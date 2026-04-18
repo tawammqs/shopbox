@@ -1,0 +1,54 @@
+// Centralized plan tier helpers + feature gating
+export type PlanSlug = "inicial" | "profissional" | "premium";
+
+export const PLAN_HIERARCHY: Record<PlanSlug, number> = {
+  inicial: 1,
+  profissional: 2,
+  premium: 3,
+};
+
+export const PLAN_LABELS: Record<PlanSlug, string> = {
+  inicial: "Inicial",
+  profissional: "Profissional",
+  premium: "Premium",
+};
+
+export const PLAN_PRICES_CENTS: Record<PlanSlug, number> = {
+  inicial: 4700,
+  profissional: 9700,
+  premium: 19700,
+};
+
+export const PLAN_LIMITS: Record<PlanSlug, { maxProducts: number }> = {
+  inicial: { maxProducts: 50 },
+  profissional: { maxProducts: 500 },
+  premium: { maxProducts: 5000 },
+};
+
+export type Feature =
+  | "bulk_actions"
+  | "discounts"
+  | "video_testimonials"
+  | "custom_domain"
+  | "seo_per_product"
+  | "analytics"
+  | "welcome_popup";
+
+export const FEATURE_MIN_PLAN: Record<Feature, PlanSlug> = {
+  bulk_actions: "profissional",
+  discounts: "profissional",
+  video_testimonials: "profissional",
+  welcome_popup: "profissional",
+  custom_domain: "premium",
+  seo_per_product: "premium",
+  analytics: "premium",
+};
+
+export function planAllows(plan: PlanSlug | null | undefined, feature: Feature) {
+  if (!plan) return false;
+  return PLAN_HIERARCHY[plan] >= PLAN_HIERARCHY[FEATURE_MIN_PLAN[feature]];
+}
+
+export function planLabel(plan: PlanSlug | null | undefined) {
+  return plan ? PLAN_LABELS[plan] : "—";
+}
