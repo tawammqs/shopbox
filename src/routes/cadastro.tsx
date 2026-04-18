@@ -137,13 +137,13 @@ function SignupPage() {
     }
     setSubmitting(true);
     try {
-      // 1) Sign up user
+      // 1) Sign up user (auto-confirm habilitado no auth — não precisa de email)
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: accountData.email,
         password: accountData.password,
         options: {
           data: { full_name: accountData.name },
-          emailRedirectTo: `${window.location.origin}/painel`,
+          emailRedirectTo: `${window.location.origin}/admin/dashboard`,
         },
       });
       if (signUpError || !signUpData.user) {
@@ -154,28 +154,31 @@ function SignupPage() {
         }
         return;
       }
+      const userId = signUpData.user.id;
 
-      // 2) Sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      // 2) Sign in (garante sessão ativa para o INSERT passar pela RLS)
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: accountData.email,
         password: accountData.password,
       });
-      if (signInError) {
+      if (signInError || !signInData.session) {
         toast.error("Conta criada, mas erro ao iniciar sessão. Tente entrar.");
         navigate({ to: "/login" });
         return;
       }
 
-      // 3) Create store
+      // 3) Create store — usa o id da sessão recém-iniciada
       const { error: storeError } = await supabase.from("stores").insert({
-        owner_user_id: signUpData.user.id,
+        owner_user_id: userId,
         name: accountData.storeName,
         slug: storeSlug,
         segment: accountData.segment,
         plan_id: selectedPlan.id,
         subscription_status: "trialing",
+        whatsapp: "",
       });
       if (storeError) {
+        console.error("Store insert error:", storeError);
         toast.error("Erro ao criar loja: " + storeError.message);
         return;
       }
@@ -184,8 +187,8 @@ function SignupPage() {
       const secret = await createCheckoutSession({
         priceId: selectedPlan.stripe_price_id,
         customerEmail: accountData.email,
-        userId: signUpData.user.id,
-        returnUrl: `${window.location.origin}/painel?checkout=success`,
+        userId,
+        returnUrl: `${window.location.origin}/admin/dashboard?checkout=success`,
       });
       setClientSecret(secret);
     } catch (err) {
