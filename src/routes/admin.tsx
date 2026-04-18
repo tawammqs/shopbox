@@ -1,15 +1,20 @@
 import { createFileRoute, Outlet, Link, useNavigate, useLocation, redirect } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, MessageSquare,
-  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette
+  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { planLabel } from "@/lib/plans";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Painel — ShopBox" }] }),
@@ -54,13 +59,7 @@ function AdminLayout() {
   }
 
   if (!store) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
-        <h1 className="font-display text-2xl font-bold">Você ainda não tem uma loja</h1>
-        <p className="text-muted-foreground">Crie sua loja para acessar o painel.</p>
-        <Button onClick={() => navigate({ to: "/cadastro" })}>Criar minha loja</Button>
-      </div>
-    );
+    return <CreateStoreFallback userId={user.id} email={user.email ?? ""} />;
   }
 
   const planSlug = store.plan?.slug ?? null;
@@ -146,5 +145,98 @@ function SidebarContent({ storeName, storeSlug, planLabel: pl }: { storeName: st
         </div>
       </div>
     </>
+  );
+}
+
+function slugify(s: string): string {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
+}
+
+function CreateStoreFallback({ userId, email }: { userId: string; email: string }) {
+  const qc = useQueryClient();
+  const [storeName, setStoreName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function handleCreate() {
+    if (storeName.trim().length < 2) {
+      toast.error("Informe o nome da loja");
+      return;
+    }
+    setBusy(true);
+    try {
+      // Find a free plan or fall back to first active plan
+      const { data: plan } = await supabase
+        .from("plans").select("id").eq("slug", "inicial").eq("active", true).maybeSingle();
+
+      // Generate unique slug
+      const base = slugify(storeName);
+      let slug = base;
+      for (let i = 0; i < 10; i++) {
+        const { data: exists } = await supabase
+          .from("stores").select("id").eq("slug", slug).maybeSingle();
+        if (!exists) break;
+        slug = `${base}-${i + 2}`;
+      }
+
+      const { error } = await supabase.from("stores").insert({
+        owner_user_id: userId,
+        name: storeName.trim(),
+        slug,
+        plan_id: plan?.id ?? null,
+        subscription_status: "trialing",
+        whatsapp: whatsapp.trim(),
+      });
+      if (error) throw error;
+      toast.success("Loja criada com sucesso!");
+      await qc.invalidateQueries({ queryKey: ["my-store-full", userId] });
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao criar loja");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+        <div className="mb-5 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent">
+            <StoreIcon className="h-6 w-6" />
+          </div>
+          <h1 className="font-display text-2xl font-bold">Falta criar sua loja</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Sua conta ({email}) ainda não tem uma loja vinculada. Crie agora em segundos.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="storeName">Nome da loja</Label>
+            <Input
+              id="storeName"
+              value={storeName}
+              onChange={(e) => setStoreName(e.target.value)}
+              placeholder="Ex: Bella Acessórios"
+              autoFocus
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="whatsapp">WhatsApp (opcional)</Label>
+            <Input
+              id="whatsapp"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+              placeholder="5511999998888"
+            />
+            <p className="text-xs text-muted-foreground">Você pode configurar depois nas configurações.</p>
+          </div>
+          <Button onClick={handleCreate} disabled={busy} className="w-full" size="lg">
+            {busy ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Criando...</> : "Criar minha loja"}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
