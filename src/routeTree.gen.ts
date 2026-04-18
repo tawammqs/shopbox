@@ -9,51 +9,162 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as StorefrontRouteImport } from './routes/_storefront'
+import { Route as StorefrontIndexRouteImport } from './routes/_storefront.index'
+import { Route as StorefrontProdutoSlugRouteImport } from './routes/_storefront.produto.$slug'
+import { Route as StorefrontCategoriaSlugRouteImport } from './routes/_storefront.categoria.$slug'
+import { Route as StorefrontCategoriaSlugSubRouteImport } from './routes/_storefront.categoria.$slug.$sub'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const StorefrontRoute = StorefrontRouteImport.update({
+  id: '/_storefront',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StorefrontIndexRoute = StorefrontIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StorefrontRoute,
+} as any)
+const StorefrontProdutoSlugRoute = StorefrontProdutoSlugRouteImport.update({
+  id: '/produto/$slug',
+  path: '/produto/$slug',
+  getParentRoute: () => StorefrontRoute,
+} as any)
+const StorefrontCategoriaSlugRoute = StorefrontCategoriaSlugRouteImport.update({
+  id: '/categoria/$slug',
+  path: '/categoria/$slug',
+  getParentRoute: () => StorefrontRoute,
+} as any)
+const StorefrontCategoriaSlugSubRoute =
+  StorefrontCategoriaSlugSubRouteImport.update({
+    id: '/$sub',
+    path: '/$sub',
+    getParentRoute: () => StorefrontCategoriaSlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof StorefrontIndexRoute
+  '/categoria/$slug': typeof StorefrontCategoriaSlugRouteWithChildren
+  '/produto/$slug': typeof StorefrontProdutoSlugRoute
+  '/categoria/$slug/$sub': typeof StorefrontCategoriaSlugSubRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/': typeof StorefrontIndexRoute
+  '/categoria/$slug': typeof StorefrontCategoriaSlugRouteWithChildren
+  '/produto/$slug': typeof StorefrontProdutoSlugRoute
+  '/categoria/$slug/$sub': typeof StorefrontCategoriaSlugSubRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_storefront': typeof StorefrontRouteWithChildren
+  '/_storefront/': typeof StorefrontIndexRoute
+  '/_storefront/categoria/$slug': typeof StorefrontCategoriaSlugRouteWithChildren
+  '/_storefront/produto/$slug': typeof StorefrontProdutoSlugRoute
+  '/_storefront/categoria/$slug/$sub': typeof StorefrontCategoriaSlugSubRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/categoria/$slug'
+    | '/produto/$slug'
+    | '/categoria/$slug/$sub'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/categoria/$slug' | '/produto/$slug' | '/categoria/$slug/$sub'
+  id:
+    | '__root__'
+    | '/_storefront'
+    | '/_storefront/'
+    | '/_storefront/categoria/$slug'
+    | '/_storefront/produto/$slug'
+    | '/_storefront/categoria/$slug/$sub'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  StorefrontRoute: typeof StorefrontRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_storefront': {
+      id: '/_storefront'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof StorefrontRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_storefront/': {
+      id: '/_storefront/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof StorefrontIndexRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
+    '/_storefront/produto/$slug': {
+      id: '/_storefront/produto/$slug'
+      path: '/produto/$slug'
+      fullPath: '/produto/$slug'
+      preLoaderRoute: typeof StorefrontProdutoSlugRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
+    '/_storefront/categoria/$slug': {
+      id: '/_storefront/categoria/$slug'
+      path: '/categoria/$slug'
+      fullPath: '/categoria/$slug'
+      preLoaderRoute: typeof StorefrontCategoriaSlugRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
+    '/_storefront/categoria/$slug/$sub': {
+      id: '/_storefront/categoria/$slug/$sub'
+      path: '/$sub'
+      fullPath: '/categoria/$slug/$sub'
+      preLoaderRoute: typeof StorefrontCategoriaSlugSubRouteImport
+      parentRoute: typeof StorefrontCategoriaSlugRoute
     }
   }
 }
 
+interface StorefrontCategoriaSlugRouteChildren {
+  StorefrontCategoriaSlugSubRoute: typeof StorefrontCategoriaSlugSubRoute
+}
+
+const StorefrontCategoriaSlugRouteChildren: StorefrontCategoriaSlugRouteChildren =
+  {
+    StorefrontCategoriaSlugSubRoute: StorefrontCategoriaSlugSubRoute,
+  }
+
+const StorefrontCategoriaSlugRouteWithChildren =
+  StorefrontCategoriaSlugRoute._addFileChildren(
+    StorefrontCategoriaSlugRouteChildren,
+  )
+
+interface StorefrontRouteChildren {
+  StorefrontIndexRoute: typeof StorefrontIndexRoute
+  StorefrontCategoriaSlugRoute: typeof StorefrontCategoriaSlugRouteWithChildren
+  StorefrontProdutoSlugRoute: typeof StorefrontProdutoSlugRoute
+}
+
+const StorefrontRouteChildren: StorefrontRouteChildren = {
+  StorefrontIndexRoute: StorefrontIndexRoute,
+  StorefrontCategoriaSlugRoute: StorefrontCategoriaSlugRouteWithChildren,
+  StorefrontProdutoSlugRoute: StorefrontProdutoSlugRoute,
+}
+
+const StorefrontRouteWithChildren = StorefrontRoute._addFileChildren(
+  StorefrontRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  StorefrontRoute: StorefrontRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
