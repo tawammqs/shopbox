@@ -1,15 +1,20 @@
 import { createFileRoute, Outlet, Link, useNavigate, useLocation, redirect } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, MessageSquare,
-  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette
+  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { planLabel } from "@/lib/plans";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Painel — ShopBox" }] }),
