@@ -50,10 +50,13 @@
   --font-marketing-body: "Inter", system-ui, sans-serif;
 }
 
-/* Marketing landing tokens */
+/* Marketing landing tokens — WhatsApp green palette */
 :root {
-  --brand-teal: #00b7a8;
-  --brand-teal-dark: #009b8e;
+  --brand-teal: #25D366;
+  --brand-teal-dark: #1ebe57;
+  --brand-accent: #25D366;
+  --brand-accent-hover: #1ebe57;
+  --brand-accent-light: #f0fdf4;
   --brand-ink: #111827;
   --brand-soft: #f7f8fa;
   --brand-border: #e5e7eb;
