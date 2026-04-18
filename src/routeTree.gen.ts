@@ -17,7 +17,6 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
 import { Route as AdminConfiguracoesIndexRouteImport } from './routes/admin.configuracoes.index'
 import { Route as AdminCategoriasIndexRouteImport } from './routes/admin.categorias.index'
-import { Route as AdminBannersIndexRouteImport } from './routes/admin.banners.index'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
 import { Route as StorefrontProdutoSlugRouteImport } from './routes/_storefront.produto.$slug'
 import { Route as StorefrontCategoriaSlugRouteImport } from './routes/_storefront.categoria.$slug'
@@ -62,11 +61,6 @@ const AdminCategoriasIndexRoute = AdminCategoriasIndexRouteImport.update({
   path: '/categorias/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminBannersIndexRoute = AdminBannersIndexRouteImport.update({
-  id: '/banners/',
-  path: '/banners/',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   id: '/produtos/$id',
   path: '/produtos/$id',
@@ -97,7 +91,6 @@ export interface FileRoutesByFullPath {
   '/categoria/$slug': typeof StorefrontCategoriaSlugRouteWithChildren
   '/produto/$slug': typeof StorefrontProdutoSlugRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
-  '/admin/banners/': typeof AdminBannersIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
@@ -110,7 +103,6 @@ export interface FileRoutesByTo {
   '/categoria/$slug': typeof StorefrontCategoriaSlugRouteWithChildren
   '/produto/$slug': typeof StorefrontProdutoSlugRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
-  '/admin/banners': typeof AdminBannersIndexRoute
   '/admin/categorias': typeof AdminCategoriasIndexRoute
   '/admin/configuracoes': typeof AdminConfiguracoesIndexRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
@@ -126,7 +118,6 @@ export interface FileRoutesById {
   '/_storefront/categoria/$slug': typeof StorefrontCategoriaSlugRouteWithChildren
   '/_storefront/produto/$slug': typeof StorefrontProdutoSlugRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
-  '/admin/banners/': typeof AdminBannersIndexRoute
   '/admin/categorias/': typeof AdminCategoriasIndexRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
@@ -142,7 +133,6 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/admin/produtos/$id'
-    | '/admin/banners/'
     | '/admin/categorias/'
     | '/admin/configuracoes/'
     | '/admin/produtos/'
@@ -155,7 +145,6 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/admin/produtos/$id'
-    | '/admin/banners'
     | '/admin/categorias'
     | '/admin/configuracoes'
     | '/admin/produtos'
@@ -170,7 +159,6 @@ export interface FileRouteTypes {
     | '/_storefront/categoria/$slug'
     | '/_storefront/produto/$slug'
     | '/admin/produtos/$id'
-    | '/admin/banners/'
     | '/admin/categorias/'
     | '/admin/configuracoes/'
     | '/admin/produtos/'
@@ -240,13 +228,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriasIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/banners/': {
-      id: '/admin/banners/'
-      path: '/banners'
-      fullPath: '/admin/banners/'
-      preLoaderRoute: typeof AdminBannersIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/produtos/$id': {
       id: '/admin/produtos/$id'
       path: '/produtos/$id'
@@ -312,7 +293,6 @@ interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
-  AdminBannersIndexRoute: typeof AdminBannersIndexRoute
   AdminCategoriasIndexRoute: typeof AdminCategoriasIndexRoute
   AdminConfiguracoesIndexRoute: typeof AdminConfiguracoesIndexRoute
   AdminProdutosIndexRoute: typeof AdminProdutosIndexRoute
@@ -322,7 +302,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
-  AdminBannersIndexRoute: AdminBannersIndexRoute,
   AdminCategoriasIndexRoute: AdminCategoriasIndexRoute,
   AdminConfiguracoesIndexRoute: AdminConfiguracoesIndexRoute,
   AdminProdutosIndexRoute: AdminProdutosIndexRoute,
