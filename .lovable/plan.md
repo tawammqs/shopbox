@@ -1,65 +1,100 @@
 
-# Plano: E-commerce com Checkout via WhatsApp
+# Plano: Plataforma SaaS E-commerce Multi-Loja
 
-Loja completa em pt-BR com vitrine pública e painel admin protegido. Estilo premium (branco, charcoal #1a1a1a, verde esmeralda #1a6b4a), Playfair Display + DM Sans.
+Transformação completa do projeto: de loja única para SaaS multi-tenant com landing page, signup, planos pagos via Stripe e todas as features avançadas (cupons, promoções, wishlist, reviews, etc).
 
-## 🗄️ Backend (Lovable Cloud / Supabase)
+## ⚠️ Avisos importantes antes de começar
 
-**Tabelas:**
-- `categories` — id, name, slug, parent_id (subcategorias), image_url, display_order
-- `products` — id, title, brand, description, sku, price, promo_price, promo_starts_at, promo_ends_at, category_id, subcategory_id, tags[], active, created_at
-- `product_images` — id, product_id, url, position
-- `product_colors` — id, product_id, name, hex
-- `product_sizes` — id, product_id, label
-- `product_stock` — product_id, color_id, size_id, quantity (matriz cor × tamanho)
-- `banners` — id, title, subtitle, button_label, button_link, desktop_url, mobile_url, display_order, active
-- `store_settings` — singleton: name, logo_url, whatsapp, instagram, facebook, tiktok, youtube
-- `user_roles` — gerenciamento de admin (tabela separada com enum + função `has_role`)
+1. **Escopo gigante**: Isso são ~40+ features. Vou construir tudo, mas espere precisar de iterações de polimento depois — é normal em builds desta escala.
+2. **Stripe real exige plano Pro do Lovable**. Quando eu chamar `enable_stripe_payments`, se você não estiver no Pro, vai bloquear. Se isso acontecer, podemos cair para "mock UI" temporariamente.
+3. **Wipe de dados**: Tudo que existe hoje (loja "Minha Loja", produtos demo, admin tawam.mqs@outlook.com) será **apagado** e recriado num esquema multi-tenant. Você poderá criar um novo signup como qualquer usuário.
+4. **Subdomínios**: vou usar `/loja/<slug>` (path-based) — funciona imediatamente em qualquer URL.
 
-**Storage:** buckets públicos `products`, `categories`, `banners`, `logo`
+## 🗄️ Novo schema multi-tenant
 
-**Auth:** admin único pré-criado via seed. Sem signup público. Rotas `/admin/*` protegidas via guard.
+**Tabelas core (todas com `store_id` + RLS por loja):**
+- `stores` — id, owner_user_id, name, slug (único, vira `/loja/<slug>`), segment, logo_url, favicon_url, accent_color, tagline, whatsapp, social URLs, trust_badges (JSONB), shipping_rates (JSONB), seo_meta, welcome_popup (JSONB), plan_id, subscription_status, stripe_customer_id, stripe_subscription_id, created_at
+- `plans` — id, name (Básico/Profissional/Premium), price_cents, stripe_price_id, max_products, features (JSONB)
+- `categories` — `+ store_id`
+- `products` — `+ store_id`, `low_stock_threshold`, `meta_title`, `meta_description`, `size_guide_url`
+- `product_images`, `product_colors`, `product_sizes`, `product_stock` (mantém por relacionamento via product)
+- `product_video_testimonials` — id, product_id, video_url, kind (youtube|mp4), customer_name, rating, quote, position
+- `product_reviews` — id, product_id, customer_name, rating, text, status (pending|approved|rejected), created_at
+- `banners` — `+ store_id`
+- `static_pages` — id, store_id, slug (sobre/politicas/contato), title, content_md
+- `coupons` — id, store_id, code, type (fixed|percent), value, min_cart, max_uses, max_uses_per_customer, expires_at, scope_type, scope_ids (JSONB), first_purchase_only, active
+- `coupon_uses` — id, coupon_id, customer_whatsapp, used_at
+- `promotions` — id, store_id, name, badge_label, type (percent|fixed), value, scope_type, scope_ids, starts_at, ends_at, active
+- `combo_promotions` — id, store_id, name, badge_label, scope_type, scope_ids, min_quantity, discount_kind (fixed_total|percent|free_n), discount_value, active
+- `stock_notify_requests` — id, product_id, color_id, size_id, customer_whatsapp, notified
+- `subscription_events` — id, store_id, stripe_event_id, type, payload (audit log)
 
-**Seed:** ~10 produtos de exemplo, categorias Meninos/Meninas/Bebê com subcategorias, 1 banner, 1 admin.
+**Funções/triggers:**
+- `is_store_owner(_store_id)` — security definer para RLS
+- `has_role(...)` mantido (admin global da plataforma para suporte)
+- Trigger: ao criar `store`, criar categorias/configs default
 
-## 🛍️ Vitrine Pública
+**RLS:** SELECT público em produtos/categorias/banners/reviews aprovadas/etc (apenas onde a loja está ativa). INSERT/UPDATE/DELETE só para `is_store_owner` ou `has_role('admin')`.
 
-**Layout global:**
-- Header sticky: logo · busca em tempo real (dropdown com thumb + nome + preço) · ícone carrinho com badge animado
-- Mobile: busca colapsável, menu hamburger em drawer full-screen
-- Menu de categorias com submenu (hover desktop / expand mobile)
-- Footer com logo, redes sociais, links rápidos
+## 🌐 LAYER 1 — Landing SaaS (rotas públicas raiz)
 
-**Páginas:**
-- `/` — Hero carousel (banners desktop/mobile separados, auto-slide), seções por tag (Destaques, Lançamentos, Ofertas, Principal), grid de categorias
-- `/categoria/$slug` e `/categoria/$slug/$sub` — sidebar de filtros (categoria, tamanho, preço com slider, marca, cor swatches, tags), barra de ordenação, grid responsivo (2/3/4 cols), chips de filtros ativos, "Ver mais"
-- `/produto/$slug` — galeria com zoom, breadcrumb, seletor de cor (swatches), seletor de tamanho (combinações sem estoque acinzentadas), indicador de estoque, qty, "Adicionar ao Carrinho", "Comprar agora pelo WhatsApp", relacionados
-- Carrinho — drawer lateral, persistido em localStorage, CTA "Finalizar pelo WhatsApp" abre `wa.me/<numero>` com mensagem formatada (itens, cor, tamanho, qtd, total)
+- `/` — Landing: hero, features, pricing (3 planos), depoimentos, FAQ, footer
+- `/cadastro` — Wizard 3 passos: dados+loja → plano → checkout Stripe
+- `/login` — login dono de loja
+- `/recuperar-senha` + `/reset-password`
+- Após signup → cria `store` + redireciona para `/painel` com checklist de onboarding
 
-**Comportamentos:**
-- Filtros refletidos na URL (search params) — compartilháveis
-- Busca cobre nome, descrição, marca, categoria
-- Preço promocional: original riscado + badge de % de desconto
-- Lazy-load de imagens, animações sutis (hover lift, fade, drawer)
+## 🏪 LAYER 2 — Storefront por loja: `/loja/$slug/*`
 
-## 🔐 Painel Admin (`/admin`)
+- `/loja/$slug/` — home (banners, seções por tag, grid categorias, popup boas-vindas)
+- `/loja/$slug/categoria/$cat` e `/.../$cat/$sub`
+- `/loja/$slug/produto/$produto` — galeria zoom, variações, vídeos depoimento, reviews, relacionados, "notificar quando disponível"
+- `/loja/$slug/favoritos` — wishlist (localStorage por loja)
+- `/loja/$slug/sobre`, `/politicas`, `/contato` — páginas estáticas editáveis
+- Header: logo, busca real-time, wishlist, carrinho, menu mobile drawer
+- Sidebar filtros: categorias, tamanho, preço (slider), marca, cor, tags, em estoque
+- Carrinho drawer: cupom input, breakdown desconto, CEP/frete, CTA WhatsApp formatado
 
-- Login email + senha
-- Dashboard: cards de resumo (produtos, categorias, alertas de estoque baixo, banners ativos)
-- **Produtos** — CRUD completo, upload de imagem principal + galeria (até 6, drag-reorder), variações de cor (nome + color picker hex), tamanhos (texto livre), matriz visual de estoque cor × tamanho
-- **Categorias** — CRUD, subcategorias, imagem, slug auto, drag-reorder
-- **Banners** — upload separado desktop/mobile, preview, ordem, on/off
-- **Configurações** — nome da loja, logo, WhatsApp, URLs de redes sociais
+## 🔐 LAYER 3 — Painel do dono: `/painel/*`
 
-## 🎨 Design
+- `/painel` — dashboard com checklist onboarding, stats, mais vistos/wishlistados
+- `/painel/produtos` — tabela com **bulk actions** (preço, categoria, tag, ativar/desativar/excluir) + barra flutuante
+- `/painel/produtos/$id` — form completo: rich text, mídia drag-drop, vídeos depoimento, matriz de estoque cor×tamanho, SEO, badges
+- `/painel/categorias` — tree view drag-drop
+- `/painel/banners` — desktop+mobile separados, preview
+- `/painel/descontos` — 4 tabs: Cupons, Promoções, Combos, Pop-up boas-vindas
+- `/painel/reviews` — moderar (aprovar/rejeitar)
+- `/painel/paginas` — editar sobre/políticas/contato
+- `/painel/configuracoes` — geral, WhatsApp, redes, frete, badges, SEO, cor de destaque
+- `/painel/plano` — plano atual, uso, upgrade/downgrade (Stripe Customer Portal), histórico
 
-- Tailwind tokens semânticos (esmeralda como `--accent`)
-- Playfair Display (headings) + DM Sans (body) via Google Fonts
-- Mobile-first, tap targets ≥44px, drawers no mobile
-- Microanimações: card hover lift, drawer slide, fade do banner, reveal escalonado do grid
+## 💳 Pagamentos Stripe
 
-## ⚠️ Observação importante
+- `enable_stripe_payments` (Lovable built-in)
+- Criar 3 produtos/preços (Básico/Profissional/Premium mensais)
+- Server route `/api/stripe/checkout` — cria Checkout Session
+- Server route `/api/stripe/webhook` — escuta `checkout.session.completed`, `customer.subscription.updated/deleted`, atualiza `stores.subscription_status`
+- Server route `/api/stripe/portal` — abre Customer Portal
+- Guard: `/painel/*` exige assinatura ativa (senão redireciona para `/painel/plano`)
 
-WhatsApp Web tem limite prático de ~2000 caracteres na URL `wa.me`. Para carrinhos grandes, vou truncar a mensagem com aviso "...e mais X itens" se ultrapassar — o atendente verá o pedido completo se você também quiser que eu salve o pedido no banco antes de abrir o WhatsApp (posso adicionar isso depois se quiser histórico de pedidos).
+## 🛠️ Stack adicional necessário
 
-Após aprovação, vou pedir o **email do admin** para criar a conta inicial.
+- React Hook Form + Zod (forms)
+- DnD kit (drag-drop reorder)
+- Tiptap ou similar (rich text editor)
+- Loja: Zustand para wishlist + cart isolados por `storeSlug`
+
+## 📋 Ordem de execução
+
+1. Migration: wipe + novo schema multi-tenant + RLS + planos seed
+2. Habilitar Stripe + criar produtos/preços + server routes (checkout/webhook/portal)
+3. Landing + signup wizard + login/reset (rotas raiz)
+4. Refatorar storefront atual para `/loja/$slug/*` com `store_id` em todas queries
+5. Refatorar admin atual para `/painel/*` escopado por loja
+6. Adicionar features novas: wishlist, popup, share, cupom no carrinho, CEP/frete
+7. Página produto avançada: vídeos depoimento, reviews, notify-stock, badges trust
+8. Promoções engine: cupons + promoções categoria + combos + aplicação no carrinho
+9. Bulk actions de produtos + reviews moderação + páginas estáticas
+10. Polimento: animações, mobile, SEO meta tags por rota
+
+Após aprovar, vou começar com a migration (passo 1) e Stripe (passo 2). Se Stripe travar por falta de plano Pro, eu aviso e seguimos com mock UI no checkout.
