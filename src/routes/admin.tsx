@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, Link, useNavigate, useLocation, redirect } fro
 import { useEffect } from "react";
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, MessageSquare,
-  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu
+  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
@@ -22,6 +22,7 @@ const NAV = [
   { to: "/admin/categorias", label: "Categorias", icon: FolderTree },
   { to: "/admin/banners", label: "Banners", icon: Image },
   { to: "/admin/descontos", label: "Descontos", icon: Tag },
+  { to: "/admin/temas", label: "Temas", icon: Palette },
   { to: "/admin/avaliacoes", label: "Avaliações", icon: MessageSquare },
   { to: "/admin/configuracoes", label: "Configurações", icon: Settings },
   { to: "/admin/plano", label: "Plano & Cobrança", icon: CreditCard },

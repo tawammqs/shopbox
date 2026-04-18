@@ -32,7 +32,7 @@ function LoginPage() {
       return;
     }
     toast.success("Bem-vindo de volta!");
-    navigate({ to: "/painel" });
+    navigate({ to: "/admin/dashboard" });
   }
 
   return (
