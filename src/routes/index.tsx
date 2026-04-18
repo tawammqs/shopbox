@@ -37,7 +37,7 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: "1", title: "Crie sua conta e escolha seu plano", desc: "Cadastro rápido, 7 dias grátis pra testar tudo." },
+  { n: "1", title: "Crie sua conta gratuita", desc: "Cadastro rápido, 7 dias grátis pra testar tudo." },
   { n: "2", title: "Configure sua loja", desc: "Logo, produtos, categorias, tema e WhatsApp." },
   { n: "3", title: "Compartilhe e venda pelo WhatsApp", desc: "Link da sua loja na bio, story ou anúncio. Pedidos chegam no seu WhatsApp." },
 ];
@@ -80,8 +80,8 @@ function LandingPage() {
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#e6f8f6] px-3 py-1 text-xs font-semibold text-[#00857a]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00b7a8]" />
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#f0fdf4] px-3 py-1 text-xs font-semibold text-[#1ebe57]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#25D366]" />
               Plataforma de e-commerce para WhatsApp
             </span>
             <h1
@@ -89,7 +89,7 @@ function LandingPage() {
               style={{ fontFamily: "var(--font-marketing)" }}
             >
               Crie sua loja e venda pelo{" "}
-              <span className="text-[#00b7a8]">WhatsApp</span> como uma loja profissional
+              <span className="text-[#25D366]">WhatsApp</span> como uma loja profissional
             </h1>
             <p className="mt-5 max-w-lg text-lg text-[#4b5563]">
               Vitrine profissional, cupons, promoções e checkout direto no WhatsApp dos
@@ -98,13 +98,13 @@ function LandingPage() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 to="/cadastro"
-                className="rounded-full bg-[#00b7a8] px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-[#00b7a8]/20 transition hover:bg-[#009b8e]"
+                className="rounded-full bg-[#25D366] px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-[#25D366]/20 transition hover:bg-[#1ebe57]"
               >
-                Criar minha loja grátis
+                Testar grátis por 7 dias
               </Link>
               <a
                 href="#como-funciona"
-                className="rounded-full border-2 border-[#111827] px-7 py-3 text-base font-semibold text-[#111827] transition hover:bg-[#111827] hover:text-white"
+                className="rounded-full border-2 border-[#25D366] px-7 py-3 text-base font-semibold text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
               >
                 Ver demonstração
               </a>
@@ -123,7 +123,7 @@ function LandingPage() {
       <section className="border-y border-[#e5e7eb] bg-[#f7f8fa] py-10">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <p className="text-sm font-medium text-[#6b7280]">
-            Mais de <span className="font-bold text-[#111827]">1.200 lojistas</span> já vendem com a gente
+            Junte-se a <span className="font-bold text-[#111827]">milhares de lojistas</span> que já vendem pelo WhatsApp
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-8 text-[#9ca3af]">
             <div className="flex items-center gap-2 text-sm font-semibold">
@@ -157,9 +157,9 @@ function LandingPage() {
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-2xl border border-[#e5e7eb] bg-white p-7 transition hover:border-[#00b7a8] hover:shadow-lg">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e6f8f6]">
-                    <Icon className="h-5 w-5 text-[#00b7a8]" />
+                <div key={f.title} className="rounded-2xl border border-[#e5e7eb] bg-white p-7 transition hover:border-[#25D366] hover:shadow-lg">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f0fdf4]">
+                    <Icon className="h-5 w-5 text-[#25D366]" />
                   </div>
                   <h3 className="mt-5 text-lg font-bold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
                     {f.title}
@@ -186,7 +186,7 @@ function LandingPage() {
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {STEPS.map((s) => (
               <div key={s.n} className="relative rounded-2xl bg-white p-7 shadow-sm">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#00b7a8] font-display text-xl font-bold text-white">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] font-display text-xl font-bold text-white">
                   {s.n}
                 </div>
                 <h3 className="mt-5 text-lg font-bold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
@@ -212,7 +212,7 @@ function LandingPage() {
               </h2>
               <p className="mt-4 text-lg text-[#6b7280]">Escolha um visual e personalize em minutos.</p>
             </div>
-            <Link to="/temas" className="text-sm font-semibold text-[#00b7a8] hover:text-[#009b8e]">
+            <Link to="/temas" className="text-sm font-semibold text-[#25D366] hover:text-[#1ebe57]">
               Ver todos os temas →
             </Link>
           </div>
@@ -223,7 +223,7 @@ function LandingPage() {
                   key={t.id}
                   to="/temas/$slug"
                   params={{ slug: t.slug }}
-                  className="group w-72 shrink-0 overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white transition hover:border-[#00b7a8] hover:shadow-lg"
+                  className="group w-72 shrink-0 overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white transition hover:border-[#25D366] hover:shadow-lg"
                 >
                   <div className="aspect-[4/3] overflow-hidden bg-[#f7f8fa]">
                     {t.preview_desktop_url ? (
@@ -234,7 +234,7 @@ function LandingPage() {
                   </div>
                   <div className="p-4">
                     <div className="font-semibold text-[#111827]">{t.name}</div>
-                    <div className="mt-1 text-sm text-[#00b7a8] font-semibold">
+                    <div className="mt-1 text-sm text-[#25D366] font-semibold">
                       {t.is_free ? "Gratuito" : `R$ ${(t.price_cents / 100).toFixed(0)}`}
                     </div>
                   </div>
@@ -285,7 +285,7 @@ function LandingPage() {
                 </div>
                 <p className="mt-4 text-[#374151] leading-relaxed">"{t.quote}"</p>
                 <div className="mt-5 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#00b7a8] font-bold text-white">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] font-bold text-white">
                     {t.name.charAt(0)}
                   </div>
                   <div>
@@ -317,7 +317,7 @@ function LandingPage() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="bg-[#00b7a8] py-20">
+      <section className="bg-[#25D366] py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2
             className="text-4xl font-extrabold leading-tight text-white md:text-5xl"
@@ -330,9 +330,9 @@ function LandingPage() {
           </p>
           <Link
             to="/cadastro"
-            className="mt-8 inline-block rounded-full bg-white px-8 py-4 text-base font-bold text-[#00b7a8] shadow-xl transition hover:bg-[#f7f8fa]"
+            className="mt-8 inline-block rounded-full bg-white px-8 py-4 text-base font-bold text-[#25D366] shadow-xl transition hover:bg-[#f7f8fa]"
           >
-            Criar minha loja agora — é grátis →
+            Testar grátis por 7 dias
           </Link>
         </div>
       </section>

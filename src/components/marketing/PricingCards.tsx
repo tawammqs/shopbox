@@ -53,12 +53,12 @@ export function PricingCards() {
               key={plan.id}
               className={`relative flex flex-col rounded-2xl bg-white p-8 ${
                 highlighted
-                  ? "border-2 border-[#00b7a8] shadow-xl md:scale-105"
+                  ? "border-2 border-[#25D366] shadow-xl md:scale-105"
                   : "border border-[#e5e7eb] shadow-sm"
               }`}
             >
               {highlighted && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#00b7a8] px-4 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#25D366] px-4 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md">
                   Mais Popular
                 </span>
               )}
@@ -73,7 +73,7 @@ export function PricingCards() {
               <ul className="mt-6 flex-1 space-y-3 text-sm">
                 {plan.features.map((f, i) => (
                   <li key={i} className="flex gap-2.5">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#00b7a8]" />
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#25D366]" />
                     <span className="text-[#374151]">{f}</span>
                   </li>
                 ))}
@@ -82,18 +82,18 @@ export function PricingCards() {
                 to="/cadastro"
                 className={`mt-8 block w-full rounded-full px-6 py-3 text-center text-sm font-semibold transition ${
                   highlighted
-                    ? "bg-[#00b7a8] text-white hover:bg-[#009b8e]"
-                    : "border border-[#111827] text-[#111827] hover:bg-[#111827] hover:text-white"
+                    ? "bg-[#25D366] text-white hover:bg-[#1ebe57]"
+                    : "border border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white"
                 }`}
               >
-                Começar agora
+                Testar grátis por 7 dias
               </Link>
             </div>
           );
         })}
       </div>
       <p className="mt-8 text-center text-sm text-[#6b7280]">
-        Todos os planos incluem 7 dias grátis para testar
+        7 dias grátis em todos os planos. Sem cartão de crédito.
       </p>
     </>
   );
