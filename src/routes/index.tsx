@@ -157,9 +157,9 @@ function LandingPage() {
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.title} className="rounded-2xl border border-[#e5e7eb] bg-white p-7 transition hover:border-[#00b7a8] hover:shadow-lg">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e6f8f6]">
-                    <Icon className="h-5 w-5 text-[#00b7a8]" />
+                <div key={f.title} className="rounded-2xl border border-[#e5e7eb] bg-white p-7 transition hover:border-[#25D366] hover:shadow-lg">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#f0fdf4]">
+                    <Icon className="h-5 w-5 text-[#25D366]" />
                   </div>
                   <h3 className="mt-5 text-lg font-bold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
                     {f.title}
@@ -186,7 +186,7 @@ function LandingPage() {
           <div className="mt-14 grid gap-8 md:grid-cols-3">
             {STEPS.map((s) => (
               <div key={s.n} className="relative rounded-2xl bg-white p-7 shadow-sm">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#00b7a8] font-display text-xl font-bold text-white">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] font-display text-xl font-bold text-white">
                   {s.n}
                 </div>
                 <h3 className="mt-5 text-lg font-bold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
@@ -212,7 +212,7 @@ function LandingPage() {
               </h2>
               <p className="mt-4 text-lg text-[#6b7280]">Escolha um visual e personalize em minutos.</p>
             </div>
-            <Link to="/temas" className="text-sm font-semibold text-[#00b7a8] hover:text-[#009b8e]">
+            <Link to="/temas" className="text-sm font-semibold text-[#25D366] hover:text-[#1ebe57]">
               Ver todos os temas →
             </Link>
           </div>
@@ -223,7 +223,7 @@ function LandingPage() {
                   key={t.id}
                   to="/temas/$slug"
                   params={{ slug: t.slug }}
-                  className="group w-72 shrink-0 overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white transition hover:border-[#00b7a8] hover:shadow-lg"
+                  className="group w-72 shrink-0 overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white transition hover:border-[#25D366] hover:shadow-lg"
                 >
                   <div className="aspect-[4/3] overflow-hidden bg-[#f7f8fa]">
                     {t.preview_desktop_url ? (
@@ -234,7 +234,7 @@ function LandingPage() {
                   </div>
                   <div className="p-4">
                     <div className="font-semibold text-[#111827]">{t.name}</div>
-                    <div className="mt-1 text-sm text-[#00b7a8] font-semibold">
+                    <div className="mt-1 text-sm text-[#25D366] font-semibold">
                       {t.is_free ? "Gratuito" : `R$ ${(t.price_cents / 100).toFixed(0)}`}
                     </div>
                   </div>
@@ -285,7 +285,7 @@ function LandingPage() {
                 </div>
                 <p className="mt-4 text-[#374151] leading-relaxed">"{t.quote}"</p>
                 <div className="mt-5 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#00b7a8] font-bold text-white">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] font-bold text-white">
                     {t.name.charAt(0)}
                   </div>
                   <div>
@@ -317,7 +317,7 @@ function LandingPage() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="bg-[#00b7a8] py-20">
+      <section className="bg-[#25D366] py-20">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <h2
             className="text-4xl font-extrabold leading-tight text-white md:text-5xl"
@@ -330,7 +330,7 @@ function LandingPage() {
           </p>
           <Link
             to="/cadastro"
-            className="mt-8 inline-block rounded-full bg-white px-8 py-4 text-base font-bold text-[#00b7a8] shadow-xl transition hover:bg-[#f7f8fa]"
+            className="mt-8 inline-block rounded-full bg-white px-8 py-4 text-base font-bold text-[#25D366] shadow-xl transition hover:bg-[#f7f8fa]"
           >
             Criar minha loja agora — é grátis →
           </Link>
