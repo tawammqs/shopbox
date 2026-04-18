@@ -18,7 +18,9 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
+import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as LojaSlugProdutoProductSlugRouteImport } from './routes/loja.$slug.produto.$productSlug'
@@ -69,10 +71,20 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
 const LojaSlugIndexRoute = LojaSlugIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LojaSlugRoute,
+} as any)
+const AdminProdutosIndexRoute = AdminProdutosIndexRouteImport.update({
+  id: '/produtos/',
+  path: '/produtos/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const LojaSlugWishlistRoute = LojaSlugWishlistRouteImport.update({
   id: '/wishlist',
@@ -99,31 +111,35 @@ const LojaSlugCategoriaCategorySlugRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
+  '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
+  '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
@@ -131,16 +147,18 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
+  '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
@@ -155,10 +173,12 @@ export interface FileRouteTypes {
     | '/painel'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/admin/dashboard'
     | '/checkout/return'
     | '/loja/$slug'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
+    | '/admin/produtos/'
     | '/loja/$slug/'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/produto/$productSlug'
@@ -171,9 +191,11 @@ export interface FileRouteTypes {
     | '/painel'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/admin/dashboard'
     | '/checkout/return'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
+    | '/admin/produtos'
     | '/loja/$slug'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/produto/$productSlug'
@@ -186,10 +208,12 @@ export interface FileRouteTypes {
     | '/painel'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/admin/dashboard'
     | '/checkout/return'
     | '/loja/$slug'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
+    | '/admin/produtos/'
     | '/loja/$slug/'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/produto/$productSlug'
@@ -197,7 +221,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   LoginRoute: typeof LoginRoute
   PainelRoute: typeof PainelRoute
@@ -272,12 +296,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/loja/$slug/': {
       id: '/loja/$slug/'
       path: '/'
       fullPath: '/loja/$slug/'
       preLoaderRoute: typeof LojaSlugIndexRouteImport
       parentRoute: typeof LojaSlugRoute
+    }
+    '/admin/produtos/': {
+      id: '/admin/produtos/'
+      path: '/produtos'
+      fullPath: '/admin/produtos/'
+      preLoaderRoute: typeof AdminProdutosIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/loja/$slug/wishlist': {
       id: '/loja/$slug/wishlist'
@@ -310,6 +348,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminProdutosIndexRoute: typeof AdminProdutosIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminProdutosIndexRoute: AdminProdutosIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface LojaSlugRouteChildren {
   LojaSlugBuscaRoute: typeof LojaSlugBuscaRoute
   LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
@@ -332,7 +382,7 @@ const LojaSlugRouteWithChildren = LojaSlugRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   CadastroRoute: CadastroRoute,
   LoginRoute: LoginRoute,
   PainelRoute: PainelRoute,
