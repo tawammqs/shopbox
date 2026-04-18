@@ -40,8 +40,8 @@ export function FaqAccordion() {
   return (
     <Accordion type="single" collapsible className="w-full">
       {FAQ.map((item, i) => (
-        <AccordionItem key={i} value={`item-${i}`} className="border-b border-[#e5e7eb]">
-          <AccordionTrigger className="py-5 text-left text-base font-semibold text-[#111827] hover:no-underline">
+        <AccordionItem key={i} value={`item-${i}`} className="border-b border-[#e5e7eb] data-[state=open]:border-[#25D366]">
+          <AccordionTrigger className="py-5 text-left text-base font-semibold text-[#111827] hover:no-underline data-[state=open]:text-[#25D366] [&>svg]:text-[#25D366]">
             {item.q}
           </AccordionTrigger>
           <AccordionContent className="pb-5 text-sm text-[#6b7280]">
