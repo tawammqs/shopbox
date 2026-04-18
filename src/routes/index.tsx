@@ -80,8 +80,8 @@ function LandingPage() {
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#e6f8f6] px-3 py-1 text-xs font-semibold text-[#00857a]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#00b7a8]" />
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#f0fdf4] px-3 py-1 text-xs font-semibold text-[#1ebe57]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#25D366]" />
               Plataforma de e-commerce para WhatsApp
             </span>
             <h1
@@ -89,7 +89,7 @@ function LandingPage() {
               style={{ fontFamily: "var(--font-marketing)" }}
             >
               Crie sua loja e venda pelo{" "}
-              <span className="text-[#00b7a8]">WhatsApp</span> como uma loja profissional
+              <span className="text-[#25D366]">WhatsApp</span> como uma loja profissional
             </h1>
             <p className="mt-5 max-w-lg text-lg text-[#4b5563]">
               Vitrine profissional, cupons, promoções e checkout direto no WhatsApp dos
@@ -98,13 +98,13 @@ function LandingPage() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 to="/cadastro"
-                className="rounded-full bg-[#00b7a8] px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-[#00b7a8]/20 transition hover:bg-[#009b8e]"
+                className="rounded-full bg-[#25D366] px-7 py-3.5 text-base font-semibold text-white shadow-lg shadow-[#25D366]/20 transition hover:bg-[#1ebe57]"
               >
-                Criar minha loja grátis
+                Testar grátis por 7 dias
               </Link>
               <a
                 href="#como-funciona"
-                className="rounded-full border-2 border-[#111827] px-7 py-3 text-base font-semibold text-[#111827] transition hover:bg-[#111827] hover:text-white"
+                className="rounded-full border-2 border-[#25D366] px-7 py-3 text-base font-semibold text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
               >
                 Ver demonstração
               </a>
