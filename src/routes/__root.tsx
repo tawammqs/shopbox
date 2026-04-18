@@ -41,8 +41,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Loja" },
+      { title: "ShopBox" },
       { name: "description", content: "E-commerce com checkout via WhatsApp" },
+      { property: "og:title", content: "ShopBox" },
+      { name: "twitter:title", content: "ShopBox" },
+      { property: "og:description", content: "E-commerce com checkout via WhatsApp" },
+      { name: "twitter:description", content: "E-commerce com checkout via WhatsApp" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/n4evE3y1mQWwxj8HBFEYLvQ0Ykz1/social-images/social-1776525957843-SHOPBOX_(4).webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/n4evE3y1mQWwxj8HBFEYLvQ0Ykz1/social-images/social-1776525957843-SHOPBOX_(4).webp" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
