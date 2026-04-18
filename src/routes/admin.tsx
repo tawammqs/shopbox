@@ -54,13 +54,7 @@ function AdminLayout() {
   }
 
   if (!store) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background px-4 text-center">
-        <h1 className="font-display text-2xl font-bold">Você ainda não tem uma loja</h1>
-        <p className="text-muted-foreground">Crie sua loja para acessar o painel.</p>
-        <Button onClick={() => navigate({ to: "/cadastro" })}>Criar minha loja</Button>
-      </div>
-    );
+    return <CreateStoreFallback userId={user.id} email={user.email ?? ""} />;
   }
 
   const planSlug = store.plan?.slug ?? null;
