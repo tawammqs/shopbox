@@ -249,7 +249,7 @@ function ThemeCustomizerDialog({
 
               <TabsContent value="sections" className="space-y-2 pt-4">
                 <p className="text-xs text-muted-foreground">Reordene e habilite/desabilite seções da home</p>
-                {sections.map((s, idx) => {
+                {sections.map((s: { id: string; enabled: boolean; order: number }, idx: number) => {
                   const meta = ALL_SECTIONS.find((x) => x.id === s.id);
                   if (!meta) return null;
                   return (
