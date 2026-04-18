@@ -176,7 +176,7 @@ function ThemeCustomizerDialog({
     patch({ sections: next.map((s, i) => ({ ...s, order: i })) });
   }
   function toggleSection(id: string) {
-    const next = sections.map((s) => s.id === id ? { ...s, enabled: !s.enabled } : s);
+    const next = sections.map((s: { id: string; enabled: boolean; order: number }) => s.id === id ? { ...s, enabled: !s.enabled } : s);
     patch({ sections: next });
   }
 
