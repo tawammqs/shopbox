@@ -12,20 +12,31 @@ export type CartItem = {
   sizeLabel: string | null;
   unitPrice: number;
   quantity: number;
+  storeId: string;
 };
+
+export type AppliedCoupon = {
+  code: string;
+  type: "percent" | "fixed";
+  value: number;
+  discount: number;
+} | null;
 
 type CartState = {
   items: CartItem[];
   isOpen: boolean;
+  coupon: AppliedCoupon;
   open: () => void;
   close: () => void;
   toggle: () => void;
   addItem: (item: CartItem) => void;
   removeItem: (productId: string, colorId: string | null, sizeId: string | null) => void;
   updateQty: (productId: string, colorId: string | null, sizeId: string | null, qty: number) => void;
+  setCoupon: (c: AppliedCoupon) => void;
   clear: () => void;
-  totalCount: () => number;
-  totalPrice: () => number;
+  itemsForStore: (storeId: string) => CartItem[];
+  totalCount: (storeId?: string) => number;
+  subtotal: (storeId?: string) => number;
 };
 
 const sameLine = (a: CartItem, productId: string, colorId: string | null, sizeId: string | null) =>
@@ -36,6 +47,7 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       items: [],
       isOpen: false,
+      coupon: null,
       open: () => set({ isOpen: true }),
       close: () => set({ isOpen: false }),
       toggle: () => set((s) => ({ isOpen: !s.isOpen })),
@@ -62,10 +74,18 @@ export const useCart = create<CartState>()(
             .map((i) => (sameLine(i, productId, colorId, sizeId) ? { ...i, quantity: Math.max(1, qty) } : i))
             .filter((i) => i.quantity > 0),
         })),
-      clear: () => set({ items: [] }),
-      totalCount: () => get().items.reduce((a, b) => a + b.quantity, 0),
-      totalPrice: () => get().items.reduce((a, b) => a + b.unitPrice * b.quantity, 0),
+      setCoupon: (c) => set({ coupon: c }),
+      clear: () => set({ items: [], coupon: null }),
+      itemsForStore: (storeId) => get().items.filter((i) => i.storeId === storeId),
+      totalCount: (storeId) => {
+        const items = storeId ? get().items.filter((i) => i.storeId === storeId) : get().items;
+        return items.reduce((a, b) => a + b.quantity, 0);
+      },
+      subtotal: (storeId) => {
+        const items = storeId ? get().items.filter((i) => i.storeId === storeId) : get().items;
+        return items.reduce((a, b) => a + b.unitPrice * b.quantity, 0);
+      },
     }),
-    { name: "cart-v1" },
+    { name: "cart-v2" },
   ),
 );
