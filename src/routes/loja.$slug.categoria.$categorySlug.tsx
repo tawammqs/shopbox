@@ -10,11 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 
 const searchSchema = z.object({
-  sort: fallback(z.enum(["relevance", "price_asc", "price_desc", "newest", "ofertas"]), "relevance").default("relevance"),
-  minPrice: fallback(z.number().optional(), undefined),
-  maxPrice: fallback(z.number().optional(), undefined),
-  inStock: fallback(z.boolean().optional(), undefined),
-  page: fallback(z.number().int().min(1), 1).default(1),
+  sort: fallback(z.enum(["relevance", "price_asc", "price_desc", "newest", "ofertas"]).optional(), "relevance").default("relevance"),
+  minPrice: fallback(z.number().optional(), undefined).optional(),
+  maxPrice: fallback(z.number().optional(), undefined).optional(),
+  inStock: fallback(z.boolean().optional(), undefined).optional(),
+  page: fallback(z.number().int().min(1).optional(), 1).default(1),
 });
 
 export const Route = createFileRoute("/loja/$slug/categoria/$categorySlug")({

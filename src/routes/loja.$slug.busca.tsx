@@ -6,7 +6,7 @@ import { searchProductsLive } from "@/lib/storefront";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { effectivePrice, formatBRL } from "@/lib/format";
 
-const schema = z.object({ q: fallback(z.string(), "").default("") });
+const schema = z.object({ q: fallback(z.string().optional(), "").default("") });
 
 export const Route = createFileRoute("/loja/$slug/busca")({
   validateSearch: zodValidator(schema),
