@@ -265,6 +265,35 @@ export type Database = {
           },
         ]
       }
+      customer_wishlist: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_wishlist_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plans: {
         Row: {
           active: boolean
@@ -1003,6 +1032,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_product_view: {
+        Args: { _product_id: string }
+        Returns: undefined
       }
       is_store_owner: { Args: { _store_id: string }; Returns: boolean }
       store_id_from_product: { Args: { _product_id: string }; Returns: string }
