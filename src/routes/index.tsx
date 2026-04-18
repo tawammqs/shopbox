@@ -37,7 +37,7 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: "1", title: "Crie sua conta e escolha seu plano", desc: "Cadastro rápido, 7 dias grátis pra testar tudo." },
+  { n: "1", title: "Crie sua conta gratuita", desc: "Cadastro rápido, 7 dias grátis pra testar tudo." },
   { n: "2", title: "Configure sua loja", desc: "Logo, produtos, categorias, tema e WhatsApp." },
   { n: "3", title: "Compartilhe e venda pelo WhatsApp", desc: "Link da sua loja na bio, story ou anúncio. Pedidos chegam no seu WhatsApp." },
 ];
@@ -123,7 +123,7 @@ function LandingPage() {
       <section className="border-y border-[#e5e7eb] bg-[#f7f8fa] py-10">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <p className="text-sm font-medium text-[#6b7280]">
-            Mais de <span className="font-bold text-[#111827]">1.200 lojistas</span> já vendem com a gente
+            Junte-se a <span className="font-bold text-[#111827]">milhares de lojistas</span> que já vendem pelo WhatsApp
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-8 text-[#9ca3af]">
             <div className="flex items-center gap-2 text-sm font-semibold">
@@ -332,7 +332,7 @@ function LandingPage() {
             to="/cadastro"
             className="mt-8 inline-block rounded-full bg-white px-8 py-4 text-base font-bold text-[#25D366] shadow-xl transition hover:bg-[#f7f8fa]"
           >
-            Criar minha loja agora — é grátis →
+            Testar grátis por 7 dias
           </Link>
         </div>
       </section>
