@@ -45,8 +45,8 @@ export function HeroMockup() {
           <MessageCircle className="h-4 w-4 text-white" />
         </div>
         <div>
-          <div className="text-[10px] font-medium text-gray-500">WhatsApp</div>
-          <div className="text-xs font-bold text-[#111827]">Pedido recebido!</div>
+          <div className="text-[10px] font-medium text-gray-500">🟢 WhatsApp</div>
+          <div className="text-xs font-bold text-[#111827]">Compra finalizada!</div>
         </div>
       </div>
 

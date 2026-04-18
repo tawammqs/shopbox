@@ -12,9 +12,9 @@ export function MarketingFooter() {
               A plataforma de loja online para quem vende pelo WhatsApp.
             </p>
             <div className="mt-5 flex gap-3">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><Instagram className="h-4 w-4" /></a>
-              <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><Youtube className="h-4 w-4" /></a>
-              <a href="https://wa.me/" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><MessageCircle className="h-4 w-4" /></a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded-full bg-white/10 p-2 transition hover:bg-[#25D366] hover:text-white"><Instagram className="h-4 w-4" /></a>
+              <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube" className="rounded-full bg-white/10 p-2 transition hover:bg-[#25D366] hover:text-white"><Youtube className="h-4 w-4" /></a>
+              <a href="https://wa.me/" target="_blank" rel="noreferrer" aria-label="WhatsApp" className="rounded-full bg-white/10 p-2 transition hover:bg-[#25D366] hover:text-white"><MessageCircle className="h-4 w-4" /></a>
             </div>
           </div>
           <div>
@@ -23,6 +23,7 @@ export function MarketingFooter() {
               <li><Link to="/funcionalidades" className="hover:text-white">Funcionalidades</Link></li>
               <li><Link to="/temas" className="hover:text-white">Temas</Link></li>
               <li><Link to="/precos" className="hover:text-white">Preços</Link></li>
+              <li><a href="#" className="hover:text-white">Blog</a></li>
             </ul>
           </div>
           <div>
