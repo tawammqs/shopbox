@@ -33,7 +33,7 @@ function DashboardPage() {
       return {
         productCount: products.count ?? 0,
         categoryCount: categories.count ?? 0,
-        bannerCount: lowStock.error ? 0 : (banners.count ?? 0),
+        bannerCount: banners?.count ?? 0,
         lowStockCount: lowCount,
       };
     },

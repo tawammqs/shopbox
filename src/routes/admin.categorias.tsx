@@ -83,7 +83,7 @@ function CategoriesPage() {
           <p className="p-8 text-center text-sm text-muted-foreground">Nenhuma categoria. Crie a primeira!</p>
         )}
         {roots.map((c: any) => (
-          <CatRow key={c.id} cat={c} childrenList={childrenOf(c.id)} onEdit={(x) => { setEditing(x); setOpen(true); }} onDelete={(id) => {
+          <CatRow key={c.id} cat={c} childrenList={childrenOf(c.id)} onEdit={(x: any) => { setEditing(x); setOpen(true); }} onDelete={(id: string) => {
             if (confirm("Excluir categoria?")) remove.mutate(id);
           }} onMove={move} />
         ))}

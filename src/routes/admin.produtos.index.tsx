@@ -113,7 +113,7 @@ function ProductsListPage() {
           </Button>
         ) : (
           <Button asChild>
-            <Link to="/admin/produtos/novo"><Plus className="mr-1.5 h-4 w-4" /> Novo produto</Link>
+            <Link to="/admin/produtos/$id" params={{ id: "novo" }}><Plus className="mr-1.5 h-4 w-4" /> Novo produto</Link>
           </Button>
         )}
       </div>
