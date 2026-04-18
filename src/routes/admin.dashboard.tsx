@@ -19,11 +19,10 @@ function DashboardPage() {
     enabled: !!store,
     queryFn: async () => {
       const sid = store!.id;
-      const [products, lowStock, categories, banners] = await Promise.all([
+      const [products, categories, banners] = await Promise.all([
         supabase.from("products").select("id, low_stock_threshold, product_stock(quantity)", { count: "exact" }).eq("store_id", sid),
         supabase.from("categories").select("id", { count: "exact", head: true }).eq("store_id", sid),
         supabase.from("banners").select("id", { count: "exact", head: true }).eq("store_id", sid).eq("active", true),
-        Promise.resolve(null),
       ]);
       const all = products.data ?? [];
       const lowCount = all.filter((p: any) => {
@@ -33,7 +32,7 @@ function DashboardPage() {
       return {
         productCount: products.count ?? 0,
         categoryCount: categories.count ?? 0,
-        bannerCount: banners?.count ?? 0,
+        bannerCount: banners.count ?? 0,
         lowStockCount: lowCount,
       };
     },
