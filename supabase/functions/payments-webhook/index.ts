@@ -27,6 +27,7 @@ serve(async (req) => {
         break;
       case "checkout.session.completed":
         console.log("Checkout completed:", event.data.object.id);
+        await handleCheckoutCompleted(event.data.object);
         break;
       default:
         console.log("Unhandled:", event.type);
@@ -104,4 +105,40 @@ async function handleSubscriptionDeleted(subscription: any, env: StripeEnv) {
 function mapStatus(s: string): string {
   const valid = ["trialing", "active", "past_due", "canceled", "incomplete", "unpaid", "inactive"];
   return valid.includes(s) ? s : "inactive";
+}
+
+async function handleCheckoutCompleted(session: any) {
+  const meta = session.metadata ?? {};
+  if (meta.kind !== "theme_purchase") return;
+  const themeId = meta.themeId;
+  const storeId = meta.storeId;
+  if (!themeId || !storeId) return;
+
+  // Fetch theme + partner commission
+  const { data: theme } = await supabase
+    .from("themes")
+    .select("price_cents, partner_id, theme_partners(commission_percent)")
+    .eq("id", themeId)
+    .maybeSingle();
+
+  const priceCents = session.amount_total ?? theme?.price_cents ?? 0;
+  const commission = (theme?.theme_partners as any)?.commission_percent ?? 0;
+  const partnerEarnings = Math.round((priceCents * commission) / 100);
+  const platformEarnings = priceCents - partnerEarnings;
+
+  await supabase.from("theme_purchases").upsert({
+    store_id: storeId,
+    theme_id: themeId,
+    price_cents: priceCents,
+    stripe_session_id: session.id,
+    stripe_payment_intent: session.payment_intent ?? null,
+    partner_id: theme?.partner_id ?? null,
+    partner_commission_percent: commission,
+    partner_earnings_cents: partnerEarnings,
+    platform_earnings_cents: platformEarnings,
+    status: "completed",
+  }, { onConflict: "store_id,theme_id" });
+
+  // Increment theme installs
+  await supabase.rpc("increment_theme_installs", { _theme_id: themeId });
 }
