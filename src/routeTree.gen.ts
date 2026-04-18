@@ -16,7 +16,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TemasIndexRouteImport } from './routes/temas.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as TemasSlugRouteImport } from './routes/temas.$slug'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
@@ -69,10 +71,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemasIndexRoute = TemasIndexRouteImport.update({
+  id: '/temas/',
+  path: '/temas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const TemasSlugRoute = TemasSlugRouteImport.update({
+  id: '/temas/$slug',
+  path: '/temas/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LojaSlugRoute = LojaSlugRouteImport.update({
   id: '/loja/$slug',
@@ -174,7 +186,9 @@ export interface FileRoutesByFullPath {
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/temas/$slug': typeof TemasSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/temas/': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -198,7 +212,9 @@ export interface FileRoutesByTo {
   '/admin/descontos': typeof AdminDescontosRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/temas/$slug': typeof TemasSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/temas': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -225,7 +241,9 @@ export interface FileRoutesById {
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/temas/$slug': typeof TemasSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/temas/': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -253,7 +271,9 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/checkout/return'
     | '/loja/$slug'
+    | '/temas/$slug'
     | '/admin/'
+    | '/temas/'
     | '/admin/produtos/$id'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
@@ -277,7 +297,9 @@ export interface FileRouteTypes {
     | '/admin/descontos'
     | '/admin/plano'
     | '/checkout/return'
+    | '/temas/$slug'
     | '/admin'
+    | '/temas'
     | '/admin/produtos/$id'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
@@ -303,7 +325,9 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/checkout/return'
     | '/loja/$slug'
+    | '/temas/$slug'
     | '/admin/'
+    | '/temas/'
     | '/admin/produtos/$id'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
@@ -323,6 +347,8 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
+  TemasSlugRoute: typeof TemasSlugRoute
+  TemasIndexRoute: typeof TemasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -376,12 +402,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/temas/': {
+      id: '/temas/'
+      path: '/temas'
+      fullPath: '/temas/'
+      preLoaderRoute: typeof TemasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/temas/$slug': {
+      id: '/temas/$slug'
+      path: '/temas/$slug'
+      fullPath: '/temas/$slug'
+      preLoaderRoute: typeof TemasSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/loja/$slug': {
       id: '/loja/$slug'
@@ -556,6 +596,8 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
+  TemasSlugRoute: TemasSlugRoute,
+  TemasIndexRoute: TemasIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
