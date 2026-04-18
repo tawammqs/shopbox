@@ -806,6 +806,45 @@ export type Database = {
           },
         ]
       }
+      store_theme_settings: {
+        Row: {
+          active_theme_id: string | null
+          customizations: Json
+          id: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          active_theme_id?: string | null
+          customizations?: Json
+          id?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          active_theme_id?: string | null
+          customizations?: Json
+          id?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_theme_settings_active_theme_id_fkey"
+            columns: ["active_theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_theme_settings_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           accent_color: string
@@ -996,6 +1035,198 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_partners: {
+        Row: {
+          active: boolean
+          commission_percent: number
+          created_at: string
+          display_name: string
+          email: string | null
+          id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          commission_percent?: number
+          created_at?: string
+          display_name: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          commission_percent?: number
+          created_at?: string
+          display_name?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      theme_purchases: {
+        Row: {
+          created_at: string
+          id: string
+          partner_commission_percent: number
+          partner_earnings_cents: number
+          partner_id: string | null
+          platform_earnings_cents: number
+          price_cents: number
+          status: string
+          store_id: string
+          stripe_payment_intent: string | null
+          stripe_session_id: string | null
+          theme_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          partner_commission_percent?: number
+          partner_earnings_cents?: number
+          partner_id?: string | null
+          platform_earnings_cents?: number
+          price_cents?: number
+          status?: string
+          store_id: string
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
+          theme_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          partner_commission_percent?: number
+          partner_earnings_cents?: number
+          partner_id?: string | null
+          platform_earnings_cents?: number
+          price_cents?: number
+          status?: string
+          store_id?: string
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_purchases_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "theme_partners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "theme_purchases_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "theme_purchases_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      themes: {
+        Row: {
+          carousel_urls: Json
+          created_at: string
+          default_sections: Json
+          demo_url: string | null
+          description: string | null
+          display_order: number
+          features: Json
+          id: string
+          install_count: number
+          is_free: boolean
+          name: string
+          partner_id: string | null
+          preview_desktop_url: string | null
+          preview_mobile_url: string | null
+          price_cents: number
+          rating_avg: number
+          rating_count: number
+          required_plan: string
+          segment_tags: string[]
+          slug: string
+          status: Database["public"]["Enums"]["theme_status"]
+          style_tags: string[]
+          tagline: string | null
+          tokens: Json
+          updated_at: string
+        }
+        Insert: {
+          carousel_urls?: Json
+          created_at?: string
+          default_sections?: Json
+          demo_url?: string | null
+          description?: string | null
+          display_order?: number
+          features?: Json
+          id?: string
+          install_count?: number
+          is_free?: boolean
+          name: string
+          partner_id?: string | null
+          preview_desktop_url?: string | null
+          preview_mobile_url?: string | null
+          price_cents?: number
+          rating_avg?: number
+          rating_count?: number
+          required_plan?: string
+          segment_tags?: string[]
+          slug: string
+          status?: Database["public"]["Enums"]["theme_status"]
+          style_tags?: string[]
+          tagline?: string | null
+          tokens?: Json
+          updated_at?: string
+        }
+        Update: {
+          carousel_urls?: Json
+          created_at?: string
+          default_sections?: Json
+          demo_url?: string | null
+          description?: string | null
+          display_order?: number
+          features?: Json
+          id?: string
+          install_count?: number
+          is_free?: boolean
+          name?: string
+          partner_id?: string | null
+          preview_desktop_url?: string | null
+          preview_mobile_url?: string | null
+          price_cents?: number
+          rating_avg?: number
+          rating_count?: number
+          required_plan?: string
+          segment_tags?: string[]
+          slug?: string
+          status?: Database["public"]["Enums"]["theme_status"]
+          style_tags?: string[]
+          tagline?: string | null
+          tokens?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "themes_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "theme_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1037,7 +1268,15 @@ export type Database = {
         Args: { _product_id: string }
         Returns: undefined
       }
+      increment_theme_installs: {
+        Args: { _theme_id: string }
+        Returns: undefined
+      }
       is_store_owner: { Args: { _store_id: string }; Returns: boolean }
+      store_has_theme: {
+        Args: { _store_id: string; _theme_id: string }
+        Returns: boolean
+      }
       store_id_from_product: { Args: { _product_id: string }; Returns: string }
     }
     Enums: {
@@ -1055,6 +1294,7 @@ export type Database = {
         | "incomplete"
         | "unpaid"
         | "inactive"
+      theme_status: "draft" | "pending_review" | "approved" | "rejected"
       video_kind: "youtube" | "mp4"
     }
     CompositeTypes: {
@@ -1198,6 +1438,7 @@ export const Constants = {
         "unpaid",
         "inactive",
       ],
+      theme_status: ["draft", "pending_review", "approved", "rejected"],
       video_kind: ["youtube", "mp4"],
     },
   },
