@@ -176,7 +176,7 @@ function ThemeCustomizerDialog({
     patch({ sections: next.map((s, i) => ({ ...s, order: i })) });
   }
   function toggleSection(id: string) {
-    const next = sections.map((s) => s.id === id ? { ...s, enabled: !s.enabled } : s);
+    const next = sections.map((s: { id: string; enabled: boolean; order: number }) => s.id === id ? { ...s, enabled: !s.enabled } : s);
     patch({ sections: next });
   }
 
@@ -219,7 +219,7 @@ function ThemeCustomizerDialog({
               <TabsContent value="colors" className="space-y-4 pt-4">
                 <ColorField label="Primária" value={merged.colors.primary} onChange={(v) => patchColors({ primary: v })} />
                 <ColorField label="Secundária" value={merged.colors.secondary} onChange={(v) => patchColors({ secondary: v })} />
-                <PlanGate planSlug={planSlug} feature="seo_per_product" fallbackTitle="Cor de destaque (Premium)">
+                <PlanGate plan={planSlug} feature="seo_per_product">
                   <ColorField label="Destaque" value={merged.colors.accent} onChange={(v) => patchColors({ accent: v })} />
                 </PlanGate>
                 <ColorField label="Fundo" value={merged.colors.bg} onChange={(v) => patchColors({ bg: v })} />
@@ -249,7 +249,7 @@ function ThemeCustomizerDialog({
 
               <TabsContent value="sections" className="space-y-2 pt-4">
                 <p className="text-xs text-muted-foreground">Reordene e habilite/desabilite seções da home</p>
-                {sections.map((s, idx) => {
+                {sections.map((s: { id: string; enabled: boolean; order: number }, idx: number) => {
                   const meta = ALL_SECTIONS.find((x) => x.id === s.id);
                   if (!meta) return null;
                   return (
