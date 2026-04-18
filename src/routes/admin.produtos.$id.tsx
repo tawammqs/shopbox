@@ -99,7 +99,9 @@ function ProductFormPage() {
         sm[`${s.color_id ?? "_"}|${s.size_id ?? "_"}`] = s.quantity;
       });
       setStock(sm);
-      setVideos((p.product_video_testimonials ?? []).sort((a: any, b: any) => a.position - b.position));
+      setVideos((p.product_video_testimonials ?? []).sort((a: any, b: any) => a.position - b.position).map((v: any) => ({
+        id: v.id, video_url: v.video_url, kind: v.kind, customer_name: v.customer_name ?? "", quote: v.quote ?? "", rating: v.rating, position: v.position,
+      })));
     }
   }, [productQ.data]);
 
