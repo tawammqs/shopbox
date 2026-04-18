@@ -46,6 +46,17 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-display: "Playfair Display", Georgia, serif;
   --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-marketing: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-marketing-body: "Inter", system-ui, sans-serif;
+}
+
+/* Marketing landing tokens */
+:root {
+  --brand-teal: #00b7a8;
+  --brand-teal-dark: #009b8e;
+  --brand-ink: #111827;
+  --brand-soft: #f7f8fa;
+  --brand-border: #e5e7eb;
 }
 
 :root {
