@@ -18,6 +18,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
+import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
+import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
+import { Route as LojaSlugProdutoProductSlugRouteImport } from './routes/loja.$slug.produto.$productSlug'
+import { Route as LojaSlugCategoriaCategorySlugRouteImport } from './routes/loja.$slug.categoria.$categorySlug'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -64,6 +68,28 @@ const LojaSlugIndexRoute = LojaSlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LojaSlugRoute,
 } as any)
+const LojaSlugWishlistRoute = LojaSlugWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
+const LojaSlugBuscaRoute = LojaSlugBuscaRouteImport.update({
+  id: '/busca',
+  path: '/busca',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
+const LojaSlugProdutoProductSlugRoute =
+  LojaSlugProdutoProductSlugRouteImport.update({
+    id: '/produto/$productSlug',
+    path: '/produto/$productSlug',
+    getParentRoute: () => LojaSlugRoute,
+  } as any)
+const LojaSlugCategoriaCategorySlugRoute =
+  LojaSlugCategoriaCategorySlugRouteImport.update({
+    id: '/categoria/$categorySlug',
+    path: '/categoria/$categorySlug',
+    getParentRoute: () => LojaSlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -74,7 +100,11 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/loja/$slug/busca': typeof LojaSlugBuscaRoute
+  '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
+  '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
+  '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,7 +114,11 @@ export interface FileRoutesByTo {
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/loja/$slug/busca': typeof LojaSlugBuscaRoute
+  '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
+  '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
+  '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,7 +130,11 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/loja/$slug/busca': typeof LojaSlugBuscaRoute
+  '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
+  '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
+  '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,7 +147,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/checkout/return'
     | '/loja/$slug'
+    | '/loja/$slug/busca'
+    | '/loja/$slug/wishlist'
     | '/loja/$slug/'
+    | '/loja/$slug/categoria/$categorySlug'
+    | '/loja/$slug/produto/$productSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -119,7 +161,11 @@ export interface FileRouteTypes {
     | '/recuperar-senha'
     | '/reset-password'
     | '/checkout/return'
+    | '/loja/$slug/busca'
+    | '/loja/$slug/wishlist'
     | '/loja/$slug'
+    | '/loja/$slug/categoria/$categorySlug'
+    | '/loja/$slug/produto/$productSlug'
   id:
     | '__root__'
     | '/'
@@ -130,7 +176,11 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/checkout/return'
     | '/loja/$slug'
+    | '/loja/$slug/busca'
+    | '/loja/$slug/wishlist'
     | '/loja/$slug/'
+    | '/loja/$slug/categoria/$categorySlug'
+    | '/loja/$slug/produto/$productSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,15 +259,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojaSlugIndexRouteImport
       parentRoute: typeof LojaSlugRoute
     }
+    '/loja/$slug/wishlist': {
+      id: '/loja/$slug/wishlist'
+      path: '/wishlist'
+      fullPath: '/loja/$slug/wishlist'
+      preLoaderRoute: typeof LojaSlugWishlistRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
+    '/loja/$slug/busca': {
+      id: '/loja/$slug/busca'
+      path: '/busca'
+      fullPath: '/loja/$slug/busca'
+      preLoaderRoute: typeof LojaSlugBuscaRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
+    '/loja/$slug/produto/$productSlug': {
+      id: '/loja/$slug/produto/$productSlug'
+      path: '/produto/$productSlug'
+      fullPath: '/loja/$slug/produto/$productSlug'
+      preLoaderRoute: typeof LojaSlugProdutoProductSlugRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
+    '/loja/$slug/categoria/$categorySlug': {
+      id: '/loja/$slug/categoria/$categorySlug'
+      path: '/categoria/$categorySlug'
+      fullPath: '/loja/$slug/categoria/$categorySlug'
+      preLoaderRoute: typeof LojaSlugCategoriaCategorySlugRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
   }
 }
 
 interface LojaSlugRouteChildren {
+  LojaSlugBuscaRoute: typeof LojaSlugBuscaRoute
+  LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
   LojaSlugIndexRoute: typeof LojaSlugIndexRoute
+  LojaSlugCategoriaCategorySlugRoute: typeof LojaSlugCategoriaCategorySlugRoute
+  LojaSlugProdutoProductSlugRoute: typeof LojaSlugProdutoProductSlugRoute
 }
 
 const LojaSlugRouteChildren: LojaSlugRouteChildren = {
+  LojaSlugBuscaRoute: LojaSlugBuscaRoute,
+  LojaSlugWishlistRoute: LojaSlugWishlistRoute,
   LojaSlugIndexRoute: LojaSlugIndexRoute,
+  LojaSlugCategoriaCategorySlugRoute: LojaSlugCategoriaCategorySlugRoute,
+  LojaSlugProdutoProductSlugRoute: LojaSlugProdutoProductSlugRoute,
 }
 
 const LojaSlugRouteWithChildren = LojaSlugRoute._addFileChildren(
