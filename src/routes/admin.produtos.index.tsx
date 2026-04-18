@@ -38,7 +38,7 @@ function ProductsList() {
           <h1 className="font-display text-3xl font-bold">Produtos</h1>
           <p className="mt-1 text-sm text-muted-foreground">{products.length} produtos cadastrados</p>
         </div>
-        <Link to="/admin/produtos/novo" className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition hover:bg-accent/90">
+        <Link to="/admin/produtos/$id" params={{ id: "novo" }} className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition hover:bg-accent/90">
           <Plus className="h-4 w-4" /> Novo
         </Link>
       </div>

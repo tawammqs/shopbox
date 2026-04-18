@@ -72,7 +72,7 @@ function ProductEdit() {
       const ss = (data.product_sizes ?? []).sort((a: Size, b: Size) => a.position - b.position);
       setSizes(ss);
       const stk: Record<string, number> = {};
-      (data.product_stock ?? []).forEach((s: { color_id: string; size_id: string; quantity: number }) => {
+      (data.product_stock ?? []).forEach((s: { color_id: string | null; size_id: string | null; quantity: number }) => {
         const ci = cs.findIndex((c: Color) => c.id === s.color_id);
         const si = ss.findIndex((sz: Size) => sz.id === s.size_id);
         if (ci >= 0 && si >= 0) stk[`${ci}-${si}`] = s.quantity;
