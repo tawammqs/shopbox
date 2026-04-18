@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
+import { Route as PrecosRouteImport } from './routes/precos'
 import { Route as PainelRouteImport } from './routes/painel'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as FuncionalidadesRouteImport } from './routes/funcionalidades'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -48,6 +50,11 @@ const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
   path: '/recuperar-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrecosRoute = PrecosRouteImport.update({
+  id: '/precos',
+  path: '/precos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PainelRoute = PainelRouteImport.update({
   id: '/painel',
   path: '/painel',
@@ -56,6 +63,11 @@ const PainelRoute = PainelRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FuncionalidadesRoute = FuncionalidadesRouteImport.update({
+  id: '/funcionalidades',
+  path: '/funcionalidades',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CadastroRoute = CadastroRouteImport.update({
@@ -185,8 +197,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/funcionalidades': typeof FuncionalidadesRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
+  '/precos': typeof PrecosRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
@@ -214,8 +228,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/funcionalidades': typeof FuncionalidadesRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
+  '/precos': typeof PrecosRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
@@ -244,8 +260,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/cadastro': typeof CadastroRoute
+  '/funcionalidades': typeof FuncionalidadesRoute
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
+  '/precos': typeof PrecosRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
@@ -276,8 +294,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/cadastro'
+    | '/funcionalidades'
     | '/login'
     | '/painel'
+    | '/precos'
     | '/recuperar-senha'
     | '/reset-password'
     | '/admin/avaliacoes'
@@ -305,8 +325,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cadastro'
+    | '/funcionalidades'
     | '/login'
     | '/painel'
+    | '/precos'
     | '/recuperar-senha'
     | '/reset-password'
     | '/admin/avaliacoes'
@@ -334,8 +356,10 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/cadastro'
+    | '/funcionalidades'
     | '/login'
     | '/painel'
+    | '/precos'
     | '/recuperar-senha'
     | '/reset-password'
     | '/admin/avaliacoes'
@@ -365,8 +389,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   CadastroRoute: typeof CadastroRoute
+  FuncionalidadesRoute: typeof FuncionalidadesRoute
   LoginRoute: typeof LoginRoute
   PainelRoute: typeof PainelRoute
+  PrecosRoute: typeof PrecosRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -392,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecuperarSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/precos': {
+      id: '/precos'
+      path: '/precos'
+      fullPath: '/precos'
+      preLoaderRoute: typeof PrecosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/painel': {
       id: '/painel'
       path: '/painel'
@@ -404,6 +437,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/funcionalidades': {
+      id: '/funcionalidades'
+      path: '/funcionalidades'
+      fullPath: '/funcionalidades'
+      preLoaderRoute: typeof FuncionalidadesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cadastro': {
@@ -631,8 +671,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   CadastroRoute: CadastroRoute,
+  FuncionalidadesRoute: FuncionalidadesRoute,
   LoginRoute: LoginRoute,
   PainelRoute: PainelRoute,
+  PrecosRoute: PrecosRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
@@ -644,3 +686,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
