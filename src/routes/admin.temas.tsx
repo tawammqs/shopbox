@@ -219,7 +219,7 @@ function ThemeCustomizerDialog({
               <TabsContent value="colors" className="space-y-4 pt-4">
                 <ColorField label="Primária" value={merged.colors.primary} onChange={(v) => patchColors({ primary: v })} />
                 <ColorField label="Secundária" value={merged.colors.secondary} onChange={(v) => patchColors({ secondary: v })} />
-                <PlanGate planSlug={planSlug} feature="seo_per_product" fallbackTitle="Cor de destaque (Premium)">
+                <PlanGate plan={planSlug} feature="seo_per_product">
                   <ColorField label="Destaque" value={merged.colors.accent} onChange={(v) => patchColors({ accent: v })} />
                 </PlanGate>
                 <ColorField label="Fundo" value={merged.colors.bg} onChange={(v) => patchColors({ bg: v })} />
