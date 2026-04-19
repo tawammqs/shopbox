@@ -1,9 +1,10 @@
-import { createFileRoute, Outlet, Link, useNavigate, useLocation, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, MessageSquare,
-  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2
+  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2,
+  Lock,
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
@@ -13,7 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
-import { planLabel } from "@/lib/plans";
+import { planLabel, hasStoreAccess } from "@/lib/plans";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "sonner";
 import shopboxLogo from "@/assets/shopbox-logo.png";
 

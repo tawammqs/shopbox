@@ -167,14 +167,15 @@ function SignupPage() {
         return;
       }
 
-      // 3) Create store — usa o id da sessão recém-iniciada
+      // 3) Create store as INCOMPLETE — webhook will activate after payment confirms
       const { error: storeError } = await supabase.from("stores").insert({
         owner_user_id: userId,
         name: accountData.storeName,
         slug: storeSlug,
         segment: accountData.segment,
         plan_id: selectedPlan.id,
-        subscription_status: "trialing",
+        subscription_status: "incomplete",
+        active: false,
         whatsapp: "",
       });
       if (storeError) {
@@ -183,11 +184,12 @@ function SignupPage() {
         return;
       }
 
-      // 4) Create checkout session
+      // 4) Create checkout session with 7-day trial
       const secret = await createCheckoutSession({
         priceId: selectedPlan.stripe_price_id,
         customerEmail: accountData.email,
         userId,
+        trialPeriodDays: 7,
         returnUrl: `${window.location.origin}/admin/dashboard?checkout=success`,
       });
       setClientSecret(secret);
