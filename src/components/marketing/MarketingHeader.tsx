@@ -1,14 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import shopboxLogo from "@/assets/shopbox-logo.png";
 
 export function MarketingHeader() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 border-b border-[#e5e7eb] bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" className="font-display text-2xl font-extrabold tracking-tight text-[#111827]">
-          ShopBox
+        <Link to="/" className="flex items-center" aria-label="shopbox">
+          <img src={shopboxLogo} alt="shopbox" className="h-7 w-auto" />
         </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium text-[#374151] md:flex">
           <Link to="/funcionalidades" className="hover:text-[#111827]">Funcionalidades</Link>
