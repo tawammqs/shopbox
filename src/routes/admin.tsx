@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+// Note: post-checkout activation is now handled by Realtime in useMyStore.
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, MessageSquare,
   Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2,
