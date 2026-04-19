@@ -100,7 +100,7 @@ const STYLES = `
 .pdark .section{padding:100px 5%;max-width:1200px;margin:0 auto}
 .pdark .section-full{padding:100px 5%}
 .pdark .stag{font-size:11px;font-weight:500;color:var(--g);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:14px}
-.pdark .stitle{font-size:clamp(30px,3.5vw,48px);font-weight:900;letter-spacing:-2px;color:#fff;line-height:1.05;margin-bottom:16px}
+.pdark .stitle{font-size:clamp(30px,3.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
 .pdark .ssub{font-size:16px;color:var(--muted);line-height:1.7;max-width:560px}
 
 .pdark .split{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
