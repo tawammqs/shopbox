@@ -276,3 +276,95 @@ function CreateStoreFallback({ userId, email }: { userId: string; email: string 
     </div>
   );
 }
+
+function SubscriptionGate({
+  status,
+  isPostCheckout,
+  onRefresh,
+}: {
+  status: string | null | undefined;
+  isPostCheckout: boolean;
+  onRefresh: () => void;
+}) {
+  const [opening, setOpening] = useState(false);
+
+  if (isPostCheckout && (status === "incomplete" || !status)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+          <Loader2 className="mx-auto h-10 w-10 animate-spin text-accent" />
+          <h1 className="mt-4 font-display text-xl font-bold">Ativando sua loja…</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Confirmamos seu pagamento. Em alguns segundos seu painel estará liberado.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  async function openPortal() {
+    setOpening(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-portal-session", {
+        body: {
+          environment: getStripeEnvironment(),
+          returnUrl: `${window.location.origin}/admin/dashboard`,
+        },
+      });
+      if (error || !data?.url) throw new Error(error?.message || "Não foi possível abrir o portal");
+      window.open(data.url, "_blank");
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao abrir portal");
+    } finally {
+      setOpening(false);
+    }
+  }
+
+  const labelByStatus: Record<string, { title: string; desc: string }> = {
+    incomplete: {
+      title: "Pagamento pendente",
+      desc: "Seu cadastro foi criado, mas o pagamento ainda não foi confirmado. Reative sua assinatura para liberar o painel.",
+    },
+    canceled: {
+      title: "Assinatura cancelada",
+      desc: "Sua assinatura foi cancelada. Reative para voltar a usar a ShopBox.",
+    },
+    unpaid: {
+      title: "Pagamento em atraso",
+      desc: "Não conseguimos cobrar sua assinatura. Atualize sua forma de pagamento para reativar a loja.",
+    },
+    inactive: {
+      title: "Loja inativa",
+      desc: "Sua loja está inativa. Reative seu plano para continuar.",
+    },
+  };
+  const info = labelByStatus[status ?? "inactive"] ?? labelByStatus.inactive;
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+          <Lock className="h-6 w-6" />
+        </div>
+        <h1 className="font-display text-xl font-bold">{info.title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{info.desc}</p>
+
+        <div className="mt-6 space-y-2">
+          <Button onClick={openPortal} disabled={opening} className="w-full" size="lg">
+            {opening ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Abrindo…</>
+            ) : (
+              "Gerenciar pagamento"
+            )}
+          </Button>
+          <Button variant="outline" onClick={onRefresh} className="w-full">
+            Já paguei — atualizar
+          </Button>
+          <Button variant="ghost" onClick={() => signOut()} className="w-full">
+            <LogOut className="mr-2 h-4 w-4" /> Sair
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
