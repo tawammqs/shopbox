@@ -256,40 +256,14 @@ function ProductFormPage() {
             <MultiImageUpload bucket="products" storeId={store.id} images={images} onChange={setImages} />
           </Section>
 
-          {/* Variants */}
-          <Section title="Cores">
-            <div className="space-y-2">
-              {colors.map((c, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <input type="color" value={c.hex} onChange={(e) => {
-                    const next = [...colors]; next[i].hex = e.target.value; setColors(next);
-                  }} className="h-9 w-12 cursor-pointer rounded border" />
-                  <Input value={c.name} placeholder="Nome (ex: Vermelho)" onChange={(e) => {
-                    const next = [...colors]; next[i].name = e.target.value; setColors(next);
-                  }} />
-                  <Button size="icon" variant="ghost" onClick={() => setColors(colors.filter((_, j) => j !== i))}><X className="h-4 w-4" /></Button>
-                </div>
-              ))}
-              <Button size="sm" variant="outline" onClick={() => setColors([...colors, { name: "", hex: "#000000", position: colors.length }])}>
-                <Plus className="mr-1 h-3 w-3" /> Adicionar cor
-              </Button>
-            </div>
-          </Section>
-
-          <Section title="Tamanhos">
-            <div className="flex flex-wrap gap-2">
-              {sizes.map((s, i) => (
-                <div key={i} className="flex items-center gap-1 rounded-md border border-border bg-muted px-2 py-1">
-                  <Input value={s.label} className="h-7 w-16 border-0 bg-transparent" onChange={(e) => {
-                    const next = [...sizes]; next[i].label = e.target.value; setSizes(next);
-                  }} />
-                  <button onClick={() => setSizes(sizes.filter((_, j) => j !== i))}><X className="h-3 w-3" /></button>
-                </div>
-              ))}
-              <Button size="sm" variant="outline" onClick={() => setSizes([...sizes, { label: "", position: sizes.length }])}>
-                <Plus className="mr-1 h-3 w-3" /> Tamanho
-              </Button>
-            </div>
+          {/* Variants — Nuvemshop-style flow */}
+          <Section title="Variações">
+            <VariationsBuilder
+              colors={colors}
+              sizes={sizes}
+              onColorsChange={setColors}
+              onSizesChange={setSizes}
+            />
           </Section>
 
           {/* Stock matrix */}
