@@ -173,6 +173,8 @@ function ThemeMarketplacePage() {
           )}
         </div>
       </div>
+
+      <MarketingFooter />
     </div>
   );
 }
