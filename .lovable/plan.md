@@ -1,43 +1,77 @@
 
 
 ## Objetivo
-Permitir você comparar visualmente o design **escuro premium** (HTML enviado) vs a **landing atual** sem alterar nada que está em produção.
+1. Adicionar a logomarca `shopbox` (PNG enviado) no header da landing e no admin
+2. Trocar fontes globais para **Geist Sans** (texto) + **Geist Mono** (mono/acentos)
 
-## Plano
+## Análise rápida
+- Logo enviada: `user-uploads://SHOPBOX_4-2.png` — wordmark "shopbox" preto, sans-serif geométrica, lowercase
+- Fontes atuais: Plus Jakarta Sans + Inter + DM Sans + Playfair (definidas em `src/styles.css`)
+- Header atual (`MarketingHeader.tsx`): usa texto "ShopBox" com `font-display`
+- Footer (`MarketingFooter.tsx`): também texto "ShopBox"
+- Admin (`src/routes/admin.tsx`): tem header próprio — precisa verificar onde fica o logo
 
-### 1. Criar rota de preview isolada
-- Novo arquivo: `src/routes/preview-dark.tsx`
-- Conteúdo: cópia fiel do HTML enviado (`shopbox_landing_1.html`) convertido para JSX/React
-- Acessível em `/preview-dark`
-- **Não toca** em `/` (landing atual continua intacta)
+## Plano de execução
 
-### 2. Adaptações mínimas para funcionar em React/TanStack
-- Tags `<script src="https://cdn.tailwindcss.com">` → remover (Tailwind já está no projeto via `styles.css`)
-- Fonts Geist Sans/Mono → adicionar `<link>` no `head()` da própria rota (escopo isolado)
-- Substituir `class=` por `className=`, `for=` por `htmlFor=`
-- Botões "Testar grátis" → `<Link to="/cadastro">`
-- Botão "Entrar" → `<Link to="/login">`
-- Animações CSS inline (ticker, glow) → mover para `<style>` no topo do componente
+### 1. Adicionar a logo ao projeto
+- `lov-copy user-uploads://SHOPBOX_4-2.png src/assets/shopbox-logo.png`
+- Importar como ES module nos componentes que usam
 
-### 3. O que NÃO faço agora
-- Não altero `src/routes/index.tsx`
-- Não altero `src/styles.css`
-- Não altero header/footer atuais
-- Não troco fontes globais
+### 2. Trocar fontes globais para Geist
+**`src/styles.css`** — atualizar `@theme inline`:
+```
+--font-sans: "Geist", system-ui, sans-serif;
+--font-mono: "Geist Mono", ui-monospace, monospace;
+--font-display: "Geist", system-ui, sans-serif;     /* remover Playfair */
+--font-marketing: "Geist", system-ui, sans-serif;   /* remover Plus Jakarta */
+--font-marketing-body: "Geist", system-ui, sans-serif; /* remover Inter */
+```
+Resultado: tudo (landing + admin + storefront) passa a usar Geist automaticamente via tokens existentes.
 
-## Como você usa
-1. Abre `/` → vê a landing atual (clara, verde WhatsApp)
-2. Abre `/preview-dark` → vê o design escuro premium do HTML
-3. Decide qual prefere e me avisa:
-   - "Migra para a escura" → eu substituo `index.tsx`
-   - "Fica com a clara" → eu deleto `/preview-dark`
-   - "Faz híbrido" → conversamos sobre quais elementos da escura trazer pra clara
+### 3. Carregar Geist do Google Fonts
+**`src/routes/__root.tsx`** — adicionar no `head()`:
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+```
+E remover (ou deixar — não atrapalha) os `<link>` de Plus Jakarta/Inter se existirem.
 
-## Arquivos
-```text
-src/routes/
-  preview-dark.tsx    ← NOVO (rota temporária de comparação)
+### 4. Trocar texto "ShopBox" pela logo PNG
+**`src/components/marketing/MarketingHeader.tsx`**:
+```tsx
+import shopboxLogo from "@/assets/shopbox-logo.png";
+// ...
+<Link to="/" className="flex items-center">
+  <img src={shopboxLogo} alt="shopbox" className="h-7 w-auto" />
+</Link>
 ```
 
-Apenas 1 arquivo novo. Zero risco para a landing atual.
+**`src/components/marketing/MarketingFooter.tsx`**: mesma troca, mas com filtro CSS `invert` pra ficar branco no fundo escuro:
+```tsx
+<img src={shopboxLogo} alt="shopbox" className="h-7 w-auto invert brightness-0" 
+     style={{ filter: "invert(1) brightness(2)" }} />
+```
+
+**Admin** (`src/routes/admin.tsx`): se houver logo/título no sidebar/topo, trocar pela mesma imagem.
+
+### 5. Verificações
+- Storefront (`/loja/$slug`) — fontes herdam de `--font-sans`, então automaticamente vira Geist (OK, não é o logo do shopbox lá, é o logo da loja do cliente)
+- `/preview-dark` — já usa Geist no escopo `.pdark`; passa a estar consistente com o resto
+- Headings na landing (`font-display`) — antes Playfair (serifa), agora Geist (sans). Visual mudará: títulos ficam mais limpos/modernos, alinhado com a vibe minimalista da logo
+
+## Arquivos a alterar
+```text
+src/assets/shopbox-logo.png            ← NOVO (lov-copy)
+src/styles.css                         ← font tokens → Geist
+src/routes/__root.tsx                  ← <link> Google Fonts Geist
+src/components/marketing/MarketingHeader.tsx   ← logo PNG
+src/components/marketing/MarketingFooter.tsx   ← logo PNG (filtro invert)
+src/routes/admin.tsx                   ← logo PNG no header (se houver)
+```
+
+## Riscos
+- **Headings com serifa (Playfair) somem** — design muda. Quem aprovou a vibe NuvemShop pode estranhar. Mas a logo enviada é claramente sans → coerente trocar.
+- **Geist pode não carregar instantaneamente** → fallback `system-ui` evita flash.
+- **Logo PNG em fundo escuro do footer** → uso `filter: invert(1) brightness(2)` pra deixar branca sem precisar de versão alternativa.
 
