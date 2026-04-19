@@ -295,7 +295,6 @@ function LandingPage() {
         </nav>
         <div className="hdr-right">
           <Link to="/login" className="btn-ghost">Entrar</Link>
-          <Link to="/temas" className="btn-outline">Ver demo</Link>
           <Link to="/cadastro" className="btn-g">Testar grátis</Link>
         </div>
       </header>
@@ -304,11 +303,14 @@ function LandingPage() {
         <div className="hero-glow" />
         <div className="hero-grid" />
         <div className="hero-badge">+12.000 lojas ativas no WhatsApp</div>
-        <h1>A plataforma de<br /><em>e-commerce</em> feita<br />para o WhatsApp</h1>
+        <h1>
+          A plataforma de<span className="desk-break"><br /></span><span className="mob-break"> </span>
+          <em>e-commerce</em> feita<span className="desk-break"><br /></span><span className="mob-break"> </span>
+          para o WhatsApp
+        </h1>
         <p className="hero-sub">Monte sua loja em minutos, compartilhe o link no WhatsApp e comece a receber pedidos hoje mesmo.</p>
         <div className="hero-ctas">
           <Link to="/cadastro" className="btn-g btn-hero-lg">Testar grátis por 7 dias</Link>
-          <Link to="/temas" className="btn-outline btn-hero-lg">Ver demonstração</Link>
         </div>
         <div className="hero-social-proof">
           <div className="avatars">
