@@ -27,16 +27,16 @@ const STYLES = `
 .pdark *,.pdark *::before,.pdark *::after{box-sizing:border-box;margin:0;padding:0}
 .pdark{
   --g:#25D366;--g2:#1ebe57;--g3:#128C7E;
-  --gl:rgba(37,211,102,0.12);--gl2:rgba(37,211,102,0.06);
-  --dark:#0a0f0a;--dark2:#111811;--dark3:#161e16;--card:#141a14;
-  --border:rgba(37,211,102,0.15);--border2:rgba(255,255,255,0.07);
-  --text:#f0f7f0;--muted:#7a9a7a;--muted2:#5a7a5a;
+  --gl:rgba(37,211,102,0.10);--gl2:rgba(37,211,102,0.04);
+  --dark:#ffffff;--dark2:#f7faf7;--dark3:#f0f5f0;--card:#ffffff;
+  --border:rgba(37,211,102,0.25);--border2:rgba(17,24,17,0.08);
+  --text:#0a0f0a;--muted:#5a6a5a;--muted2:#8a9a8a;
   --sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace;
   font-family:var(--sans);color:var(--text);background:var(--dark);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;
 }
 
-.pdark .pd-header{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:rgba(10,15,10,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border2)}
-.pdark .pd-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:#fff;text-decoration:none}
+.pdark .pd-header{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border2)}
+.pdark .pd-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--text);text-decoration:none}
 .pdark .pd-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--g)}
 .pdark nav.pd-nav{display:flex;gap:2rem;align-items:center}
 .pdark .pd-nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
@@ -55,7 +55,7 @@ const STYLES = `
 .pdark .hero-badge{position:relative;display:inline-flex;align-items:center;gap:8px;background:var(--gl);border:1px solid var(--border);color:var(--g);font-size:12px;font-weight:500;padding:5px 14px;border-radius:999px;margin-bottom:28px;font-family:var(--mono)}
 .pdark .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--g);animation:pdpulse 2s infinite}
 @keyframes pdpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-.pdark .hero h1{position:relative;font-size:clamp(44px,6vw,80px);font-weight:900;line-height:1.0;letter-spacing:-3px;color:#fff;margin-bottom:24px;max-width:900px}
+.pdark .hero h1{position:relative;font-size:clamp(44px,6vw,80px);font-weight:900;line-height:1.0;letter-spacing:-3px;color:var(--text);margin-bottom:24px;max-width:900px}
 .pdark .hero h1 em{font-style:normal;color:var(--g)}
 .pdark .hero-sub{position:relative;font-size:18px;color:var(--muted);line-height:1.65;margin-bottom:40px;max-width:540px;font-weight:400}
 .pdark .hero-ctas{position:relative;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
@@ -100,7 +100,7 @@ const STYLES = `
 .pdark .section{padding:100px 5%;max-width:1200px;margin:0 auto}
 .pdark .section-full{padding:100px 5%}
 .pdark .stag{font-size:11px;font-weight:500;color:var(--g);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:14px}
-.pdark .stitle{font-size:clamp(30px,3.5vw,48px);font-weight:900;letter-spacing:-2px;color:#fff;line-height:1.05;margin-bottom:16px}
+.pdark .stitle{font-size:clamp(30px,3.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
 .pdark .ssub{font-size:16px;color:var(--muted);line-height:1.7;max-width:560px}
 
 .pdark .split{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
@@ -108,7 +108,7 @@ const STYLES = `
 .pdark .sf{display:flex;gap:14px;align-items:flex-start}
 .pdark .sf-icon{width:36px;height:36px;border-radius:8px;background:var(--gl);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pdark .sf-icon svg{width:18px;height:18px;stroke:var(--g);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.pdark .sf-txt h4{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
+.pdark .sf-txt h4{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
 .pdark .sf-txt p{font-size:13px;color:var(--muted);line-height:1.6}
 
 .pdark .dash-mockup{background:var(--dark3);border:1px solid var(--border2);border-radius:16px;overflow:hidden}
@@ -151,7 +151,7 @@ const STYLES = `
 .pdark .feat-num{font-size:11px;font-weight:500;color:var(--muted2);font-family:var(--mono);margin-bottom:20px}
 .pdark .feat-icon{width:44px;height:44px;border-radius:10px;background:var(--gl);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
 .pdark .feat-icon svg{width:22px;height:22px;stroke:var(--g);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.pdark .feat-card h3{font-size:16px;font-weight:600;color:#fff;margin-bottom:8px}
+.pdark .feat-card h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px}
 .pdark .feat-card p{font-size:13px;color:var(--muted);line-height:1.65}
 
 .pdark .steps-bg{background:var(--dark2)}
@@ -159,7 +159,7 @@ const STYLES = `
 .pdark .step-card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:32px 28px;position:relative;overflow:hidden}
 .pdark .step-card::before{content:attr(data-n);position:absolute;top:-10px;right:16px;font-size:80px;font-weight:900;color:rgba(37,211,102,.05);font-family:var(--mono);line-height:1}
 .pdark .step-n{font-size:11px;font-weight:500;color:var(--g);font-family:var(--mono);margin-bottom:16px;letter-spacing:1px}
-.pdark .step-card h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:10px}
+.pdark .step-card h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px}
 .pdark .step-card p{font-size:14px;color:var(--muted);line-height:1.65}
 
 .pdark .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:56px}
@@ -169,7 +169,7 @@ const STYLES = `
 .pdark .testi-text{font-size:14px;color:var(--text);line-height:1.75;margin-bottom:24px;flex:1}
 .pdark .testi-author{display:flex;align-items:center;gap:10px;border-top:1px solid var(--border2);padding-top:16px}
 .pdark .testi-av{width:36px;height:36px;border-radius:50%;background:var(--gl);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--g);font-family:var(--mono);flex-shrink:0}
-.pdark .testi-name{font-size:13px;font-weight:600;color:#fff}
+.pdark .testi-name{font-size:13px;font-weight:600;color:var(--text)}
 .pdark .testi-role{font-size:11px;color:var(--muted);font-family:var(--mono)}
 
 .pdark .metrics-strip{background:var(--dark2);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
@@ -185,7 +185,7 @@ const STYLES = `
 .pdark .p-card.pop{border-color:var(--g)}
 .pdark .pop-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;font-size:11px;font-weight:500;padding:4px 16px;border-radius:999px;white-space:nowrap;font-family:var(--mono);letter-spacing:.5px}
 .pdark .p-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-family:var(--mono)}
-.pdark .p-price{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:6px}
+.pdark .p-price{font-size:44px;font-weight:900;color:var(--text);letter-spacing:-2px;line-height:1;margin-bottom:6px}
 .pdark .p-price sup{font-size:18px;font-weight:500;vertical-align:super;font-family:var(--mono)}
 .pdark .p-price sub{font-size:14px;font-weight:400;color:var(--muted);letter-spacing:0;font-family:var(--mono)}
 .pdark .p-desc{font-size:13px;color:var(--muted);margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border2)}
@@ -198,7 +198,7 @@ const STYLES = `
 .pdark .faq-bg{background:var(--dark2)}
 .pdark .faq-inner{max-width:720px;margin:0 auto;margin-top:56px}
 .pdark .faq-item{border-bottom:1px solid var(--border2)}
-.pdark .faq-q{width:100%;padding:20px 0;background:transparent;text-align:left;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;color:#fff;gap:16px;transition:color .2s}
+.pdark .faq-q{width:100%;padding:20px 0;background:transparent;text-align:left;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;color:var(--text);gap:16px;transition:color .2s}
 .pdark .faq-q:hover,.pdark .faq-q.open{color:var(--g)}
 .pdark .faq-icon svg{stroke:var(--muted);transition:transform .3s,stroke .2s;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .pdark .faq-q.open .faq-icon svg{transform:rotate(45deg);stroke:var(--g)}
@@ -212,7 +212,7 @@ const STYLES = `
 .pdark .btn-white{position:relative;background:#fff;color:var(--g);border:none;padding:15px 36px;border-radius:999px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
 .pdark .btn-white:hover{background:rgba(255,255,255,.92);transform:translateY(-1px)}
 
-.pdark .pd-footer{background:#050a05;padding:64px 5% 32px}
+.pdark .pd-footer{background:#f0f5f0;padding:64px 5% 32px;border-top:1px solid var(--border2)}
 .pdark .foot-inner{max-width:1200px;margin:0 auto}
 .pdark .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:48px}
 .pdark .foot-brand p{font-size:13px;color:var(--muted2);line-height:1.75;margin-top:14px;max-width:280px}
@@ -292,7 +292,6 @@ function LandingPage() {
         </nav>
         <div className="hdr-right">
           <Link to="/login" className="btn-ghost">Entrar</Link>
-          <Link to="/temas" className="btn-outline">Ver demo</Link>
           <Link to="/cadastro" className="btn-g">Testar grátis</Link>
         </div>
       </header>
@@ -301,11 +300,14 @@ function LandingPage() {
         <div className="hero-glow" />
         <div className="hero-grid" />
         <div className="hero-badge">+12.000 lojas ativas no WhatsApp</div>
-        <h1>A plataforma de<br /><em>e-commerce</em> feita<br />para o WhatsApp</h1>
+        <h1>
+          A plataforma de<br />
+          <em>e-commerce</em> feita<br />
+          para o WhatsApp
+        </h1>
         <p className="hero-sub">Monte sua loja em minutos, compartilhe o link no WhatsApp e comece a receber pedidos hoje mesmo.</p>
         <div className="hero-ctas">
           <Link to="/cadastro" className="btn-g btn-hero-lg">Testar grátis por 7 dias</Link>
-          <Link to="/temas" className="btn-outline btn-hero-lg">Ver demonstração</Link>
         </div>
         <div className="hero-social-proof">
           <div className="avatars">
