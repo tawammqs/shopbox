@@ -23,6 +23,7 @@ export async function createCheckoutSession(opts: {
   customerEmail?: string;
   userId?: string;
   returnUrl?: string;
+  trialPeriodDays?: number;
 }): Promise<string> {
   const { data, error } = await supabase.functions.invoke("create-checkout", {
     body: { ...opts, environment },

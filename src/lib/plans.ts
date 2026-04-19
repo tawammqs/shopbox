@@ -52,3 +52,24 @@ export function planAllows(plan: PlanSlug | null | undefined, feature: Feature) 
 export function planLabel(plan: PlanSlug | null | undefined) {
   return plan ? PLAN_LABELS[plan] : "—";
 }
+
+// Subscription gating — keep in sync with the subscription_status enum
+export type StoreAccessStatus =
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "incomplete"
+  | "unpaid"
+  | "inactive";
+
+/**
+ * Whether the store owner can access the admin panel.
+ * Grants access during trial, active, and past_due (grace period).
+ * Blocks: incomplete (payment not finished), canceled, unpaid, inactive.
+ */
+export function hasStoreAccess(store: { subscription_status?: string | null } | null | undefined): boolean {
+  if (!store) return false;
+  const s = store.subscription_status as StoreAccessStatus | undefined;
+  return s === "trialing" || s === "active" || s === "past_due";
+}

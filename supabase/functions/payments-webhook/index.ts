@@ -43,6 +43,11 @@ serve(async (req) => {
   }
 });
 
+function tsToIso(value: unknown): string | null {
+  if (typeof value !== "number" || !Number.isFinite(value)) return null;
+  return new Date(value * 1000).toISOString();
+}
+
 async function handleSubscriptionUpsert(subscription: any, env: StripeEnv) {
   const userId = subscription.metadata?.userId;
   if (!userId) {
@@ -54,8 +59,14 @@ async function handleSubscriptionUpsert(subscription: any, env: StripeEnv) {
   const priceId = item?.price?.metadata?.lovable_external_id || item?.price?.id;
   const productId = item?.price?.product;
 
-  const periodStart = subscription.current_period_start;
-  const periodEnd = subscription.current_period_end;
+  // Newer Stripe API moved current_period_* under items.data[0]; fallback to root for compat
+  const periodStart = item?.current_period_start ?? subscription.current_period_start;
+  const periodEnd = item?.current_period_end ?? subscription.current_period_end;
+  const trialEnd = subscription.trial_end;
+
+  const periodStartIso = tsToIso(periodStart);
+  const periodEndIso = tsToIso(periodEnd);
+  const trialEndIso = tsToIso(trialEnd);
 
   await supabase.from("subscriptions").upsert(
     {
@@ -65,8 +76,8 @@ async function handleSubscriptionUpsert(subscription: any, env: StripeEnv) {
       product_id: productId,
       price_id: priceId,
       status: subscription.status,
-      current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
-      current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+      current_period_start: periodStartIso,
+      current_period_end: periodEndIso,
       cancel_at_period_end: subscription.cancel_at_period_end || false,
       environment: env,
       updated_at: new Date().toISOString(),
@@ -74,14 +85,16 @@ async function handleSubscriptionUpsert(subscription: any, env: StripeEnv) {
     { onConflict: "stripe_subscription_id" },
   );
 
-  // Also update store subscription fields
+  // Mirror to the store row so the admin app can gate access without joining
   await supabase
     .from("stores")
     .update({
       stripe_customer_id: subscription.customer,
       stripe_subscription_id: subscription.id,
       subscription_status: mapStatus(subscription.status),
-      current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+      current_period_end: periodEndIso,
+      trial_ends_at: trialEndIso,
+      active: true,
     })
     .eq("owner_user_id", userId);
 }
@@ -114,7 +127,6 @@ async function handleCheckoutCompleted(session: any) {
   const storeId = meta.storeId;
   if (!themeId || !storeId) return;
 
-  // Fetch theme + partner commission
   const { data: theme } = await supabase
     .from("themes")
     .select("price_cents, partner_id, theme_partners(commission_percent)")
@@ -126,19 +138,21 @@ async function handleCheckoutCompleted(session: any) {
   const partnerEarnings = Math.round((priceCents * commission) / 100);
   const platformEarnings = priceCents - partnerEarnings;
 
-  await supabase.from("theme_purchases").upsert({
-    store_id: storeId,
-    theme_id: themeId,
-    price_cents: priceCents,
-    stripe_session_id: session.id,
-    stripe_payment_intent: session.payment_intent ?? null,
-    partner_id: theme?.partner_id ?? null,
-    partner_commission_percent: commission,
-    partner_earnings_cents: partnerEarnings,
-    platform_earnings_cents: platformEarnings,
-    status: "completed",
-  }, { onConflict: "store_id,theme_id" });
+  await supabase.from("theme_purchases").upsert(
+    {
+      store_id: storeId,
+      theme_id: themeId,
+      price_cents: priceCents,
+      stripe_session_id: session.id,
+      stripe_payment_intent: session.payment_intent ?? null,
+      partner_id: theme?.partner_id ?? null,
+      partner_commission_percent: commission,
+      partner_earnings_cents: partnerEarnings,
+      platform_earnings_cents: platformEarnings,
+      status: "completed",
+    },
+    { onConflict: "store_id,theme_id" },
+  );
 
-  // Increment theme installs
   await supabase.rpc("increment_theme_installs", { _theme_id: themeId });
 }
