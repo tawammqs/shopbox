@@ -42,7 +42,6 @@ function AdminLayout() {
   const { user, loading } = useAuth();
   const { data: store, isLoading: storeLoading, refetch } = useMyStore();
   const location = useLocation();
-  const qc = useQueryClient();
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
