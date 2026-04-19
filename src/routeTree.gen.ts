@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
+import { Route as PreviewDarkRouteImport } from './routes/preview-dark'
 import { Route as PrecosRouteImport } from './routes/precos'
 import { Route as PainelRouteImport } from './routes/painel'
 import { Route as LoginRouteImport } from './routes/login'
@@ -48,6 +49,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
   id: '/recuperar-senha',
   path: '/recuperar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PreviewDarkRoute = PreviewDarkRouteImport.update({
+  id: '/preview-dark',
+  path: '/preview-dark',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrecosRoute = PrecosRouteImport.update({
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
+  '/preview-dark': typeof PreviewDarkRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
@@ -232,6 +239,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
+  '/preview-dark': typeof PreviewDarkRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
@@ -264,6 +272,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
+  '/preview-dark': typeof PreviewDarkRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
@@ -298,6 +307,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/painel'
     | '/precos'
+    | '/preview-dark'
     | '/recuperar-senha'
     | '/reset-password'
     | '/admin/avaliacoes'
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/painel'
     | '/precos'
+    | '/preview-dark'
     | '/recuperar-senha'
     | '/reset-password'
     | '/admin/avaliacoes'
@@ -360,6 +371,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/painel'
     | '/precos'
+    | '/preview-dark'
     | '/recuperar-senha'
     | '/reset-password'
     | '/admin/avaliacoes'
@@ -393,6 +405,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PainelRoute: typeof PainelRoute
   PrecosRoute: typeof PrecosRoute
+  PreviewDarkRoute: typeof PreviewDarkRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -416,6 +429,13 @@ declare module '@tanstack/react-router' {
       path: '/recuperar-senha'
       fullPath: '/recuperar-senha'
       preLoaderRoute: typeof RecuperarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview-dark': {
+      id: '/preview-dark'
+      path: '/preview-dark'
+      fullPath: '/preview-dark'
+      preLoaderRoute: typeof PreviewDarkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/precos': {
@@ -675,6 +695,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PainelRoute: PainelRoute,
   PrecosRoute: PrecosRoute,
+  PreviewDarkRoute: PreviewDarkRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
@@ -686,12 +707,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
