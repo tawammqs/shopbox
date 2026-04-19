@@ -15,6 +15,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { planLabel } from "@/lib/plans";
 import { toast } from "sonner";
+import shopboxLogo from "@/assets/shopbox-logo.png";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Painel — ShopBox" }] }),
