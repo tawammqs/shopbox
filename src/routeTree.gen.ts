@@ -24,6 +24,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TemasSlugRouteImport } from './routes/temas.$slug'
 import { Route as SuperadminTemasRouteImport } from './routes/superadmin.temas'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
+import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cleanup-orphan-stores'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AdminTemasRouteImport } from './routes/admin.temas'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
@@ -116,6 +117,12 @@ const LojaSlugRoute = LojaSlugRouteImport.update({
   path: '/loja/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HooksCleanupOrphanStoresRoute =
+  HooksCleanupOrphanStoresRouteImport.update({
+    id: '/hooks/cleanup-orphan-stores',
+    path: '/hooks/cleanup-orphan-stores',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -284,6 +293,7 @@ export interface FileRoutesById {
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/admin/temas'
     | '/checkout/return'
+    | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
     | '/superadmin/temas'
     | '/temas/$slug'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/admin/temas'
     | '/checkout/return'
+    | '/hooks/cleanup-orphan-stores'
     | '/superadmin/temas'
     | '/temas/$slug'
     | '/admin'
@@ -383,6 +395,7 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/admin/temas'
     | '/checkout/return'
+    | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
     | '/superadmin/temas'
     | '/temas/$slug'
@@ -409,6 +422,7 @@ export interface RootRouteChildren {
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
+  HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
   SuperadminTemasRoute: typeof SuperadminTemasRoute
   TemasSlugRoute: typeof TemasSlugRoute
@@ -520,6 +534,13 @@ declare module '@tanstack/react-router' {
       path: '/loja/$slug'
       fullPath: '/loja/$slug'
       preLoaderRoute: typeof LojaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hooks/cleanup-orphan-stores': {
+      id: '/hooks/cleanup-orphan-stores'
+      path: '/hooks/cleanup-orphan-stores'
+      fullPath: '/hooks/cleanup-orphan-stores'
+      preLoaderRoute: typeof HooksCleanupOrphanStoresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout/return': {
@@ -699,6 +720,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
+  HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
   SuperadminTemasRoute: SuperadminTemasRoute,
   TemasSlugRoute: TemasSlugRoute,
