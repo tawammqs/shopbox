@@ -55,7 +55,7 @@ const STYLES = `
 .pdark .hero-badge{position:relative;display:inline-flex;align-items:center;gap:8px;background:var(--gl);border:1px solid var(--border);color:var(--g);font-size:12px;font-weight:500;padding:5px 14px;border-radius:999px;margin-bottom:28px;font-family:var(--mono)}
 .pdark .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--g);animation:pdpulse 2s infinite}
 @keyframes pdpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-.pdark .hero h1{position:relative;font-size:clamp(44px,6vw,80px);font-weight:900;line-height:1.0;letter-spacing:-3px;color:#fff;margin-bottom:24px;max-width:900px}
+.pdark .hero h1{position:relative;font-size:clamp(44px,6vw,80px);font-weight:900;line-height:1.0;letter-spacing:-3px;color:var(--text);margin-bottom:24px;max-width:900px}
 .pdark .hero h1 em{font-style:normal;color:var(--g)}
 .pdark .hero-sub{position:relative;font-size:18px;color:var(--muted);line-height:1.65;margin-bottom:40px;max-width:540px;font-weight:400}
 .pdark .hero-ctas{position:relative;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
