@@ -39,8 +39,9 @@ const NAV = [
 function AdminLayout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const { data: store, isLoading: storeLoading } = useMyStore();
+  const { data: store, isLoading: storeLoading, refetch } = useMyStore();
   const location = useLocation();
+  const qc = useQueryClient();
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -52,6 +53,26 @@ function AdminLayout() {
       navigate({ to: "/admin/dashboard", replace: true });
     }
   }, [location.pathname, navigate]);
+
+  // Post-checkout: when user lands here from Stripe, poll until webhook activates the store
+  const isPostCheckout =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("checkout") === "success";
+
+  useEffect(() => {
+    if (!isPostCheckout || !user) return;
+    const status = store?.subscription_status;
+    if (status === "trialing" || status === "active") return; // already activated
+
+    const interval = setInterval(() => {
+      qc.invalidateQueries({ queryKey: ["my-store-full", user.id] });
+    }, 2500);
+    const timeout = setTimeout(() => clearInterval(interval), 30_000);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [isPostCheckout, store?.subscription_status, user, qc]);
 
   if (loading || storeLoading || !user) {
     return (
@@ -65,7 +86,19 @@ function AdminLayout() {
     return <CreateStoreFallback userId={user.id} email={user.email ?? ""} />;
   }
 
+  // Subscription gate — block access if status is incomplete/canceled/unpaid/inactive
+  if (!hasStoreAccess(store)) {
+    return (
+      <SubscriptionGate
+        status={store.subscription_status}
+        isPostCheckout={isPostCheckout}
+        onRefresh={() => refetch()}
+      />
+    );
+  }
+
   const planSlug = store.plan?.slug ?? null;
+
 
   return (
     <div className="flex min-h-screen bg-muted/20">
