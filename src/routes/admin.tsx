@@ -84,7 +84,7 @@ function AdminLayout() {
                 <SidebarContent storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
               </SheetContent>
             </Sheet>
-            <span className="font-display text-lg font-bold">ShopBox</span>
+            <img src={shopboxLogo} alt="shopbox" className="h-6 w-auto" />
           </div>
           <div className="hidden flex-1 md:block" />
           <div className="flex items-center gap-2">
