@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useStorefront } from "./StoreContext";
@@ -12,7 +12,11 @@ import { cn } from "@/lib/utils";
 export function StorefrontHeader({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
   const { store } = useStorefront();
   const navigate = useNavigate();
-  const cartCount = useCart((s) => s.totalCount(store.id));
+  const allItems = useCart((s) => s.items);
+  const cartCount = useMemo(
+    () => allItems.filter((i) => i.storeId === store.id).reduce((a, b) => a + b.quantity, 0),
+    [allItems, store.id],
+  );
   const openCart = useCart((s) => s.open);
   const wishlistCount = useWishlist((s) => s.ids.length);
 
