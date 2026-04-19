@@ -35,7 +35,7 @@ const STYLES = `
   font-family:var(--sans);color:var(--text);background:var(--dark);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;
 }
 
-.pdark .pd-header{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:rgba(10,15,10,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border2)}
+.pdark .pd-header{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border2)}
 .pdark .pd-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:#fff;text-decoration:none}
 .pdark .pd-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--g)}
 .pdark nav.pd-nav{display:flex;gap:2rem;align-items:center}
