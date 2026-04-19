@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import type { PlanSlug } from "@/lib/plans";
@@ -34,6 +35,32 @@ export type MyStore = {
 
 export function useMyStore() {
   const { user, loading: authLoading } = useAuth();
+  const qc = useQueryClient();
+
+  // Subscribe to realtime UPDATEs on the owner's store row so subscription_status
+  // changes (driven by Stripe webhook) invalidate the cache instantly — no polling.
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`my-store-${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "stores",
+          filter: `owner_user_id=eq.${user.id}`,
+        },
+        () => {
+          qc.invalidateQueries({ queryKey: ["my-store-full", user.id] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, qc]);
 
   return useQuery({
     queryKey: ["my-store-full", user?.id],
