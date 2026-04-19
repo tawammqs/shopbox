@@ -18,27 +18,28 @@ export const Route = createFileRoute("/precos")({
 
 function PricingPage() {
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "var(--font-marketing-body)" }}>
+    <div className="min-h-screen bg-white" style={{ fontFamily: "Geist, system-ui, sans-serif" }}>
       <MarketingHeader />
 
-      <section className="bg-white py-16 lg:py-20">
+      <section className="bg-white py-20 lg:py-28">
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-[#e6f8f6] px-3 py-1 text-xs font-semibold text-[#00857a]">
-            💰 Preços
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#25D366]/10 border border-[#25D366]/25 px-3.5 py-1 text-[11px] font-medium text-[#25D366]" style={{ fontFamily: "Geist Mono, monospace" }}>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#25D366] animate-pulse" />
+            Planos transparentes
           </span>
           <h1
-            className="mt-5 text-4xl font-extrabold leading-tight tracking-tight text-[#111827] md:text-6xl"
-            style={{ fontFamily: "var(--font-marketing)" }}
+            className="mt-6 text-5xl font-black leading-[1.05] tracking-[-0.03em] text-[#0a0f0a] md:text-6xl lg:text-7xl"
+            style={{ fontFamily: "Geist, system-ui, sans-serif" }}
           >
-            Planos para cada fase do seu negócio
+            Sem surpresas,<br />sem letras miúdas
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-[#6b7280]">
-            Comece pequeno e cresça sem dor de cabeça. Sem comissão por venda.
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-[#5a6a5a] leading-relaxed">
+            7 dias grátis em todos os planos. Sem cartão de crédito. Cancele quando quiser.
           </p>
         </div>
       </section>
 
-      <section className="bg-[#f7f8fa] py-16">
+      <section className="bg-[#f7faf7] py-20 border-y border-[#e5e7eb]">
         <div className="mx-auto max-w-6xl px-6">
           <PricingCards />
         </div>
@@ -47,11 +48,14 @@ function PricingPage() {
       <section className="bg-white py-20 lg:py-24">
         <div className="mx-auto max-w-3xl px-6">
           <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-[#111827] md:text-4xl" style={{ fontFamily: "var(--font-marketing)" }}>
-              Dúvidas frequentes
+            <span className="text-[11px] font-medium uppercase tracking-[2px] text-[#25D366]" style={{ fontFamily: "Geist Mono, monospace" }}>
+              FAQ
+            </span>
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.02em] text-[#0a0f0a] md:text-5xl" style={{ fontFamily: "Geist, system-ui, sans-serif" }}>
+              Perguntas frequentes
             </h2>
           </div>
-          <div className="mt-10">
+          <div className="mt-12">
             <FaqAccordion />
           </div>
         </div>
