@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Star, Download, Sparkles, Filter, X } from "lucide-react";
+import { Star, Download, Filter, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatBRL, SEGMENT_OPTIONS, STYLE_OPTIONS, type ThemeTokens } from "@/lib/themes";
+import { MarketingHeader } from "@/components/marketing/MarketingHeader";
+import { MarketingFooter } from "@/components/marketing/MarketingFooter";
 
 export const Route = createFileRoute("/temas/")({
   head: () => ({
@@ -66,13 +68,22 @@ function ThemeMarketplacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white" style={{ fontFamily: "Geist, system-ui, sans-serif" }}>
+      <MarketingHeader />
+
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/5 via-background to-accent/5">
-        <div className="container mx-auto px-4 py-16 text-center">
-          <Badge className="mb-4 gap-1.5"><Sparkles className="h-3 w-3" /> Marketplace de Temas</Badge>
-          <h1 className="font-display text-4xl font-bold tracking-tight md:text-6xl">Deixe sua loja ainda mais profissional</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">Escolha entre dezenas de temas exclusivos. Ative em um clique, personalize tudo no editor visual.</p>
+      <section className="bg-white py-20 lg:py-24 border-b border-[#e5e7eb]">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#25D366]/10 border border-[#25D366]/25 px-3.5 py-1 text-[11px] font-medium text-[#25D366]" style={{ fontFamily: "Geist Mono, monospace" }}>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#25D366] animate-pulse" />
+            Marketplace de Temas
+          </span>
+          <h1 className="mt-6 text-5xl font-black leading-[1.05] tracking-[-0.03em] text-[#0a0f0a] md:text-6xl lg:text-7xl" style={{ fontFamily: "Geist, system-ui, sans-serif" }}>
+            Deixe sua loja ainda<br />mais profissional
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-[#5a6a5a] leading-relaxed">
+            Escolha entre dezenas de temas exclusivos. Ative em um clique, personalize tudo no editor visual.
+          </p>
           <div className="mx-auto mt-8 flex max-w-md gap-2">
             <Input placeholder="Buscar temas…" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
@@ -162,6 +173,8 @@ function ThemeMarketplacePage() {
           )}
         </div>
       </div>
+
+      <MarketingFooter />
     </div>
   );
 }

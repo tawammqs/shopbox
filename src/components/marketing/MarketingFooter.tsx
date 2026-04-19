@@ -4,7 +4,7 @@ import shopboxLogo from "@/assets/shopbox-logo.png";
 
 export function MarketingFooter() {
   return (
-    <footer className="bg-[#111827] py-16 text-white">
+    <footer className="bg-[#0a0f0a] py-16 text-white">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
