@@ -1,9 +1,10 @@
-import { createFileRoute, Outlet, Link, useNavigate, useLocation, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useNavigate, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, MessageSquare,
-  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2
+  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2,
+  Lock,
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
@@ -13,7 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
-import { planLabel } from "@/lib/plans";
+import { planLabel, hasStoreAccess } from "@/lib/plans";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "sonner";
 import shopboxLogo from "@/assets/shopbox-logo.png";
 
@@ -37,8 +39,9 @@ const NAV = [
 function AdminLayout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const { data: store, isLoading: storeLoading } = useMyStore();
+  const { data: store, isLoading: storeLoading, refetch } = useMyStore();
   const location = useLocation();
+  const qc = useQueryClient();
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -50,6 +53,26 @@ function AdminLayout() {
       navigate({ to: "/admin/dashboard", replace: true });
     }
   }, [location.pathname, navigate]);
+
+  // Post-checkout: when user lands here from Stripe, poll until webhook activates the store
+  const isPostCheckout =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("checkout") === "success";
+
+  useEffect(() => {
+    if (!isPostCheckout || !user) return;
+    const status = store?.subscription_status;
+    if (status === "trialing" || status === "active") return; // already activated
+
+    const interval = setInterval(() => {
+      qc.invalidateQueries({ queryKey: ["my-store-full", user.id] });
+    }, 2500);
+    const timeout = setTimeout(() => clearInterval(interval), 30_000);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [isPostCheckout, store?.subscription_status, user, qc]);
 
   if (loading || storeLoading || !user) {
     return (
@@ -63,7 +86,19 @@ function AdminLayout() {
     return <CreateStoreFallback userId={user.id} email={user.email ?? ""} />;
   }
 
+  // Subscription gate — block access if status is incomplete/canceled/unpaid/inactive
+  if (!hasStoreAccess(store)) {
+    return (
+      <SubscriptionGate
+        status={store.subscription_status}
+        isPostCheckout={isPostCheckout}
+        onRefresh={() => refetch()}
+      />
+    );
+  }
+
   const planSlug = store.plan?.slug ?? null;
+
 
   return (
     <div className="flex min-h-screen bg-muted/20">
@@ -235,6 +270,98 @@ function CreateStoreFallback({ userId, email }: { userId: string; email: string 
           </div>
           <Button onClick={handleCreate} disabled={busy} className="w-full" size="lg">
             {busy ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Criando...</> : "Criar minha loja"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SubscriptionGate({
+  status,
+  isPostCheckout,
+  onRefresh,
+}: {
+  status: string | null | undefined;
+  isPostCheckout: boolean;
+  onRefresh: () => void;
+}) {
+  const [opening, setOpening] = useState(false);
+
+  if (isPostCheckout && (status === "incomplete" || !status)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+          <Loader2 className="mx-auto h-10 w-10 animate-spin text-accent" />
+          <h1 className="mt-4 font-display text-xl font-bold">Ativando sua loja…</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Confirmamos seu pagamento. Em alguns segundos seu painel estará liberado.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  async function openPortal() {
+    setOpening(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-portal-session", {
+        body: {
+          environment: getStripeEnvironment(),
+          returnUrl: `${window.location.origin}/admin/dashboard`,
+        },
+      });
+      if (error || !data?.url) throw new Error(error?.message || "Não foi possível abrir o portal");
+      window.open(data.url, "_blank");
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao abrir portal");
+    } finally {
+      setOpening(false);
+    }
+  }
+
+  const labelByStatus: Record<string, { title: string; desc: string }> = {
+    incomplete: {
+      title: "Pagamento pendente",
+      desc: "Seu cadastro foi criado, mas o pagamento ainda não foi confirmado. Reative sua assinatura para liberar o painel.",
+    },
+    canceled: {
+      title: "Assinatura cancelada",
+      desc: "Sua assinatura foi cancelada. Reative para voltar a usar a ShopBox.",
+    },
+    unpaid: {
+      title: "Pagamento em atraso",
+      desc: "Não conseguimos cobrar sua assinatura. Atualize sua forma de pagamento para reativar a loja.",
+    },
+    inactive: {
+      title: "Loja inativa",
+      desc: "Sua loja está inativa. Reative seu plano para continuar.",
+    },
+  };
+  const info = labelByStatus[status ?? "inactive"] ?? labelByStatus.inactive;
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
+          <Lock className="h-6 w-6" />
+        </div>
+        <h1 className="font-display text-xl font-bold">{info.title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{info.desc}</p>
+
+        <div className="mt-6 space-y-2">
+          <Button onClick={openPortal} disabled={opening} className="w-full" size="lg">
+            {opening ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Abrindo…</>
+            ) : (
+              "Gerenciar pagamento"
+            )}
+          </Button>
+          <Button variant="outline" onClick={onRefresh} className="w-full">
+            Já paguei — atualizar
+          </Button>
+          <Button variant="ghost" onClick={() => signOut()} className="w-full">
+            <LogOut className="mr-2 h-4 w-4" /> Sair
           </Button>
         </div>
       </div>

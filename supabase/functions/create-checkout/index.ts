@@ -10,7 +10,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { priceId, customerEmail, userId, returnUrl, environment } = await req.json();
+    const { priceId, customerEmail, userId, returnUrl, environment, trialPeriodDays } =
+      await req.json();
     if (!priceId || typeof priceId !== "string" || !/^[a-zA-Z0-9_-]+$/.test(priceId)) {
       return new Response(JSON.stringify({ error: "Invalid priceId" }), {
         status: 400,
@@ -31,6 +32,21 @@ serve(async (req) => {
     const stripePrice = prices.data[0];
     const isRecurring = stripePrice.type === "recurring";
 
+    const trialDays =
+      typeof trialPeriodDays === "number" && trialPeriodDays > 0 && trialPeriodDays <= 30
+        ? Math.floor(trialPeriodDays)
+        : undefined;
+
+    const subscriptionData =
+      isRecurring && (userId || trialDays)
+        ? {
+            subscription_data: {
+              ...(userId && { metadata: { userId } }),
+              ...(trialDays && { trial_period_days: trialDays }),
+            },
+          }
+        : {};
+
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: stripePrice.id, quantity: 1 }],
       mode: isRecurring ? "subscription" : "payment",
@@ -39,10 +55,8 @@ serve(async (req) => {
         returnUrl ||
         `${req.headers.get("origin")}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
       ...(customerEmail && { customer_email: customerEmail }),
-      ...(userId && {
-        metadata: { userId },
-        ...(isRecurring && { subscription_data: { metadata: { userId } } }),
-      }),
+      ...(userId && { metadata: { userId } }),
+      ...subscriptionData,
     });
 
     return new Response(JSON.stringify({ clientSecret: session.client_secret }), {
