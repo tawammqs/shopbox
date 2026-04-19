@@ -304,8 +304,8 @@ function LandingPage() {
         <div className="hero-grid" />
         <div className="hero-badge">+12.000 lojas ativas no WhatsApp</div>
         <h1>
-          A plataforma de<span className="desk-break"><br /></span><span className="mob-break"> </span>
-          <em>e-commerce</em> feita<span className="desk-break"><br /></span><span className="mob-break"> </span>
+          A plataforma de<br />
+          <em>e-commerce</em> feita<br />
           para o WhatsApp
         </h1>
         <p className="hero-sub">Monte sua loja em minutos, compartilhe o link no WhatsApp e comece a receber pedidos hoje mesmo.</p>
