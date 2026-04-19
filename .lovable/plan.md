@@ -1,77 +1,76 @@
 
 
-## Objetivo
-1. Adicionar a logomarca `shopbox` (PNG enviado) no header da landing e no admin
-2. Trocar fontes globais para **Geist Sans** (texto) + **Geist Mono** (mono/acentos)
+## Tarefas
+1. Verificar `/loja/demo` na URL publicada (`shopbox.lovable.app`) após republicação
+2. Migrar a landing `/` para o design escuro do `/preview-dark`
 
-## Análise rápida
-- Logo enviada: `user-uploads://SHOPBOX_4-2.png` — wordmark "shopbox" preto, sans-serif geométrica, lowercase
-- Fontes atuais: Plus Jakarta Sans + Inter + DM Sans + Playfair (definidas em `src/styles.css`)
-- Header atual (`MarketingHeader.tsx`): usa texto "ShopBox" com `font-display`
-- Footer (`MarketingFooter.tsx`): também texto "ShopBox"
-- Admin (`src/routes/admin.tsx`): tem header próprio — precisa verificar onde fica o logo
+## Etapa 1 — Validar produção
 
-## Plano de execução
+- `browser--navigate_to_url` → `https://shopbox.lovable.app/loja/demo`
+- `browser--screenshot` + `browser--read_console_logs` → confirmar sem erro #185
+- Reportar ao usuário com screenshot
 
-### 1. Adicionar a logo ao projeto
-- `lov-copy user-uploads://SHOPBOX_4-2.png src/assets/shopbox-logo.png`
-- Importar como ES module nos componentes que usam
+## Etapa 2 — Migrar landing para dark
 
-### 2. Trocar fontes globais para Geist
-**`src/styles.css`** — atualizar `@theme inline`:
+### 2.1 Análise do que existe hoje
+
+- **`/preview-dark`** (`src/routes/preview-dark.tsx`) — design escuro premium completo com hero centralizado, mockup WhatsApp, ticker animado, dashboard mock, métricas, pricing, FAQ acordeão, CTA final. Todo escopado dentro de `.pdark` para isolar do resto.
+- **`/`** (`src/routes/index.tsx`) — landing clara atual usando `MarketingHeader` + `HeroMockup` + `PricingCards` + `FaqAccordion` + `MarketingFooter`.
+
+### 2.2 Estratégia de migração
+
+**Não mexer nos componentes compartilhados** (`MarketingHeader`, `MarketingFooter`, `PricingCards`, etc.) porque eles são usados em outras rotas (`/precos`, `/funcionalidades`, `/temas`, etc). Em vez disso:
+
+1. **Substituir `src/routes/index.tsx`** pelo conteúdo de `preview-dark.tsx` (sem o escopo `.pdark` — agora vira o tema da landing inteira) **mas mantendo `MarketingHeader` e `MarketingFooter`** já existentes para consistência com outras páginas marketing.
+
+2. **Adaptar o header/footer compartilhado pra ficarem bem em fundo escuro**:
+   - `MarketingHeader.tsx` — adicionar variant ou usar tokens que respeitem fundo escuro. Mais simples: deixar header com fundo `bg-background/95 backdrop-blur` que já é responsivo via tokens. Mas como o `--background` é branco no `:root`, precisamos forçar dark na landing.
+   - Solução pragmática: na `index.tsx` envolver tudo em `<div className="dark bg-background text-foreground">` para ativar tokens dark globais (que devem existir em `styles.css` no bloco `.dark`).
+
+3. **Fonts**: já está Geist global, ok.
+
+4. **Logo no header em dark**: a logo PNG `shopbox-logo.png` é preta. No fundo escuro precisa do filtro invert. Vou verificar como o `MarketingHeader` renderiza e adicionar suporte a dark mode (usando `dark:invert` na img).
+
+5. **Footer**: já tem `filter: invert(1) brightness(2)` aplicado — vai ficar correto em fundo escuro.
+
+### 2.3 Plano de arquivos
+
+**Arquivos a editar/criar:**
+
 ```
---font-sans: "Geist", system-ui, sans-serif;
---font-mono: "Geist Mono", ui-monospace, monospace;
---font-display: "Geist", system-ui, sans-serif;     /* remover Playfair */
---font-marketing: "Geist", system-ui, sans-serif;   /* remover Plus Jakarta */
---font-marketing-body: "Geist", system-ui, sans-serif; /* remover Inter */
-```
-Resultado: tudo (landing + admin + storefront) passa a usar Geist automaticamente via tokens existentes.
-
-### 3. Carregar Geist do Google Fonts
-**`src/routes/__root.tsx`** — adicionar no `head()`:
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-```
-E remover (ou deixar — não atrapalha) os `<link>` de Plus Jakarta/Inter se existirem.
-
-### 4. Trocar texto "ShopBox" pela logo PNG
-**`src/components/marketing/MarketingHeader.tsx`**:
-```tsx
-import shopboxLogo from "@/assets/shopbox-logo.png";
-// ...
-<Link to="/" className="flex items-center">
-  <img src={shopboxLogo} alt="shopbox" className="h-7 w-auto" />
-</Link>
+src/routes/index.tsx                          ← REESCRITO (conteúdo do preview-dark, com MarketingHeader/Footer)
+src/components/marketing/MarketingHeader.tsx  ← adicionar dark:invert na logo + fundo respeitando dark
+src/components/marketing/PricingCards.tsx     ← variant dark (passar prop ou ler de contexto)
+src/components/marketing/FaqAccordion.tsx     ← variant dark
+src/styles.css                                ← garantir que `.dark` tem tokens corretos (já tem provavelmente)
 ```
 
-**`src/components/marketing/MarketingFooter.tsx`**: mesma troca, mas com filtro CSS `invert` pra ficar branco no fundo escuro:
-```tsx
-<img src={shopboxLogo} alt="shopbox" className="h-7 w-auto invert brightness-0" 
-     style={{ filter: "invert(1) brightness(2)" }} />
-```
+**Decisão**: para minimizar risco e tempo, vou:
+- Reescrever `index.tsx` inline, **incluindo header/footer próprios escuros** (sem usar os Marketing*), porque o preview-dark já tem header/footer completos no design escuro. Isso evita ter que fazer variants em 3 componentes.
+- Manter os componentes `MarketingHeader`/`MarketingFooter` intactos para que outras rotas marketing (`/precos`, `/funcionalidades`, etc.) continuem funcionando.
+- **Trade-off**: agora `/` fica desconectado visualmente de `/precos` e `/funcionalidades`. O usuário precisa decidir se quer migrar essas também — pergunto no final.
 
-**Admin** (`src/routes/admin.tsx`): se houver logo/título no sidebar/topo, trocar pela mesma imagem.
+### 2.4 Conteúdo final de `index.tsx`
 
-### 5. Verificações
-- Storefront (`/loja/$slug`) — fontes herdam de `--font-sans`, então automaticamente vira Geist (OK, não é o logo do shopbox lá, é o logo da loja do cliente)
-- `/preview-dark` — já usa Geist no escopo `.pdark`; passa a estar consistente com o resto
-- Headings na landing (`font-display`) — antes Playfair (serifa), agora Geist (sans). Visual mudará: títulos ficam mais limpos/modernos, alinhado com a vibe minimalista da logo
+Cópia do `preview-dark.tsx` removendo o wrapper `.pdark` (vira global na rota), mantendo:
+- Hero centralizado com pílula verde "Loja em 5 minutos"
+- Mockup conversa WhatsApp
+- Ticker animado
+- Dashboard mock
+- Strip métricas (12k+, 3x, 30min, 4.9★)
+- Pricing 3 cards (com plano destacado)
+- FAQ acordeão
+- CTA final
+- Footer escuro
 
-## Arquivos a alterar
-```text
-src/assets/shopbox-logo.png            ← NOVO (lov-copy)
-src/styles.css                         ← font tokens → Geist
-src/routes/__root.tsx                  ← <link> Google Fonts Geist
-src/components/marketing/MarketingHeader.tsx   ← logo PNG
-src/components/marketing/MarketingFooter.tsx   ← logo PNG (filtro invert)
-src/routes/admin.tsx                   ← logo PNG no header (se houver)
-```
+Adicionar `head()` da landing original (titles SEO).
+
+### 2.5 Limpeza
+
+- Manter `/preview-dark` por enquanto como referência. Não deletar até o usuário confirmar que gostou.
 
 ## Riscos
-- **Headings com serifa (Playfair) somem** — design muda. Quem aprovou a vibe NuvemShop pode estranhar. Mas a logo enviada é claramente sans → coerente trocar.
-- **Geist pode não carregar instantaneamente** → fallback `system-ui` evita flash.
-- **Logo PNG em fundo escuro do footer** → uso `filter: invert(1) brightness(2)` pra deixar branca sem precisar de versão alternativa.
+- **Outras rotas marketing** (`/precos`, `/funcionalidades`, `/temas`) ficam claras enquanto `/` fica escura — inconsistência. Vou avisar e oferecer migrar depois.
+- **Logo no header escuro**: usar versão branca via `filter: invert(1) brightness(2)` — testado no footer.
+- **SEO**: preservar `head()` da landing original.
 
