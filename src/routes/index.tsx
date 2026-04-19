@@ -230,15 +230,12 @@ const STYLES = `
 @media(max-width:900px){
   .pdark nav.pd-nav,.pdark .hdr-right .btn-outline{display:none}
   .pdark .hero h1{letter-spacing:-2px}
-  .pdark .hero h1 .desk-break{display:none}
-  .pdark .hero h1 .mob-break{display:inline}
   .pdark .split,.pdark .hello-grid,.pdark .feat-grid{grid-template-columns:1fr}
   .pdark .hero-mockup{display:none}
   .pdark .pricing-grid,.pdark .testi-grid,.pdark .steps-grid,.pdark .foot-grid{grid-template-columns:1fr}
   .pdark .metrics-inner{grid-template-columns:repeat(2,1fr)}
   .pdark .metric{border-right:none;border-bottom:1px solid var(--border2);padding-bottom:24px}
 }
-.pdark .hero h1 .mob-break{display:none}
 `;
 
 const TICKER_ITEMS = [
