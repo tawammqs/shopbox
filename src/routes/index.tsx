@@ -27,10 +27,10 @@ const STYLES = `
 .pdark *,.pdark *::before,.pdark *::after{box-sizing:border-box;margin:0;padding:0}
 .pdark{
   --g:#25D366;--g2:#1ebe57;--g3:#128C7E;
-  --gl:rgba(37,211,102,0.12);--gl2:rgba(37,211,102,0.06);
-  --dark:#0a0f0a;--dark2:#111811;--dark3:#161e16;--card:#141a14;
-  --border:rgba(37,211,102,0.15);--border2:rgba(255,255,255,0.07);
-  --text:#f0f7f0;--muted:#7a9a7a;--muted2:#5a7a5a;
+  --gl:rgba(37,211,102,0.10);--gl2:rgba(37,211,102,0.04);
+  --dark:#ffffff;--dark2:#f7faf7;--dark3:#f0f5f0;--card:#ffffff;
+  --border:rgba(37,211,102,0.25);--border2:rgba(17,24,17,0.08);
+  --text:#0a0f0a;--muted:#5a6a5a;--muted2:#8a9a8a;
   --sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace;
   font-family:var(--sans);color:var(--text);background:var(--dark);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;
 }
