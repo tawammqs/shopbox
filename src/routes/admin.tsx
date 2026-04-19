@@ -55,25 +55,12 @@ function AdminLayout() {
     }
   }, [location.pathname, navigate]);
 
-  // Post-checkout: when user lands here from Stripe, poll until webhook activates the store
+  // Post-checkout flag drives the "Ativando sua loja…" screen below.
+  // Realtime subscription in useMyStore() invalidates the query as soon as
+  // the Stripe webhook updates the store row, so no polling is needed here.
   const isPostCheckout =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("checkout") === "success";
-
-  useEffect(() => {
-    if (!isPostCheckout || !user) return;
-    const status = store?.subscription_status;
-    if (status === "trialing" || status === "active") return; // already activated
-
-    const interval = setInterval(() => {
-      qc.invalidateQueries({ queryKey: ["my-store-full", user.id] });
-    }, 2500);
-    const timeout = setTimeout(() => clearInterval(interval), 30_000);
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, [isPostCheckout, store?.subscription_status, user, qc]);
 
   if (loading || storeLoading || !user) {
     return (
