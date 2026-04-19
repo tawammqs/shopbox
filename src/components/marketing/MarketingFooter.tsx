@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Youtube, MessageCircle } from "lucide-react";
+import shopboxLogo from "@/assets/shopbox-logo.png";
 
 export function MarketingFooter() {
   return (
@@ -7,7 +8,7 @@ export function MarketingFooter() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
-            <div className="font-display text-2xl font-extrabold">ShopBox</div>
+            <img src={shopboxLogo} alt="shopbox" className="h-7 w-auto" style={{ filter: "invert(1) brightness(2)" }} />
             <p className="mt-3 max-w-xs text-sm text-white/60">
               A plataforma de loja online para quem vende pelo WhatsApp.
             </p>
