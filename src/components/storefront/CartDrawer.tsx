@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X, ShoppingBag, Trash2, Tag, Truck, MessageCircle } from "lucide-react";
 import { useCart, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront } from "./StoreContext";
@@ -13,12 +13,14 @@ export function CartDrawer() {
   const { store } = useStorefront();
   const isOpen = useCart((s) => s.isOpen);
   const close = useCart((s) => s.close);
-  const items = useCart((s) => s.itemsForStore(store.id));
-  const subtotal = useCart((s) => s.subtotal(store.id));
+  const allItems = useCart((s) => s.items);
   const updateQty = useCart((s) => s.updateQty);
   const removeItem = useCart((s) => s.removeItem);
   const coupon = useCart((s) => s.coupon);
   const setCoupon = useCart((s) => s.setCoupon);
+
+  const items = useMemo(() => allItems.filter((i) => i.storeId === store.id), [allItems, store.id]);
+  const subtotal = useMemo(() => items.reduce((a, b) => a + b.unitPrice * b.quantity, 0), [items]);
 
   const [code, setCode] = useState("");
   const [validating, setValidating] = useState(false);
