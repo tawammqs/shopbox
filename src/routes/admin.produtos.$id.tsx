@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { ImageUpload, MultiImageUpload } from "@/components/admin/ImageUpload";
 import { PlanGate } from "@/components/admin/PlanGate";
+import { VariationsBuilder } from "@/components/admin/VariationsBuilder";
 import { slugify } from "@/lib/format";
 import { toast } from "sonner";
 
