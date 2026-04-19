@@ -34,9 +34,6 @@ type CartState = {
   updateQty: (productId: string, colorId: string | null, sizeId: string | null, qty: number) => void;
   setCoupon: (c: AppliedCoupon) => void;
   clear: () => void;
-  itemsForStore: (storeId: string) => CartItem[];
-  totalCount: (storeId?: string) => number;
-  subtotal: (storeId?: string) => number;
 };
 
 const sameLine = (a: CartItem, productId: string, colorId: string | null, sizeId: string | null) =>
@@ -44,7 +41,7 @@ const sameLine = (a: CartItem, productId: string, colorId: string | null, sizeId
 
 export const useCart = create<CartState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       items: [],
       isOpen: false,
       coupon: null,
@@ -76,15 +73,6 @@ export const useCart = create<CartState>()(
         })),
       setCoupon: (c) => set({ coupon: c }),
       clear: () => set({ items: [], coupon: null }),
-      itemsForStore: (storeId) => get().items.filter((i) => i.storeId === storeId),
-      totalCount: (storeId) => {
-        const items = storeId ? get().items.filter((i) => i.storeId === storeId) : get().items;
-        return items.reduce((a, b) => a + b.quantity, 0);
-      },
-      subtotal: (storeId) => {
-        const items = storeId ? get().items.filter((i) => i.storeId === storeId) : get().items;
-        return items.reduce((a, b) => a + b.unitPrice * b.quantity, 0);
-      },
     }),
     { name: "cart-v2" },
   ),
