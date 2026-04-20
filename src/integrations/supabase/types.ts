@@ -294,6 +294,119 @@ export type Database = {
           },
         ]
       }
+      customers: {
+        Row: {
+          address: string | null
+          cep: string | null
+          city_state: string | null
+          cpf: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          store_id: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          address?: string | null
+          cep?: string | null
+          city_state?: string | null
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          store_id: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          address?: string | null
+          cep?: string | null
+          city_state?: string | null
+          cpf?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          store_id?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          coupon_code: string | null
+          created_at: string
+          customer_id: string | null
+          discount_amount: number
+          id: string
+          items: Json
+          order_number: number
+          promotion_description: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          store_id: string
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          coupon_code?: string | null
+          created_at?: string
+          customer_id?: string | null
+          discount_amount?: number
+          id?: string
+          items?: Json
+          order_number: number
+          promotion_description?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          store_id: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          coupon_code?: string | null
+          created_at?: string
+          customer_id?: string | null
+          discount_amount?: number
+          id?: string
+          items?: Json
+          order_number?: number
+          promotion_description?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          store_id?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plans: {
         Row: {
           active: boolean
@@ -1261,6 +1374,29 @@ export type Database = {
           id: string
         }[]
       }
+      create_order_with_customer: {
+        Args: {
+          _address: string
+          _cep: string
+          _city_state: string
+          _coupon_code: string
+          _cpf: string
+          _discount: number
+          _email: string
+          _items: Json
+          _name: string
+          _promotion_description: string
+          _store_id: string
+          _subtotal: number
+          _total: number
+          _whatsapp: string
+        }
+        Returns: {
+          customer_id: string
+          order_id: string
+          order_number: number
+        }[]
+      }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
@@ -1291,6 +1427,12 @@ export type Database = {
       app_role: "platform_admin" | "user"
       combo_kind: "fixed_total" | "percent" | "free_n"
       coupon_type: "fixed" | "percent"
+      order_status:
+        | "aguardando"
+        | "confirmado"
+        | "enviado"
+        | "entregue"
+        | "cancelado"
       product_tag: "destaques" | "lancamentos" | "ofertas" | "principal"
       promo_scope: "all" | "category" | "subcategory" | "tag" | "products"
       review_status: "pending" | "approved" | "rejected"
@@ -1434,6 +1576,13 @@ export const Constants = {
       app_role: ["platform_admin", "user"],
       combo_kind: ["fixed_total", "percent", "free_n"],
       coupon_type: ["fixed", "percent"],
+      order_status: [
+        "aguardando",
+        "confirmado",
+        "enviado",
+        "entregue",
+        "cancelado",
+      ],
       product_tag: ["destaques", "lancamentos", "ofertas", "principal"],
       promo_scope: ["all", "category", "subcategory", "tag", "products"],
       review_status: ["pending", "approved", "rejected"],
