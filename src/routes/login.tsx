@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,12 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (redirect && (redirect.startsWith("/superadmin") || redirect.startsWith("/admin"))) {
+      toast.info("Faça login para acessar o painel");
+    }
+  }, [redirect]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
