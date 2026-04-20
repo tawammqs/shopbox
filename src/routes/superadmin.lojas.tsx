@@ -94,9 +94,23 @@ function daysUntil(iso: string | null): number | null {
 }
 
 function SuperadminLojasPage() {
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [planFilter, setPlanFilter] = useState<string>("all");
+
+  const toggleActive = useMutation({
+    mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
+      const { error } = await supabase.from("stores").update({ active }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      toast.success(vars.active ? "Loja reativada" : "Loja suspensa");
+      qc.invalidateQueries({ queryKey: ["sa-stores"] });
+      qc.invalidateQueries({ queryKey: ["sa-clients"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const storesQ = useQuery({
     queryKey: ["sa-stores"],
