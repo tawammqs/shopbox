@@ -219,7 +219,7 @@ function SignupPage() {
         customerEmail: accountData.email,
         userId,
         trialPeriodDays: 7,
-        returnUrl: `${window.location.origin}/admin/dashboard?checkout=success`,
+        returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
       });
       setClientSecret(secret);
     } catch (err) {
