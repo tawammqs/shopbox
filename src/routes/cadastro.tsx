@@ -412,10 +412,51 @@ function SignupPage() {
               </p>
             </div>
 
+            {/* Billing toggle */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <span
+                className={`text-sm font-medium transition ${
+                  !isYearly ? "text-[#111827]" : "text-[#9ca3af]"
+                }`}
+              >
+                Mensal
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isYearly}
+                aria-label="Alternar entre cobrança mensal e anual"
+                onClick={() => setBillingCycle(isYearly ? "monthly" : "yearly")}
+                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+                  isYearly ? "bg-[#25D366]" : "bg-[#e5e7eb]"
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                    isYearly ? "translate-x-[22px]" : "translate-x-0.5"
+                  }`}
+                />
+              </button>
+              <span
+                className={`text-sm font-medium transition ${
+                  isYearly ? "text-[#111827]" : "text-[#9ca3af]"
+                }`}
+              >
+                Anual
+              </span>
+              <span className="rounded-full bg-[#f0fdf4] px-2.5 py-1 text-[11px] font-semibold text-[#27500A]">
+                2 meses grátis
+              </span>
+            </div>
+
             <div className="grid gap-4 md:grid-cols-3">
               {plans?.map((plan) => {
                 const selected = selectedPlanId === plan.id;
                 const isPopular = plan.slug === "profissional";
+                const yearlyMonthly = YEARLY_MONTHLY_CENTS[plan.slug] ?? plan.price_cents;
+                const yearlyTotal = YEARLY_TOTAL_CENTS[plan.slug] ?? plan.price_cents * 12;
+                const yearlySavings = YEARLY_SAVINGS_CENTS[plan.slug] ?? 0;
+                const displayCents = isYearly ? yearlyMonthly : plan.price_cents;
                 return (
                   <button
                     key={plan.id}
@@ -443,10 +484,15 @@ function SignupPage() {
                     <p className="mt-1 text-xs text-[#6b7280]">{PLAN_TAGLINES[plan.slug]}</p>
                     <div className="mt-4">
                       <span className="text-3xl font-extrabold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
-                        R${(plan.price_cents / 100).toFixed(0)}
+                        R${(displayCents / 100).toFixed(0)}
                       </span>
                       <span className="text-sm text-[#6b7280]">/mês</span>
                     </div>
+                    {isYearly && (
+                      <div className="mt-1 text-[11px] font-medium text-[#3B6D11]">
+                        R${(yearlyTotal / 100).toFixed(0)}/ano · economize R${(yearlySavings / 100).toFixed(0)}
+                      </div>
+                    )}
                     <ul className="mt-4 flex-1 space-y-2 text-xs text-[#374151]">
                       {plan.features.slice(0, 5).map((f, i) => (
                         <li key={i} className="flex gap-1.5">
