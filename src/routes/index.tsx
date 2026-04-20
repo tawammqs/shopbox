@@ -193,7 +193,18 @@ const STYLES = `
 .pdark .p-feats li{font-size:13px;color:var(--text);display:flex;align-items:center;gap:9px}
 .pdark .p-check{width:16px;height:16px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pdark .p-check svg{width:9px;height:9px;stroke:var(--g);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.pdark .p-note{text-align:center;font-size:12px;color:var(--muted2);margin-top:24px;font-family:var(--mono)}
+.pdark .p-note{text-align:center;font-size:12px;color:var(--muted2);margin-top:24px;font-family:var(--mono);transition:opacity .2s}
+.pdark .billing-toggle{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:40px}
+.pdark .billing-label{font-size:14px;font-weight:500;color:var(--muted);transition:color .2s}
+.pdark .billing-label.active{color:var(--text)}
+.pdark .billing-switch{position:relative;display:inline-flex;height:28px;width:50px;align-items:center;border-radius:999px;background:#e5e7eb;cursor:pointer;border:none;transition:background .2s;padding:0;flex-shrink:0}
+.pdark .billing-switch.on{background:#25D366}
+.pdark .billing-switch:focus-visible{outline:2px solid #25D366;outline-offset:2px}
+.pdark .billing-thumb{display:inline-block;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transform:translateX(4px);transition:transform .2s}
+.pdark .billing-switch.on .billing-thumb{transform:translateX(26px)}
+.pdark .billing-badge{display:inline-flex;align-items:center;background:#f0fdf4;color:#27500A;font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px}
+.pdark .p-savings{overflow:hidden;max-height:0;opacity:0;transition:max-height .25s ease,opacity .2s ease,margin .2s ease;font-size:12px;font-weight:500;color:#3B6D11;font-family:var(--mono)}
+.pdark .p-savings.show{max-height:32px;opacity:1;margin-top:6px;margin-bottom:6px}
 
 .pdark .faq-bg{background:var(--dark2)}
 .pdark .faq-inner{max-width:720px;margin:0 auto;margin-top:56px}
@@ -275,6 +286,8 @@ const FAQS = [
 
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const isYearly = billing === "yearly";
 
   return (
     <div className="pdark">
@@ -516,12 +529,31 @@ function LandingPage() {
             <h2 className="stitle">Sem surpresas, sem letras miúdas</h2>
             <p className="ssub" style={{ margin: "0 auto", textAlign: "center" }}>7 dias grátis em todos os planos. Sem cartão de crédito.</p>
           </div>
-          <div className="pricing-grid">
-            <PricingCard label="Inicial" price="47" desc="Para quem está começando a vender online." feats={["Até 50 produtos","Checkout pelo WhatsApp","1 usuário","Relatórios básicos","Suporte por email"]} cta="outline" />
-            <PricingCard label="Profissional" price="97" desc="Para lojas em crescimento que querem vender mais." feats={["Produtos ilimitados","Checkout + catálogo automático","3 usuários","Cupons e promoções","Domínio personalizado","Suporte prioritário"]} cta="g" pop />
-            <PricingCard label="Premium" price="197" desc="Para negócios que precisam de escala e controle total." feats={["Tudo do Profissional","Usuários ilimitados","API de integração","Relatórios avançados","Gerente de conta dedicado","SLA garantido"]} cta="outline" />
+          <div className="billing-toggle">
+            <span className={`billing-label ${!isYearly ? "active" : ""}`}>Mensal</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isYearly}
+              aria-label="Alternar entre cobrança mensal e anual"
+              onClick={() => setBilling(isYearly ? "monthly" : "yearly")}
+              className={`billing-switch ${isYearly ? "on" : ""}`}
+            >
+              <span className="billing-thumb" />
+            </button>
+            <span className={`billing-label ${isYearly ? "active" : ""}`}>Anual</span>
+            <span className="billing-badge">2 meses grátis</span>
           </div>
-          <p className="p-note">7 dias grátis em todos os planos · sem cartão de crédito · cancele quando quiser</p>
+          <div className="pricing-grid">
+            <PricingCard slug="inicial" label="Inicial" price="47" yearlyMonthly="38" yearlyTotal="456" savings="108" isYearly={isYearly} desc="Para quem está começando a vender online." feats={["Até 50 produtos","Checkout pelo WhatsApp","1 usuário","Relatórios básicos","Suporte por email"]} cta="outline" />
+            <PricingCard slug="profissional" label="Profissional" price="97" yearlyMonthly="78" yearlyTotal="936" savings="228" isYearly={isYearly} desc="Para lojas em crescimento que querem vender mais." feats={["Produtos ilimitados","Checkout + catálogo automático","3 usuários","Cupons e promoções","Domínio personalizado","Suporte prioritário"]} cta="g" pop />
+            <PricingCard slug="premium" label="Premium" price="197" yearlyMonthly="158" yearlyTotal="1.896" savings="468" isYearly={isYearly} desc="Para negócios que precisam de escala e controle total." feats={["Tudo do Profissional","Usuários ilimitados","API de integração","Relatórios avançados","Gerente de conta dedicado","SLA garantido"]} cta="outline" />
+          </div>
+          <p className="p-note">
+            {isYearly
+              ? "Cobrança anual antecipada · sem cartão de crédito · reembolso em até 7 dias"
+              : "7 dias grátis em todos os planos · sem cartão de crédito · cancele quando quiser"}
+          </p>
         </div>
       </div>
 
@@ -596,21 +628,57 @@ function LandingPage() {
   );
 }
 
-function PricingCard({ label, price, desc, feats, cta, pop }: { label: string; price: string; desc: string; feats: string[]; cta: "g" | "outline"; pop?: boolean }) {
+function PricingCard({
+  slug, label, price, desc, feats, cta, pop,
+  isYearly = false, yearlyMonthly, yearlyTotal, savings,
+}: {
+  slug: "inicial" | "profissional" | "premium";
+  label: string;
+  price: string;
+  desc: string;
+  feats: string[];
+  cta: "g" | "outline";
+  pop?: boolean;
+  isYearly?: boolean;
+  yearlyMonthly?: string;
+  yearlyTotal?: string;
+  savings?: string;
+}) {
+  const displayPrice = isYearly && yearlyMonthly ? yearlyMonthly : price;
+  const useConsultor = isYearly && slug === "premium";
+  const ctaLabel = useConsultor ? "Falar com consultor" : "Testar grátis por 7 dias";
+  const btnClass = cta === "g" ? "btn-g" : "btn-outline";
+  const btnStyle = { textAlign: "center" as const, display: "block", width: "100%", padding: "12px", borderRadius: 999 };
+
   return (
     <div className={`p-card ${pop ? "pop" : ""}`}>
       {pop && <div className="pop-badge">Mais Popular</div>}
       <div className="p-label">{label}</div>
-      <div className="p-price"><sup>R$</sup>{price}<sub>/mês</sub></div>
+      <div className="p-price"><sup>R$</sup>{displayPrice}<sub>/mês</sub></div>
+      <div className={`p-savings ${isYearly && yearlyTotal ? "show" : ""}`} aria-hidden={!isYearly}>
+        R${yearlyTotal}/ano · economize R${savings}
+      </div>
       <p className="p-desc">{desc}</p>
       <ul className="p-feats">
         {feats.map((f) => (
           <li key={f}><span className="p-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></span>{f}</li>
         ))}
       </ul>
-      <Link to="/cadastro" className={cta === "g" ? "btn-g" : "btn-outline"} style={{ textAlign: "center", display: "block", width: "100%", padding: "12px", borderRadius: 999 }}>
-        Testar grátis por 7 dias
-      </Link>
+      {useConsultor ? (
+        <a
+          href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20sobre%20o%20plano%20Premium%20anual."
+          target="_blank"
+          rel="noopener noreferrer"
+          className={btnClass}
+          style={btnStyle}
+        >
+          {ctaLabel}
+        </a>
+      ) : (
+        <Link to="/cadastro" className={btnClass} style={btnStyle}>
+          {ctaLabel}
+        </Link>
+      )}
     </div>
   );
 }
