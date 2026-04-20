@@ -65,6 +65,22 @@ export function OrderDetailDrawer({
   }, [open]);
 
   const [busy, setBusy] = useState(false);
+  const [history, setHistory] = useState<{ status: OrderStatus; changed_at: string }[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  useEffect(() => {
+    if (!order) { setHistory([]); return; }
+    setHistoryLoading(true);
+    supabase
+      .from("order_status_history")
+      .select("status, changed_at")
+      .eq("order_id", order.id)
+      .order("changed_at", { ascending: true })
+      .then(({ data }) => {
+        setHistory((data ?? []) as { status: OrderStatus; changed_at: string }[]);
+        setHistoryLoading(false);
+      });
+  }, [order?.id]);
 
   if (!order) return null;
 
@@ -84,6 +100,7 @@ export function OrderDetailDrawer({
       toast.error("Erro ao atualizar status");
     } else {
       toast.success(`Status atualizado para ${STATUS_META[status].label}`);
+      setHistory((h) => [...h, { status, changed_at: new Date().toISOString() }]);
       onChanged?.(status);
     }
   };
