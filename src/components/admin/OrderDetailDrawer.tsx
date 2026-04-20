@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, MessageCircle, Loader2, Tag, Truck } from "lucide-react";
+import { X, MessageCircle, Loader2, Tag, Truck, Clock, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,6 +65,22 @@ export function OrderDetailDrawer({
   }, [open]);
 
   const [busy, setBusy] = useState(false);
+  const [history, setHistory] = useState<{ status: OrderStatus; changed_at: string }[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  useEffect(() => {
+    if (!order) { setHistory([]); return; }
+    setHistoryLoading(true);
+    supabase
+      .from("order_status_history")
+      .select("status, changed_at")
+      .eq("order_id", order.id)
+      .order("changed_at", { ascending: true })
+      .then(({ data }) => {
+        setHistory((data ?? []) as { status: OrderStatus; changed_at: string }[]);
+        setHistoryLoading(false);
+      });
+  }, [order?.id]);
 
   if (!order) return null;
 
@@ -84,6 +100,7 @@ export function OrderDetailDrawer({
       toast.error("Erro ao atualizar status");
     } else {
       toast.success(`Status atualizado para ${STATUS_META[status].label}`);
+      setHistory((h) => [...h, { status, changed_at: new Date().toISOString() }]);
       onChanged?.(status);
     }
   };
@@ -182,6 +199,45 @@ export function OrderDetailDrawer({
                   </li>
                 ))}
               </ul>
+            )}
+          </section>
+
+          {/* Status Timeline */}
+          <section className="border-b border-border p-5">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Histórico de status
+            </h3>
+            {historyLoading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando...
+              </div>
+            ) : history.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Sem histórico.</p>
+            ) : (
+              <ol className="relative ml-1 space-y-3 border-l border-border pl-5">
+                {history.map((h, idx) => {
+                  const isLast = idx === history.length - 1;
+                  const meta = STATUS_META[h.status];
+                  return (
+                    <li key={idx} className="relative">
+                      <span
+                        className={cn(
+                          "absolute -left-[26px] flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-background",
+                          isLast ? "bg-accent" : "bg-muted-foreground/40",
+                        )}
+                      >
+                        {isLast ? <Check className="h-2.5 w-2.5 text-accent-foreground" /> : <Clock className="h-2.5 w-2.5 text-background" />}
+                      </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={cn("inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium", meta.className)}>
+                          {meta.label}
+                        </span>
+                        <span className="text-xs text-muted-foreground">{fmtDate(h.changed_at)}</span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
             )}
           </section>
 
