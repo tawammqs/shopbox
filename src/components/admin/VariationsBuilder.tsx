@@ -29,7 +29,7 @@ type PropertyKind = "size" | "color" | "material" | "custom";
 const SIZE_PRESETS: Record<string, string[]> = {
   Adultos: ["PP", "P", "M", "G", "GG", "XG", "XXG"],
   Crianças: ["2", "4", "6", "8", "10", "12", "14"],
-  Calçados: ["34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44"],
+  Calçados: Array.from({ length: 43 - 13 + 1 }, (_, i) => String(13 + i)),
 };
 
 const COLOR_PRESETS: { name: string; hex: string }[] = [
