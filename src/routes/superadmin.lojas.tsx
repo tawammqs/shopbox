@@ -102,6 +102,7 @@ function SuperadminLojasPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [planFilter, setPlanFilter] = useState<string>("all");
+  const [openingPortal, setOpeningPortal] = useState<string | null>(null);
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
@@ -115,6 +116,27 @@ function SuperadminLojasPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  async function openCustomerPortal(storeId: string) {
+    setOpeningPortal(storeId);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-create-portal-session", {
+        body: {
+          storeId,
+          environment: getStripeEnvironment(),
+          returnUrl: `${window.location.origin}/superadmin/lojas`,
+        },
+      });
+      if (error || !data?.url) {
+        throw new Error(error?.message || data?.error || "Não foi possível abrir o portal");
+      }
+      window.open(data.url, "_blank");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setOpeningPortal(null);
+    }
+  }
 
   const storesQ = useQuery({
     queryKey: ["sa-stores"],
