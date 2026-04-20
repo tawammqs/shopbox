@@ -214,6 +214,14 @@ function SuperadminLojasPage() {
     });
   }, [stores]);
 
+  // Lojas que precisam de atenção: churn (canceled/unpaid) e past_due
+  const alerts = useMemo(() => {
+    const churned = stores.filter(
+      (s) => s.subscription_status === "canceled" || s.subscription_status === "unpaid",
+    );
+    const pastDue = stores.filter((s) => s.subscription_status === "past_due");
+    return { churned, pastDue };
+  }, [stores]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
