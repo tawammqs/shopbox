@@ -245,6 +245,51 @@ function SuperadminLojasPage() {
         />
       </div>
 
+      {/* Gráfico MRR últimos 6 meses */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Evolução do MRR (últimos 6 meses)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={mrrHistory} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="mrrGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickFormatter={(v: number) => formatBRL(v)}
+                  width={80}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                  }}
+                  formatter={(v: number) => [formatBRL(v), "MRR"]}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="mrr"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                  fill="url(#mrrGradient)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Filtros */}
       <Card>
         <CardHeader>
