@@ -93,11 +93,18 @@ function ProductFormPage() {
       setActive(p.active); setLowStock(String(p.low_stock_threshold ?? 5));
       setMetaTitle(p.meta_title ?? ""); setMetaDesc(p.meta_description ?? "");
       setImages((p.product_images ?? []).sort((a: any, b: any) => a.position - b.position).map((i: any) => ({ url: i.url, position: i.position })));
-      setColors((p.product_colors ?? []).sort((a: any, b: any) => a.position - b.position));
-      setSizes((p.product_sizes ?? []).sort((a: any, b: any) => a.position - b.position));
+      const sortedColors = (p.product_colors ?? []).sort((a: any, b: any) => a.position - b.position);
+      const sortedSizes = (p.product_sizes ?? []).sort((a: any, b: any) => a.position - b.position);
+      setColors(sortedColors);
+      setSizes(sortedSizes);
+      // Map stock by color_id/size_id → key by color.name/size.label so it survives variation re-syncs on save.
+      const colorNameById = new Map<string, string>(sortedColors.map((c: any) => [c.id, c.name]));
+      const sizeLabelById = new Map<string, string>(sortedSizes.map((s: any) => [s.id, s.label]));
       const sm: Record<string, number> = {};
       (p.product_stock ?? []).forEach((s: any) => {
-        sm[`${s.color_id ?? "_"}|${s.size_id ?? "_"}`] = s.quantity;
+        const ck = s.color_id ? colorNameById.get(s.color_id) ?? "_" : "_";
+        const sk = s.size_id ? sizeLabelById.get(s.size_id) ?? "_" : "_";
+        sm[`${ck}|${sk}`] = s.quantity;
       });
       setStock(sm);
       setVideos((p.product_video_testimonials ?? []).sort((a: any, b: any) => a.position - b.position).map((v: any) => ({
