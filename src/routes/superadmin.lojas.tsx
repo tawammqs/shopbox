@@ -425,14 +425,35 @@ function SuperadminLojasPage() {
                           {formatDate(s.created_at)}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Link
-                            to="/loja/$slug"
-                            params={{ slug: s.slug }}
-                            target="_blank"
-                            className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                          >
-                            Visitar <ExternalLink className="h-3 w-3" />
-                          </Link>
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant={s.active ? "outline" : "default"}
+                              onClick={() =>
+                                toggleActive.mutate({ id: s.id, active: !s.active })
+                              }
+                              disabled={toggleActive.isPending}
+                              className="h-7 text-xs"
+                            >
+                              {s.active ? (
+                                <>
+                                  <PowerOff className="mr-1 h-3 w-3" /> Suspender
+                                </>
+                              ) : (
+                                <>
+                                  <Power className="mr-1 h-3 w-3" /> Reativar
+                                </>
+                              )}
+                            </Button>
+                            <Link
+                              to="/loja/$slug"
+                              params={{ slug: s.slug }}
+                              target="_blank"
+                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                            >
+                              Visitar <ExternalLink className="h-3 w-3" />
+                            </Link>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
