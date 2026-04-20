@@ -39,6 +39,9 @@ const accountSchema = z
     confirm: z.string().min(8, "Confirme a senha"),
     storeName: z.string().trim().min(2, "Nome da loja obrigatório").max(60),
     segment: z.string().min(1, "Escolha um segmento"),
+    acceptTerms: z.literal(true, {
+      errorMap: () => ({ message: "Você precisa aceitar os Termos e a Política de Privacidade" }),
+    }),
   })
   .refine((d) => d.password === d.confirm, {
     path: ["confirm"],
@@ -113,6 +116,7 @@ function SignupPage() {
     defaultValues: {
       name: "", email: "", password: "", confirm: "",
       storeName: "", segment: "",
+      acceptTerms: false as unknown as true,
     },
     mode: "onChange",
   });
@@ -387,6 +391,47 @@ function SignupPage() {
                   <p className="text-xs text-red-600">{form.formState.errors.segment.message}</p>
                 )}
               </div>
+            </div>
+
+            <div className="border-t border-[#e5e7eb] pt-5">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!form.watch("acceptTerms")}
+                  onChange={(e) =>
+                    form.setValue("acceptTerms", e.target.checked as unknown as true, {
+                      shouldValidate: true,
+                    })
+                  }
+                  className="mt-0.5 h-4 w-4 rounded border-[#d1d5db] text-[#00b7a8] focus:ring-[#00b7a8] cursor-pointer"
+                />
+                <span className="text-sm text-[#374151] leading-relaxed">
+                  Li e aceito os{" "}
+                  <a
+                    href="/termos"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[#00b7a8] underline hover:text-[#009b8e]"
+                  >
+                    Termos de Uso
+                  </a>{" "}
+                  e a{" "}
+                  <a
+                    href="/privacidade"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[#00b7a8] underline hover:text-[#009b8e]"
+                  >
+                    Política de Privacidade
+                  </a>
+                  .
+                </span>
+              </label>
+              {form.formState.errors.acceptTerms && (
+                <p className="mt-2 text-xs text-red-600">
+                  {form.formState.errors.acceptTerms.message as string}
+                </p>
+              )}
             </div>
 
             <Button
