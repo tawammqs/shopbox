@@ -161,6 +161,34 @@ function SuperadminLojasPage() {
     return Array.from(set.entries());
   }, [stores]);
 
+  // Histórico de MRR dos últimos 6 meses (estimado a partir da data de criação das lojas pagantes)
+  const mrrHistory = useMemo(() => {
+    const months: { label: string; date: Date }[] = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        label: d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+        date: d,
+      });
+    }
+    return months.map(({ label, date }) => {
+      // No fim do mês de referência
+      const refEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+      const cents = stores
+        .filter((s) => {
+          const created = new Date(s.created_at);
+          if (created > refEnd) return false;
+          // Considerar pagantes naquele momento (aproximação: estado atual aplicado retroativo
+          // se já havia sido criada antes do mês de referência)
+          return s.subscription_status === "active" || s.subscription_status === "past_due";
+        })
+        .reduce((sum, s) => sum + (s.plans?.price_cents ?? 0), 0);
+      return { month: label, mrr: cents / 100 };
+    });
+  }, [stores]);
+
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return stores.filter((s) => {
