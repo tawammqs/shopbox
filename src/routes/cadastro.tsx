@@ -53,13 +53,37 @@ type Plan = {
   name: string;
   price_cents: number;
   stripe_price_id: string | null;
+  stripe_price_id_yearly: string | null;
   features: string[];
 };
+
+type BillingCycle = "monthly" | "yearly";
 
 const PLAN_TAGLINES: Record<string, string> = {
   inicial: "Para quem está começando",
   profissional: "Para quem quer vender mais",
   premium: "Para uma loja completa e profissional",
+};
+
+// Preço mensal equivalente quando pago no plano anual (em centavos)
+const YEARLY_MONTHLY_CENTS: Record<string, number> = {
+  inicial: 3800,
+  profissional: 7800,
+  premium: 15800,
+};
+
+// Total cobrado por ano (em centavos)
+const YEARLY_TOTAL_CENTS: Record<string, number> = {
+  inicial: 45600,
+  profissional: 93600,
+  premium: 189600,
+};
+
+// Economia anual (em centavos)
+const YEARLY_SAVINGS_CENTS: Record<string, number> = {
+  inicial: 10800,
+  profissional: 22800,
+  premium: 46800,
 };
 
 function slugify(s: string): string {
@@ -79,6 +103,7 @@ function SignupPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [accountData, setAccountData] = useState<AccountForm | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [storeSlug, setStoreSlug] = useState("");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -97,7 +122,7 @@ function SignupPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("plans")
-        .select("id, slug, name, price_cents, stripe_price_id, features")
+        .select("id, slug, name, price_cents, stripe_price_id, stripe_price_id_yearly, features")
         .eq("active", true)
         .in("slug", ["inicial", "profissional", "premium"])
         .order("display_order");
@@ -107,6 +132,7 @@ function SignupPage() {
   });
 
   const selectedPlan = plans?.find((p) => p.id === selectedPlanId) ?? null;
+  const isYearly = billingCycle === "yearly";
 
   async function onAccountSubmit(values: AccountForm) {
     setSubmitting(true);
@@ -131,8 +157,11 @@ function SignupPage() {
 
   async function handleCreateStore() {
     if (!accountData || !selectedPlan) return;
-    if (!selectedPlan.stripe_price_id) {
-      toast.error("Plano sem preço configurado. Tente outro.");
+    const priceId = isYearly
+      ? selectedPlan.stripe_price_id_yearly
+      : selectedPlan.stripe_price_id;
+    if (!priceId) {
+      toast.error("Plano sem preço configurado para esse ciclo. Tente outro.");
       return;
     }
     setSubmitting(true);
@@ -186,7 +215,7 @@ function SignupPage() {
 
       // 4) Create checkout session with 7-day trial
       const secret = await createCheckoutSession({
-        priceId: selectedPlan.stripe_price_id,
+        priceId,
         customerEmail: accountData.email,
         userId,
         trialPeriodDays: 7,
@@ -383,10 +412,51 @@ function SignupPage() {
               </p>
             </div>
 
+            {/* Billing toggle */}
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <span
+                className={`text-sm font-medium transition ${
+                  !isYearly ? "text-[#111827]" : "text-[#9ca3af]"
+                }`}
+              >
+                Mensal
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isYearly}
+                aria-label="Alternar entre cobrança mensal e anual"
+                onClick={() => setBillingCycle(isYearly ? "monthly" : "yearly")}
+                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+                  isYearly ? "bg-[#25D366]" : "bg-[#e5e7eb]"
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                    isYearly ? "translate-x-[22px]" : "translate-x-0.5"
+                  }`}
+                />
+              </button>
+              <span
+                className={`text-sm font-medium transition ${
+                  isYearly ? "text-[#111827]" : "text-[#9ca3af]"
+                }`}
+              >
+                Anual
+              </span>
+              <span className="rounded-full bg-[#f0fdf4] px-2.5 py-1 text-[11px] font-semibold text-[#27500A]">
+                2 meses grátis
+              </span>
+            </div>
+
             <div className="grid gap-4 md:grid-cols-3">
               {plans?.map((plan) => {
                 const selected = selectedPlanId === plan.id;
                 const isPopular = plan.slug === "profissional";
+                const yearlyMonthly = YEARLY_MONTHLY_CENTS[plan.slug] ?? plan.price_cents;
+                const yearlyTotal = YEARLY_TOTAL_CENTS[plan.slug] ?? plan.price_cents * 12;
+                const yearlySavings = YEARLY_SAVINGS_CENTS[plan.slug] ?? 0;
+                const displayCents = isYearly ? yearlyMonthly : plan.price_cents;
                 return (
                   <button
                     key={plan.id}
@@ -414,10 +484,15 @@ function SignupPage() {
                     <p className="mt-1 text-xs text-[#6b7280]">{PLAN_TAGLINES[plan.slug]}</p>
                     <div className="mt-4">
                       <span className="text-3xl font-extrabold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
-                        R${(plan.price_cents / 100).toFixed(0)}
+                        R${(displayCents / 100).toFixed(0)}
                       </span>
                       <span className="text-sm text-[#6b7280]">/mês</span>
                     </div>
+                    {isYearly && (
+                      <div className="mt-1 text-[11px] font-medium text-[#3B6D11]">
+                        R${(yearlyTotal / 100).toFixed(0)}/ano · economize R${(yearlySavings / 100).toFixed(0)}
+                      </div>
+                    )}
                     <ul className="mt-4 flex-1 space-y-2 text-xs text-[#374151]">
                       {plan.features.slice(0, 5).map((f, i) => (
                         <li key={i} className="flex gap-1.5">
@@ -471,12 +546,23 @@ function SignupPage() {
                     {selectedPlan.name}
                   </div>
                   <div className="text-sm text-[#6b7280]">{PLAN_TAGLINES[selectedPlan.slug]}</div>
+                  <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[11px] font-semibold text-[#374151]">
+                    Cobrança {isYearly ? "anual" : "mensal"}
+                    {isYearly && (
+                      <span className="text-[#27500A]">· 2 meses grátis</span>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-extrabold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
-                    R${(selectedPlan.price_cents / 100).toFixed(0)}
+                    R${(((isYearly ? YEARLY_MONTHLY_CENTS[selectedPlan.slug] : selectedPlan.price_cents) ?? selectedPlan.price_cents) / 100).toFixed(0)}
                   </div>
                   <div className="text-xs text-[#6b7280]">/mês · 7 dias grátis</div>
+                  {isYearly && (
+                    <div className="mt-1 text-[11px] font-medium text-[#3B6D11]">
+                      R${((YEARLY_TOTAL_CENTS[selectedPlan.slug] ?? 0) / 100).toFixed(0)} cobrados anualmente
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="mt-4 border-t border-[#e5e7eb] pt-4 text-sm text-[#6b7280]">
