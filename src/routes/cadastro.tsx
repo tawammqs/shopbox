@@ -215,7 +215,7 @@ function SignupPage() {
 
       // 4) Create checkout session with 7-day trial
       const secret = await createCheckoutSession({
-        priceId: selectedPlan.stripe_price_id,
+        priceId,
         customerEmail: accountData.email,
         userId,
         trialPeriodDays: 7,
