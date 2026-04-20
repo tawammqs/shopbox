@@ -1,0 +1,186 @@
+import { useState } from "react";
+import { z } from "zod";
+import { Loader2, X, MessageCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useCart, type CartItem, type AppliedCoupon } from "@/stores/cart";
+import { useStorefront } from "./StoreContext";
+import { openWhatsAppCheckout } from "@/lib/whatsapp";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+const schema = z.object({
+  name: z.string().trim().min(2, "Informe seu nome").max(100),
+  whatsapp: z.string().trim().min(8, "WhatsApp inválido").max(20),
+  email: z.string().trim().email("Email inválido").max(255).optional().or(z.literal("")),
+  cpf: z.string().trim().max(20).optional().or(z.literal("")),
+  cep: z.string().trim().max(12).optional().or(z.literal("")),
+  address: z.string().trim().max(255).optional().or(z.literal("")),
+  city_state: z.string().trim().max(120).optional().or(z.literal("")),
+});
+
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  items: CartItem[];
+  subtotal: number;
+  coupon: AppliedCoupon;
+  total: number;
+};
+
+const onlyDigits = (s: string) => s.replace(/\D/g, "");
+
+export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, total }: Props) {
+  const { store } = useStorefront();
+  const clearCart = useCart((s) => s.clear);
+
+  const [form, setForm] = useState({
+    name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false);
+
+  if (!open) return null;
+
+  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = schema.safeParse(form);
+    if (!parsed.success) {
+      const errs: Record<string, string> = {};
+      parsed.error.issues.forEach((i) => {
+        const k = i.path[0] as string;
+        if (k && !errs[k]) errs[k] = i.message;
+      });
+      setErrors(errs);
+      return;
+    }
+    setErrors({});
+    setBusy(true);
+    try {
+      const itemsSnapshot = items.map((i) => ({
+        product_id: i.productId,
+        slug: i.slug,
+        title: i.title,
+        image: i.image,
+        color: i.colorName,
+        size: i.sizeLabel,
+        quantity: i.quantity,
+        unit_price: i.unitPrice,
+        line_total: i.unitPrice * i.quantity,
+      }));
+
+      const { error } = await supabase.rpc("create_order_with_customer", {
+        _store_id: store.id,
+        _name: form.name.trim(),
+        _whatsapp: onlyDigits(form.whatsapp),
+        _email: form.email.trim() || null,
+        _cpf: form.cpf.trim() || null,
+        _cep: form.cep.trim() || null,
+        _address: form.address.trim() || null,
+        _city_state: form.city_state.trim() || null,
+        _items: itemsSnapshot as any,
+        _subtotal: subtotal,
+        _discount: coupon?.discount ?? 0,
+        _coupon_code: coupon?.code ?? null,
+        _promotion_description: null,
+        _total: total,
+      });
+
+      if (error) throw error;
+
+      // Open WhatsApp only after successful save
+      openWhatsAppCheckout(store.whatsapp, items, subtotal, coupon, total, store.whatsapp_greeting);
+      clearCart();
+      onClose();
+      toast.success("Pedido registrado! Continue no WhatsApp.");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Erro ao registrar pedido");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 sm:items-center"
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={cn(
+          "w-full max-w-lg bg-background shadow-2xl",
+          "rounded-t-2xl sm:rounded-2xl",
+          "max-h-[92vh] overflow-y-auto",
+        )}
+      >
+        <div className="sticky top-0 flex items-center justify-between border-b border-border bg-background px-5 py-4">
+          <div>
+            <h2 className="font-display text-lg font-semibold">Seus dados</h2>
+            <p className="text-xs text-muted-foreground">
+              Para finalizar pelo WhatsApp e a loja conseguir te atender melhor.
+            </p>
+          </div>
+          <button onClick={onClose} aria-label="Fechar" className="rounded-md p-2 hover:bg-muted">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-3 px-5 py-4">
+          <Field label="Nome completo *" error={errors.name}>
+            <Input value={form.name} onChange={update("name")} autoFocus required />
+          </Field>
+          <Field label="WhatsApp *" error={errors.whatsapp}>
+            <Input value={form.whatsapp} onChange={update("whatsapp")} placeholder="(11) 99999-9999" required />
+          </Field>
+          <Field label="Email" error={errors.email}>
+            <Input type="email" value={form.email} onChange={update("email")} />
+          </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="CPF" error={errors.cpf}>
+              <Input value={form.cpf} onChange={update("cpf")} />
+            </Field>
+            <Field label="CEP" error={errors.cep}>
+              <Input value={form.cep} onChange={update("cep")} />
+            </Field>
+          </div>
+          <Field label="Endereço" error={errors.address}>
+            <Input value={form.address} onChange={update("address")} placeholder="Rua, número, bairro" />
+          </Field>
+          <Field label="Cidade / Estado" error={errors.city_state}>
+            <Input value={form.city_state} onChange={update("city_state")} placeholder="São Paulo / SP" />
+          </Field>
+
+          <Button
+            type="submit"
+            disabled={busy}
+            className="mt-2 h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a]"
+          >
+            {busy ? (
+              <><Loader2 className="h-5 w-5 animate-spin" /> Enviando…</>
+            ) : (
+              <><MessageCircle className="h-5 w-5" /> Confirmar e falar no WhatsApp</>
+            )}
+          </Button>
+          <p className="text-center text-[11px] text-muted-foreground">
+            Seus dados ficam salvos só na loja, para o lojista te atender.
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs font-medium">{label}</Label>
+      {children}
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  );
+}
