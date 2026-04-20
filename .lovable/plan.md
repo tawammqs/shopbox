@@ -1,52 +1,74 @@
 
 
-## Aplicar toggle Mensal/Anual na seção #precos da landing page (home `/`)
+# Auditoria de prontidão comercial — ShopBox
 
-### O que está acontecendo
-As alterações anteriores foram feitas em `src/components/marketing/PricingCards.tsx`, que **só é usado na rota `/precos`**. A landing principal (`/`) tem sua própria seção de planos em `src/routes/index.tsx` (linhas 512-526) usando um componente interno `PricingCard` (tema dark `.pdark`) que **não foi tocado**.
+## Resposta direta
+**Sim — o sistema está tecnicamente pronto** para o cliente entrar, escolher um plano (mensal ou anual) e receber acesso. Mas existem **3 ajustes recomendados antes de divulgar publicamente** para evitar problemas com os primeiros clientes pagantes.
 
-### O que será feito (apenas em `src/routes/index.tsx`, seção `#precos`)
+---
 
-**1. Adicionar state de billing no componente da página**
-- `useState<"monthly" | "yearly">("monthly")` no topo do componente da home.
+## ✅ O que está funcionando ponta-a-ponta
 
-**2. Adicionar toggle visual acima do grid de planos**
-Posicionado entre o subtítulo e a `.pricing-grid` (após linha 518):
-- Label "Mensal" + switch + label "Anual" + badge **"2 meses grátis"**
-- Track verde `#25D366` quando ativo, cinza `#e5e7eb` quando inativo, thumb branco
-- Transição suave de 0.2s
-- Badge: fundo `#f0fdf4`, texto `#27500A`, formato pill arredondado
+| Etapa | Status | Detalhes |
+|---|---|---|
+| Cadastro em 3 passos | ✅ | `/cadastro` — Conta → Plano → Pagamento |
+| Toggle Mensal/Anual | ✅ | Funciona em `/`, `/precos` e `/cadastro` |
+| Planos no banco | ✅ | Inicial, Profissional e Premium ativos com `stripe_price_id` mensal e anual |
+| Stripe Checkout embedded | ✅ | Trial de 7 dias automático |
+| Stripe LIVE | ✅ | Conta verificada, app instalado, readiness check OK — pronto para receber dinheiro real |
+| Webhook | ✅ | `payments-webhook` ativa a loja (`active=true`, `subscription_status=trialing/active`) ao confirmar pagamento |
+| Realtime | ✅ | Painel detecta ativação automaticamente sem reload |
+| Bloqueio de acesso | ✅ | `SubscriptionGate` bloqueia painel se status for `incomplete/canceled/unpaid` |
+| Portal de cobrança | ✅ | Cliente troca cartão / cancela via Stripe Billing Portal |
 
-**3. Atualizar o componente interno `PricingCard`**
-- Receber novas props: `isYearly`, `yearlyMonthly`, `yearlyTotal`, `savings`, `slug`
-- Quando `isYearly=true`: exibir `yearlyMonthly` no preço grande e linha secundária `R$XXX/ano · economize R$XXX` em verde escuro `#3B6D11` 12px
-- Linha de economia com transição suave (max-height + opacity)
-- CTA condicional: para `slug="premium"` + `isYearly=true` → "Falar com consultor" linkando para WhatsApp; demais casos mantém "Testar grátis por 7 dias" linkando para `/cadastro`
+---
 
-**4. Valores anuais (em centavos como mensal equivalente)**
-| Plano | Mensal | Anual exibido | Total anual | Economia |
-|---|---|---|---|---|
-| Inicial | R$47 | R$38/mês | R$456/ano | R$108 |
-| Profissional | R$97 | R$78/mês | R$936/ano | R$228 |
-| Premium | R$197 | R$158/mês | R$1.896/ano | R$468 |
+## ⚠️ Ajustes recomendados antes de comercializar
 
-**5. Atualizar nota de rodapé `.p-note` (linha 524)**
-- Modo Mensal: `7 dias grátis em todos os planos · sem cartão de crédito · cancele quando quiser` (atual)
-- Modo Anual: `Cobrança anual antecipada · sem cartão de crédito · reembolso em até 7 dias`
+### 1. URL de retorno aponta para query inexistente após publish
+No `cadastro.tsx` (linha 222), o `returnUrl` vai para `/admin/dashboard?checkout=success`. Isso funciona, mas a **página `/checkout/return`** existe e está mais polida (com confirmação visual). Decidir se quer:
+- **(A) Manter atual** — redireciona direto pro painel com loader "Ativando sua loja…" (UX atual)
+- **(B) Usar `/checkout/return`** — mostra tela de sucesso + botão "Acessar painel"
 
-**6. Adicionar CSS no bloco `STYLES` (próximo à linha 196)**
-Novas classes seguindo o padrão `.pdark`:
-- `.pdark .billing-toggle` — wrapper flex centralizado
-- `.pdark .billing-switch` — track + thumb com transição
-- `.pdark .billing-badge` — pill verde claro
-- `.pdark .p-savings` — linha de economia verde escuro com transição
+### 2. Plano `basico` órfão no banco
+Existe um plano `basico` (R$49) **inativo** sem `stripe_price_id`. Não aparece para o cliente, mas polui consultas. Recomendo deletar ou deixar documentado.
 
-### O que NÃO será alterado
-- Header, hero, features, depoimentos, FAQ, footer da landing
-- Componente `PricingCards.tsx` (rota `/precos`) — já está correto
-- Nenhum outro arquivo do projeto
-- Cores, fontes e layout existentes da seção (apenas adições)
+### 3. Número de WhatsApp do botão "Falar com consultor" (Premium anual)
+Em `PricingCards.tsx` e na home, o link aponta para `5500000000000` (placeholder). Precisa do número real da ShopBox antes de divulgar.
 
-### Arquivo afetado
-- `src/routes/index.tsx` — adicionar state, toggle, CSS, atualizar `PricingCard` e a chamada dos 3 cards
+### 4. Validações finais não testadas em produção real
+Nunca foi rodado um cadastro completo em **modo LIVE** (com cartão real). O fluxo foi validado em sandbox. Recomendo um **teste end-to-end com cartão real próprio** após publicar — risco baixo mas é a única forma de garantir 100%.
+
+---
+
+## 📋 Checklist final antes de divulgar
+
+```text
+[ ] Atualizar WhatsApp do consultor (Premium anual) — 2 lugares
+[ ] Decidir entre /checkout/return ou /admin/dashboard como returnUrl
+[ ] (Opcional) Deletar plano "basico" órfão
+[ ] Publicar app (botão Publish)
+[ ] Fazer 1 cadastro real com cartão próprio em modo LIVE
+[ ] Cancelar essa assinatura teste no Stripe
+[ ] Pronto para divulgar 🚀
+```
+
+---
+
+## 🔮 Melhorias futuras (não-bloqueantes)
+
+- **Aceite de Termos/LGPD** no Step 1 do cadastro (checkbox obrigatório)
+- **Recuperação de carrinho abandonado** caso cliente feche o checkout antes de pagar (loja fica `incomplete` no banco)
+- **E-mail de boas-vindas** após ativação da assinatura
+- **Tela de upgrade/downgrade de ciclo** dentro de `/admin/plano` (hoje só dá para gerenciar via Stripe Portal)
+- **Métricas de conversão** no `/superadmin` (cadastros iniciados vs. pagamentos confirmados)
+
+---
+
+## Arquivos que seriam tocados se você aprovar os ajustes
+
+- `src/components/marketing/PricingCards.tsx` — número de WhatsApp
+- `src/routes/index.tsx` — número de WhatsApp do CTA do Premium anual
+- `src/routes/cadastro.tsx` — (opcional) trocar returnUrl
+- Migração SQL — (opcional) `DELETE FROM plans WHERE slug = 'basico'`
 
