@@ -39,7 +39,7 @@ const NAV = [
 function AdminLayout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const { data: store, isLoading: storeLoading, refetch } = useMyStore();
+  const { data: store, isLoading: storeLoading, error: storeError, refetch } = useMyStore();
   const location = useLocation();
 
   useEffect(() => {
@@ -54,8 +54,6 @@ function AdminLayout() {
   }, [location.pathname, navigate]);
 
   // Post-checkout flag drives the "Ativando sua loja…" screen below.
-  // Realtime subscription in useMyStore() invalidates the query as soon as
-  // the Stripe webhook updates the store row, so no polling is needed here.
   const isPostCheckout =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("checkout") === "success";
@@ -64,6 +62,27 @@ function AdminLayout() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <p className="text-sm text-muted-foreground">Carregando…</p>
+      </div>
+    );
+  }
+
+  if (storeError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4 py-10">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-sm">
+          <h1 className="font-display text-xl font-bold">Não foi possível carregar sua loja</h1>
+          <p className="mt-2 text-sm text-muted-foreground break-words">
+            {storeError.message ?? "Erro inesperado"}
+          </p>
+          <div className="mt-6 space-y-2">
+            <Button onClick={() => refetch()} className="w-full" size="lg">
+              Tentar novamente
+            </Button>
+            <Button variant="ghost" onClick={() => signOut()} className="w-full">
+              <LogOut className="mr-2 h-4 w-4" /> Sair
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
