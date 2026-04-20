@@ -1,42 +1,43 @@
 
 
-## Diagnóstico: deploy publicado está quebrado
+## Diagnóstico: erro ao acessar /superadmin
 
-### O que descobri
-1. **A loja existe e está OK no banco**: `loja-de-teste` (status `trialing`, `active=true`, plano Profissional vinculado).
-2. **A assinatura funcionou perfeitamente**: webhook ativou a loja, RLS está correto, dados estão íntegros.
-3. **O erro é no deploy publicado**, não no código:
-   - URL publicada (`https://shopbox.lovable.app/loja/loja-de-teste`) retorna SSR vazio: `<main></main>` sem header, sem nav, sem footer, **sem nenhuma tag `<script>`**.
-   - Logs do worker mostram 404 para os bundles JS:
-     ```
-     GET /assets/index-CXJO8uzO.js → 404
-     GET /assets/index-BLYZfPCT.js → 404
-     GET /assets/loja._slug.categoria.REDACTED.js → 404
-     ```
-   - O HTML servido está apontando para arquivos JS que não existem mais — provavelmente uma publicação anterior cuja CDN/cache ficou inconsistente após uma alteração em código.
+### Estado atual confirmado
+- Você (`tawam.mqs@outlook.com`) está marcado como `platform_admin` no banco ✅
+- As rotas `/superadmin`, `/superadmin/lojas`, `/superadmin/clientes` existem e estão no route tree ✅
+- Função RPC `admin_list_users` existe ✅
+- Servidor está respondendo (307 = redirect, normal pra usuário não logado) ✅
+- Os erros do dev-server log são de 15 minutos atrás (cache durante a deleção das rotas de tema), já resolvidos ✅
 
-### Por que aparece "Algo deu errado"
-Sem o bundle JS, o React não consegue hidratar. O `defaultErrorComponent` em `src/router.tsx` captura a falha e mostra "Algo deu errado / Tentar novamente / Ir para a loja" — exatamente o screenshot enviado.
+### Causas mais prováveis do erro que você está vendo
 
-### Plano de correção
+**1. Sessão antiga / cache do navegador (mais provável)**
+Você fez login antes de ser promovido a `platform_admin`. O JWT em cache não contém a info atualizada e o `beforeLoad` em `superadmin.tsx` faz redirect pra `/`.
 
-**1. Republicar o app** (ação principal)
-- Disparar uma nova publicação para regenerar os bundles JS e o HTML estático em sincronia.
-- Isso resolve o 404 dos `/assets/*.js` automaticamente.
+**2. Bundle desatualizado no preview/publicado**
+Mesmo problema do `loja-de-teste` que tivemos antes — os assets JS antigos não têm a rota `/superadmin`.
 
-**2. Validar o código antes da republicação** (defensivo)
-- Conferir rapidamente que `src/routes/loja.$slug.tsx` e os componentes de storefront não têm imports quebrados ou dependências faltando — se tudo já roda na preview (que está OK), só republicar resolve.
+**3. Erro de runtime na página (ex: edge function `admin-create-portal-session` falhando)**
+A query carrega mas algo dispara o `errorComponent`.
 
-**3. Testar pós-publicação**
-- Abrir `https://shopbox.lovable.app/loja/loja-de-teste` em aba anônima.
-- Verificar no devtools (Network) que os `/assets/*.js` retornam 200.
-- Confirmar que header, banners (vazios) e footer aparecem.
-- Hard refresh (Ctrl+Shift+R) para garantir que não é cache do browser.
+### O que preciso de você
+Me responde uma dessas pra eu agir certo:
 
-### Arquivos
-- Nenhuma alteração de código necessária — é problema de deploy.
-- Após aprovar, eu disparo a republicação.
+**Opção A — Tentar primeiro o mais simples (recomendado)**
+1. Fazer **logout** em `/admin/dashboard` (botão Sair)
+2. Login de novo em `/login` com `tawam.mqs@outlook.com`
+3. Acessar `/superadmin/lojas`
+4. Se ainda der erro, me manda **screenshot da tela** + **mensagem exata do erro** (ou abrir DevTools → Console → tirar print)
 
-### Nota sobre a preview
-Na preview (`/cadastro` que você está vendo agora) o app funciona porque o Vite serve os bundles do dev server em runtime. O erro só aparece para o público no domínio publicado.
+**Opção B — Quero que você investigue mais antes**
+Eu adiciono logs temporários no `beforeLoad` e nas queries pra cuspir no console o que está acontecendo, e te passo o passo-a-passo pra você reportar o output.
+
+**Opção C — É no domínio publicado (shopbox.lovable.app/superadmin)**
+Aí é só clicar em **Publish → Update** no canto superior direito, igual fizemos antes com `/loja/loja-de-teste`. Não preciso mexer em código.
+
+### O que NÃO vou fazer agora
+- Não vou alterar código sem saber qual o erro real (pode piorar)
+- Não vou refazer auth/role check (já está correto e funcionando no banco)
+
+Me confirma qual opção (A, B ou C) ou manda direto o screenshot do erro pra eu identificar.
 
