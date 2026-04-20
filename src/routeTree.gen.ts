@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SuperadminRouteImport } from './routes/superadmin'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as PreviewDarkRouteImport } from './routes/preview-dark'
@@ -20,9 +21,11 @@ import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TemasIndexRouteImport } from './routes/temas.index'
+import { Route as SuperadminIndexRouteImport } from './routes/superadmin.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TemasSlugRouteImport } from './routes/temas.$slug'
 import { Route as SuperadminTemasRouteImport } from './routes/superadmin.temas'
+import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cleanup-orphan-stores'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
@@ -42,6 +45,11 @@ import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id
 import { Route as LojaSlugProdutoProductSlugRouteImport } from './routes/loja.$slug.produto.$productSlug'
 import { Route as LojaSlugCategoriaCategorySlugRouteImport } from './routes/loja.$slug.categoria.$categorySlug'
 
+const SuperadminRoute = SuperadminRouteImport.update({
+  id: '/superadmin',
+  path: '/superadmin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -97,6 +105,11 @@ const TemasIndexRoute = TemasIndexRouteImport.update({
   path: '/temas/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuperadminIndexRoute = SuperadminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SuperadminRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -108,9 +121,14 @@ const TemasSlugRoute = TemasSlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuperadminTemasRoute = SuperadminTemasRouteImport.update({
-  id: '/superadmin/temas',
-  path: '/superadmin/temas',
-  getParentRoute: () => rootRouteImport,
+  id: '/temas',
+  path: '/temas',
+  getParentRoute: () => SuperadminRoute,
+} as any)
+const SuperadminLojasRoute = SuperadminLojasRouteImport.update({
+  id: '/lojas',
+  path: '/lojas',
+  getParentRoute: () => SuperadminRoute,
 } as any)
 const LojaSlugRoute = LojaSlugRouteImport.update({
   id: '/loja/$slug',
@@ -217,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/preview-dark': typeof PreviewDarkRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/superadmin': typeof SuperadminRouteWithChildren
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -228,9 +247,11 @@ export interface FileRoutesByFullPath {
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
@@ -260,9 +281,11 @@ export interface FileRoutesByTo {
   '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
+  '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/superadmin': typeof SuperadminIndexRoute
   '/temas': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
@@ -284,6 +307,7 @@ export interface FileRoutesById {
   '/preview-dark': typeof PreviewDarkRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/superadmin': typeof SuperadminRouteWithChildren
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -295,9 +319,11 @@ export interface FileRoutesById {
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
@@ -320,6 +346,7 @@ export interface FileRouteTypes {
     | '/preview-dark'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/superadmin'
     | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
@@ -331,9 +358,11 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
+    | '/superadmin/lojas'
     | '/superadmin/temas'
     | '/temas/$slug'
     | '/admin/'
+    | '/superadmin/'
     | '/temas/'
     | '/admin/produtos/$id'
     | '/loja/$slug/busca'
@@ -363,9 +392,11 @@ export interface FileRouteTypes {
     | '/admin/temas'
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
+    | '/superadmin/lojas'
     | '/superadmin/temas'
     | '/temas/$slug'
     | '/admin'
+    | '/superadmin'
     | '/temas'
     | '/admin/produtos/$id'
     | '/loja/$slug/busca'
@@ -386,6 +417,7 @@ export interface FileRouteTypes {
     | '/preview-dark'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/superadmin'
     | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
@@ -397,9 +429,11 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
+    | '/superadmin/lojas'
     | '/superadmin/temas'
     | '/temas/$slug'
     | '/admin/'
+    | '/superadmin/'
     | '/temas/'
     | '/admin/produtos/$id'
     | '/loja/$slug/busca'
@@ -421,16 +455,23 @@ export interface RootRouteChildren {
   PreviewDarkRoute: typeof PreviewDarkRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SuperadminRoute: typeof SuperadminRouteWithChildren
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
-  SuperadminTemasRoute: typeof SuperadminTemasRoute
   TemasSlugRoute: typeof TemasSlugRoute
   TemasIndexRoute: typeof TemasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/superadmin': {
+      id: '/superadmin'
+      path: '/superadmin'
+      fullPath: '/superadmin'
+      preLoaderRoute: typeof SuperadminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -508,6 +549,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TemasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/superadmin/': {
+      id: '/superadmin/'
+      path: '/'
+      fullPath: '/superadmin/'
+      preLoaderRoute: typeof SuperadminIndexRouteImport
+      parentRoute: typeof SuperadminRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -524,10 +572,17 @@ declare module '@tanstack/react-router' {
     }
     '/superadmin/temas': {
       id: '/superadmin/temas'
-      path: '/superadmin/temas'
+      path: '/temas'
       fullPath: '/superadmin/temas'
       preLoaderRoute: typeof SuperadminTemasRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SuperadminRoute
+    }
+    '/superadmin/lojas': {
+      id: '/superadmin/lojas'
+      path: '/lojas'
+      fullPath: '/superadmin/lojas'
+      preLoaderRoute: typeof SuperadminLojasRouteImport
+      parentRoute: typeof SuperadminRoute
     }
     '/loja/$slug': {
       id: '/loja/$slug'
@@ -688,6 +743,22 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface SuperadminRouteChildren {
+  SuperadminLojasRoute: typeof SuperadminLojasRoute
+  SuperadminTemasRoute: typeof SuperadminTemasRoute
+  SuperadminIndexRoute: typeof SuperadminIndexRoute
+}
+
+const SuperadminRouteChildren: SuperadminRouteChildren = {
+  SuperadminLojasRoute: SuperadminLojasRoute,
+  SuperadminTemasRoute: SuperadminTemasRoute,
+  SuperadminIndexRoute: SuperadminIndexRoute,
+}
+
+const SuperadminRouteWithChildren = SuperadminRoute._addFileChildren(
+  SuperadminRouteChildren,
+)
+
 interface LojaSlugRouteChildren {
   LojaSlugBuscaRoute: typeof LojaSlugBuscaRoute
   LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
@@ -719,10 +790,10 @@ const rootRouteChildren: RootRouteChildren = {
   PreviewDarkRoute: PreviewDarkRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SuperadminRoute: SuperadminRouteWithChildren,
   CheckoutReturnRoute: CheckoutReturnRoute,
   HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
-  SuperadminTemasRoute: SuperadminTemasRoute,
   TemasSlugRoute: TemasSlugRoute,
   TemasIndexRoute: TemasIndexRoute,
 }
