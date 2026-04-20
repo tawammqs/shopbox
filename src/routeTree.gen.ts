@@ -10,9 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SuperadminRouteImport } from './routes/superadmin'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PreviewDarkRouteImport } from './routes/preview-dark'
 import { Route as PrecosRouteImport } from './routes/precos'
 import { Route as PainelRouteImport } from './routes/painel'
@@ -58,6 +60,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
   path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuperadminRoute = SuperadminRouteImport.update({
   id: '/superadmin',
   path: '/superadmin',
@@ -71,6 +78,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
   id: '/recuperar-senha',
   path: '/recuperar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PreviewDarkRoute = PreviewDarkRouteImport.update({
@@ -285,9 +297,11 @@ export interface FileRoutesByFullPath {
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
   '/preview-dark': typeof PreviewDarkRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/superadmin': typeof SuperadminRouteWithChildren
+  '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -329,8 +343,10 @@ export interface FileRoutesByTo {
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
   '/preview-dark': typeof PreviewDarkRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -373,9 +389,11 @@ export interface FileRoutesById {
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
   '/preview-dark': typeof PreviewDarkRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/superadmin': typeof SuperadminRouteWithChildren
+  '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -420,9 +438,11 @@ export interface FileRouteTypes {
     | '/painel'
     | '/precos'
     | '/preview-dark'
+    | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
     | '/superadmin'
+    | '/termos'
     | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
@@ -464,8 +484,10 @@ export interface FileRouteTypes {
     | '/painel'
     | '/precos'
     | '/preview-dark'
+    | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/termos'
     | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
@@ -507,9 +529,11 @@ export interface FileRouteTypes {
     | '/painel'
     | '/precos'
     | '/preview-dark'
+    | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
     | '/superadmin'
+    | '/termos'
     | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
@@ -553,9 +577,11 @@ export interface RootRouteChildren {
   PainelRoute: typeof PainelRoute
   PrecosRoute: typeof PrecosRoute
   PreviewDarkRoute: typeof PreviewDarkRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SuperadminRoute: typeof SuperadminRouteWithChildren
+  TermosRoute: typeof TermosRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
@@ -579,6 +605,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/superadmin': {
       id: '/superadmin'
       path: '/superadmin'
@@ -598,6 +631,13 @@ declare module '@tanstack/react-router' {
       path: '/recuperar-senha'
       fullPath: '/recuperar-senha'
       preLoaderRoute: typeof RecuperarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/preview-dark': {
@@ -953,9 +993,11 @@ const rootRouteChildren: RootRouteChildren = {
   PainelRoute: PainelRoute,
   PrecosRoute: PrecosRoute,
   PreviewDarkRoute: PreviewDarkRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SuperadminRoute: SuperadminRouteWithChildren,
+  TermosRoute: TermosRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
