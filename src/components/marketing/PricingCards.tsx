@@ -104,9 +104,7 @@ export function PricingCards() {
           const annual = ANNUAL_PRICING[plan.slug];
           const displayCents = isYearly && annual ? annual.monthlyEquivalent : plan.price_cents;
 
-          const isPremium = plan.slug === "premium";
-          const useConsultor = isYearly && isPremium;
-          const ctaLabel = useConsultor ? "Falar com consultor" : "Testar grátis por 7 dias";
+          const ctaLabel = "Testar grátis por 7 dias";
 
           return (
             <div
@@ -153,27 +151,16 @@ export function PricingCards() {
                   </li>
                 ))}
               </ul>
-              {useConsultor ? (
-                <a
-                  href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20sobre%20o%20plano%20Premium%20anual."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-8 block w-full rounded-full border border-[#25D366] px-6 py-3 text-center text-sm font-semibold text-[#25D366] transition hover:bg-[#25D366] hover:text-white"
-                >
-                  {ctaLabel}
-                </a>
-              ) : (
-                <Link
-                  to="/cadastro"
-                  className={`mt-8 block w-full rounded-full px-6 py-3 text-center text-sm font-semibold transition ${
-                    highlighted
-                      ? "bg-[#25D366] text-white hover:bg-[#1ebe57]"
-                      : "border border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white"
-                  }`}
-                >
-                  {ctaLabel}
-                </Link>
-              )}
+              <Link
+                to="/cadastro"
+                className={`mt-8 block w-full rounded-full px-6 py-3 text-center text-sm font-semibold transition ${
+                  highlighted
+                    ? "bg-[#25D366] text-white hover:bg-[#1ebe57]"
+                    : "border border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white"
+                }`}
+              >
+                {ctaLabel}
+              </Link>
             </div>
           );
         })}
