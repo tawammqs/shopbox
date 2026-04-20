@@ -1,40 +1,54 @@
 
-Objetivo: corrigir o redirecionamento indevido de `/superadmin/lojas` para `/login` no domínio publicado.
 
-1. Remover a checagem de acesso do `beforeLoad` de `src/routes/superadmin.tsx`
-- O problema atual é que essa checagem usa o client de autenticação no momento de SSR.
-- Em acesso direto pelo domínio publicado, a sessão do navegador ainda não está disponível no servidor, então `getUser()` volta vazio e a rota redireciona para `/login`.
-- Vou transformar `superadmin.tsx` em um layout que não decide acesso no `beforeLoad`.
+## Diagnóstico final: o redirect está correto, falta sessão no domínio publicado
 
-2. Criar uma guarda de acesso no próprio layout do superadmin
-- Dentro de `SuperadminLayout`, usar `useAuth()` para esperar a sessão ser restaurada no navegador.
-- Enquanto estiver carregando, mostrar estado de “Carregando acesso…”.
-- Depois da sessão pronta:
-  - sem usuário: redirecionar para `/login`
-  - com usuário: consultar `user_roles`
-  - sem `platform_admin`: redirecionar para `/`
-  - com `platform_admin`: renderizar o painel normalmente
-- Isso evita o falso negativo no published site sem expor conteúdo protegido durante o carregamento.
+### O que está acontecendo
+O código de `src/routes/superadmin.tsx` já está com o gate client-side correto: ele espera `useAuth()` carregar, e só redireciona pra `/login` se `user` vier `null`.
 
-3. Preservar o destino ao mandar para login
-- Ajustar o fluxo para enviar `redirect=/superadmin/lojas` ao navegar para `/login`.
-- Atualizar `src/routes/login.tsx` para ler esse destino e, após login bem-sucedido, voltar para a rota pedida em vez de sempre mandar para `/admin/dashboard`.
-- Se não houver redirect, o comportamento atual continua.
+A causa do redirect que você está vendo é simples: **a sessão do Supabase é guardada por origem (origin) no `localStorage` do navegador**.
 
-4. Tratar estados de erro de forma clara
-- Se a leitura de `user_roles` falhar, mostrar mensagem amigável no layout em vez de parecer “logout”.
-- Remover logs temporários de diagnóstico se ainda estiverem no arquivo, deixando apenas o tratamento final.
+- Quando você faz login no **preview** (`id-preview--6d9db69c-….lovable.app`) → a sessão fica salva só lá.
+- Quando você abre `https://shopbox.lovable.app/superadmin/lojas` → é outro origin, sem sessão → `useAuth()` retorna `user = null` → o gate manda pra `/login`.
 
-5. Validar as rotas do superadmin após a correção
-- Confirmar que o fluxo esperado fica assim:
-  - usuário deslogado acessa `/superadmin/lojas` -> vai para `/login`
-  - usuário logado sem permissão -> vai para `/`
-  - usuário logado com `platform_admin` -> entra em `/superadmin/lojas`
-- Garantir que `/superadmin` continue redirecionando para `/superadmin/lojas` e que `/superadmin/clientes` herde a mesma proteção.
+Isso é comportamento esperado (e desejável — senão qualquer um conseguiria entrar como você num domínio diferente). Não é bug.
 
-Detalhes técnicos
-- Arquivo principal a ajustar: `src/routes/superadmin.tsx`
-- Arquivo complementar: `src/routes/login.tsx`
-- Estratégia: mover a autorização do SSR para um gate client-side baseado em `useAuth()` + consulta a `user_roles`
-- Motivo: a sessão atual está persistida no navegador, não em um mecanismo legível pelo servidor durante o render inicial
-- Benefício: corrige o published deep link sem exigir mudanças no backend nem no modelo de permissões
+### Como confirmar
+Teste isso no `shopbox.lovable.app`:
+- Abra DevTools → Application → Local Storage → `https://shopbox.lovable.app`
+- Procure por chave começando com `sb-` (token do Supabase)
+- Se não existir → você nunca logou nesse domínio. É exatamente esse o problema.
+
+### Solução (sem mexer em código)
+1. Acesse `https://shopbox.lovable.app/login`
+2. Faça login com `tawam.mqs@outlook.com`
+3. Após o login você cai em `/admin/dashboard`
+4. Agora acesse `https://shopbox.lovable.app/superadmin/lojas` → vai entrar normal
+
+Alternativa: acessar direto `https://shopbox.lovable.app/superadmin/lojas` deslogado → o gate envia pra `/login?redirect=/superadmin/lojas` → após login, o `login.tsx` te devolve pra `/superadmin/lojas` automaticamente (essa parte já está implementada).
+
+### Por que você achou que era bug
+Você provavelmente vinha logado no preview (`id-preview--…`) e abriu o link publicado direto, esperando estar logado lá também. Cada subdomínio mantém storage separado.
+
+### O que vou implementar (melhoria opcional, se aprovar)
+
+Para deixar a experiência mais clara em vez de só "jogar" no login:
+
+1. **Toast informativo no login quando vier de redirect protegido**
+   - Em `src/routes/login.tsx`, se `search.redirect` começar com `/superadmin` ou `/admin`, mostrar uma mensagem amigável: "Faça login para acessar o painel".
+
+2. **Atalho visual no header da home pra superadmins**
+   - Sem mudança grande: nada extra agora. Quem é admin já sabe a URL.
+
+### Detalhes técnicos
+- Arquivos tocados: `src/routes/login.tsx` (somente um `useEffect` com `toast.info` condicional ao montar, se houver `redirect`).
+- Nada no `superadmin.tsx`. Ele já está correto.
+- Nada no banco. Seu role `platform_admin` está OK.
+
+### Se você confirmar que logou em `shopbox.lovable.app` e mesmo assim cai no `/login`
+Aí sim é bug e eu investigo a fundo:
+- Adicionar logs temporários no `useAuth` pra cuspir o que `getSession()` retorna no domínio publicado
+- Verificar se o `persistSession: true` do client está funcionando corretamente em produção
+- Conferir se há algum interceptor / middleware no edge que está limpando cookies
+
+Mas primeiro precisamos descartar a causa óbvia (sessão por origin).
+
