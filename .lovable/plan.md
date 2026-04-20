@@ -1,59 +1,42 @@
 
 
-## Plano: cron de limpeza + realtime + republicação
+## Diagnóstico: deploy publicado está quebrado
 
-### A. Cron de limpeza de lojas órfãs (TanStack server route)
+### O que descobri
+1. **A loja existe e está OK no banco**: `loja-de-teste` (status `trialing`, `active=true`, plano Profissional vinculado).
+2. **A assinatura funcionou perfeitamente**: webhook ativou a loja, RLS está correto, dados estão íntegros.
+3. **O erro é no deploy publicado**, não no código:
+   - URL publicada (`https://shopbox.lovable.app/loja/loja-de-teste`) retorna SSR vazio: `<main></main>` sem header, sem nav, sem footer, **sem nenhuma tag `<script>`**.
+   - Logs do worker mostram 404 para os bundles JS:
+     ```
+     GET /assets/index-CXJO8uzO.js → 404
+     GET /assets/index-BLYZfPCT.js → 404
+     GET /assets/loja._slug.categoria.REDACTED.js → 404
+     ```
+   - O HTML servido está apontando para arquivos JS que não existem mais — provavelmente uma publicação anterior cuja CDN/cache ficou inconsistente após uma alteração em código.
 
-**Por quê:** evitar que lojas com `subscription_status='incomplete'` sem `stripe_subscription_id` há mais de 24h ocupem slugs/poluam o banco quando o usuário desistir do checkout.
+### Por que aparece "Algo deu errado"
+Sem o bundle JS, o React não consegue hidratar. O `defaultErrorComponent` em `src/router.tsx` captura a falha e mostra "Algo deu errado / Tentar novamente / Ir para a loja" — exatamente o screenshot enviado.
 
-**Arquivos:**
-- Criar `src/routes/hooks/cleanup-orphan-stores.ts`
-  - Server route POST com validação de `Authorization: Bearer <anon-key>`
-  - Usa `supabaseAdmin` (service role) para `DELETE FROM stores WHERE subscription_status='incomplete' AND stripe_subscription_id IS NULL AND created_at < now() - interval '24 hours'`
-  - Também cancela usuários auth órfãos? **Não** — só remove a loja. O usuário pode tentar criar outra depois.
-  - Retorna JSON `{ deleted: number }`
+### Plano de correção
 
-- Agendar via `pg_cron` + `pg_net` (insert tool, não migration) rodando 1x por hora:
-  ```sql
-  SELECT cron.schedule(
-    'cleanup-orphan-stores-hourly',
-    '15 * * * *',
-    $$ SELECT net.http_post(
-      url := 'https://shopbox.lovable.app/hooks/cleanup-orphan-stores',
-      headers := '{"Content-Type":"application/json","Authorization":"Bearer <anon>"}'::jsonb,
-      body := '{}'::jsonb
-    ); $$
-  );
-  ```
-  Garantir extensions `pg_cron` e `pg_net` ativadas (migration separada se preciso).
+**1. Republicar o app** (ação principal)
+- Disparar uma nova publicação para regenerar os bundles JS e o HTML estático em sincronia.
+- Isso resolve o 404 dos `/assets/*.js` automaticamente.
 
-### B. Realtime na tabela `stores` (substitui polling)
+**2. Validar o código antes da republicação** (defensivo)
+- Conferir rapidamente que `src/routes/loja.$slug.tsx` e os componentes de storefront não têm imports quebrados ou dependências faltando — se tudo já roda na preview (que está OK), só republicar resolve.
 
-**Por quê:** hoje o `/admin?checkout=success` invalida a query a cada 2.5s por 30s. Com Realtime, a tela "Ativando sua loja…" libera no instante em que o webhook atualiza a linha.
+**3. Testar pós-publicação**
+- Abrir `https://shopbox.lovable.app/loja/loja-de-teste` em aba anônima.
+- Verificar no devtools (Network) que os `/assets/*.js` retornam 200.
+- Confirmar que header, banners (vazios) e footer aparecem.
+- Hard refresh (Ctrl+Shift+R) para garantir que não é cache do browser.
 
-**Arquivos:**
-- Migration: `ALTER PUBLICATION supabase_realtime ADD TABLE public.stores;` e `ALTER TABLE public.stores REPLICA IDENTITY FULL;`
-- `src/hooks/useMyStore.ts`: adicionar `useEffect` que assina `postgres_changes` (UPDATE) na tabela `stores` filtrado por `owner_user_id=eq.<userId>` e invalida a query no callback. Cleanup do canal no unmount.
-- `src/routes/admin.tsx`: remover o bloco `setInterval/setTimeout` de polling (linhas 62-75) — o realtime cuida disso. Manter o botão "Já paguei — atualizar" como fallback manual.
+### Arquivos
+- Nenhuma alteração de código necessária — é problema de deploy.
+- Após aprovar, eu disparo a republicação.
 
-### C. Republicar e testar end-to-end
-
-1. Republicar (deploy automático de edge functions + nova rota `/hooks/cleanup-orphan-stores`)
-2. Disparar manualmente uma vez `curl -X POST .../hooks/cleanup-orphan-stores` para validar
-3. Fluxo completo no preview:
-   - `/cadastro` → criar conta + escolher plano "Profissional"
-   - Pagar com `4242 4242 4242 4242`, qualquer CVC, validade futura
-   - Verificar redirect para `/admin/dashboard?checkout=success`
-   - Confirmar que a tela "Ativando sua loja…" some sozinha em <3s (graças ao realtime)
-   - Confirmar `subscription_status='trialing'` e acesso ao dashboard
-
-### Riscos / observações
-- O endpoint `/hooks/cleanup-orphan-stores` precisa do anon key no header — armazeno no SQL do cron, não no código
-- Realtime só dispara para o owner que está logado (filtro `owner_user_id`), não há vazamento entre usuários
-- Sem e-mail Resend nesta rodada (recusado) — se quiser depois, basta colar a chave API
-
-### Resultado esperado
-- Lojas incompletas somem automaticamente após 24h
-- Liberação pós-pagamento é instantânea (sem polling)
-- Fluxo cadastro→pagamento→admin testado e validado
+### Nota sobre a preview
+Na preview (`/cadastro` que você está vendo agora) o app funciona porque o Vite serve os bundles do dev server em runtime. O erro só aparece para o público no domínio publicado.
 
