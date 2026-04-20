@@ -86,17 +86,110 @@ async function handleSubscriptionUpsert(subscription: any, env: StripeEnv) {
   );
 
   // Mirror to the store row so the admin app can gate access without joining
+  const newStatus = mapStatus(subscription.status);
+  const { data: storeBefore } = await supabase
+    .from("stores")
+    .select("id, name, subscription_status, plan_id")
+    .eq("owner_user_id", userId)
+    .maybeSingle();
+
   await supabase
     .from("stores")
     .update({
       stripe_customer_id: subscription.customer,
       stripe_subscription_id: subscription.id,
-      subscription_status: mapStatus(subscription.status),
+      subscription_status: newStatus,
       current_period_end: periodEndIso,
       trial_ends_at: trialEndIso,
       active: true,
     })
     .eq("owner_user_id", userId);
+
+  // Send welcome email on first activation (status transitions to trialing/active)
+  const wasActiveBefore =
+    storeBefore?.subscription_status === "trialing" ||
+    storeBefore?.subscription_status === "active";
+  const isActiveNow = newStatus === "trialing" || newStatus === "active";
+
+  if (isActiveNow && !wasActiveBefore && storeBefore?.id) {
+    try {
+      await sendWelcomeEmail(userId, storeBefore.id, storeBefore.name, storeBefore.plan_id, subscription.id);
+    } catch (e) {
+      console.error("Failed to send welcome email:", e);
+    }
+  }
+}
+
+async function sendWelcomeEmail(
+  userId: string,
+  storeId: string,
+  storeName: string | null,
+  planId: string | null,
+  subscriptionId: string,
+) {
+  // Idempotency: only send once per subscription
+  const { data: existing } = await supabase
+    .from("email_send_log")
+    .select("id")
+    .eq("template_name", "welcome")
+    .eq("error_message", `sub:${subscriptionId}`)
+    .limit(1);
+  if (existing && existing.length > 0) {
+    console.log("Welcome email already sent for subscription", subscriptionId);
+    return;
+  }
+
+  // Look up user email
+  const { data: users } = await supabase.rpc("admin_list_users", {
+    _user_ids: [userId],
+  });
+  const userEmail = users?.[0]?.email;
+  if (!userEmail) {
+    console.error("No email found for user", userId);
+    return;
+  }
+
+  // Look up plan name
+  let planName: string | null = null;
+  if (planId) {
+    const { data: plan } = await supabase
+      .from("plans")
+      .select("name")
+      .eq("id", planId)
+      .maybeSingle();
+    planName = plan?.name ?? null;
+  }
+
+  const appUrl = Deno.env.get("APP_PUBLIC_URL") || "https://shopbox.lovable.app";
+  const sendUrl = `${appUrl}/lovable/email/transactional/send-internal`;
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+  const res = await fetch(sendUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${serviceKey}`,
+    },
+    body: JSON.stringify({
+      templateName: "welcome",
+      recipientEmail: userEmail,
+      idempotencyKey: `welcome-${subscriptionId}`,
+      subscriptionId,
+      templateData: {
+        name: storeName || null,
+        planName,
+        trialDays: 7,
+        dashboardUrl: `${appUrl}/admin/dashboard`,
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const txt = await res.text();
+    console.error("Welcome email send failed:", res.status, txt);
+  } else {
+    console.log("Welcome email queued for", userEmail);
+  }
 }
 
 async function handleSubscriptionDeleted(subscription: any, env: StripeEnv) {
