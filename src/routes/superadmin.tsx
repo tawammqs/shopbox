@@ -1,28 +1,11 @@
-import { createFileRoute, Link, Outlet, redirect, useLocation } from "@tanstack/react-router";
-import { Store, LayoutDashboard, ArrowLeft, Users } from "lucide-react";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Store, LayoutDashboard, ArrowLeft, Users, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/superadmin")({
-  beforeLoad: async () => {
-    console.log("[SUPERADMIN] beforeLoad start");
-    const { data: userData, error: userErr } = await supabase.auth.getUser();
-    console.log("[SUPERADMIN] getUser →", { user: userData?.user?.email, id: userData?.user?.id, err: userErr?.message });
-    if (!userData.user) {
-      console.warn("[SUPERADMIN] No user → redirect /login");
-      throw redirect({ to: "/login" });
-    }
-    const { data: roles, error: rolesErr } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userData.user.id);
-    console.log("[SUPERADMIN] roles →", { roles, err: rolesErr?.message });
-    if (!roles?.some((r) => r.role === "platform_admin")) {
-      console.warn("[SUPERADMIN] Not platform_admin → redirect /");
-      throw redirect({ to: "/" });
-    }
-    console.log("[SUPERADMIN] Access granted");
-  },
   component: SuperadminLayout,
 });
 
@@ -31,8 +14,80 @@ const NAV = [
   { to: "/superadmin/clientes", label: "Clientes", icon: Users },
 ] as const;
 
+type GateState = "checking" | "ok" | "error";
+
 function SuperadminLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const [state, setState] = useState<GateState>("checking");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      const redirectTo = location.pathname + location.search;
+      navigate({ to: "/login", search: { redirect: redirectTo } as never, replace: true });
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+
+      if (cancelled) return;
+
+      if (error) {
+        setErrorMsg(error.message);
+        setState("error");
+        return;
+      }
+
+      const isAdmin = data?.some((r) => r.role === "platform_admin");
+      if (!isAdmin) {
+        navigate({ to: "/", replace: true });
+        return;
+      }
+      setState("ok");
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, user, navigate, location.pathname, location.search]);
+
+  if (authLoading || state === "checking") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="text-sm">Carregando acesso…</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (state === "error") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <div className="max-w-md text-center space-y-3">
+          <h1 className="text-xl font-semibold">Não foi possível verificar o acesso</h1>
+          <p className="text-sm text-muted-foreground">{errorMsg ?? "Erro desconhecido"}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
