@@ -645,8 +645,7 @@ function PricingCard({
   savings?: string;
 }) {
   const displayPrice = isYearly && yearlyMonthly ? yearlyMonthly : price;
-  const useConsultor = isYearly && slug === "premium";
-  const ctaLabel = useConsultor ? "Falar com consultor" : "Testar grátis por 7 dias";
+  const ctaLabel = "Testar grátis por 7 dias";
   const btnClass = cta === "g" ? "btn-g" : "btn-outline";
   const btnStyle = { textAlign: "center" as const, display: "block", width: "100%", padding: "12px", borderRadius: 999 };
 
@@ -664,21 +663,9 @@ function PricingCard({
           <li key={f}><span className="p-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></span>{f}</li>
         ))}
       </ul>
-      {useConsultor ? (
-        <a
-          href="https://wa.me/5500000000000?text=Ol%C3%A1%2C%20gostaria%20de%20falar%20sobre%20o%20plano%20Premium%20anual."
-          target="_blank"
-          rel="noopener noreferrer"
-          className={btnClass}
-          style={btnStyle}
-        >
-          {ctaLabel}
-        </a>
-      ) : (
-        <Link to="/cadastro" className={btnClass} style={btnStyle}>
-          {ctaLabel}
-        </Link>
-      )}
+      <Link to="/cadastro" className={btnClass} style={btnStyle}>
+        {ctaLabel}
+      </Link>
     </div>
   );
 }
