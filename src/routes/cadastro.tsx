@@ -103,6 +103,7 @@ function SignupPage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [accountData, setAccountData] = useState<AccountForm | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [storeSlug, setStoreSlug] = useState("");
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -121,7 +122,7 @@ function SignupPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("plans")
-        .select("id, slug, name, price_cents, stripe_price_id, features")
+        .select("id, slug, name, price_cents, stripe_price_id, stripe_price_id_yearly, features")
         .eq("active", true)
         .in("slug", ["inicial", "profissional", "premium"])
         .order("display_order");
@@ -131,6 +132,7 @@ function SignupPage() {
   });
 
   const selectedPlan = plans?.find((p) => p.id === selectedPlanId) ?? null;
+  const isYearly = billingCycle === "yearly";
 
   async function onAccountSubmit(values: AccountForm) {
     setSubmitting(true);
