@@ -13,6 +13,9 @@ import {
   Calendar,
   Power,
   PowerOff,
+  CreditCard,
+  Bell,
+  Loader2,
 } from "lucide-react";
 import {
   AreaChart,
@@ -44,6 +47,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatBRL } from "@/lib/format";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/superadmin/lojas")({
