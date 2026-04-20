@@ -34,25 +34,31 @@ function SuperadminLayout() {
 
     let cancelled = false;
     (async () => {
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id);
+      try {
+        const { data, error } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id);
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (error) {
-        setErrorMsg(error.message);
+        if (error) {
+          setErrorMsg(error.message);
+          setState("error");
+          return;
+        }
+
+        const isAdmin = data?.some((r) => r.role === "platform_admin");
+        if (!isAdmin) {
+          navigate({ to: "/", replace: true });
+          return;
+        }
+        setState("ok");
+      } catch (err: any) {
+        if (cancelled) return;
+        setErrorMsg(err?.message ?? "Erro inesperado ao verificar acesso");
         setState("error");
-        return;
       }
-
-      const isAdmin = data?.some((r) => r.role === "platform_admin");
-      if (!isAdmin) {
-        navigate({ to: "/", replace: true });
-        return;
-      }
-      setState("ok");
     })();
 
     return () => {
