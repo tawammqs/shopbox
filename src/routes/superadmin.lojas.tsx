@@ -426,8 +426,7 @@ function SuperadminLojasPage() {
                     <TableHead>Loja</TableHead>
                     <TableHead>Plano</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Expira em</TableHead>
-                    <TableHead>MRR</TableHead>
+                    <TableHead>Cobrança recorrente</TableHead>
                     <TableHead>Criada</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
