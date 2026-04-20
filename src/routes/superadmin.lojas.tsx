@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import {
   Search,
@@ -11,10 +11,22 @@ import {
   XCircle,
   ExternalLink,
   Calendar,
+  Power,
+  PowerOff,
 } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -32,6 +44,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatBRL } from "@/lib/format";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/superadmin/lojas")({
   component: SuperadminLojasPage,
@@ -81,9 +94,23 @@ function daysUntil(iso: string | null): number | null {
 }
 
 function SuperadminLojasPage() {
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [planFilter, setPlanFilter] = useState<string>("all");
+
+  const toggleActive = useMutation({
+    mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
+      const { error } = await supabase.from("stores").update({ active }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      toast.success(vars.active ? "Loja reativada" : "Loja suspensa");
+      qc.invalidateQueries({ queryKey: ["sa-stores"] });
+      qc.invalidateQueries({ queryKey: ["sa-clients"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const storesQ = useQuery({
     queryKey: ["sa-stores"],
@@ -133,6 +160,34 @@ function SuperadminLojasPage() {
     });
     return Array.from(set.entries());
   }, [stores]);
+
+  // Histórico de MRR dos últimos 6 meses (estimado a partir da data de criação das lojas pagantes)
+  const mrrHistory = useMemo(() => {
+    const months: { label: string; date: Date }[] = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        label: d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+        date: d,
+      });
+    }
+    return months.map(({ label, date }) => {
+      // No fim do mês de referência
+      const refEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+      const cents = stores
+        .filter((s) => {
+          const created = new Date(s.created_at);
+          if (created > refEnd) return false;
+          // Considerar pagantes naquele momento (aproximação: estado atual aplicado retroativo
+          // se já havia sido criada antes do mês de referência)
+          return s.subscription_status === "active" || s.subscription_status === "past_due";
+        })
+        .reduce((sum, s) => sum + (s.plans?.price_cents ?? 0), 0);
+      return { month: label, mrr: cents / 100 };
+    });
+  }, [stores]);
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -189,6 +244,51 @@ function SuperadminLojasPage() {
           accent="text-amber-600"
         />
       </div>
+
+      {/* Gráfico MRR últimos 6 meses */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Evolução do MRR (últimos 6 meses)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={mrrHistory} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="mrrGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickFormatter={(v: number) => formatBRL(v)}
+                  width={80}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                  }}
+                  formatter={(v: number) => [formatBRL(v), "MRR"]}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="mrr"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                  fill="url(#mrrGradient)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Filtros */}
       <Card>
@@ -325,14 +425,35 @@ function SuperadminLojasPage() {
                           {formatDate(s.created_at)}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Link
-                            to="/loja/$slug"
-                            params={{ slug: s.slug }}
-                            target="_blank"
-                            className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                          >
-                            Visitar <ExternalLink className="h-3 w-3" />
-                          </Link>
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant={s.active ? "outline" : "default"}
+                              onClick={() =>
+                                toggleActive.mutate({ id: s.id, active: !s.active })
+                              }
+                              disabled={toggleActive.isPending}
+                              className="h-7 text-xs"
+                            >
+                              {s.active ? (
+                                <>
+                                  <PowerOff className="mr-1 h-3 w-3" /> Suspender
+                                </>
+                              ) : (
+                                <>
+                                  <Power className="mr-1 h-3 w-3" /> Reativar
+                                </>
+                              )}
+                            </Button>
+                            <Link
+                              to="/loja/$slug"
+                              params={{ slug: s.slug }}
+                              target="_blank"
+                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                            >
+                              Visitar <ExternalLink className="h-3 w-3" />
+                            </Link>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
