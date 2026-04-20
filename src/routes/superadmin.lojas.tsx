@@ -13,6 +13,9 @@ import {
   Calendar,
   Power,
   PowerOff,
+  CreditCard,
+  Bell,
+  Loader2,
 } from "lucide-react";
 import {
   AreaChart,
@@ -44,6 +47,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { formatBRL } from "@/lib/format";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/superadmin/lojas")({
@@ -98,6 +102,7 @@ function SuperadminLojasPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [planFilter, setPlanFilter] = useState<string>("all");
+  const [openingPortal, setOpeningPortal] = useState<string | null>(null);
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
@@ -111,6 +116,27 @@ function SuperadminLojasPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  async function openCustomerPortal(storeId: string) {
+    setOpeningPortal(storeId);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-create-portal-session", {
+        body: {
+          storeId,
+          environment: getStripeEnvironment(),
+          returnUrl: `${window.location.origin}/superadmin/lojas`,
+        },
+      });
+      if (error || !data?.url) {
+        throw new Error(error?.message || data?.error || "Não foi possível abrir o portal");
+      }
+      window.open(data.url, "_blank");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setOpeningPortal(null);
+    }
+  }
 
   const storesQ = useQuery({
     queryKey: ["sa-stores"],
@@ -188,6 +214,14 @@ function SuperadminLojasPage() {
     });
   }, [stores]);
 
+  // Lojas que precisam de atenção: churn (canceled/unpaid) e past_due
+  const alerts = useMemo(() => {
+    const churned = stores.filter(
+      (s) => s.subscription_status === "canceled" || s.subscription_status === "unpaid",
+    );
+    const pastDue = stores.filter((s) => s.subscription_status === "past_due");
+    return { churned, pastDue };
+  }, [stores]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -290,6 +324,50 @@ function SuperadminLojasPage() {
         </CardContent>
       </Card>
 
+      {/* Alertas: churn e past_due */}
+      {(alerts.churned.length > 0 || alerts.pastDue.length > 0) && (
+        <Card className="border-amber-500/30 bg-amber-500/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Bell className="h-4 w-4 text-amber-600" />
+              Alertas — atenção necessária
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {alerts.pastDue.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                  Pagamento atrasado ({alerts.pastDue.length})
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {alerts.pastDue.map((s) => (
+                    <Badge key={s.id} variant="outline" className="border-amber-500/40 bg-background">
+                      <AlertCircle className="mr-1 h-3 w-3 text-amber-600" />
+                      {s.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            {alerts.churned.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-rose-700 dark:text-rose-300">
+                  Churn — assinaturas canceladas ({alerts.churned.length})
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {alerts.churned.map((s) => (
+                    <Badge key={s.id} variant="outline" className="border-rose-500/40 bg-background">
+                      <XCircle className="mr-1 h-3 w-3 text-rose-600" />
+                      {s.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Filtros */}
       <Card>
         <CardHeader>
@@ -348,8 +426,7 @@ function SuperadminLojasPage() {
                     <TableHead>Loja</TableHead>
                     <TableHead>Plano</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Expira em</TableHead>
-                    <TableHead>MRR</TableHead>
+                    <TableHead>Cobrança recorrente</TableHead>
                     <TableHead>Criada</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
@@ -396,30 +473,51 @@ function SuperadminLojasPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                            {formatDate(expiryRef)}
-                          </div>
-                          {days !== null && (
-                            <div
-                              className={`text-xs ${
-                                days < 0
-                                  ? "text-rose-600"
-                                  : expiryUrgent
-                                    ? "text-amber-600"
-                                    : "text-muted-foreground"
-                              }`}
-                            >
-                              {days < 0
-                                ? `Expirou há ${Math.abs(days)}d`
-                                : days === 0
-                                  ? "Expira hoje"
-                                  : `${days}d restantes`}
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-sm font-semibold">
+                              <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
+                              {mrrCents > 0 ? `${formatBRL(mrrCents / 100)}/mês` : "—"}
                             </div>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {mrrCents > 0 ? formatBRL(mrrCents / 100) : "—"}
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Calendar className="h-3 w-3" />
+                              {s.subscription_status === "trialing" ? "Trial até " : "Próx. cobrança: "}
+                              {formatDate(expiryRef)}
+                            </div>
+                            {days !== null && (
+                              <div
+                                className={`text-xs font-medium ${
+                                  days < 0
+                                    ? "text-rose-600"
+                                    : expiryUrgent
+                                      ? "text-amber-600"
+                                      : "text-muted-foreground"
+                                }`}
+                              >
+                                {days < 0
+                                  ? `Atrasado há ${Math.abs(days)}d`
+                                  : days === 0
+                                    ? "Hoje"
+                                    : `em ${days}d`}
+                              </div>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => openCustomerPortal(s.id)}
+                              disabled={openingPortal === s.id}
+                              className="h-6 px-2 text-xs"
+                            >
+                              {openingPortal === s.id ? (
+                                <>
+                                  <Loader2 className="mr-1 h-3 w-3 animate-spin" /> Abrindo…
+                                </>
+                              ) : (
+                                <>
+                                  <ExternalLink className="mr-1 h-3 w-3" /> Portal Stripe
+                                </>
+                              )}
+                            </Button>
+                          </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {formatDate(s.created_at)}

@@ -307,7 +307,7 @@ function PreviewDark() {
         </nav>
         <div className="hdr-right">
           <Link to="/login" className="btn-ghost">Entrar</Link>
-          <Link to="/temas" className="btn-outline">Ver demo</Link>
+          <Link to="/funcionalidades" className="btn-outline">Funcionalidades</Link>
           <Link to="/cadastro" className="btn-g">Testar grátis</Link>
         </div>
       </header>
@@ -321,7 +321,7 @@ function PreviewDark() {
         <p className="hero-sub">Monte sua loja em minutos, compartilhe o link no WhatsApp e comece a receber pedidos hoje mesmo.</p>
         <div className="hero-ctas">
           <Link to="/cadastro" className="btn-g btn-hero-lg">Testar grátis por 7 dias</Link>
-          <Link to="/temas" className="btn-outline btn-hero-lg">Ver demonstração</Link>
+          <Link to="/funcionalidades" className="btn-outline btn-hero-lg">Ver funcionalidades</Link>
         </div>
         <div className="hero-social-proof">
           <div className="avatars">

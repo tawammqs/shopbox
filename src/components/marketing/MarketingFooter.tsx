@@ -22,7 +22,6 @@ export function MarketingFooter() {
             <div className="text-sm font-semibold">Produto</div>
             <ul className="mt-4 space-y-2 text-sm text-white/60">
               <li><Link to="/funcionalidades" className="hover:text-white">Funcionalidades</Link></li>
-              <li><Link to="/temas" className="hover:text-white">Temas</Link></li>
               <li><Link to="/precos" className="hover:text-white">Preços</Link></li>
               <li><a href="#" className="hover:text-white">Blog</a></li>
             </ul>
