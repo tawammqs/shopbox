@@ -26,6 +26,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TemasSlugRouteImport } from './routes/temas.$slug'
 import { Route as SuperadminTemasRouteImport } from './routes/superadmin.temas'
 import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
+import { Route as SuperadminClientesRouteImport } from './routes/superadmin.clientes'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cleanup-orphan-stores'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
@@ -128,6 +129,11 @@ const SuperadminTemasRoute = SuperadminTemasRouteImport.update({
 const SuperadminLojasRoute = SuperadminLojasRouteImport.update({
   id: '/lojas',
   path: '/lojas',
+  getParentRoute: () => SuperadminRoute,
+} as any)
+const SuperadminClientesRoute = SuperadminClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
   getParentRoute: () => SuperadminRoute,
 } as any)
 const LojaSlugRoute = LojaSlugRouteImport.update({
@@ -247,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
@@ -281,6 +288,7 @@ export interface FileRoutesByTo {
   '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
+  '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
@@ -319,6 +327,7 @@ export interface FileRoutesById {
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/temas': typeof SuperadminTemasRoute
   '/temas/$slug': typeof TemasSlugRoute
@@ -358,6 +367,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
+    | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/temas'
     | '/temas/$slug'
@@ -392,6 +402,7 @@ export interface FileRouteTypes {
     | '/admin/temas'
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
+    | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/temas'
     | '/temas/$slug'
@@ -429,6 +440,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
+    | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/temas'
     | '/temas/$slug'
@@ -582,6 +594,13 @@ declare module '@tanstack/react-router' {
       path: '/lojas'
       fullPath: '/superadmin/lojas'
       preLoaderRoute: typeof SuperadminLojasRouteImport
+      parentRoute: typeof SuperadminRoute
+    }
+    '/superadmin/clientes': {
+      id: '/superadmin/clientes'
+      path: '/clientes'
+      fullPath: '/superadmin/clientes'
+      preLoaderRoute: typeof SuperadminClientesRouteImport
       parentRoute: typeof SuperadminRoute
     }
     '/loja/$slug': {
@@ -744,12 +763,14 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface SuperadminRouteChildren {
+  SuperadminClientesRoute: typeof SuperadminClientesRoute
   SuperadminLojasRoute: typeof SuperadminLojasRoute
   SuperadminTemasRoute: typeof SuperadminTemasRoute
   SuperadminIndexRoute: typeof SuperadminIndexRoute
 }
 
 const SuperadminRouteChildren: SuperadminRouteChildren = {
+  SuperadminClientesRoute: SuperadminClientesRoute,
   SuperadminLojasRoute: SuperadminLojasRoute,
   SuperadminTemasRoute: SuperadminTemasRoute,
   SuperadminIndexRoute: SuperadminIndexRoute,
@@ -800,3 +821,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
