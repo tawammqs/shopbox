@@ -13,7 +13,6 @@ export function MarketingHeader() {
         </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium text-[#374151] md:flex">
           <Link to="/funcionalidades" className="hover:text-[#111827]">Funcionalidades</Link>
-          <Link to="/temas" className="hover:text-[#111827]">Temas</Link>
           <Link to="/precos" className="hover:text-[#111827]">Preços</Link>
           <a href="#" className="hover:text-[#111827]">Blog</a>
         </nav>
@@ -40,7 +39,6 @@ export function MarketingHeader() {
         <div className="border-t border-[#e5e7eb] bg-white px-6 py-4 md:hidden">
           <div className="flex flex-col gap-4">
             <Link to="/funcionalidades" onClick={() => setOpen(false)} className="text-sm font-medium text-[#374151]">Funcionalidades</Link>
-            <Link to="/temas" onClick={() => setOpen(false)} className="text-sm font-medium text-[#374151]">Temas</Link>
             <Link to="/precos" onClick={() => setOpen(false)} className="text-sm font-medium text-[#374151]">Preços</Link>
             <a href="#" onClick={() => setOpen(false)} className="text-sm font-medium text-[#374151]">Blog</a>
             <Link to="/login" onClick={() => setOpen(false)} className="text-sm font-medium text-[#374151]">Entrar</Link>

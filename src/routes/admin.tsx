@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 // Note: post-checkout activation is handled by Realtime in useMyStore.
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, MessageSquare,
-  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Palette, Loader2,
+  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Loader2,
   Lock,
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
@@ -31,7 +31,6 @@ const NAV = [
   { to: "/admin/categorias", label: "Categorias", icon: FolderTree },
   { to: "/admin/banners", label: "Banners", icon: Image },
   { to: "/admin/descontos", label: "Descontos", icon: Tag },
-  { to: "/admin/temas", label: "Temas", icon: Palette },
   { to: "/admin/avaliacoes", label: "Avaliações", icon: MessageSquare },
   { to: "/admin/configuracoes", label: "Configurações", icon: Settings },
   { to: "/admin/plano", label: "Plano & Cobrança", icon: CreditCard },
