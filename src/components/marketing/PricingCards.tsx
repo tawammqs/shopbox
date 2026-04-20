@@ -105,8 +105,8 @@ export function PricingCards() {
           const displayCents = isYearly && annual ? annual.monthlyEquivalent : plan.price_cents;
 
           const isPremium = plan.slug === "premium";
-          const ctaLabel = isYearly && isPremium ? "Falar com consultor" : "Testar grátis por 7 dias";
-          const ctaTo = isYearly && isPremium ? "/contato" : "/cadastro";
+          const useConsultor = isYearly && isPremium;
+          const ctaLabel = useConsultor ? "Falar com consultor" : "Testar grátis por 7 dias";
 
           return (
             <div
