@@ -28,7 +28,7 @@ function SuperadminLayout() {
 
     if (!user) {
       const redirectTo = location.pathname + location.search;
-      navigate({ to: "/login", search: { redirect: redirectTo } as never, replace: true });
+      navigate({ to: "/login", search: { redirect: redirectTo }, replace: true });
       return;
     }
 
