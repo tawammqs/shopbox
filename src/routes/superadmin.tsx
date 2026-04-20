@@ -27,7 +27,9 @@ function SuperadminLayout() {
     if (authLoading) return;
 
     if (!user) {
-      const redirectTo = location.pathname + location.search;
+      const redirectTo = typeof window !== "undefined"
+        ? `${window.location.pathname}${window.location.search}`
+        : location.pathname;
       navigate({ to: "/login", search: { redirect: redirectTo }, replace: true });
       return;
     }
