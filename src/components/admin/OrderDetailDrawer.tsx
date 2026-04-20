@@ -202,8 +202,6 @@ export function OrderDetailDrawer({
             )}
           </section>
 
-          </section>
-
           {/* Status Timeline */}
           <section className="border-b border-border p-5">
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
