@@ -321,6 +321,22 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
           </div>
         </div>
       )}
+
+      <OrderDetailDrawer
+        order={openOrder}
+        storeName={storeName}
+        onClose={closeDetail}
+        onChanged={(status) => {
+          if (openOrderId) {
+            setOrders((cur) => cur.map((o) => (o.id === openOrderId ? { ...o, status } : o)));
+          }
+        }}
+      />
+      {loadingDetail && openOrderId && !openOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <Loader2 className="h-6 w-6 animate-spin text-white" />
+        </div>
+      )}
     </div>
   );
 }

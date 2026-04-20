@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
+import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { planLabel, hasStoreAccess } from "@/lib/plans";
 import { getStripeEnvironment } from "@/lib/stripe";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import shopboxLogo from "@/assets/shopbox-logo.png";
 
