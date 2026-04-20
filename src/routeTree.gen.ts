@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as SuperadminRouteImport } from './routes/superadmin'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
@@ -43,6 +44,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as LovableEmailTransactionalSendInternalRouteImport } from './routes/lovable/email/transactional/send-internal'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -51,6 +53,11 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as LojaSlugProdutoProductSlugRouteImport } from './routes/loja.$slug.produto.$productSlug'
 import { Route as LojaSlugCategoriaCategorySlugRouteImport } from './routes/loja.$slug.categoria.$categorySlug'
 
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuperadminRoute = SuperadminRouteImport.update({
   id: '/superadmin',
   path: '/superadmin',
@@ -222,6 +229,12 @@ const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   path: '/produtos/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const LovableEmailTransactionalSendInternalRoute =
+  LovableEmailTransactionalSendInternalRouteImport.update({
+    id: '/lovable/email/transactional/send-internal',
+    path: '/lovable/email/transactional/send-internal',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
     id: '/lovable/email/transactional/send',
@@ -275,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/superadmin': typeof SuperadminRouteWithChildren
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -305,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -316,6 +331,7 @@ export interface FileRoutesByTo {
   '/preview-dark': typeof PreviewDarkRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -345,6 +361,7 @@ export interface FileRoutesByTo {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -359,6 +376,7 @@ export interface FileRoutesById {
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/superadmin': typeof SuperadminRouteWithChildren
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
@@ -389,6 +407,7 @@ export interface FileRoutesById {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -404,6 +423,7 @@ export interface FileRouteTypes {
     | '/recuperar-senha'
     | '/reset-password'
     | '/superadmin'
+    | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
@@ -434,6 +454,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/lovable/email/transactional/send-internal'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -445,6 +466,7 @@ export interface FileRouteTypes {
     | '/preview-dark'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
@@ -474,6 +496,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/lovable/email/transactional/send-internal'
   id:
     | '__root__'
     | '/'
@@ -487,6 +510,7 @@ export interface FileRouteTypes {
     | '/recuperar-senha'
     | '/reset-password'
     | '/superadmin'
+    | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
@@ -517,6 +541,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/lovable/email/transactional/send-internal'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -531,6 +556,7 @@ export interface RootRouteChildren {
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SuperadminRoute: typeof SuperadminRouteWithChildren
+  UnsubscribeRoute: typeof UnsubscribeRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
@@ -541,10 +567,18 @@ export interface RootRouteChildren {
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
+  LovableEmailTransactionalSendInternalRoute: typeof LovableEmailTransactionalSendInternalRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/superadmin': {
       id: '/superadmin'
       path: '/superadmin'
@@ -783,6 +817,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/lovable/email/transactional/send-internal': {
+      id: '/lovable/email/transactional/send-internal'
+      path: '/lovable/email/transactional/send-internal'
+      fullPath: '/lovable/email/transactional/send-internal'
+      preLoaderRoute: typeof LovableEmailTransactionalSendInternalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
       path: '/lovable/email/transactional/send'
@@ -915,6 +956,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SuperadminRoute: SuperadminRouteWithChildren,
+  UnsubscribeRoute: UnsubscribeRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
@@ -925,6 +967,8 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
+  LovableEmailTransactionalSendInternalRoute:
+    LovableEmailTransactionalSendInternalRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
