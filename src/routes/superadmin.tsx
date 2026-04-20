@@ -5,15 +5,23 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/superadmin")({
   beforeLoad: async () => {
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) throw redirect({ to: "/login" });
-    const { data: roles } = await supabase
+    console.log("[SUPERADMIN] beforeLoad start");
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    console.log("[SUPERADMIN] getUser →", { user: userData?.user?.email, id: userData?.user?.id, err: userErr?.message });
+    if (!userData.user) {
+      console.warn("[SUPERADMIN] No user → redirect /login");
+      throw redirect({ to: "/login" });
+    }
+    const { data: roles, error: rolesErr } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userData.user.id);
+    console.log("[SUPERADMIN] roles →", { roles, err: rolesErr?.message });
     if (!roles?.some((r) => r.role === "platform_admin")) {
+      console.warn("[SUPERADMIN] Not platform_admin → redirect /");
       throw redirect({ to: "/" });
     }
+    console.log("[SUPERADMIN] Access granted");
   },
   component: SuperadminLayout,
 });
