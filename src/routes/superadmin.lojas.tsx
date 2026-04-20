@@ -324,6 +324,50 @@ function SuperadminLojasPage() {
         </CardContent>
       </Card>
 
+      {/* Alertas: churn e past_due */}
+      {(alerts.churned.length > 0 || alerts.pastDue.length > 0) && (
+        <Card className="border-amber-500/30 bg-amber-500/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Bell className="h-4 w-4 text-amber-600" />
+              Alertas — atenção necessária
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {alerts.pastDue.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                  Pagamento atrasado ({alerts.pastDue.length})
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {alerts.pastDue.map((s) => (
+                    <Badge key={s.id} variant="outline" className="border-amber-500/40 bg-background">
+                      <AlertCircle className="mr-1 h-3 w-3 text-amber-600" />
+                      {s.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            {alerts.churned.length > 0 && (
+              <div>
+                <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-rose-700 dark:text-rose-300">
+                  Churn — assinaturas canceladas ({alerts.churned.length})
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {alerts.churned.map((s) => (
+                    <Badge key={s.id} variant="outline" className="border-rose-500/40 bg-background">
+                      <XCircle className="mr-1 h-3 w-3 text-rose-600" />
+                      {s.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Filtros */}
       <Card>
         <CardHeader>
