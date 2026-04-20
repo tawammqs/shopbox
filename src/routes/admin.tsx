@@ -113,7 +113,7 @@ function AdminLayout() {
     <div className="flex min-h-screen bg-muted/20">
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
-        <SidebarContent storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
+        <SidebarContent storeId={store.id} storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
       </aside>
 
       {/* Main */}
@@ -125,7 +125,7 @@ function AdminLayout() {
                 <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-72 p-0">
-                <SidebarContent storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
+                <SidebarContent storeId={store.id} storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
               </SheetContent>
             </Sheet>
             <img src={shopboxLogo} alt="shopbox" className="h-6 w-auto" />
@@ -153,7 +153,8 @@ function AdminLayout() {
   );
 }
 
-function SidebarContent({ storeName, storeSlug, planLabel: pl }: { storeName: string; storeSlug: string; planLabel: string }) {
+function SidebarContent({ storeId, storeName, storeSlug, planLabel: pl }: { storeId: string; storeName: string; storeSlug: string; planLabel: string }) {
+  const pendingOrders = usePendingOrdersCount(storeId);
   return (
     <>
       <div className="border-b border-border p-5">
@@ -168,17 +169,31 @@ function SidebarContent({ storeName, storeSlug, planLabel: pl }: { storeName: st
         </Link>
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {NAV.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
-            activeProps={{ className: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm bg-accent/10 text-accent font-medium" }}
-          >
-            <item.icon className="h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
+        {NAV.map((item) => {
+          const showBadge = item.to === "/admin/pedidos" && pendingOrders > 0;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              activeProps={{ className: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm bg-accent/10 text-accent font-medium" }}
+            >
+              <item.icon className="h-4 w-4" />
+              <span className="flex-1">{item.label}</span>
+              {showBadge && (
+                <span
+                  aria-label={`${pendingOrders} pedidos aguardando`}
+                  className={cn(
+                    "min-w-[1.5rem] rounded-full bg-yellow-500 px-1.5 py-0.5 text-center text-[11px] font-bold leading-none text-white",
+                    "shadow-sm",
+                  )}
+                >
+                  {pendingOrders > 99 ? "99+" : pendingOrders}
+                </span>
+              )}
+            </Link>
+          );
+        })}
       </nav>
       <div className="border-t border-border p-3">
         <div className="rounded-lg bg-muted/50 p-3">
