@@ -9,6 +9,7 @@ import {
   Html,
   Link,
   Preview,
+  Section,
   Text,
 } from '@react-email/components'
 
@@ -25,31 +26,35 @@ export const SignupEmail = ({
   recipient,
   confirmationUrl,
 }: SignupEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Preview>Confirme seu e-mail para começar a usar o {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email</Heading>
+        <Section style={brandBar}>
+          <Text style={brandText}>ShopBox</Text>
+        </Section>
+        <Heading style={h1}>Bem-vindo ao {siteName}!</Heading>
         <Text style={text}>
-          Thanks for signing up for{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          !
+          Falta só um passo para você criar a sua loja online com checkout via WhatsApp.
+          Confirme o e-mail{' '}
+          <Link href={`mailto:${recipient}`} style={link}>{recipient}</Link>{' '}
+          clicando no botão abaixo:
         </Text>
-        <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
+        <Section style={buttonWrapper}>
+          <Button style={button} href={confirmationUrl}>
+            Confirmar meu e-mail
+          </Button>
+        </Section>
+        <Text style={textSmall}>
+          Se o botão não funcionar, copie e cole este link no navegador:
+          <br />
+          <Link href={confirmationUrl} style={linkBreak}>{confirmationUrl}</Link>
         </Text>
-        <Button style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
         <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.
+          Se você não criou uma conta no {siteName}, pode ignorar este e-mail.
+          <br />
+          <Link href={siteUrl} style={footerLink}>shopbox.lovable.app</Link>
         </Text>
       </Container>
     </Body>
@@ -58,27 +63,16 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const link = { color: 'inherit', textDecoration: 'underline' }
-const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
-  textDecoration: 'none',
-}
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Geist, Arial, sans-serif' }
+const container = { padding: '32px 24px', maxWidth: '560px', margin: '0 auto' }
+const brandBar = { paddingBottom: '24px', borderBottom: '1px solid #e5e7eb', marginBottom: '32px' }
+const brandText = { fontSize: '20px', fontWeight: 'bold' as const, color: '#1a1a1a', margin: '0', letterSpacing: '-0.02em' }
+const h1 = { fontSize: '26px', fontWeight: 'bold' as const, color: '#1a1a1a', margin: '0 0 20px', letterSpacing: '-0.01em' }
+const text = { fontSize: '15px', color: '#374151', lineHeight: '1.6', margin: '0 0 24px' }
+const textSmall = { fontSize: '13px', color: '#6b7280', lineHeight: '1.6', margin: '24px 0 0' }
+const link = { color: '#1a1a1a', textDecoration: 'underline' }
+const linkBreak = { color: '#25D366', textDecoration: 'underline', wordBreak: 'break-all' as const }
+const buttonWrapper = { margin: '8px 0 8px' }
+const button = { backgroundColor: '#25D366', color: '#ffffff', fontSize: '15px', fontWeight: '600' as const, borderRadius: '8px', padding: '14px 28px', textDecoration: 'none', display: 'inline-block' }
+const footer = { fontSize: '12px', color: '#9ca3af', margin: '40px 0 0', borderTop: '1px solid #e5e7eb', paddingTop: '20px', lineHeight: '1.6' }
+const footerLink = { color: '#9ca3af', textDecoration: 'underline' }
