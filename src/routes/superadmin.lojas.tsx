@@ -473,30 +473,51 @@ function SuperadminLojasPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-1 text-sm">
-                            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                            {formatDate(expiryRef)}
-                          </div>
-                          {days !== null && (
-                            <div
-                              className={`text-xs ${
-                                days < 0
-                                  ? "text-rose-600"
-                                  : expiryUrgent
-                                    ? "text-amber-600"
-                                    : "text-muted-foreground"
-                              }`}
-                            >
-                              {days < 0
-                                ? `Expirou há ${Math.abs(days)}d`
-                                : days === 0
-                                  ? "Expira hoje"
-                                  : `${days}d restantes`}
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-sm font-semibold">
+                              <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
+                              {mrrCents > 0 ? `${formatBRL(mrrCents / 100)}/mês` : "—"}
                             </div>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {mrrCents > 0 ? formatBRL(mrrCents / 100) : "—"}
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Calendar className="h-3 w-3" />
+                              {s.subscription_status === "trialing" ? "Trial até " : "Próx. cobrança: "}
+                              {formatDate(expiryRef)}
+                            </div>
+                            {days !== null && (
+                              <div
+                                className={`text-xs font-medium ${
+                                  days < 0
+                                    ? "text-rose-600"
+                                    : expiryUrgent
+                                      ? "text-amber-600"
+                                      : "text-muted-foreground"
+                                }`}
+                              >
+                                {days < 0
+                                  ? `Atrasado há ${Math.abs(days)}d`
+                                  : days === 0
+                                    ? "Hoje"
+                                    : `em ${days}d`}
+                              </div>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => openCustomerPortal(s.id)}
+                              disabled={openingPortal === s.id}
+                              className="h-6 px-2 text-xs"
+                            >
+                              {openingPortal === s.id ? (
+                                <>
+                                  <Loader2 className="mr-1 h-3 w-3 animate-spin" /> Abrindo…
+                                </>
+                              ) : (
+                                <>
+                                  <ExternalLink className="mr-1 h-3 w-3" /> Portal Stripe
+                                </>
+                              )}
+                            </Button>
+                          </div>
                         </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {formatDate(s.created_at)}
