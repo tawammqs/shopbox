@@ -26,6 +26,12 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (redirect && (redirect.startsWith("/superadmin") || redirect.startsWith("/admin"))) {
+      toast.info("Faça login para acessar o painel");
+    }
+  }, [redirect]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
