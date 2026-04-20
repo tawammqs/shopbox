@@ -1,0 +1,1 @@
+DELETE FROM public.plans WHERE slug = 'basico';
