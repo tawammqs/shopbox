@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
-import { Loader2, X, MessageCircle } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { useCart, type CartItem, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront } from "./StoreContext";
 import { openWhatsAppCheckout } from "@/lib/whatsapp";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -30,8 +32,6 @@ type Props = {
   total: number;
 };
 
-const onlyDigits = (s: string) => s.replace(/\D/g, "");
-
 export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, total }: Props) {
   const { store } = useStorefront();
   const clearCart = useCart((s) => s.clear);
@@ -46,6 +46,10 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
 
   const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const updateMasked = (k: keyof typeof form, mask: (v: string) => string) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm((f) => ({ ...f, [k]: mask(e.target.value) }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,17 +139,33 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
             <Input value={form.name} onChange={update("name")} autoFocus required />
           </Field>
           <Field label="WhatsApp *" error={errors.whatsapp}>
-            <Input value={form.whatsapp} onChange={update("whatsapp")} placeholder="(11) 99999-9999" required />
+            <Input
+              value={form.whatsapp}
+              onChange={updateMasked("whatsapp", maskPhoneBR)}
+              placeholder="(11) 99999-9999"
+              inputMode="tel"
+              required
+            />
           </Field>
           <Field label="Email" error={errors.email}>
             <Input type="email" value={form.email} onChange={update("email")} />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="CPF" error={errors.cpf}>
-              <Input value={form.cpf} onChange={update("cpf")} />
+              <Input
+                value={form.cpf}
+                onChange={updateMasked("cpf", maskCPF)}
+                placeholder="000.000.000-00"
+                inputMode="numeric"
+              />
             </Field>
             <Field label="CEP" error={errors.cep}>
-              <Input value={form.cep} onChange={update("cep")} />
+              <Input
+                value={form.cep}
+                onChange={updateMasked("cep", maskCEP)}
+                placeholder="00000-000"
+                inputMode="numeric"
+              />
             </Field>
           </div>
           <Field label="Endereço" error={errors.address}>
@@ -163,7 +183,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
             {busy ? (
               <><Loader2 className="h-5 w-5 animate-spin" /> Enviando…</>
             ) : (
-              <><MessageCircle className="h-5 w-5" /> Confirmar e falar no WhatsApp</>
+              <><WhatsAppIcon className="h-5 w-5" /> Confirmar e falar no WhatsApp</>
             )}
           </Button>
           <p className="text-center text-[11px] text-muted-foreground">
