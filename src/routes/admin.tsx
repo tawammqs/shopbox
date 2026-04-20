@@ -184,7 +184,7 @@ function SidebarContent({ storeId, storeName, storeSlug, planLabel: pl }: { stor
                 <span
                   aria-label={`${pendingOrders} pedidos aguardando`}
                   className={cn(
-                    "min-w-[1.5rem] rounded-full bg-yellow-500 px-1.5 py-0.5 text-center text-[11px] font-bold leading-none text-white",
+                    "min-w-[1.5rem] rounded-full bg-destructive px-1.5 py-0.5 text-center text-[11px] font-bold leading-none text-destructive-foreground",
                     "shadow-sm",
                   )}
                 >
