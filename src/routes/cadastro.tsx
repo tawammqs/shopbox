@@ -53,13 +53,37 @@ type Plan = {
   name: string;
   price_cents: number;
   stripe_price_id: string | null;
+  stripe_price_id_yearly: string | null;
   features: string[];
 };
+
+type BillingCycle = "monthly" | "yearly";
 
 const PLAN_TAGLINES: Record<string, string> = {
   inicial: "Para quem está começando",
   profissional: "Para quem quer vender mais",
   premium: "Para uma loja completa e profissional",
+};
+
+// Preço mensal equivalente quando pago no plano anual (em centavos)
+const YEARLY_MONTHLY_CENTS: Record<string, number> = {
+  inicial: 3800,
+  profissional: 7800,
+  premium: 15800,
+};
+
+// Total cobrado por ano (em centavos)
+const YEARLY_TOTAL_CENTS: Record<string, number> = {
+  inicial: 45600,
+  profissional: 93600,
+  premium: 189600,
+};
+
+// Economia anual (em centavos)
+const YEARLY_SAVINGS_CENTS: Record<string, number> = {
+  inicial: 10800,
+  profissional: 22800,
+  premium: 46800,
 };
 
 function slugify(s: string): string {
