@@ -25,6 +25,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuperadminIndexRouteImport } from './routes/superadmin.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SuperadminMetricasRouteImport } from './routes/superadmin.metricas'
 import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
 import { Route as SuperadminClientesRouteImport } from './routes/superadmin.clientes'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
@@ -134,6 +135,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const SuperadminMetricasRoute = SuperadminMetricasRouteImport.update({
+  id: '/metricas',
+  path: '/metricas',
+  getParentRoute: () => SuperadminRoute,
 } as any)
 const SuperadminLojasRoute = SuperadminLojasRouteImport.update({
   id: '/lojas',
@@ -318,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
+  '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -362,6 +369,7 @@ export interface FileRoutesByTo {
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
+  '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/admin': typeof AdminIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -410,6 +418,7 @@ export interface FileRoutesById {
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
+  '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -459,6 +468,7 @@ export interface FileRouteTypes {
     | '/loja/$slug'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
+    | '/superadmin/metricas'
     | '/admin/'
     | '/superadmin/'
     | '/admin/produtos/$id'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/hooks/cleanup-orphan-stores'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
+    | '/superadmin/metricas'
     | '/admin'
     | '/superadmin'
     | '/admin/produtos/$id'
@@ -550,6 +561,7 @@ export interface FileRouteTypes {
     | '/loja/$slug'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
+    | '/superadmin/metricas'
     | '/admin/'
     | '/superadmin/'
     | '/admin/produtos/$id'
@@ -709,6 +721,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/superadmin/metricas': {
+      id: '/superadmin/metricas'
+      path: '/metricas'
+      fullPath: '/superadmin/metricas'
+      preLoaderRoute: typeof SuperadminMetricasRouteImport
+      parentRoute: typeof SuperadminRoute
     }
     '/superadmin/lojas': {
       id: '/superadmin/lojas'
@@ -951,12 +970,14 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 interface SuperadminRouteChildren {
   SuperadminClientesRoute: typeof SuperadminClientesRoute
   SuperadminLojasRoute: typeof SuperadminLojasRoute
+  SuperadminMetricasRoute: typeof SuperadminMetricasRoute
   SuperadminIndexRoute: typeof SuperadminIndexRoute
 }
 
 const SuperadminRouteChildren: SuperadminRouteChildren = {
   SuperadminClientesRoute: SuperadminClientesRoute,
   SuperadminLojasRoute: SuperadminLojasRoute,
+  SuperadminMetricasRoute: SuperadminMetricasRoute,
   SuperadminIndexRoute: SuperadminIndexRoute,
 }
 

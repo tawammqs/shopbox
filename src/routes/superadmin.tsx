@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Store, LayoutDashboard, ArrowLeft, Users, Loader2 } from "lucide-react";
+import { Store, LayoutDashboard, ArrowLeft, Users, Loader2, BarChart3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ export const Route = createFileRoute("/superadmin")({
 });
 
 const NAV = [
+  { to: "/superadmin/metricas", label: "Métricas", icon: BarChart3 },
   { to: "/superadmin/lojas", label: "Lojas & MRR", icon: LayoutDashboard },
   { to: "/superadmin/clientes", label: "Clientes", icon: Users },
 ] as const;
