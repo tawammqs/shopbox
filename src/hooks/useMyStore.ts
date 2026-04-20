@@ -41,24 +41,39 @@ export function useMyStore() {
   // changes (driven by Stripe webhook) invalidate the cache instantly — no polling.
   useEffect(() => {
     if (!user) return;
-    const channel = supabase
-      .channel(`my-store-${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "stores",
-          filter: `owner_user_id=eq.${user.id}`,
-        },
-        () => {
-          qc.invalidateQueries({ queryKey: ["my-store-full", user.id] });
-        },
-      )
-      .subscribe();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    try {
+      const suffix =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID().slice(0, 8)
+          : Math.random().toString(36).slice(2, 10);
+      channel = supabase.channel(`my-store-${user.id}-${suffix}`);
+      channel
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "stores",
+            filter: `owner_user_id=eq.${user.id}`,
+          },
+          () => {
+            qc.invalidateQueries({ queryKey: ["my-store-full", user.id] });
+          },
+        )
+        .subscribe();
+    } catch (err) {
+      // Realtime is non-critical — never let it crash the admin UI
+      console.warn("[useMyStore] realtime subscribe failed:", err);
+    }
 
     return () => {
-      supabase.removeChannel(channel);
+      if (!channel) return;
+      try {
+        supabase.removeChannel(channel);
+      } catch (err) {
+        console.warn("[useMyStore] realtime cleanup failed:", err);
+      }
     };
   }, [user, qc]);
 
