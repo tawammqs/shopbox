@@ -157,8 +157,11 @@ function SignupPage() {
 
   async function handleCreateStore() {
     if (!accountData || !selectedPlan) return;
-    if (!selectedPlan.stripe_price_id) {
-      toast.error("Plano sem preço configurado. Tente outro.");
+    const priceId = isYearly
+      ? selectedPlan.stripe_price_id_yearly
+      : selectedPlan.stripe_price_id;
+    if (!priceId) {
+      toast.error("Plano sem preço configurado para esse ciclo. Tente outro.");
       return;
     }
     setSubmitting(true);
