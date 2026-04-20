@@ -1253,6 +1253,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_users: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          created_at: string
+          email: string
+          id: string
+        }[]
+      }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
