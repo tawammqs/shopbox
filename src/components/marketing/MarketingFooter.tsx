@@ -37,9 +37,9 @@ export function MarketingFooter() {
           <div>
             <div className="text-sm font-semibold">Legal</div>
             <ul className="mt-4 space-y-2 text-sm text-white/60">
-              <li><a href="#" className="hover:text-white">Termos de uso</a></li>
-              <li><a href="#" className="hover:text-white">Privacidade</a></li>
-              <li><a href="#" className="hover:text-white">Contato</a></li>
+              <li><Link to="/termos" className="hover:text-white">Termos de uso</Link></li>
+              <li><Link to="/privacidade" className="hover:text-white">Privacidade</Link></li>
+              <li><a href="mailto:contato@shopboxapp.com.br" className="hover:text-white">Contato</a></li>
             </ul>
           </div>
         </div>

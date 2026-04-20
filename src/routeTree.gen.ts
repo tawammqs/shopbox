@@ -10,9 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SuperadminRouteImport } from './routes/superadmin'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PreviewDarkRouteImport } from './routes/preview-dark'
 import { Route as PrecosRouteImport } from './routes/precos'
 import { Route as PainelRouteImport } from './routes/painel'
@@ -23,10 +25,12 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuperadminIndexRouteImport } from './routes/superadmin.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as SuperadminMetricasRouteImport } from './routes/superadmin.metricas'
 import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
 import { Route as SuperadminClientesRouteImport } from './routes/superadmin.clientes'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cleanup-orphan-stores'
+import { Route as HooksCartRecoveryRouteImport } from './routes/hooks/cart-recovery'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
@@ -58,6 +62,11 @@ const UnsubscribeRoute = UnsubscribeRouteImport.update({
   path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuperadminRoute = SuperadminRouteImport.update({
   id: '/superadmin',
   path: '/superadmin',
@@ -71,6 +80,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
   id: '/recuperar-senha',
   path: '/recuperar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PreviewDarkRoute = PreviewDarkRouteImport.update({
@@ -123,6 +137,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const SuperadminMetricasRoute = SuperadminMetricasRouteImport.update({
+  id: '/metricas',
+  path: '/metricas',
+  getParentRoute: () => SuperadminRoute,
+} as any)
 const SuperadminLojasRoute = SuperadminLojasRouteImport.update({
   id: '/lojas',
   path: '/lojas',
@@ -144,6 +163,11 @@ const HooksCleanupOrphanStoresRoute =
     path: '/hooks/cleanup-orphan-stores',
     getParentRoute: () => rootRouteImport,
   } as any)
+const HooksCartRecoveryRoute = HooksCartRecoveryRouteImport.update({
+  id: '/hooks/cart-recovery',
+  path: '/hooks/cart-recovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
   id: '/email/unsubscribe',
   path: '/email/unsubscribe',
@@ -285,9 +309,11 @@ export interface FileRoutesByFullPath {
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
   '/preview-dark': typeof PreviewDarkRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/superadmin': typeof SuperadminRouteWithChildren
+  '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -300,10 +326,12 @@ export interface FileRoutesByFullPath {
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
+  '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -329,8 +357,10 @@ export interface FileRoutesByTo {
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
   '/preview-dark': typeof PreviewDarkRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -343,9 +373,11 @@ export interface FileRoutesByTo {
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
+  '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/admin': typeof AdminIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -373,9 +405,11 @@ export interface FileRoutesById {
   '/painel': typeof PainelRoute
   '/precos': typeof PrecosRoute
   '/preview-dark': typeof PreviewDarkRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
   '/superadmin': typeof SuperadminRouteWithChildren
+  '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
@@ -388,10 +422,12 @@ export interface FileRoutesById {
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
+  '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -420,9 +456,11 @@ export interface FileRouteTypes {
     | '/painel'
     | '/precos'
     | '/preview-dark'
+    | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
     | '/superadmin'
+    | '/termos'
     | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
@@ -435,10 +473,12 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/checkout/return'
     | '/email/unsubscribe'
+    | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
+    | '/superadmin/metricas'
     | '/admin/'
     | '/superadmin/'
     | '/admin/produtos/$id'
@@ -464,8 +504,10 @@ export interface FileRouteTypes {
     | '/painel'
     | '/precos'
     | '/preview-dark'
+    | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/termos'
     | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
@@ -478,9 +520,11 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/checkout/return'
     | '/email/unsubscribe'
+    | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
+    | '/superadmin/metricas'
     | '/admin'
     | '/superadmin'
     | '/admin/produtos/$id'
@@ -507,9 +551,11 @@ export interface FileRouteTypes {
     | '/painel'
     | '/precos'
     | '/preview-dark'
+    | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
     | '/superadmin'
+    | '/termos'
     | '/unsubscribe'
     | '/admin/avaliacoes'
     | '/admin/banners'
@@ -522,10 +568,12 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/checkout/return'
     | '/email/unsubscribe'
+    | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
+    | '/superadmin/metricas'
     | '/admin/'
     | '/superadmin/'
     | '/admin/produtos/$id'
@@ -553,12 +601,15 @@ export interface RootRouteChildren {
   PainelRoute: typeof PainelRoute
   PrecosRoute: typeof PrecosRoute
   PreviewDarkRoute: typeof PreviewDarkRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SuperadminRoute: typeof SuperadminRouteWithChildren
+  TermosRoute: typeof TermosRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  HooksCartRecoveryRoute: typeof HooksCartRecoveryRoute
   HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -577,6 +628,13 @@ declare module '@tanstack/react-router' {
       path: '/unsubscribe'
       fullPath: '/unsubscribe'
       preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/superadmin': {
@@ -598,6 +656,13 @@ declare module '@tanstack/react-router' {
       path: '/recuperar-senha'
       fullPath: '/recuperar-senha'
       preLoaderRoute: typeof RecuperarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/preview-dark': {
@@ -670,6 +735,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/superadmin/metricas': {
+      id: '/superadmin/metricas'
+      path: '/metricas'
+      fullPath: '/superadmin/metricas'
+      preLoaderRoute: typeof SuperadminMetricasRouteImport
+      parentRoute: typeof SuperadminRoute
+    }
     '/superadmin/lojas': {
       id: '/superadmin/lojas'
       path: '/lojas'
@@ -696,6 +768,13 @@ declare module '@tanstack/react-router' {
       path: '/hooks/cleanup-orphan-stores'
       fullPath: '/hooks/cleanup-orphan-stores'
       preLoaderRoute: typeof HooksCleanupOrphanStoresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hooks/cart-recovery': {
+      id: '/hooks/cart-recovery'
+      path: '/hooks/cart-recovery'
+      fullPath: '/hooks/cart-recovery'
+      preLoaderRoute: typeof HooksCartRecoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -911,12 +990,14 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 interface SuperadminRouteChildren {
   SuperadminClientesRoute: typeof SuperadminClientesRoute
   SuperadminLojasRoute: typeof SuperadminLojasRoute
+  SuperadminMetricasRoute: typeof SuperadminMetricasRoute
   SuperadminIndexRoute: typeof SuperadminIndexRoute
 }
 
 const SuperadminRouteChildren: SuperadminRouteChildren = {
   SuperadminClientesRoute: SuperadminClientesRoute,
   SuperadminLojasRoute: SuperadminLojasRoute,
+  SuperadminMetricasRoute: SuperadminMetricasRoute,
   SuperadminIndexRoute: SuperadminIndexRoute,
 }
 
@@ -953,12 +1034,15 @@ const rootRouteChildren: RootRouteChildren = {
   PainelRoute: PainelRoute,
   PrecosRoute: PrecosRoute,
   PreviewDarkRoute: PreviewDarkRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SuperadminRoute: SuperadminRouteWithChildren,
+  TermosRoute: TermosRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  HooksCartRecoveryRoute: HooksCartRecoveryRoute,
   HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
