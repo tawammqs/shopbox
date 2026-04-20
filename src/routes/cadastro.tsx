@@ -40,7 +40,7 @@ const accountSchema = z
     storeName: z.string().trim().min(2, "Nome da loja obrigatório").max(60),
     segment: z.string().min(1, "Escolha um segmento"),
     acceptTerms: z.literal(true, {
-      errorMap: () => ({ message: "Você precisa aceitar os Termos e a Política de Privacidade" }),
+      message: "Você precisa aceitar os Termos e a Política de Privacidade",
     }),
   })
   .refine((d) => d.password === d.confirm, {
