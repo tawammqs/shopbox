@@ -32,13 +32,15 @@ export type Feature =
   | "custom_domain"
   | "seo_per_product"
   | "analytics"
-  | "welcome_popup";
+  | "welcome_popup"
+  | "customers";
 
 export const FEATURE_MIN_PLAN: Record<Feature, PlanSlug> = {
   bulk_actions: "profissional",
   discounts: "profissional",
   video_testimonials: "profissional",
   welcome_popup: "profissional",
+  customers: "profissional",
   custom_domain: "premium",
   seo_per_product: "premium",
   analytics: "premium",

@@ -5,7 +5,7 @@ import { useStorefront } from "./StoreContext";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
-import { openWhatsAppCheckout } from "@/lib/whatsapp";
+import { CheckoutFormDialog } from "./CheckoutFormDialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +26,7 @@ export function CartDrawer() {
   const [validating, setValidating] = useState(false);
   const [cep, setCep] = useState("");
   const [shippingMsg, setShippingMsg] = useState<string | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
@@ -80,7 +81,7 @@ export function CartDrawer() {
 
   const checkout = () => {
     if (items.length === 0) return;
-    openWhatsAppCheckout(store.whatsapp, items, subtotal, coupon, total, store.whatsapp_greeting);
+    setCheckoutOpen(true);
   };
 
   return (
@@ -247,6 +248,15 @@ export function CartDrawer() {
           </>
         )}
       </aside>
+
+      <CheckoutFormDialog
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        items={items}
+        subtotal={subtotal}
+        coupon={coupon}
+        total={total}
+      />
     </>
   );
 }
