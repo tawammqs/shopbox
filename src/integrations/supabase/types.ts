@@ -448,6 +448,7 @@ export type Database = {
           price_cents: number
           slug: string
           stripe_price_id: string | null
+          stripe_price_id_yearly: string | null
           updated_at: string
         }
         Insert: {
@@ -461,6 +462,7 @@ export type Database = {
           price_cents?: number
           slug: string
           stripe_price_id?: string | null
+          stripe_price_id_yearly?: string | null
           updated_at?: string
         }
         Update: {
@@ -474,6 +476,7 @@ export type Database = {
           price_cents?: number
           slug?: string
           stripe_price_id?: string | null
+          stripe_price_id_yearly?: string | null
           updated_at?: string
         }
         Relationships: []
