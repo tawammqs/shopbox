@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { X, ShoppingBag, Trash2, Tag, Truck, MessageCircle } from "lucide-react";
+import { X, ShoppingBag, Trash2, Tag, Truck } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { useCart, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront } from "./StoreContext";
 import { formatBRL } from "@/lib/format";
@@ -238,7 +239,7 @@ export function CartDrawer() {
                 </div>
               </div>
               <Button onClick={checkout} className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a]">
-                <MessageCircle className="h-5 w-5" />
+                <WhatsAppIcon className="h-5 w-5" />
                 Finalizar pelo WhatsApp
               </Button>
               <p className="text-center text-[11px] text-muted-foreground">

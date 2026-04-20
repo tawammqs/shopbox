@@ -28,6 +28,7 @@ import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cleanup-orphan-stores'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
+import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
 import { Route as AdminDescontosRouteImport } from './routes/admin.descontos'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
@@ -139,6 +140,11 @@ const AdminPlanoRoute = AdminPlanoRouteImport.update({
   path: '/plano',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPedidosRoute = AdminPedidosRouteImport.update({
+  id: '/pedidos',
+  path: '/pedidos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDescontosRoute = AdminDescontosRouteImport.update({
   id: '/descontos',
   path: '/descontos',
@@ -231,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
@@ -264,6 +271,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
@@ -299,6 +307,7 @@ export interface FileRoutesById {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/pedidos'
     | '/admin/plano'
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
@@ -369,6 +379,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/pedidos'
     | '/admin/plano'
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
@@ -403,6 +414,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/pedidos'
     | '/admin/plano'
     | '/checkout/return'
     | '/hooks/cleanup-orphan-stores'
@@ -572,6 +584,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPlanoRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pedidos': {
+      id: '/admin/pedidos'
+      path: '/pedidos'
+      fullPath: '/admin/pedidos'
+      preLoaderRoute: typeof AdminPedidosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/descontos': {
       id: '/admin/descontos'
       path: '/descontos'
@@ -681,6 +700,7 @@ interface AdminRouteChildren {
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminDescontosRoute: typeof AdminDescontosRoute
+  AdminPedidosRoute: typeof AdminPedidosRoute
   AdminPlanoRoute: typeof AdminPlanoRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
@@ -695,6 +715,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminDescontosRoute: AdminDescontosRoute,
+  AdminPedidosRoute: AdminPedidosRoute,
   AdminPlanoRoute: AdminPlanoRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
