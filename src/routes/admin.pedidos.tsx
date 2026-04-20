@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { PlanGate } from "@/components/admin/PlanGate";
+import { OrderDetailDrawer, type OrderDetail } from "@/components/admin/OrderDetailDrawer";
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -60,13 +61,13 @@ function PedidosPage() {
       </div>
 
       <PlanGate plan={planSlug} feature="customers">
-        {store && <PedidosContent storeId={store.id} />}
+        {store && <PedidosContent storeId={store.id} storeName={store.name} />}
       </PlanGate>
     </div>
   );
 }
 
-function PedidosContent({ storeId }: { storeId: string }) {
+function PedidosContent({ storeId, storeName }: { storeId: string; storeName: string }) {
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -74,6 +75,9 @@ function PedidosContent({ storeId }: { storeId: string }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [page, setPage] = useState(1);
+  const [openOrderId, setOpenOrderId] = useState<string | null>(null);
+  const [openOrder, setOpenOrder] = useState<OrderDetail | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -90,6 +94,28 @@ function PedidosContent({ storeId }: { storeId: string }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const openOrderDetail = async (id: string) => {
+    setOpenOrderId(id);
+    setLoadingDetail(true);
+    const { data, error } = await supabase
+      .from("orders")
+      .select("id, order_number, total, subtotal, discount_amount, status, coupon_code, promotion_description, created_at, items, customer:customers(id, name, whatsapp, email, cpf, cep, address, city_state)")
+      .eq("id", id)
+      .maybeSingle();
+    setLoadingDetail(false);
+    if (error || !data) {
+      toast.error("Erro ao carregar detalhes do pedido");
+      setOpenOrderId(null);
+      return;
+    }
+    setOpenOrder(data as any);
+  };
+
+  const closeDetail = () => {
+    setOpenOrderId(null);
+    setOpenOrder(null);
   };
 
   useEffect(() => { load(); }, [storeId]);
@@ -129,6 +155,7 @@ function PedidosContent({ storeId }: { storeId: string }) {
   const updateStatus = async (orderId: string, status: OrderStatus) => {
     const prev = orders;
     setOrders((cur) => cur.map((o) => (o.id === orderId ? { ...o, status } : o)));
+    setOpenOrder((o) => (o && o.id === orderId ? { ...o, status } : o));
     const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
     if (error) {
       setOrders(prev);
@@ -210,7 +237,11 @@ function PedidosContent({ storeId }: { storeId: string }) {
                 {pageItems.map((o) => {
                   const itemsCount = Array.isArray(o.items) ? o.items.reduce((a: number, x: any) => a + (Number(x.quantity) || 0), 0) : 0;
                   return (
-                    <tr key={o.id} className="border-t border-border hover:bg-muted/20">
+                    <tr
+                      key={o.id}
+                      className="cursor-pointer border-t border-border hover:bg-muted/20"
+                      onClick={() => openOrderDetail(o.id)}
+                    >
                       <td className="whitespace-nowrap px-4 py-3 font-semibold">
                         #{String(o.order_number).padStart(3, "0")}
                       </td>
@@ -232,7 +263,7 @@ function PedidosContent({ storeId }: { storeId: string }) {
                         </span>
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 font-semibold">{formatBRL(Number(o.total))}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <Select value={o.status} onValueChange={(v) => updateStatus(o.id, v as OrderStatus)}>
                           <SelectTrigger
                             className={cn("h-8 w-[140px] border-0 px-2 text-xs font-medium", STATUS_META[o.status].className)}
@@ -246,7 +277,7 @@ function PedidosContent({ storeId }: { storeId: string }) {
                           </SelectContent>
                         </Select>
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-right">
+                      <td className="whitespace-nowrap px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         {o.customer?.whatsapp ? (
                           <Button
                             variant="outline"
@@ -288,6 +319,22 @@ function PedidosContent({ storeId }: { storeId: string }) {
               Próxima
             </Button>
           </div>
+        </div>
+      )}
+
+      <OrderDetailDrawer
+        order={openOrder}
+        storeName={storeName}
+        onClose={closeDetail}
+        onChanged={(status) => {
+          if (openOrderId) {
+            setOrders((cur) => cur.map((o) => (o.id === openOrderId ? { ...o, status } : o)));
+          }
+        }}
+      />
+      {loadingDetail && openOrderId && !openOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <Loader2 className="h-6 w-6 animate-spin text-white" />
         </div>
       )}
     </div>
