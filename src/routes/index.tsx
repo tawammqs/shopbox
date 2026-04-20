@@ -193,7 +193,18 @@ const STYLES = `
 .pdark .p-feats li{font-size:13px;color:var(--text);display:flex;align-items:center;gap:9px}
 .pdark .p-check{width:16px;height:16px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pdark .p-check svg{width:9px;height:9px;stroke:var(--g);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.pdark .p-note{text-align:center;font-size:12px;color:var(--muted2);margin-top:24px;font-family:var(--mono)}
+.pdark .p-note{text-align:center;font-size:12px;color:var(--muted2);margin-top:24px;font-family:var(--mono);transition:opacity .2s}
+.pdark .billing-toggle{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:40px}
+.pdark .billing-label{font-size:14px;font-weight:500;color:var(--muted);transition:color .2s}
+.pdark .billing-label.active{color:var(--text)}
+.pdark .billing-switch{position:relative;display:inline-flex;height:28px;width:50px;align-items:center;border-radius:999px;background:#e5e7eb;cursor:pointer;border:none;transition:background .2s;padding:0;flex-shrink:0}
+.pdark .billing-switch.on{background:#25D366}
+.pdark .billing-switch:focus-visible{outline:2px solid #25D366;outline-offset:2px}
+.pdark .billing-thumb{display:inline-block;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transform:translateX(4px);transition:transform .2s}
+.pdark .billing-switch.on .billing-thumb{transform:translateX(26px)}
+.pdark .billing-badge{display:inline-flex;align-items:center;background:#f0fdf4;color:#27500A;font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px}
+.pdark .p-savings{overflow:hidden;max-height:0;opacity:0;transition:max-height .25s ease,opacity .2s ease,margin .2s ease;font-size:12px;font-weight:500;color:#3B6D11;font-family:var(--mono)}
+.pdark .p-savings.show{max-height:32px;opacity:1;margin-top:6px;margin-bottom:6px}
 
 .pdark .faq-bg{background:var(--dark2)}
 .pdark .faq-inner{max-width:720px;margin:0 auto;margin-top:56px}
