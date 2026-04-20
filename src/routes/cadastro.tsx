@@ -546,12 +546,23 @@ function SignupPage() {
                     {selectedPlan.name}
                   </div>
                   <div className="text-sm text-[#6b7280]">{PLAN_TAGLINES[selectedPlan.slug]}</div>
+                  <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[11px] font-semibold text-[#374151]">
+                    Cobrança {isYearly ? "anual" : "mensal"}
+                    {isYearly && (
+                      <span className="text-[#27500A]">· 2 meses grátis</span>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-extrabold text-[#111827]" style={{ fontFamily: "var(--font-marketing)" }}>
-                    R${(selectedPlan.price_cents / 100).toFixed(0)}
+                    R${(((isYearly ? YEARLY_MONTHLY_CENTS[selectedPlan.slug] : selectedPlan.price_cents) ?? selectedPlan.price_cents) / 100).toFixed(0)}
                   </div>
                   <div className="text-xs text-[#6b7280]">/mês · 7 dias grátis</div>
+                  {isYearly && (
+                    <div className="mt-1 text-[11px] font-medium text-[#3B6D11]">
+                      R${((YEARLY_TOTAL_CENTS[selectedPlan.slug] ?? 0) / 100).toFixed(0)} cobrados anualmente
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="mt-4 border-t border-[#e5e7eb] pt-4 text-sm text-[#6b7280]">
