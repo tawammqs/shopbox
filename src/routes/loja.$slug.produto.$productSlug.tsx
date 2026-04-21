@@ -70,12 +70,12 @@ function ProductInner({ product }: { product: any }) {
   const stockFor = (cId: string | null, sId: string | null) =>
     stock.filter((x) => (cId ? x.color_id === cId : true) && (sId ? x.size_id === sId : true)).reduce((a, b) => a + b.quantity, 0);
 
-  const colorAvailable = (cId: string) => stockFor(cId, null) > 0;
-  const sizeAvailableForColor = (sId: string) => stockFor(colorId, sId) > 0;
+  const colorAvailable = (_cId: string) => true;
+  const sizeAvailableForColor = (_sId: string) => true;
 
   const variantStock = stockFor(colorId, sizeId);
-  const isOut = stockFor(null, null) === 0;
-  const lowStock = variantStock > 0 && variantStock <= product.low_stock_threshold;
+  const isOut = false;
+  const lowStock = false;
 
   const price = effectivePrice(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
   const pct = discountPct(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
@@ -91,7 +91,6 @@ function ProductInner({ product }: { product: any }) {
   const validate = () => {
     if (colors.length > 0 && !colorId) return "Selecione uma cor";
     if (sizes.length > 0 && !sizeId) return "Selecione um tamanho";
-    if (variantStock === 0) return "Variação esgotada";
     return null;
   };
 
