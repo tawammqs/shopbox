@@ -20,6 +20,7 @@ export const Route = createFileRoute("/admin/produtos/")({
 function ProductsListPage() {
   const { data: store } = useMyStore();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
