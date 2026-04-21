@@ -363,8 +363,21 @@ function ProductsListPage() {
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <Button asChild size="icon" variant="ghost"><Link to="/admin/produtos/$id" params={{ id: p.id }}><Edit2 className="h-4 w-4" /></Link></Button>
-                      <Button size="icon" variant="ghost" onClick={() => {
+                      <Button asChild size="icon" variant="ghost" title="Editar"><Link to="/admin/produtos/$id" params={{ id: p.id }}><Edit2 className="h-4 w-4" /></Link></Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title={limitReached ? "Limite de produtos atingido" : "Duplicar produto"}
+                        disabled={limitReached || duplicateOne.isPending}
+                        onClick={() => {
+                          if (confirm(`Duplicar "${p.title}"? O novo produto será criado como inativo para você revisar.`)) {
+                            duplicateOne.mutate(p.id);
+                          }
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" title="Excluir" onClick={() => {
                         if (confirm(`Excluir "${p.title}"?`)) deleteOne.mutate(p.id);
                       }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
