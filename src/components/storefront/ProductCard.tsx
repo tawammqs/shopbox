@@ -18,14 +18,11 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const [hover, setHover] = useState(false);
   const price = effectivePrice(p.price, p.promo_price);
   const pct = discountPct(p.price, p.promo_price);
-  const lowStock = p.totalStock > 0 && p.totalStock <= 5;
-  const out = p.totalStock === 0;
   const img1 = p.images[0]?.url ?? "";
   const img2 = p.images[1]?.url ?? img1;
 
   const quickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (out) return;
     // If product has color or size, just go to PDP
     if (p.colors.length > 0) {
       window.location.href = `/loja/${store.slug}/produto/${p.slug}`;
@@ -104,28 +101,17 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <Heart className={cn("h-4 w-4", wished && "fill-destructive text-destructive")} />
         </button>
 
-        {/* out of stock */}
-        {out && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/70 backdrop-blur-sm">
-            <span className="rounded-full bg-foreground/90 px-3 py-1 text-xs font-semibold uppercase text-background">
-              Esgotado
-            </span>
-          </div>
-        )}
-
         {/* quick add (desktop) */}
-        {!out && (
-          <button
-            type="button"
-            onClick={quickAdd}
-            className={cn(
-              "absolute inset-x-2 bottom-2 hidden items-center justify-center gap-2 rounded-full bg-foreground py-2 text-xs font-semibold text-background opacity-0 shadow transition group-hover:opacity-100 md:flex",
-            )}
-          >
-            <ShoppingBag className="h-3.5 w-3.5" />
-            {p.colors.length > 0 ? "Escolher opções" : "Adicionar"}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={quickAdd}
+          className={cn(
+            "absolute inset-x-2 bottom-2 hidden items-center justify-center gap-2 rounded-full bg-foreground py-2 text-xs font-semibold text-background opacity-0 shadow transition group-hover:opacity-100 md:flex",
+          )}
+        >
+          <ShoppingBag className="h-3.5 w-3.5" />
+          {p.colors.length > 0 ? "Escolher opções" : "Adicionar"}
+        </button>
       </div>
 
       <div className="mt-3 space-y-1">

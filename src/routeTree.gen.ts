@@ -41,7 +41,6 @@ import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configura
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
-import { Route as AdminAvaliacoesRouteImport } from './routes/admin.avaliacoes'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -218,11 +217,6 @@ const AdminBannersRoute = AdminBannersRouteImport.update({
   path: '/banners',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAvaliacoesRoute = AdminAvaliacoesRouteImport.update({
-  id: '/avaliacoes',
-  path: '/avaliacoes',
-  getParentRoute: () => AdminRoute,
-} as any)
 const LojaSlugIndexRoute = LojaSlugIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -315,7 +309,6 @@ export interface FileRoutesByFullPath {
   '/superadmin': typeof SuperadminRouteWithChildren
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
-  '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRoute
@@ -362,7 +355,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
-  '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRoute
@@ -411,7 +403,6 @@ export interface FileRoutesById {
   '/superadmin': typeof SuperadminRouteWithChildren
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
-  '/admin/avaliacoes': typeof AdminAvaliacoesRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRoute
@@ -462,7 +453,6 @@ export interface FileRouteTypes {
     | '/superadmin'
     | '/termos'
     | '/unsubscribe'
-    | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/clientes'
@@ -509,7 +499,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/termos'
     | '/unsubscribe'
-    | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/clientes'
@@ -557,7 +546,6 @@ export interface FileRouteTypes {
     | '/superadmin'
     | '/termos'
     | '/unsubscribe'
-    | '/admin/avaliacoes'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/clientes'
@@ -847,13 +835,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBannersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/avaliacoes': {
-      id: '/admin/avaliacoes'
-      path: '/avaliacoes'
-      fullPath: '/admin/avaliacoes'
-      preLoaderRoute: typeof AdminAvaliacoesRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/loja/$slug/': {
       id: '/loja/$slug/'
       path: '/'
@@ -956,7 +937,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
-  AdminAvaliacoesRoute: typeof AdminAvaliacoesRoute
   AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminClientesRoute: typeof AdminClientesRoute
@@ -971,7 +951,6 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminAvaliacoesRoute: AdminAvaliacoesRoute,
   AdminBannersRoute: AdminBannersRoute,
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminClientesRoute: AdminClientesRoute,
