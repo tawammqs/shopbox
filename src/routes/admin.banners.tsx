@@ -164,10 +164,12 @@ function BannerDialog({ open, onOpenChange, editing, storeId, onSaved }: any) {
           <div>
             <Label>Imagem desktop (16:6)</Label>
             <div className="mt-1"><ImageUpload bucket="banners" storeId={storeId} value={desktop} onChange={setDesktop} aspect="aspect-[16/6]" /></div>
+            <p className="mt-1.5 text-xs text-muted-foreground">Tamanho recomendado: <strong>1920 × 720 px</strong> (proporção 16:6) · JPG ou PNG até 5 MB</p>
           </div>
           <div>
             <Label>Imagem mobile (4:5)</Label>
             <div className="mt-1"><ImageUpload bucket="banners" storeId={storeId} value={mobile} onChange={setMobile} aspect="aspect-[4/5]" /></div>
+            <p className="mt-1.5 text-xs text-muted-foreground">Tamanho recomendado: <strong>800 × 1000 px</strong> (proporção 4:5) · JPG ou PNG até 5 MB</p>
           </div>
           <div className="sm:col-span-2"><Label>Título</Label><Input value={title} onChange={(e) => setTitle(e.target.value)} /></div>
           <div className="sm:col-span-2"><Label>Subtítulo</Label><Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} /></div>
