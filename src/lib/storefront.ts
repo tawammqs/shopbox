@@ -143,7 +143,7 @@ export async function fetchProductsForCategory(
   // Client-side filters that need joined data
   if (opts.minPrice != null) products = products.filter((p) => effectivePrice(p.price, p.promo_price) >= opts.minPrice!);
   if (opts.maxPrice != null) products = products.filter((p) => effectivePrice(p.price, p.promo_price) <= opts.maxPrice!);
-  if (opts.inStock) products = products.filter((p) => p.totalStock > 0);
+  
   if (opts.colorNames?.length)
     products = products.filter((p) => p.colors.some((c) => opts.colorNames!.includes(c.name)));
 
