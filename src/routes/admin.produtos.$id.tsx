@@ -462,3 +462,78 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     </div>
   );
 }
+
+function QuickCategoryCreate({ storeId, onCreated }: { storeId: string; onCreated: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function create() {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      toast.error("Informe o nome da categoria");
+      return;
+    }
+    setSaving(true);
+    const { data, error } = await supabase
+      .from("categories")
+      .insert({ store_id: storeId, name: trimmed, slug: slugify(trimmed) })
+      .select("id")
+      .single();
+    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Categoria criada");
+    onCreated(data.id);
+    setName("");
+    setOpen(false);
+  }
+
+  if (!open) {
+    return (
+      <Button
+        size="sm"
+        variant="outline"
+        className="mt-3 w-full"
+        onClick={() => setOpen(true)}
+      >
+        <Plus className="mr-1 h-3.5 w-3.5" /> Nova categoria
+      </Button>
+    );
+  }
+
+  return (
+    <div className="mt-3 space-y-2 rounded-lg border border-border bg-muted/30 p-2">
+      <Input
+        autoFocus
+        placeholder="Nome da nova categoria"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            create();
+          }
+        }}
+        className="h-8"
+      />
+      <div className="flex gap-2">
+        <Button size="sm" onClick={create} disabled={saving} className="flex-1">
+          {saving ? "Criando…" : "Criar"}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            setOpen(false);
+            setName("");
+          }}
+        >
+          Cancelar
+        </Button>
+      </div>
+    </div>
+  );
+}
