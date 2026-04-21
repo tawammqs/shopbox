@@ -113,7 +113,14 @@ export async function fetchProductsForCategory(
     .eq("active", true);
 
   if (categoryIds && categoryIds.length > 0) {
-    q = q.in("category_id", categoryIds);
+    // Resolve via junction table to support products belonging to multiple categories
+    const { data: links } = await supabase
+      .from("product_categories")
+      .select("product_id")
+      .in("category_id", categoryIds);
+    const productIds = Array.from(new Set((links ?? []).map((l: any) => l.product_id)));
+    if (productIds.length === 0) return { products: [], total: 0 };
+    q = q.in("id", productIds);
   }
   if (opts.brands && opts.brands.length) q = q.in("brand", opts.brands);
 
