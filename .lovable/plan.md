@@ -1,38 +1,46 @@
 
 
-# Corrigir crash da aba Descontos
+# Remover aba Avaliações + Ignorar estoque na vitrine
 
-## Problema
+## 1. Remover a aba "Avaliações" do painel do lojista
 
-Quando o lojista abre `/admin/descontos`, a página quebra com `Cannot read properties of undefined (reading 'id')`.
+**Arquivos:**
+- `src/routes/admin.tsx` — remover o item `{ to: "/admin/avaliacoes", label: "Avaliações", icon: MessageSquare }` do array `NAV` (linha 36) e remover o import `MessageSquare` (não usado mais).
+- `src/routes/admin.avaliacoes.tsx` — **excluir o arquivo**. O TanStack Router regera `routeTree.gen.ts` automaticamente, então a rota some.
 
-**Causa**: o componente renderiza `<CouponsTab storeId={store!.id} />` (e idem para Promos/Combos) **antes** de `useMyStore()` terminar de carregar. Enquanto `store` é `undefined`, o `store!.id` estoura. O `PlanGate` também não impede a renderização durante o loading — ele só checa o plano.
+A página pública de produto continua mostrando avaliações já aprovadas (sem alteração). Só o item do menu do painel do lojista é removido.
 
-Além disso, mesmo após carregar, se o usuário ainda não tem loja (`store === null`) ou está em plano sem o recurso, o código continua tentando acessar `store!.id` em pontos do `PopupTab`.
+## 2. Mostrar todas as opções de tamanho/cor independentemente do estoque
 
-## Solução
+Hoje o site da loja trata estoque zerado como "Esgotado": esmaece cores indisponíveis, risca tamanhos sem estoque, mostra overlay "Esgotado" no card e bloqueia os botões "Adicionar ao carrinho" e "Comprar pelo WhatsApp". O lojista quer que o cliente sempre consiga escolher e comprar, ignorando o estoque cadastrado.
 
-Tratar 3 estados antes de renderizar as abas:
-1. **Carregando** (`isLoading`) → skeleton
-2. **Sem loja** (`store === null`) → mensagem orientando criar/ativar a loja
-3. **Loja carregada** → renderiza `Tabs` normalmente, passando `store.id` já garantido
+### 2a. `src/components/storefront/ProductCard.tsx` (cards de listagem)
 
-## Mudanças
+- Forçar `out = false` (remover a checagem `p.totalStock === 0`).
+- Remover o overlay "Esgotado" (bloco que renderiza quando `out`).
+- Remover o aviso "⚠️ Restam X unidades" (`lowStock`).
+- Botão "Adicionar"/"Escolher opções" sempre habilitado.
 
-**Arquivo único:** `src/routes/admin.descontos.tsx`
+### 2b. `src/routes/loja.$slug.produto.$productSlug.tsx` (página de produto)
 
-1. Desestruturar `isLoading` de `useMyStore()` além de `data: store`.
-2. No início do `DiscountsPage`, antes do `return` principal:
-   - Se `isLoading` → renderizar bloco de skeleton (cabeçalho + placeholder das tabs).
-   - Se `!store` → renderizar card "Loja não encontrada" com link para `/admin/configuracoes` ou `/admin/plano`.
-3. Só depois disso renderizar o `<PlanGate>` + `<Tabs>`, agora com `store.id` (não `store!.id`).
-4. No `PopupTab`, manter o early-return atual mas substituir `store?.id` no array de dependências do `useEffect` por algo seguro — já está com `?.`, ok.
+- Forçar `colorAvailable` a sempre retornar `true` → todas as cores aparecem 100% opacas e clicáveis (sem o risco diagonal).
+- Forçar `sizeAvailableForColor` a sempre retornar `true` → todos os tamanhos clicáveis, sem `line-through` nem `disabled`.
+- Forçar `isOut = false` e `lowStock = false` → bloco de estoque exibe sempre "Em estoque"; botões "Adicionar ao carrinho" e "Comprar agora pelo WhatsApp" sempre habilitados.
+- Em `validate()`, remover a regra `if (variantStock === 0) return "Variação esgotada"` — só continua exigindo seleção de cor/tamanho quando o produto tiver variações.
 
-Resultado: a aba abre normalmente; durante o carregamento mostra skeleton em vez de quebrar; se não houver loja, mostra mensagem amigável em vez de tela de erro genérica.
+### 2c. `src/lib/storefront.ts`
+
+- Remover o filtro `if (opts.inStock)` em `fetchProductsForCategory` (já que estoque deixa de ser critério de exibição). O filtro "Em estoque" do menu de filtros simplesmente deixa de filtrar.
+
+### O que NÃO muda
+
+- O painel do lojista continua mostrando "Esgotado" e "Estoque baixo" em `/admin/produtos` (controle interno do lojista).
+- O cadastro de estoque por variação continua existindo no admin — apenas deixa de impactar a vitrine.
+- O botão "Avise-me quando chegar" (stock_notify_requests) deixa de aparecer naturalmente, pois não há mais cenário de "esgotado" exibido.
 
 ## Detalhes técnicos
 
-- Não mexe em banco, RLS, nem em outras rotas.
-- Não altera comportamento de `useMyStore`, `PlanGate`, nem das abas internas — apenas adiciona guarda de loading/null no componente pai.
-- Skeleton usa `<Skeleton />` de `@/components/ui/skeleton` (já existe no projeto).
+- Nenhuma migração de banco. Nenhuma alteração em RLS ou edge functions.
+- `routeTree.gen.ts` é regerado pelo plugin do Vite ao excluir `admin.avaliacoes.tsx` — não editar manualmente.
+- Imports não usados (`MessageSquare` em `admin.tsx`) precisam ser removidos para não quebrar o ESLint/TS estrito.
 
