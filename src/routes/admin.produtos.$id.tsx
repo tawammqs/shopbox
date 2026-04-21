@@ -45,7 +45,7 @@ function ProductFormPage() {
   const [sku, setSku] = useState("");
   const [price, setPrice] = useState<string>("0");
   const [promoPrice, setPromoPrice] = useState<string>("");
-  const [categoryId, setCategoryId] = useState<string>("");
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [active, setActive] = useState(true);
   const [lowStock, setLowStock] = useState("5");
@@ -75,7 +75,7 @@ function ProductFormPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select(`*, product_images(*), product_colors(*), product_sizes(*), product_stock(*), product_video_testimonials(*)`)
+        .select(`*, product_images(*), product_colors(*), product_sizes(*), product_stock(*), product_video_testimonials(*), product_categories(category_id)`)
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
@@ -89,7 +89,9 @@ function ProductFormPage() {
       setTitle(p.title); setSlug(p.slug); setBrand(p.brand ?? "");
       setDescription(p.description ?? ""); setSku(p.sku ?? "");
       setPrice(String(p.price)); setPromoPrice(p.promo_price ? String(p.promo_price) : "");
-      setCategoryId(p.category_id ?? ""); setTags(p.tags ?? []);
+      const linked = ((p.product_categories ?? []) as any[]).map((r) => r.category_id).filter(Boolean);
+      setCategoryIds(linked.length ? linked : (p.category_id ? [p.category_id] : []));
+      setTags(p.tags ?? []);
       setActive(p.active); setLowStock(String(p.low_stock_threshold ?? 5));
       setMetaTitle(p.meta_title ?? ""); setMetaDesc(p.meta_description ?? "");
       setImages((p.product_images ?? []).sort((a: any, b: any) => a.position - b.position).map((i: any) => ({ url: i.url, position: i.position })));
@@ -133,7 +135,7 @@ function ProductFormPage() {
         sku: sku || null,
         price: Number(price) || 0,
         promo_price: promoPrice ? Number(promoPrice) : null,
-        category_id: categoryId || null,
+        category_id: categoryIds[0] ?? null,
         tags: tags as any,
         active,
         low_stock_threshold: Number(lowStock) || 5,
