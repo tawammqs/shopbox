@@ -22,7 +22,7 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const { redirect } = Route.useSearch();
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,13 +32,38 @@ function LoginPage() {
     }
   }, [redirect]);
 
+  // Detecta se o que o usuário digitou é um e-mail ou um WhatsApp.
+  // E-mail: contém "@". WhatsApp: ao menos 8 dígitos no que foi digitado.
+  function looksLikeEmail(value: string) {
+    return value.includes("@");
+  }
+
+  async function resolveEmail(value: string): Promise<string | null> {
+    const trimmed = value.trim();
+    if (looksLikeEmail(trimmed)) return trimmed;
+    const digits = trimmed.replace(/\D/g, "");
+    if (digits.length < 8) return null;
+    const { data, error } = await supabase.rpc("email_for_whatsapp", { _whatsapp: digits });
+    if (error) {
+      console.error("email_for_whatsapp error:", error);
+      return null;
+    }
+    return (data as string | null) ?? null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    const email = await resolveEmail(identifier);
+    if (!email) {
+      setLoading(false);
+      toast.error("Nenhuma loja encontrada com esse WhatsApp. Verifique o número ou use seu e-mail.");
+      return;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error(error.message === "Invalid login credentials" ? "E-mail ou senha incorretos" : error.message);
+      toast.error(error.message === "Invalid login credentials" ? "E-mail/WhatsApp ou senha incorretos" : error.message);
       return;
     }
     toast.success("Bem-vindo de volta!");
