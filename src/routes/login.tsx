@@ -85,8 +85,17 @@ function LoginPage() {
           <p className="text-sm text-muted-foreground mb-6">Acesse o painel da sua loja</p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Label htmlFor="identifier">E-mail ou WhatsApp</Label>
+              <Input
+                id="identifier"
+                type="text"
+                inputMode="text"
+                autoComplete="username"
+                required
+                placeholder="seu@email.com ou (11) 99999-9999"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
