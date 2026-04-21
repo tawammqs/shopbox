@@ -138,10 +138,6 @@ export function ProductCard({ p }: { p: ProductCardData }) {
             )}
           </div>
         )}
-
-        {lowStock && (
-          <p className="pt-1 text-[11px] font-medium text-destructive">⚠️ Restam {p.totalStock} unidades</p>
-        )}
       </div>
     </Link>
   );
