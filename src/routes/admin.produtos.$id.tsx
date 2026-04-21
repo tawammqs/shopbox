@@ -387,31 +387,18 @@ function ProductFormPage() {
 
           <Section title="Categorias">
             <p className="mb-2 text-xs text-muted-foreground">Selecione uma ou mais categorias.</p>
-            <div className="max-h-64 space-y-1.5 overflow-y-auto pr-1">
-              {(categoriesQ.data ?? []).length === 0 && (
-                <p className="text-xs text-muted-foreground">Nenhuma categoria criada ainda.</p>
-              )}
-              {(categoriesQ.data ?? []).map((c: any) => {
-                const checked = categoryIds.includes(c.id);
-                return (
-                  <label key={c.id} className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={(v) => {
-                        setCategoryIds(v ? [...categoryIds, c.id] : categoryIds.filter((x) => x !== c.id));
-                      }}
-                    />
-                    {c.name}
-                  </label>
-                );
-              })}
-            </div>
-            <QuickCategoryCreate
+            <CategoryTreePicker
               storeId={store.id}
-              onCreated={(newId) => {
-                setCategoryIds((prev) => [...prev, newId]);
-                qc.invalidateQueries({ queryKey: ["admin-cats", store.id] });
-              }}
+              categories={(categoriesQ.data ?? []) as any[]}
+              selectedIds={categoryIds}
+              onToggle={(id, checked) =>
+                setCategoryIds(checked ? [...categoryIds, id] : categoryIds.filter((x) => x !== id))
+              }
+              onChanged={() => qc.invalidateQueries({ queryKey: ["admin-cats", store.id] })}
+              onAutoSelect={(id) =>
+                setCategoryIds((prev) => (prev.includes(id) ? prev : [...prev, id]))
+              }
+              onDeleted={(id) => setCategoryIds((prev) => prev.filter((x) => x !== id))}
             />
           </Section>
 
