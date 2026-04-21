@@ -450,77 +450,291 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function QuickCategoryCreate({ storeId, onCreated }: { storeId: string; onCreated: (id: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [saving, setSaving] = useState(false);
+type CategoryNode = { id: string; name: string; parent_id: string | null };
 
-  async function create() {
+function CategoryTreePicker({
+  storeId,
+  categories,
+  selectedIds,
+  onToggle,
+  onChanged,
+  onAutoSelect,
+  onDeleted,
+}: {
+  storeId: string;
+  categories: CategoryNode[];
+  selectedIds: string[];
+  onToggle: (id: string, checked: boolean) => void;
+  onChanged: () => void;
+  onAutoSelect: (id: string) => void;
+  onDeleted: (id: string) => void;
+}) {
+  const [creatingFor, setCreatingFor] = useState<string | "root" | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const roots = categories.filter((c) => !c.parent_id);
+  const childrenOf = (pid: string) => categories.filter((c) => c.parent_id === pid);
+
+  function isDuplicate(name: string, parentId: string | null, ignoreId?: string) {
+    const target = name.trim().toLowerCase();
+    const targetSlug = slugify(name);
+    return categories.some(
+      (c) =>
+        c.id !== ignoreId &&
+        (c.parent_id ?? null) === (parentId ?? null) &&
+        (c.name.trim().toLowerCase() === target || slugify(c.name) === targetSlug),
+    );
+  }
+
+  async function createCategory(name: string, parentId: string | null) {
     const trimmed = name.trim();
     if (!trimmed) {
-      toast.error("Informe o nome da categoria");
-      return;
+      toast.error("Informe o nome");
+      return false;
     }
-    setSaving(true);
+    if (isDuplicate(trimmed, parentId)) {
+      toast.error("Já existe uma categoria com esse nome neste nível");
+      return false;
+    }
     const { data, error } = await supabase
       .from("categories")
-      .insert({ store_id: storeId, name: trimmed, slug: slugify(trimmed) })
+      .insert({ store_id: storeId, name: trimmed, slug: slugify(trimmed), parent_id: parentId })
       .select("id")
       .single();
-    setSaving(false);
+    if (error) {
+      toast.error(error.message);
+      return false;
+    }
+    toast.success(parentId ? "Subcategoria criada" : "Categoria criada");
+    onAutoSelect(data.id);
+    onChanged();
+    return true;
+  }
+
+  async function renameCategory(id: string, name: string, parentId: string | null) {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      toast.error("Nome obrigatório");
+      return false;
+    }
+    if (isDuplicate(trimmed, parentId, id)) {
+      toast.error("Já existe uma categoria com esse nome neste nível");
+      return false;
+    }
+    const { error } = await supabase
+      .from("categories")
+      .update({ name: trimmed, slug: slugify(trimmed) })
+      .eq("id", id);
+    if (error) {
+      toast.error(error.message);
+      return false;
+    }
+    toast.success("Categoria renomeada");
+    onChanged();
+    return true;
+  }
+
+  async function deleteCategory(id: string) {
+    const subs = childrenOf(id);
+    const msg = subs.length
+      ? `Esta categoria tem ${subs.length} subcategoria(s). Excluir mesmo assim?`
+      : "Excluir esta categoria?";
+    if (!confirm(msg)) return;
+    const { error } = await supabase.from("categories").delete().eq("id", id);
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success("Categoria criada");
-    onCreated(data.id);
-    setName("");
-    setOpen(false);
+    toast.success("Categoria excluída");
+    onDeleted(id);
+    subs.forEach((s) => onDeleted(s.id));
+    onChanged();
   }
 
-  if (!open) {
+  function renderRow(c: CategoryNode, depth: number) {
+    const checked = selectedIds.includes(c.id);
+    const isEditing = editingId === c.id;
+
     return (
-      <Button
-        size="sm"
-        variant="outline"
-        className="mt-3 w-full"
-        onClick={() => setOpen(true)}
-      >
-        <Plus className="mr-1 h-3.5 w-3.5" /> Nova categoria
-      </Button>
+      <div key={c.id}>
+        <div
+          className="group flex items-center gap-2 rounded-md py-1 pr-1 text-sm hover:bg-muted/40"
+          style={{ paddingLeft: 4 + depth * 16 }}
+        >
+          {isEditing ? (
+            <InlineEdit
+              initial={c.name}
+              onSave={async (val) => {
+                const ok = await renameCategory(c.id, val, c.parent_id);
+                if (ok) setEditingId(null);
+              }}
+              onCancel={() => setEditingId(null)}
+            />
+          ) : (
+            <>
+              <Checkbox checked={checked} onCheckedChange={(v) => onToggle(c.id, !!v)} />
+              <span className="flex-1 truncate">{c.name}</span>
+              <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                {depth === 0 && (
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6"
+                    title="Adicionar subcategoria"
+                    onClick={() => setCreatingFor(c.id)}
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6"
+                  title="Renomear"
+                  onClick={() => setEditingId(c.id)}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-6 w-6"
+                  title="Excluir"
+                  onClick={() => deleteCategory(c.id)}
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+
+        {creatingFor === c.id && (
+          <div style={{ paddingLeft: 4 + (depth + 1) * 16 }} className="py-1">
+            <InlineCreate
+              placeholder="Nome da subcategoria"
+              onSave={async (val) => {
+                const ok = await createCategory(val, c.id);
+                if (ok) setCreatingFor(null);
+              }}
+              onCancel={() => setCreatingFor(null)}
+            />
+          </div>
+        )}
+
+        {childrenOf(c.id).map((sub) => renderRow(sub, depth + 1))}
+      </div>
     );
   }
 
   return (
-    <div className="mt-3 space-y-2 rounded-lg border border-border bg-muted/30 p-2">
+    <div className="space-y-2">
+      <div className="max-h-72 space-y-0.5 overflow-y-auto pr-1">
+        {roots.length === 0 && (
+          <p className="text-xs text-muted-foreground">Nenhuma categoria criada ainda.</p>
+        )}
+        {roots.map((c) => renderRow(c, 0))}
+      </div>
+
+      {creatingFor === "root" ? (
+        <InlineCreate
+          placeholder="Nome da nova categoria"
+          onSave={async (val) => {
+            const ok = await createCategory(val, null);
+            if (ok) setCreatingFor(null);
+          }}
+          onCancel={() => setCreatingFor(null)}
+        />
+      ) : (
+        <Button size="sm" variant="outline" className="w-full" onClick={() => setCreatingFor("root")}>
+          <Plus className="mr-1 h-3.5 w-3.5" /> Nova categoria
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function InlineCreate({
+  placeholder,
+  onSave,
+  onCancel,
+}: {
+  placeholder: string;
+  onSave: (val: string) => void | Promise<void>;
+  onCancel: () => void;
+}) {
+  const [val, setVal] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function submit() {
+    setBusy(true);
+    await onSave(val);
+    setBusy(false);
+  }
+  return (
+    <div className="flex gap-1.5 rounded-lg border border-border bg-muted/30 p-1.5">
       <Input
         autoFocus
-        placeholder="Nome da nova categoria"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        placeholder={placeholder}
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            create();
+            submit();
+          } else if (e.key === "Escape") {
+            onCancel();
           }
         }}
-        className="h-8"
+        className="h-7 text-sm"
       />
-      <div className="flex gap-2">
-        <Button size="sm" onClick={create} disabled={saving} className="flex-1">
-          {saving ? "Criando…" : "Criar"}
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => {
-            setOpen(false);
-            setName("");
-          }}
-        >
-          Cancelar
-        </Button>
-      </div>
+      <Button size="icon" className="h-7 w-7 shrink-0" onClick={submit} disabled={busy}>
+        <Check className="h-3.5 w-3.5" />
+      </Button>
+      <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={onCancel}>
+        <X className="h-3.5 w-3.5" />
+      </Button>
+    </div>
+  );
+}
+
+function InlineEdit({
+  initial,
+  onSave,
+  onCancel,
+}: {
+  initial: string;
+  onSave: (val: string) => void | Promise<void>;
+  onCancel: () => void;
+}) {
+  const [val, setVal] = useState(initial);
+  const [busy, setBusy] = useState(false);
+  async function submit() {
+    setBusy(true);
+    await onSave(val);
+    setBusy(false);
+  }
+  return (
+    <div className="flex flex-1 items-center gap-1.5">
+      <Input
+        autoFocus
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            submit();
+          } else if (e.key === "Escape") {
+            onCancel();
+          }
+        }}
+        className="h-7 text-sm"
+      />
+      <Button size="icon" className="h-7 w-7 shrink-0" onClick={submit} disabled={busy}>
+        <Check className="h-3.5 w-3.5" />
+      </Button>
+      <Button size="icon" variant="ghost" className="h-7 w-7 shrink-0" onClick={onCancel}>
+        <X className="h-3.5 w-3.5" />
+      </Button>
     </div>
   );
 }
