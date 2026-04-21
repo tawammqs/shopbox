@@ -45,7 +45,7 @@ function ProductFormPage() {
   const [sku, setSku] = useState("");
   const [price, setPrice] = useState<string>("0");
   const [promoPrice, setPromoPrice] = useState<string>("");
-  const [categoryId, setCategoryId] = useState<string>("");
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [active, setActive] = useState(true);
   const [lowStock, setLowStock] = useState("5");
@@ -75,7 +75,7 @@ function ProductFormPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select(`*, product_images(*), product_colors(*), product_sizes(*), product_stock(*), product_video_testimonials(*)`)
+        .select(`*, product_images(*), product_colors(*), product_sizes(*), product_stock(*), product_video_testimonials(*), product_categories(category_id)`)
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
@@ -89,7 +89,9 @@ function ProductFormPage() {
       setTitle(p.title); setSlug(p.slug); setBrand(p.brand ?? "");
       setDescription(p.description ?? ""); setSku(p.sku ?? "");
       setPrice(String(p.price)); setPromoPrice(p.promo_price ? String(p.promo_price) : "");
-      setCategoryId(p.category_id ?? ""); setTags(p.tags ?? []);
+      const linked = ((p.product_categories ?? []) as any[]).map((r) => r.category_id).filter(Boolean);
+      setCategoryIds(linked.length ? linked : (p.category_id ? [p.category_id] : []));
+      setTags(p.tags ?? []);
       setActive(p.active); setLowStock(String(p.low_stock_threshold ?? 5));
       setMetaTitle(p.meta_title ?? ""); setMetaDesc(p.meta_description ?? "");
       setImages((p.product_images ?? []).sort((a: any, b: any) => a.position - b.position).map((i: any) => ({ url: i.url, position: i.position })));
@@ -133,7 +135,7 @@ function ProductFormPage() {
         sku: sku || null,
         price: Number(price) || 0,
         promo_price: promoPrice ? Number(promoPrice) : null,
-        category_id: categoryId || null,
+        category_id: categoryIds[0] ?? null,
         tags: tags as any,
         active,
         low_stock_threshold: Number(lowStock) || 5,
@@ -148,6 +150,14 @@ function ProductFormPage() {
       } else {
         const { error } = await supabase.from("products").update(payload).eq("id", id);
         if (error) throw error;
+      }
+
+      // Sync category links (many-to-many)
+      await supabase.from("product_categories").delete().eq("product_id", productId!);
+      if (categoryIds.length) {
+        await supabase.from("product_categories").insert(
+          categoryIds.map((cid) => ({ product_id: productId!, category_id: cid })),
+        );
       }
 
       // Sync images (delete all, re-insert)
@@ -375,15 +385,27 @@ function ProductFormPage() {
             </div>
           </Section>
 
-          <Section title="Categoria">
-            <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
-              <SelectContent>
-                {(categoriesQ.data ?? []).map((c: any) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Section title="Categorias">
+            <p className="mb-2 text-xs text-muted-foreground">Selecione uma ou mais categorias.</p>
+            <div className="max-h-64 space-y-1.5 overflow-y-auto pr-1">
+              {(categoriesQ.data ?? []).length === 0 && (
+                <p className="text-xs text-muted-foreground">Nenhuma categoria criada ainda.</p>
+              )}
+              {(categoriesQ.data ?? []).map((c: any) => {
+                const checked = categoryIds.includes(c.id);
+                return (
+                  <label key={c.id} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(v) => {
+                        setCategoryIds(v ? [...categoryIds, c.id] : categoryIds.filter((x) => x !== c.id));
+                      }}
+                    />
+                    {c.name}
+                  </label>
+                );
+              })}
+            </div>
           </Section>
 
           <Section title="Tags / Vitrines">
