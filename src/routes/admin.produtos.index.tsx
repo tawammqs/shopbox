@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Edit2, Trash2, AlertTriangle } from "lucide-react";
+import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/admin/produtos/")({
 function ProductsListPage() {
   const { data: store } = useMyStore();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -69,6 +70,152 @@ function ProductsListPage() {
     onSuccess: () => {
       toast.success("Produto excluído");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+    },
+  });
+
+  const duplicateOne = useMutation({
+    mutationFn: async (productId: string) => {
+      if (limitReached) throw new Error("Limite de produtos atingido. Faça upgrade do plano.");
+
+      // 1. Fetch full product with all relations
+      const { data: src, error: fetchErr } = await supabase
+        .from("products")
+        .select(`*, product_images(url, position), product_colors(name, hex, position),
+                 product_sizes(label, position), product_stock(color_id, size_id, quantity),
+                 product_video_testimonials(video_url, kind, customer_name, quote, rating, position),
+                 product_categories(category_id)`)
+        .eq("id", productId)
+        .maybeSingle();
+      if (fetchErr) throw fetchErr;
+      if (!src) throw new Error("Produto não encontrado");
+
+      // 2. Generate unique slug
+      const baseSlug = `${src.slug}-copia`;
+      let newSlug = baseSlug;
+      let counter = 2;
+      while (true) {
+        const { data: existing } = await supabase
+          .from("products")
+          .select("id")
+          .eq("store_id", store!.id)
+          .eq("slug", newSlug)
+          .maybeSingle();
+        if (!existing) break;
+        newSlug = `${baseSlug}-${counter++}`;
+      }
+
+      // 3. Insert new product (inactive by default)
+      const { data: newProd, error: insErr } = await supabase
+        .from("products")
+        .insert({
+          store_id: src.store_id,
+          title: `${src.title} (Cópia)`,
+          slug: newSlug,
+          brand: src.brand,
+          description: src.description,
+          sku: src.sku ? `${src.sku}-COPIA` : null,
+          price: src.price,
+          promo_price: src.promo_price,
+          promo_starts_at: src.promo_starts_at,
+          promo_ends_at: src.promo_ends_at,
+          category_id: src.category_id,
+          subcategory_id: src.subcategory_id,
+          tags: src.tags,
+          active: false,
+          low_stock_threshold: src.low_stock_threshold,
+          meta_title: src.meta_title,
+          meta_description: src.meta_description,
+          size_guide_url: src.size_guide_url,
+        })
+        .select("id")
+        .single();
+      if (insErr) throw insErr;
+      const newId = newProd.id;
+
+      // 4. Images
+      const imgs = (src.product_images ?? []) as any[];
+      if (imgs.length) {
+        await supabase.from("product_images").insert(
+          imgs.map((i) => ({ product_id: newId, url: i.url, position: i.position }))
+        );
+      }
+
+      // 5. Categories (many-to-many)
+      const cats = (src.product_categories ?? []) as any[];
+      if (cats.length) {
+        await supabase.from("product_categories").insert(
+          cats.map((c) => ({ product_id: newId, category_id: c.category_id }))
+        );
+      }
+
+      // 6. Videos
+      const vids = (src.product_video_testimonials ?? []) as any[];
+      if (vids.length) {
+        await supabase.from("product_video_testimonials").insert(
+          vids.map((v) => ({
+            product_id: newId, video_url: v.video_url, kind: v.kind,
+            customer_name: v.customer_name, quote: v.quote, rating: v.rating, position: v.position,
+          }))
+        );
+      }
+
+      // 7. Colors + Sizes (need to map old IDs to new IDs for stock)
+      const srcColors = (src.product_colors ?? []) as any[];
+      const srcSizes = (src.product_sizes ?? []) as any[];
+      const srcStock = (src.product_stock ?? []) as any[];
+
+      const colorIdMap = new Map<string, string>();
+      const sizeIdMap = new Map<string, string>();
+
+      // Re-fetch original IDs so we can map them
+      const { data: origColors } = await supabase
+        .from("product_colors").select("id, name, hex, position").eq("product_id", productId);
+      const { data: origSizes } = await supabase
+        .from("product_sizes").select("id, label, position").eq("product_id", productId);
+
+      if (srcColors.length) {
+        const { data: newColors } = await supabase
+          .from("product_colors")
+          .insert(srcColors.map((c) => ({ product_id: newId, name: c.name, hex: c.hex, position: c.position })))
+          .select("id, name, hex, position");
+        (origColors ?? []).forEach((oc) => {
+          const match = (newColors ?? []).find((nc) => nc.name === oc.name && nc.hex === oc.hex && nc.position === oc.position);
+          if (match) colorIdMap.set(oc.id, match.id);
+        });
+      }
+
+      if (srcSizes.length) {
+        const { data: newSizes } = await supabase
+          .from("product_sizes")
+          .insert(srcSizes.map((s) => ({ product_id: newId, label: s.label, position: s.position })))
+          .select("id, label, position");
+        (origSizes ?? []).forEach((os) => {
+          const match = (newSizes ?? []).find((ns) => ns.label === os.label && ns.position === os.position);
+          if (match) sizeIdMap.set(os.id, match.id);
+        });
+      }
+
+      // 8. Stock with mapped IDs
+      if (srcStock.length) {
+        await supabase.from("product_stock").insert(
+          srcStock.map((s) => ({
+            product_id: newId,
+            color_id: s.color_id ? colorIdMap.get(s.color_id) ?? null : null,
+            size_id: s.size_id ? sizeIdMap.get(s.size_id) ?? null : null,
+            quantity: s.quantity,
+          }))
+        );
+      }
+
+      return newId;
+    },
+    onSuccess: (newId) => {
+      toast.success("Produto duplicado! Edite os detalhes do novo produto.");
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+      navigate({ to: "/admin/produtos/$id", params: { id: newId } });
+    },
+    onError: (err: any) => {
+      toast.error(err?.message ?? "Erro ao duplicar produto");
     },
   });
 
@@ -216,8 +363,21 @@ function ProductsListPage() {
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <Button asChild size="icon" variant="ghost"><Link to="/admin/produtos/$id" params={{ id: p.id }}><Edit2 className="h-4 w-4" /></Link></Button>
-                      <Button size="icon" variant="ghost" onClick={() => {
+                      <Button asChild size="icon" variant="ghost" title="Editar"><Link to="/admin/produtos/$id" params={{ id: p.id }}><Edit2 className="h-4 w-4" /></Link></Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title={limitReached ? "Limite de produtos atingido" : "Duplicar produto"}
+                        disabled={limitReached || duplicateOne.isPending}
+                        onClick={() => {
+                          if (confirm(`Duplicar "${p.title}"? O novo produto será criado como inativo para você revisar.`)) {
+                            duplicateOne.mutate(p.id);
+                          }
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="ghost" title="Excluir" onClick={() => {
                         if (confirm(`Excluir "${p.title}"?`)) deleteOne.mutate(p.id);
                       }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
