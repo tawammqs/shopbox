@@ -406,6 +406,13 @@ function ProductFormPage() {
                 );
               })}
             </div>
+            <QuickCategoryCreate
+              storeId={store.id}
+              onCreated={(newId) => {
+                setCategoryIds((prev) => [...prev, newId]);
+                qc.invalidateQueries({ queryKey: ["admin-cats", store.id] });
+              }}
+            />
           </Section>
 
           <Section title="Tags / Vitrines">
