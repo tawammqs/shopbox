@@ -152,6 +152,14 @@ function ProductFormPage() {
         if (error) throw error;
       }
 
+      // Sync category links (many-to-many)
+      await supabase.from("product_categories").delete().eq("product_id", productId!);
+      if (categoryIds.length) {
+        await supabase.from("product_categories").insert(
+          categoryIds.map((cid) => ({ product_id: productId!, category_id: cid })),
+        );
+      }
+
       // Sync images (delete all, re-insert)
       await supabase.from("product_images").delete().eq("product_id", productId!);
       if (images.length) {
@@ -377,15 +385,27 @@ function ProductFormPage() {
             </div>
           </Section>
 
-          <Section title="Categoria">
-            <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
-              <SelectContent>
-                {(categoriesQ.data ?? []).map((c: any) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <Section title="Categorias">
+            <p className="mb-2 text-xs text-muted-foreground">Selecione uma ou mais categorias.</p>
+            <div className="max-h-64 space-y-1.5 overflow-y-auto pr-1">
+              {(categoriesQ.data ?? []).length === 0 && (
+                <p className="text-xs text-muted-foreground">Nenhuma categoria criada ainda.</p>
+              )}
+              {(categoriesQ.data ?? []).map((c: any) => {
+                const checked = categoryIds.includes(c.id);
+                return (
+                  <label key={c.id} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(v) => {
+                        setCategoryIds(v ? [...categoryIds, c.id] : categoryIds.filter((x) => x !== c.id));
+                      }}
+                    />
+                    {c.name}
+                  </label>
+                );
+              })}
+            </div>
           </Section>
 
           <Section title="Tags / Vitrines">
