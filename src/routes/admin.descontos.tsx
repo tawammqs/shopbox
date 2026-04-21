@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Edit2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,8 +21,47 @@ export const Route = createFileRoute("/admin/descontos")({
 });
 
 function DiscountsPage() {
-  const { data: store } = useMyStore();
+  const { data: store, isLoading } = useMyStore();
   const planSlug = store?.plan?.slug as any;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-9 w-48" />
+          <Skeleton className="h-4 w-80" />
+        </div>
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (!store) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="font-display text-3xl font-bold">Descontos</h1>
+          <p className="text-sm text-muted-foreground">Cupons, promoções, combos e popup de boas-vindas</p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-8 text-center">
+          <p className="font-medium">Loja não encontrada</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Configure sua loja antes de criar descontos.
+          </p>
+          <div className="mt-4 flex justify-center gap-2">
+            <Link to="/admin/configuracoes" className="text-sm font-medium text-primary underline">
+              Ir para configurações
+            </Link>
+            <span className="text-muted-foreground">·</span>
+            <Link to="/admin/plano" className="text-sm font-medium text-primary underline">
+              Ver plano
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -38,9 +78,9 @@ function DiscountsPage() {
             <TabsTrigger value="combos">Combos</TabsTrigger>
             <TabsTrigger value="popup">Popup</TabsTrigger>
           </TabsList>
-          <TabsContent value="coupons"><CouponsTab storeId={store!.id} /></TabsContent>
-          <TabsContent value="promos"><PromosTab storeId={store!.id} /></TabsContent>
-          <TabsContent value="combos"><CombosTab storeId={store!.id} /></TabsContent>
+          <TabsContent value="coupons"><CouponsTab storeId={store.id} /></TabsContent>
+          <TabsContent value="promos"><PromosTab storeId={store.id} /></TabsContent>
+          <TabsContent value="combos"><CombosTab storeId={store.id} /></TabsContent>
           <TabsContent value="popup"><PopupTab /></TabsContent>
         </Tabs>
       </PlanGate>
