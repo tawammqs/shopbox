@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useParams, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Plus, X, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, X, Save, Trash2, Pencil, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
