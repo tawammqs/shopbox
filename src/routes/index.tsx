@@ -378,6 +378,9 @@ const STYLES = `
   .pdark .hero h1 { font-size: 40px; letter-spacing: -1.5px; }
   .pdark .cta-sec { padding: 72px 20px; }
 }
+@media (max-width: 640px) {
+  .pdark .f-brand img { height: 64px; }
+}
 `;
 
 const TICKER_ITEMS = [
