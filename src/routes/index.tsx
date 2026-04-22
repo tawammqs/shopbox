@@ -219,12 +219,14 @@ const STYLES = `
 /* WHAT */
 .pdark .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 60px; }
 .pdark .wf-list { display: flex; flex-direction: column; gap: 16px; }
-.pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 20px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: all .22s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
-.pdark .wf:hover { border-color: rgba(0,150,60,.35); box-shadow: 0 4px 24px rgba(0,150,60,.08); }
-.pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; }
+.pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 22px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: border-color .22s ease, box-shadow .22s ease, background .22s ease; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.pdark .wf:hover { border-color: rgba(0,150,60,.45); box-shadow: 0 6px 28px rgba(0,150,60,.12); background: #fbfffb; }
+.pdark .wf-body { display: flex; flex-direction: column; }
+.pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; transition: background .22s ease, border-color .22s ease, transform .22s ease; }
+.pdark .wf:hover .wf-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.05); }
 .pdark .wf-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 4px; }
-.pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; }
+.pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 6px; line-height: 1.3; }
+.pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; margin: 0; }
 
 /* PHONE MOCK */
 .pdark .phone { background: #fff; border: 1px solid var(--cl-border); border-radius: 26px; padding: 28px; max-width: 330px; margin: 0 auto; box-shadow: 0 12px 64px rgba(0,100,40,.1); }
