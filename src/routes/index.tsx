@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  MessageCircle, Palette, BarChart3, CreditCard,
-  Package, Tag, Globe, TrendingUp,
+  Palette, ClipboardList, CreditCard,
+  Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
 import logoUrl from "@/assets/shopbox-logo.png";
