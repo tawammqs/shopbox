@@ -224,7 +224,8 @@ const STYLES = `
 .pdark .wf-body { display: flex; flex-direction: column; }
 .pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; transition: background .22s ease, border-color .22s ease, transform .22s ease; }
 .pdark .wf:hover .wf-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.05); }
-.pdark .wf-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pdark .wf-ic > svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pdark .wf-ic.wf-ic-wa > svg { stroke: none; fill: var(--green); }
 .pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 6px; line-height: 1.3; }
 .pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; margin: 0; }
 
