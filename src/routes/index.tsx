@@ -64,15 +64,15 @@ const STYLES = `
 .pdark .pd-nav-bar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 52px; height: 110px;
-  background: rgba(7,16,10,0.92);
-  backdrop-filter: blur(24px);
-  border-bottom: 1px solid var(--dk-border);
-  gap: 16px;
+  height: 140px;
+  padding: 0 48px;
+  background: rgba(7,16,10,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition: height .25s ease, padding .25s ease, background .25s ease;
 }
 .pdark .pd-nav-bar.scrolled {
-  height: 70px;
+  height: 92px;
   background: rgba(7,16,10,0.96);
   box-shadow: 0 8px 24px rgba(0,0,0,.35);
 }
@@ -80,11 +80,11 @@ const STYLES = `
   display: flex; align-items: center;
   flex: 0 1 auto;
   min-width: 0;
-  max-width: 38%;
+  max-width: 42%;
   overflow: hidden;
 }
 .pdark .nav-logo img {
-  height: 90px;
+  height: 120px;
   max-width: 100%;
   width: auto;
   object-fit: contain;
@@ -92,19 +92,19 @@ const STYLES = `
   filter: brightness(0) invert(1);
   transition: height .25s ease;
 }
-.pdark .pd-nav-bar.scrolled .nav-logo img { height: 56px; }
+.pdark .pd-nav-bar.scrolled .nav-logo img { height: 76px; }
 @media (max-width: 1024px) {
-  .pdark .pd-nav-bar { height: 104px; padding: 0 28px; }
-  .pdark .nav-logo img { height: 88px; }
-  .pdark .pd-nav-bar.scrolled { height: 72px; }
-  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 58px; }
+  .pdark .pd-nav-bar { height: 124px; padding: 0 28px; }
+  .pdark .nav-logo img { height: 108px; }
+  .pdark .pd-nav-bar.scrolled { height: 88px; }
+  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 72px; }
 }
 @media (max-width: 640px) {
-  .pdark .pd-nav-bar { height: 84px; padding: 0 16px; gap: 10px; }
-  .pdark .nav-logo { max-width: 52%; }
-  .pdark .nav-logo img { height: 72px; }
-  .pdark .pd-nav-bar.scrolled { height: 68px; }
-  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 56px; }
+  .pdark .pd-nav-bar { height: 104px; padding: 0 16px; gap: 10px; }
+  .pdark .nav-logo { max-width: 58%; }
+  .pdark .nav-logo img { height: 92px; }
+  .pdark .pd-nav-bar.scrolled { height: 84px; }
+  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 72px; }
 }
 .pdark .nav-links { display: flex; align-items: center; gap: 34px; flex-shrink: 1; min-width: 0; }
 .pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; white-space: nowrap; }
