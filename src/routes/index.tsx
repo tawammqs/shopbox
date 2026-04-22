@@ -216,7 +216,8 @@ const STYLES = `
 .pdark .wf-list { display: flex; flex-direction: column; gap: 16px; }
 .pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 20px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: all .22s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
 .pdark .wf:hover { border-color: rgba(0,150,60,.35); box-shadow: 0 4px 24px rgba(0,150,60,.08); }
-.pdark .wf-ic { width: 42px; height: 42px; flex-shrink: 0; border-radius: 10px; background: rgba(0,200,83,.1); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; }
+.pdark .wf-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 4px; }
 .pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; }
 
