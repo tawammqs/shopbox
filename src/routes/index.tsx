@@ -64,20 +64,20 @@ const STYLES = `
 .pdark .pd-nav-bar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 52px; height: 88px;
+  padding: 0 52px; height: 110px;
   background: rgba(7,16,10,0.92);
   backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--dk-border);
 }
 .pdark .nav-logo { display: flex; align-items: center; }
-.pdark .nav-logo img { height: 65px; display: block; filter: brightness(0) invert(1); transition: height .2s; }
+.pdark .nav-logo img { height: 90px; display: block; filter: brightness(0) invert(1); transition: height .2s; }
 @media (max-width: 1024px) {
-  .pdark .pd-nav-bar { height: 78px; }
-  .pdark .nav-logo img { height: 58px; }
+  .pdark .pd-nav-bar { height: 96px; }
+  .pdark .nav-logo img { height: 78px; }
 }
 @media (max-width: 640px) {
-  .pdark .pd-nav-bar { height: 70px; }
-  .pdark .nav-logo img { height: 50px; }
+  .pdark .pd-nav-bar { height: 84px; }
+  .pdark .nav-logo img { height: 68px; }
 }
 .pdark .nav-links { display: flex; align-items: center; gap: 34px; }
 .pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; }
