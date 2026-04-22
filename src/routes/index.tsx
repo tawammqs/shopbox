@@ -100,11 +100,11 @@ const STYLES = `
   .pdark .pd-nav-bar.scrolled .nav-logo img { height: 72px; }
 }
 @media (max-width: 640px) {
-  .pdark .pd-nav-bar { height: 104px; padding: 0 16px; gap: 10px; }
-  .pdark .nav-logo { max-width: 58%; }
-  .pdark .nav-logo img { height: 92px; }
-  .pdark .pd-nav-bar.scrolled { height: 84px; }
-  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 72px; }
+  .pdark .pd-nav-bar { height: 124px; padding: 0 16px; gap: 10px; }
+  .pdark .nav-logo { max-width: 62%; }
+  .pdark .nav-logo img { height: 110px; }
+  .pdark .pd-nav-bar.scrolled { height: 96px; }
+  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 84px; }
 }
 .pdark .nav-links { display: flex; align-items: center; gap: 34px; flex-shrink: 1; min-width: 0; }
 .pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; white-space: nowrap; }
