@@ -579,10 +579,10 @@ function LandingPage() {
             </div>
           </div>
           <div className="stats-band">
-            <div className="sc"><div className="sn"><em>12k</em>+</div><div className="sl">lojistas ativos</div></div>
-            <div className="sc"><div className="sn"><em>3x</em></div><div className="sl">mais conversão vs site comum</div></div>
-            <div className="sc"><div className="sn"><em>30</em>min</div><div className="sl">para montar sua loja</div></div>
-            <div className="sc"><div className="sn"><em>4.9</em>★</div><div className="sl">nota média dos lojistas</div></div>
+            <div className="sc"><div className="sc-ic"><Users /></div><div className="sn">12k+</div><div className="sl">lojistas ativos</div></div>
+            <div className="sc"><div className="sc-ic"><Zap /></div><div className="sn">3x</div><div className="sl">mais conversão vs site comum</div></div>
+            <div className="sc"><div className="sc-ic"><Clock /></div><div className="sn">30min</div><div className="sl">para montar sua loja</div></div>
+            <div className="sc"><div className="sc-ic"><Star /></div><div className="sn">4.9★</div><div className="sl">nota média dos lojistas</div></div>
           </div>
         </div>
       </div>
