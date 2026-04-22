@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  MessageCircle, Palette, BarChart3, CreditCard,
-  Package, Tag, Globe, TrendingUp,
+  Palette, ClipboardList, CreditCard,
+  Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
 import logoUrl from "@/assets/shopbox-logo.png";
@@ -219,12 +219,15 @@ const STYLES = `
 /* WHAT */
 .pdark .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 60px; }
 .pdark .wf-list { display: flex; flex-direction: column; gap: 16px; }
-.pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 20px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: all .22s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
-.pdark .wf:hover { border-color: rgba(0,150,60,.35); box-shadow: 0 4px 24px rgba(0,150,60,.08); }
-.pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; }
-.pdark .wf-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 4px; }
-.pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; }
+.pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 22px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: border-color .22s ease, box-shadow .22s ease, background .22s ease; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.pdark .wf:hover { border-color: rgba(0,150,60,.45); box-shadow: 0 6px 28px rgba(0,150,60,.12); background: #fbfffb; }
+.pdark .wf-body { display: flex; flex-direction: column; }
+.pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; transition: background .22s ease, border-color .22s ease, transform .22s ease; }
+.pdark .wf:hover .wf-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.05); }
+.pdark .wf-ic > svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pdark .wf-ic.wf-ic-wa > svg { stroke: none; fill: var(--green); }
+.pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 6px; line-height: 1.3; }
+.pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; margin: 0; }
 
 /* PHONE MOCK */
 .pdark .phone { background: #fff; border: 1px solid var(--cl-border); border-radius: 26px; padding: 28px; max-width: 330px; margin: 0 auto; box-shadow: 0 12px 64px rgba(0,100,40,.1); }
@@ -245,11 +248,12 @@ const STYLES = `
 .pdark .stats-band { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--cl-border); border: 1px solid var(--cl-border); border-radius: 16px; overflow: hidden; margin-top: 60px; }
 .pdark .sc { background: #fff; padding: 32px 24px; text-align: center; transition: background .2s; }
 .pdark .sc:hover { background: var(--cl-bg2); }
-.pdark .sc-ic { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; }
+.pdark .sc-ic { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; transition: background .22s ease, border-color .22s ease, transform .22s ease; }
+.pdark .sc:hover .sc-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.05); }
 .pdark .sc-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .sn { font-size: 38px; font-weight: 900; color: var(--cl-text); letter-spacing: -1.5px; line-height: 1; }
-.pdark .sn em { font-style: normal; color: var(--cl-text); }
-.pdark .sl { font-size: 13.5px; color: var(--cl-text); margin-top: 8px; font-weight: 600; }
+.pdark .sn { font-size: 38px; font-weight: 900; color: #0a1a0d !important; letter-spacing: -1.5px; line-height: 1; }
+.pdark .sn em { font-style: normal; color: #0a1a0d !important; }
+.pdark .sl { font-size: 13.5px; color: #0a1a0d !important; margin-top: 8px; font-weight: 600; }
 
 /* VS */
 .pdark .vs-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: stretch; margin-top: 56px; }
@@ -272,13 +276,14 @@ const STYLES = `
 
 /* FEATURES */
 .pdark .feats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
-.pdark .fc { background: #fff; border: 1px solid var(--cl-border); border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: all .25s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.pdark .fc { background: #fff; border: 1px solid var(--cl-border); border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease; box-shadow: 0 1px 4px rgba(0,0,0,.04); display: flex; flex-direction: column; }
 .pdark .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 900; color: rgba(0,150,60,.05); line-height: 1; pointer-events: none; letter-spacing: -3px; }
-.pdark .fc:hover { border-color: rgba(0,150,60,.35); transform: translateY(-4px); box-shadow: 0 10px 40px rgba(0,150,60,.1); }
-.pdark .fc-ic { width: 48px; height: 48px; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.pdark .fc:hover { border-color: rgba(0,150,60,.45); transform: translateY(-4px); box-shadow: 0 12px 44px rgba(0,150,60,.14); }
+.pdark .fc-ic { width: 48px; height: 48px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; padding: 0; transition: background .25s ease, border-color .25s ease, transform .25s ease; }
+.pdark .fc:hover .fc-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.06); }
 .pdark .fc-ic svg { width: 24px; height: 24px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .fc h3 { font-size: 17px; font-weight: 800; color: var(--cl-text); margin-bottom: 8px; }
-.pdark .fc p  { font-size: 14px; color: var(--cl-text2); line-height: 1.65; }
+.pdark .fc h3 { font-size: 17px; font-weight: 800; color: var(--cl-text); margin-bottom: 10px; line-height: 1.3; }
+.pdark .fc p  { font-size: 14px; color: var(--cl-text2); line-height: 1.65; margin: 0; }
 
 /* STEPS */
 .pdark .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; margin-top: 56px; }
@@ -546,10 +551,10 @@ function LandingPage() {
           </p>
           <div className="what-grid">
             <div className="wf-list">
-              <div className="wf"><div className="wf-ic"><MessageCircle /></div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
-              <div className="wf"><div className="wf-ic"><Palette /></div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
-              <div className="wf"><div className="wf-ic"><BarChart3 /></div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
-              <div className="wf"><div className="wf-ic"><CreditCard /></div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
+              <div className="wf"><div className="wf-ic wf-ic-wa"><WhatsAppIcon size={22} color="#00c853" /></div><div className="wf-body"><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
+              <div className="wf"><div className="wf-ic"><Palette /></div><div className="wf-body"><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
+              <div className="wf"><div className="wf-ic"><ClipboardList /></div><div className="wf-body"><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
+              <div className="wf"><div className="wf-ic"><CreditCard /></div><div className="wf-body"><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
             </div>
             <div>
               <div className="phone">
