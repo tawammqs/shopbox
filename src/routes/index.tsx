@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import logoUrl from "@/assets/shopbox-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/")({
     links: [
       {
         rel: "stylesheet",
-        href: "https://cdn.jsdelivr.net/npm/geist-font@1.3.1/dist/geist.css",
+        href: "https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500&display=swap",
       },
     ],
   }),
@@ -24,265 +25,346 @@ export const Route = createFileRoute("/")({
 });
 
 const STYLES = `
-.pdark *,.pdark *::before,.pdark *::after{box-sizing:border-box;margin:0;padding:0}
-.pdark{
-  --g:#25D366;--g2:#1ebe57;--g3:#128C7E;
-  --gl:rgba(37,211,102,0.10);--gl2:rgba(37,211,102,0.04);
-  --dark:#ffffff;--dark2:#f7faf7;--dark3:#f0f5f0;--card:#ffffff;
-  --border:rgba(37,211,102,0.25);--border2:rgba(17,24,17,0.08);
-  --text:#0a0f0a;--muted:#5a6a5a;--muted2:#8a9a8a;
-  --sans:'Geist',system-ui,sans-serif;--mono:'Geist Mono',monospace;
-  font-family:var(--sans);color:var(--text);background:var(--dark);font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;
+.pdark, .pdark *, .pdark *::before, .pdark *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.pdark {
+  --green: #00c853;
+  --green-mid: #00b248;
+  --green-dark: #007a32;
+  --green-xdark: #004d20;
+  --dk-bg: #07100a;
+  --dk-bg2: #0c180e;
+  --dk-surface: #121e14;
+  --dk-surface2: #182b1a;
+  --dk-border: rgba(0,200,83,0.14);
+  --dk-text: #eef8f0;
+  --dk-text2: #8fb898;
+  --dk-text3: #4e7557;
+  --cl-bg: #f4faf5;
+  --cl-bg2: #eaf4ec;
+  --cl-surface: #ffffff;
+  --cl-border: rgba(0,150,60,0.14);
+  --cl-text: #0a1a0d;
+  --cl-text2: #3d6345;
+  --cl-text3: #7aaa82;
+  --whatsapp: #25d366;
+  --ff: 'Public Sans', system-ui, sans-serif;
+  font-family: var(--ff);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
 }
+.pdark a { text-decoration: none; color: inherit; }
 
-.pdark .pd-header{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:rgba(255,255,255,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border2)}
-.pdark .pd-logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--text);text-decoration:none}
-.pdark .pd-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--g)}
-.pdark nav.pd-nav{display:flex;gap:2rem;align-items:center}
-.pdark .pd-nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
-.pdark .pd-nav a:hover{color:var(--text)}
-.pdark .hdr-right{display:flex;align-items:center;gap:12px}
-.pdark .btn-ghost{color:var(--muted);font-size:14px;font-weight:500;text-decoration:none;transition:color .2s}
-.pdark .btn-ghost:hover{color:var(--text)}
-.pdark .btn-g{background:var(--g);color:#fff;border:none;padding:9px 20px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:background .2s}
-.pdark .btn-g:hover{background:var(--g2)}
-.pdark .btn-outline{background:transparent;color:var(--g);border:1px solid var(--g);padding:9px 20px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
-.pdark .btn-outline:hover{background:var(--gl)}
+.pdark .dark  { background: var(--dk-bg);  color: var(--dk-text); position: relative; }
+.pdark .dark2 { background: var(--dk-bg2); color: var(--dk-text); position: relative; }
+.pdark .clean { background: var(--cl-bg);  color: var(--cl-text); }
+.pdark .clean2 { background: var(--cl-surface); color: var(--cl-text); }
 
-.pdark .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 5% 80px;position:relative;overflow:hidden}
-.pdark .hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:500px;background:radial-gradient(ellipse at 50% 0%, rgba(37,211,102,0.18) 0%, transparent 70%);pointer-events:none}
-.pdark .hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border2) 1px,transparent 1px),linear-gradient(90deg,var(--border2) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 70%);mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 70%);opacity:.4}
-.pdark .hero-badge{position:relative;display:inline-flex;align-items:center;gap:8px;background:var(--gl);border:1px solid var(--border);color:var(--g);font-size:12px;font-weight:500;padding:5px 14px;border-radius:999px;margin-bottom:28px;font-family:var(--mono)}
-.pdark .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--g);animation:pdpulse 2s infinite}
-@keyframes pdpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-.pdark .hero h1{position:relative;font-size:clamp(44px,6vw,80px);font-weight:900;line-height:1.0;letter-spacing:-3px;color:var(--text);margin-bottom:24px;max-width:900px}
-.pdark .hero h1 em{font-style:normal;color:var(--g)}
-.pdark .hero-sub{position:relative;font-size:18px;color:var(--muted);line-height:1.65;margin-bottom:40px;max-width:540px;font-weight:400}
-.pdark .hero-ctas{position:relative;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
-.pdark .btn-hero-lg{padding:15px 32px;font-size:16px;border-radius:999px;font-weight:700}
-.pdark .hero-social-proof{position:relative;display:flex;align-items:center;gap:12px;justify-content:center}
-.pdark .avatars{display:flex}
-.pdark .avatar{width:32px;height:32px;border-radius:50%;border:2px solid #ffffff;background:var(--gl);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--g3);margin-left:-8px;font-family:var(--mono)}
-.pdark .avatar:first-child{margin-left:0}
-.pdark .proof-text{font-size:13px;color:var(--muted);font-family:var(--mono)}
-.pdark .proof-text strong{color:var(--g)}
+/* NAV */
+.pdark .pd-nav-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 52px; height: 66px;
+  background: rgba(7,16,10,0.92);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--dk-border);
+}
+.pdark .nav-logo { display: flex; align-items: center; }
+.pdark .nav-logo img { height: 32px; display: block; filter: brightness(0) invert(1); }
+.pdark .nav-links { display: flex; align-items: center; gap: 34px; }
+.pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; }
+.pdark .nav-links a:hover { color: var(--dk-text); }
+.pdark .nav-cta { display: flex; align-items: center; gap: 12px; }
+.pdark .btn-ghost { font-size: 14px; font-weight: 500; color: var(--dk-text2); padding: 8px 20px; border-radius: 8px; border: 1px solid var(--dk-border); transition: all .2s; background: transparent; cursor: pointer; }
+.pdark .btn-ghost:hover { color: var(--dk-text); border-color: rgba(0,200,83,.4); }
+.pdark .btn-cta { font-size: 14px; font-weight: 700; color: #040a05; padding: 9px 22px; border-radius: 8px; background: var(--green); transition: all .2s; border: none; cursor: pointer; display: inline-block; }
+.pdark .btn-cta:hover { background: #33d974; transform: translateY(-1px); }
 
-.pdark .hero-mockup{margin-top:64px;position:relative;display:flex;justify-content:center;align-items:flex-start;gap:24px}
-.pdark .phone{width:240px;border-radius:32px;border:1.5px solid var(--border2);background:#ffffff;overflow:hidden;flex-shrink:0;box-shadow:0 12px 32px -8px rgba(0,0,0,.12)}
-.pdark .phone-bar{background:var(--g);padding:10px 14px;display:flex;align-items:center;gap:8px}
-.pdark .phone-bar-av{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.25)}
-.pdark .phone-bar-txt p{font-size:12px;font-weight:600;color:#fff;margin:0}
-.pdark .phone-bar-txt span{font-size:10px;color:rgba(255,255,255,.75);font-family:var(--mono)}
-.pdark .phone-chat{padding:10px;display:flex;flex-direction:column;gap:7px;background:#ECE5DD;min-height:260px}
-.pdark .bubble{padding:7px 11px;border-radius:10px;font-size:11.5px;line-height:1.45;max-width:82%}
-.pdark .b-in{background:#ffffff;border-radius:2px 10px 10px 10px;align-self:flex-start;color:#0a0f0a;box-shadow:0 1px 1px rgba(0,0,0,.08)}
-.pdark .b-out{background:#DCF8C6;border-radius:10px 2px 10px 10px;align-self:flex-end;color:#0a0f0a;box-shadow:0 1px 1px rgba(0,0,0,.08)}
-.pdark .b-card{background:#ffffff;border-radius:10px;overflow:hidden;width:88%;align-self:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.1)}
-.pdark .b-card-img{background:linear-gradient(135deg,#f0fdf4,#dcfce7);height:72px;display:flex;align-items:center;justify-content:center;font-size:28px}
-.pdark .b-card-body{padding:7px 10px}
-.pdark .b-card-body p{font-size:11px;font-weight:600;color:#0a0f0a;margin:0}
-.pdark .b-card-body span{font-size:11px;color:var(--g);font-weight:700;font-family:var(--mono)}
-.pdark .b-card-btn{background:var(--g);color:#fff;font-size:11px;font-weight:600;padding:6px;text-align:center;cursor:pointer}
-.pdark .float-card{position:absolute;right:-20px;top:40px;background:#ffffff;border:1px solid var(--border2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;white-space:nowrap;box-shadow:0 8px 24px -8px rgba(0,0,0,.12)}
-.pdark .float-dot{width:8px;height:8px;border-radius:50%;background:var(--g);flex-shrink:0;animation:pdpulse 2s infinite}
-.pdark .float-card p{font-size:12px;font-weight:500;color:var(--text);margin:0}
-.pdark .float-card span{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.pdark .float-metric{position:absolute;left:-24px;bottom:40px;background:#ffffff;border:1px solid var(--border2);border-radius:12px;padding:12px 16px;box-shadow:0 8px 24px -8px rgba(0,0,0,.12)}
-.pdark .float-metric-num{font-size:22px;font-weight:700;color:var(--g);font-family:var(--mono);line-height:1}
-.pdark .float-metric-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+/* HERO */
+.pdark .hero {
+  min-height: 100vh; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 110px 24px 80px;
+}
+.pdark .hero-radial {
+  position: absolute; top: -160px; left: 50%; transform: translateX(-50%);
+  width: 1000px; height: 680px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(0,200,83,.13) 0%, transparent 68%);
+  pointer-events: none; z-index: 0;
+}
+.pdark .hero > * { position: relative; z-index: 1; }
+.pdark .hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,200,83,.1); border: 1px solid rgba(0,200,83,.28);
+  border-radius: 100px; padding: 6px 18px;
+  font-size: 13px; font-weight: 600; color: var(--green);
+  margin-bottom: 32px; animation: pdfadeUp .55s ease both;
+}
+.pdark .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pdblink 2s infinite; }
+@keyframes pdblink { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+.pdark .hero h1 { font-size: clamp(44px, 6.2vw, 80px); font-weight: 900; letter-spacing: -2.5px; line-height: 1.08; max-width: 860px; animation: pdfadeUp .55s .08s ease both; color: var(--dk-text); }
+.pdark .hero h1 em { font-style: normal; color: var(--green); }
+.pdark .hero-sub { margin-top: 22px; font-size: clamp(16px, 1.4vw, 19px); color: var(--dk-text2); max-width: 560px; line-height: 1.75; font-weight: 400; animation: pdfadeUp .55s .16s ease both; }
+.pdark .hero-actions { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; animation: pdfadeUp .55s .24s ease both; }
+.pdark .btn-hero { font-size: 16px; font-weight: 800; color: #040a05; padding: 14px 34px; border-radius: 10px; background: var(--green); display: inline-flex; align-items: center; gap: 9px; box-shadow: 0 0 36px rgba(0,200,83,.32); transition: all .22s; border: none; cursor: pointer; }
+.pdark .btn-hero:hover { background: #33d974; transform: translateY(-2px); box-shadow: 0 0 54px rgba(0,200,83,.42); }
+.pdark .btn-outline { font-size: 16px; font-weight: 600; color: var(--dk-text2); padding: 14px 34px; border-radius: 10px; border: 1px solid var(--dk-border); transition: all .22s; display: inline-flex; align-items: center; gap: 8px; background: transparent; cursor: pointer; }
+.pdark .btn-outline:hover { color: var(--dk-text); border-color: rgba(0,200,83,.45); }
+.pdark .hero-note { margin-top: 20px; font-size: 13px; color: var(--dk-text3); animation: pdfadeUp .55s .32s ease both; }
+.pdark .hero-note strong { color: var(--dk-text2); }
 
-.pdark .ticker-wrap{background:var(--gl2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;overflow:hidden}
-.pdark .ticker{display:flex;gap:0;animation:pdticker 30s linear infinite;width:max-content}
-@keyframes pdticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.pdark .ticker-item{display:flex;align-items:center;gap:10px;padding:0 32px;font-size:13px;font-weight:500;font-family:var(--mono);color:var(--muted);white-space:nowrap}
-.pdark .ticker-dot{width:4px;height:4px;border-radius:50%;background:var(--g)}
+/* HERO DASHBOARD */
+.pdark .hero-dash { margin-top: 68px; width: 100%; max-width: 1020px; background: var(--dk-surface); border: 1px solid var(--dk-border); border-radius: 22px; overflow: hidden; box-shadow: 0 0 100px rgba(0,200,83,.1), 0 48px 96px rgba(0,0,0,.55); animation: pdfadeUp .8s .4s ease both; }
+.pdark .dash-bar { background: var(--dk-bg2); padding: 13px 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--dk-border); }
+.pdark .dr { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57 }
+.pdark .dy { width: 12px; height: 12px; border-radius: 50%; background: #febc2e }
+.pdark .dg { width: 12px; height: 12px; border-radius: 50%; background: #28c840 }
+.pdark .dash-url { margin-left: 12px; font-size: 12px; color: var(--dk-text3); }
+.pdark .dash-body { padding: 28px; display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
+.pdark .dc { background: var(--dk-bg); border: 1px solid var(--dk-border); border-radius: 12px; padding: 20px; }
+.pdark .dc-l { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--dk-text3); }
+.pdark .dc-v { font-size: 28px; font-weight: 900; color: var(--dk-text); margin-top: 6px; letter-spacing: -1px; }
+.pdark .dc-t { font-size: 12px; color: var(--green); margin-top: 4px; font-weight: 600; }
+.pdark .dc-table { grid-column: 1/-1; }
+.pdark .dc-table table { width: 100%; border-collapse: collapse; }
+.pdark .dc-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--dk-text3); padding: 8px 14px; text-align: left; font-weight: 600; }
+.pdark .dc-table td { font-size: 14px; color: var(--dk-text2); padding: 11px 14px; border-top: 1px solid var(--dk-border); }
+.pdark .tg { color: var(--green); background: rgba(0,200,83,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+.pdark .ty { color: #fbb040; background: rgba(251,176,64,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+@keyframes pdfadeUp { from { opacity: 0; transform: translateY(22px) } to { opacity: 1; transform: translateY(0) } }
 
-.pdark .section{padding:100px 5%;max-width:1200px;margin:0 auto}
-.pdark .section-full{padding:100px 5%}
-.pdark .stag{font-size:11px;font-weight:500;color:var(--g);text-transform:uppercase;letter-spacing:2px;font-family:var(--mono);margin-bottom:14px}
-.pdark .stitle{font-size:clamp(30px,3.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
-.pdark .ssub{font-size:16px;color:var(--muted);line-height:1.7;max-width:560px}
+/* MARQUEE */
+.pdark .marquee-wrap { overflow: hidden; padding: 17px 0; border-top: 1px solid var(--dk-border); border-bottom: 1px solid var(--dk-border); background: var(--dk-bg2); }
+.pdark .marquee-track { display: flex; white-space: nowrap; animation: pdmq 28s linear infinite; }
+.pdark .marquee-track:hover { animation-play-state: paused; }
+.pdark .mi { display: inline-flex; align-items: center; gap: 9px; padding: 0 30px; font-size: 13.5px; font-weight: 600; color: var(--dk-text3); flex-shrink: 0; }
+.pdark .mi::before { content: '✓'; color: var(--green); }
+@keyframes pdmq { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 
-.pdark .split{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.pdark .split-features{display:flex;flex-direction:column;gap:20px;margin-top:36px}
-.pdark .sf{display:flex;gap:14px;align-items:flex-start}
-.pdark .sf-icon{width:36px;height:36px;border-radius:8px;background:var(--gl);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pdark .sf-icon svg{width:18px;height:18px;stroke:var(--g);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.pdark .sf-txt h4{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
-.pdark .sf-txt p{font-size:13px;color:var(--muted);line-height:1.6}
+/* LAYOUT UTIL */
+.pdark .wrap { max-width: 1200px; margin: 0 auto; padding: 96px 52px; }
+.pdark .section-tag { display: inline-flex; align-items: center; gap: 10px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 2.2px; color: var(--green); margin-bottom: 18px; }
+.pdark .section-tag::before { content: ''; width: 18px; height: 1.5px; background: currentColor; }
+.pdark .section-tag.cl { color: var(--green-dark); }
+.pdark .sh2 { font-size: clamp(30px, 3.8vw, 50px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; max-width: 680px; margin-bottom: 18px; }
+.pdark .ssub { font-size: 17px; line-height: 1.75; font-weight: 400; max-width: 540px; }
 
-.pdark .dash-mockup{background:#ffffff;border:1px solid var(--border2);border-radius:16px;overflow:hidden;box-shadow:0 12px 32px -8px rgba(0,0,0,.10)}
-.pdark .dash-bar{background:#f7faf7;padding:10px 16px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border2)}
-.pdark .db{width:10px;height:10px;border-radius:50%}
-.pdark .dash-content{padding:20px;background:#ffffff}
-.pdark .dash-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-.pdark .dash-stat{background:#f7faf7;border:1px solid var(--border2);border-radius:10px;padding:14px}
-.pdark .dash-stat-n{font-size:20px;font-weight:700;color:var(--g);font-family:var(--mono);line-height:1}
-.pdark .dash-stat-l{font-size:11px;color:var(--muted);margin-top:4px}
-.pdark .dash-table{background:#ffffff;border:1px solid var(--border2);border-radius:10px;overflow:hidden}
-.pdark .dt-head{display:grid;grid-template-columns:1fr 1fr 80px;padding:10px 14px;border-bottom:1px solid var(--border2);background:#f7faf7}
-.pdark .dt-head span{font-size:11px;font-weight:500;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px}
-.pdark .dt-row{display:grid;grid-template-columns:1fr 1fr 80px;padding:10px 14px;border-bottom:1px solid var(--border2);align-items:center}
-.pdark .dt-row:last-child{border-bottom:none}
-.pdark .dt-row span{font-size:12px;color:var(--text)}
-.pdark .dt-badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:999px;font-family:var(--mono)}
-.pdark .dt-pago{background:rgba(37,211,102,.15);color:var(--g3)}
-.pdark .dt-pend{background:rgba(245,158,11,.15);color:#b45309}
+/* WHAT */
+.pdark .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 60px; }
+.pdark .wf-list { display: flex; flex-direction: column; gap: 16px; }
+.pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 20px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: all .22s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.pdark .wf:hover { border-color: rgba(0,150,60,.35); box-shadow: 0 4px 24px rgba(0,150,60,.08); }
+.pdark .wf-ic { width: 42px; height: 42px; flex-shrink: 0; border-radius: 10px; background: rgba(0,200,83,.1); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 4px; }
+.pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; }
 
-.pdark .hello-bg{background:var(--dark2)}
-.pdark .hello-inner{max-width:1200px;margin:0 auto;padding:100px 5%}
-.pdark .hello-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-.pdark .hello-scroll{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--card)}
-.pdark .hs-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
-.pdark .hs-dot{width:8px;height:8px;border-radius:50%;background:var(--g)}
-.pdark .hs-head span{font-size:12px;font-family:var(--mono);color:var(--muted)}
-.pdark .hs-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border2);transition:background .2s}
-.pdark .hs-item:last-child{border-bottom:none}
-.pdark .hs-item:hover{background:var(--gl2)}
-.pdark .hs-check{width:20px;height:20px;border-radius:50%;background:var(--gl);border:1px solid var(--g);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pdark .hs-check svg{width:10px;height:10px;stroke:var(--g);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.pdark .hs-item span{font-size:14px;color:var(--text);font-weight:500}
-.pdark .hello-text{display:flex;flex-direction:column;gap:12px}
-.pdark .hello-text .stag{margin-bottom:0}
+/* PHONE MOCK */
+.pdark .phone { background: #fff; border: 1px solid var(--cl-border); border-radius: 26px; padding: 28px; max-width: 330px; margin: 0 auto; box-shadow: 0 12px 64px rgba(0,100,40,.1); }
+.pdark .ph-head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--cl-border); margin-bottom: 18px; }
+.pdark .ph-av { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--green), var(--green-dark)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; color: #fff; }
+.pdark .ph-name { font-size: 15px; font-weight: 700; color: var(--cl-text); }
+.pdark .ph-on { font-size: 12px; color: var(--green); font-weight: 600; }
+.pdark .ph-prod { background: var(--cl-bg); border-radius: 14px; padding: 16px; display: flex; gap: 14px; align-items: center; margin-bottom: 14px; border: 1px solid var(--cl-border); }
+.pdark .ph-img { width: 56px; height: 56px; border-radius: 10px; background: linear-gradient(135deg,#d4f5dc,#a8e6b4); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.pdark .ph-pn { font-size: 14px; font-weight: 700; color: var(--cl-text); }
+.pdark .ph-pp { font-size: 20px; font-weight: 900; color: var(--green); margin-top: 2px; }
+.pdark .ph-btn { width: 100%; padding: 13px; background: var(--green); border-radius: 11px; text-align: center; color: #fff; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.pdark .ph-stat { margin-top: 18px; text-align: center; }
+.pdark .ph-sv { font-size: 30px; font-weight: 900; color: var(--green); letter-spacing: -1px; }
+.pdark .ph-sl { font-size: 12px; color: var(--cl-text3); font-weight: 500; }
 
-.pdark .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border2);border:1px solid var(--border2);border-radius:16px;overflow:hidden}
-.pdark .feat-card{background:var(--dark);padding:32px 28px;transition:background .3s}
-.pdark .feat-card:hover{background:var(--dark3)}
-.pdark .feat-num{font-size:11px;font-weight:500;color:var(--muted2);font-family:var(--mono);margin-bottom:20px}
-.pdark .feat-icon{width:44px;height:44px;border-radius:10px;background:var(--gl);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
-.pdark .feat-icon svg{width:22px;height:22px;stroke:var(--g);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.pdark .feat-card h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px}
-.pdark .feat-card p{font-size:13px;color:var(--muted);line-height:1.65}
+/* STATS */
+.pdark .stats-band { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--cl-border); border: 1px solid var(--cl-border); border-radius: 16px; overflow: hidden; margin-top: 60px; }
+.pdark .sc { background: #fff; padding: 32px 24px; text-align: center; transition: background .2s; }
+.pdark .sc:hover { background: var(--cl-bg2); }
+.pdark .sn { font-size: 42px; font-weight: 900; color: var(--cl-text); letter-spacing: -2px; }
+.pdark .sn em { font-style: normal; color: var(--green); }
+.pdark .sl { font-size: 13.5px; color: var(--cl-text2); margin-top: 6px; font-weight: 500; }
 
-.pdark .steps-bg{background:var(--dark2)}
-.pdark .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:56px}
-.pdark .step-card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:32px 28px;position:relative;overflow:hidden}
-.pdark .step-card::before{content:attr(data-n);position:absolute;top:-10px;right:16px;font-size:80px;font-weight:900;color:rgba(37,211,102,.05);font-family:var(--mono);line-height:1}
-.pdark .step-n{font-size:11px;font-weight:500;color:var(--g);font-family:var(--mono);margin-bottom:16px;letter-spacing:1px}
-.pdark .step-card h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px}
-.pdark .step-card p{font-size:14px;color:var(--muted);line-height:1.65}
+/* VS */
+.pdark .vs-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: stretch; margin-top: 56px; }
+.pdark .vs-card { border-radius: 22px; padding: 36px; }
+.pdark .vs-card-bad { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+.pdark .vs-card-good { background: rgba(0,200,83,0.05); border: 2px solid rgba(0,200,83,0.45); box-shadow: 0 0 60px rgba(0,200,83,0.1); }
+.pdark .vs-card-title { font-size: 16px; font-weight: 800; margin-bottom: 28px; color: var(--dk-text); display: flex; align-items: center; gap: 10px; }
+.pdark .vs-card-bad .vs-card-title { color: var(--dk-text2); }
+.pdark .vs-card-good .vs-card-title { color: var(--green); }
+.pdark .vs-divider { display: flex; align-items: center; justify-content: center; width: 72px; flex-shrink: 0; }
+.pdark .vs-badge-pill { background: var(--dk-bg); border: 1.5px solid var(--dk-border); border-radius: 100px; padding: 8px 14px; font-size: 12px; font-weight: 900; color: var(--dk-text3); letter-spacing: 1px; }
+.pdark .vs-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; line-height: 1.5; }
+.pdark .vs-item:last-child { border-bottom: none; }
+.pdark .vs-card-bad .vs-item { color: var(--dk-text3); }
+.pdark .vs-card-good .vs-item { color: var(--dk-text); font-weight: 500; }
+.pdark .ic-bad { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: rgba(224,85,85,0.12); border: 1px solid rgba(224,85,85,0.2); display: flex; align-items: center; justify-content: center; }
+.pdark .ic-bad svg { width: 14px; height: 14px; stroke: #e05555; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+.pdark .ic-good { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: rgba(0,200,83,0.15); border: 1px solid rgba(0,200,83,0.3); display: flex; align-items: center; justify-content: center; }
+.pdark .ic-good svg { width: 14px; height: 14px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
-.pdark .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:56px}
-.pdark .testi-card{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:28px 24px;display:flex;flex-direction:column;gap:0}
-.pdark .testi-stars{display:flex;gap:3px;margin-bottom:16px}
-.pdark .star{color:var(--g);font-size:14px}
-.pdark .testi-text{font-size:14px;color:var(--text);line-height:1.75;margin-bottom:24px;flex:1}
-.pdark .testi-author{display:flex;align-items:center;gap:10px;border-top:1px solid var(--border2);padding-top:16px}
-.pdark .testi-av{width:36px;height:36px;border-radius:50%;background:var(--gl);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--g);font-family:var(--mono);flex-shrink:0}
-.pdark .testi-name{font-size:13px;font-weight:600;color:var(--text)}
-.pdark .testi-role{font-size:11px;color:var(--muted);font-family:var(--mono)}
+/* FEATURES */
+.pdark .feats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
+.pdark .fc { background: #fff; border: 1px solid var(--cl-border); border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: all .25s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.pdark .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 900; color: rgba(0,150,60,.05); line-height: 1; pointer-events: none; letter-spacing: -3px; }
+.pdark .fc:hover { border-color: rgba(0,150,60,.35); transform: translateY(-4px); box-shadow: 0 10px 40px rgba(0,150,60,.1); }
+.pdark .fc-ic { font-size: 28px; margin-bottom: 16px; }
+.pdark .fc h3 { font-size: 17px; font-weight: 800; color: var(--cl-text); margin-bottom: 8px; }
+.pdark .fc p  { font-size: 14px; color: var(--cl-text2); line-height: 1.65; }
 
-.pdark .metrics-strip{background:var(--dark2);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
-.pdark .metrics-inner{max-width:1200px;margin:0 auto;padding:48px 5%;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
-.pdark .metric{text-align:center;padding:0 1rem;border-right:1px solid var(--border2)}
-.pdark .metric:last-child{border-right:none}
-.pdark .metric-num{font-size:40px;font-weight:900;color:var(--g);font-family:var(--mono);letter-spacing:-2px;line-height:1}
-.pdark .metric-lbl{font-size:13px;color:var(--muted);margin-top:6px}
+/* STEPS */
+.pdark .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; margin-top: 56px; }
+.pdark .step { position: relative; padding: 32px 28px; border-radius: 18px; background: var(--dk-surface); border: 1px solid var(--dk-border); }
+.pdark .step::after { content: '→'; position: absolute; right: -18px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--dk-text3); }
+.pdark .step:last-child::after { display: none; }
+.pdark .step-n { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; color: var(--green); margin-bottom: 14px; }
+.pdark .step h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: var(--dk-text); }
+.pdark .step p { font-size: 14px; color: var(--dk-text2); line-height: 1.65; }
 
-.pdark .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:56px}
-.pdark .p-card{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;position:relative;transition:border-color .2s}
-.pdark .p-card:hover{border-color:var(--muted2)}
-.pdark .p-card.pop{border-color:var(--g)}
-.pdark .pop-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;font-size:11px;font-weight:500;padding:4px 16px;border-radius:999px;white-space:nowrap;font-family:var(--mono);letter-spacing:.5px}
-.pdark .p-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-family:var(--mono)}
-.pdark .p-price{font-size:44px;font-weight:900;color:var(--text);letter-spacing:-2px;line-height:1;margin-bottom:6px}
-.pdark .p-price sup{font-size:18px;font-weight:500;vertical-align:super;font-family:var(--mono)}
-.pdark .p-price sub{font-size:14px;font-weight:400;color:var(--muted);letter-spacing:0;font-family:var(--mono)}
-.pdark .p-desc{font-size:13px;color:var(--muted);margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border2)}
-.pdark .p-feats{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:28px;flex:1}
-.pdark .p-feats li{font-size:13px;color:var(--text);display:flex;align-items:center;gap:9px}
-.pdark .p-check{width:16px;height:16px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pdark .p-check svg{width:9px;height:9px;stroke:var(--g);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.pdark .p-note{text-align:center;font-size:12px;color:var(--muted2);margin-top:24px;font-family:var(--mono);transition:opacity .2s}
-.pdark .billing-toggle{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:40px}
-.pdark .billing-label{font-size:14px;font-weight:500;color:var(--muted);transition:color .2s}
-.pdark .billing-label.active{color:var(--text)}
-.pdark .billing-switch{position:relative;display:inline-flex;height:28px;width:50px;align-items:center;border-radius:999px;background:#e5e7eb;cursor:pointer;border:none;transition:background .2s;padding:0;flex-shrink:0}
-.pdark .billing-switch.on{background:#25D366}
-.pdark .billing-switch:focus-visible{outline:2px solid #25D366;outline-offset:2px}
-.pdark .billing-thumb{display:inline-block;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transform:translateX(4px);transition:transform .2s}
-.pdark .billing-switch.on .billing-thumb{transform:translateX(26px)}
-.pdark .billing-badge{display:inline-flex;align-items:center;background:#f0fdf4;color:#27500A;font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px}
-.pdark .p-savings{overflow:hidden;max-height:0;opacity:0;transition:max-height .25s ease,opacity .2s ease,margin .2s ease;font-size:12px;font-weight:500;color:#3B6D11;font-family:var(--mono)}
-.pdark .p-savings.show{max-height:32px;opacity:1;margin-top:6px;margin-bottom:6px}
+/* TESTIMONIALS */
+.pdark .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
+.pdark .tc { background: var(--dk-surface); border: 1px solid var(--dk-border); border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 14px; transition: border-color .2s; }
+.pdark .tc:hover { border-color: rgba(0,200,83,.32); }
+.pdark .tc-stars { color: var(--green); font-size: 14px; letter-spacing: 2px; }
+.pdark .tc-text { font-size: 15px; color: var(--dk-text2); line-height: 1.75; flex: 1; font-weight: 400; }
+.pdark .tc-auth { display: flex; gap: 12px; align-items: center; border-top: 1px solid var(--dk-border); padding-top: 14px; }
+.pdark .tc-av { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--green-dark), var(--dk-bg)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--green); }
+.pdark .tc-name { font-size: 14px; font-weight: 700; color: var(--dk-text); }
+.pdark .tc-role { font-size: 12px; color: var(--dk-text3); }
 
-.pdark .faq-bg{background:var(--dark2)}
-.pdark .faq-inner{max-width:720px;margin:0 auto;margin-top:56px}
-.pdark .faq-item{border-bottom:1px solid var(--border2)}
-.pdark .faq-q{width:100%;padding:20px 0;background:transparent;text-align:left;border:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:600;color:var(--text);gap:16px;transition:color .2s}
-.pdark .faq-q:hover,.pdark .faq-q.open{color:var(--g)}
-.pdark .faq-icon svg{stroke:var(--muted);transition:transform .3s,stroke .2s;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.pdark .faq-q.open .faq-icon svg{transform:rotate(45deg);stroke:var(--g)}
-.pdark .faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s ease;font-size:14px;color:var(--muted);line-height:1.75}
-.pdark .faq-a.open{max-height:300px;padding-bottom:20px}
+/* PRICING */
+.pdark .billing-toggle { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 40px; }
+.pdark .billing-label { font-size: 14px; font-weight: 600; color: var(--cl-text3); transition: color .2s; }
+.pdark .billing-label.active { color: var(--cl-text); }
+.pdark .billing-switch { position: relative; display: inline-flex; height: 28px; width: 50px; align-items: center; border-radius: 999px; background: #d1ddd3; cursor: pointer; border: none; transition: background .2s; padding: 0; flex-shrink: 0; }
+.pdark .billing-switch.on { background: var(--green); }
+.pdark .billing-switch:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.pdark .billing-thumb { display: inline-block; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transform: translateX(4px); transition: transform .2s; }
+.pdark .billing-switch.on .billing-thumb { transform: translateX(26px); }
+.pdark .billing-badge { display: inline-flex; align-items: center; background: rgba(0,200,83,.12); color: var(--green-dark); font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 999px; }
 
-.pdark .cta-final{background:var(--g);padding:100px 5%;text-align:center;position:relative;overflow:hidden}
-.pdark .cta-final::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -20%, rgba(255,255,255,.15) 0%, transparent 60%);pointer-events:none}
-.pdark .cta-final h2{position:relative;font-size:clamp(36px,5vw,60px);font-weight:900;color:#fff;letter-spacing:-2px;margin-bottom:14px;line-height:1.05}
-.pdark .cta-final p{position:relative;font-size:16px;color:rgba(255,255,255,.85);margin-bottom:36px;font-family:var(--mono)}
-.pdark .btn-white{position:relative;background:#fff;color:var(--g);border:none;padding:15px 36px;border-radius:999px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s}
-.pdark .btn-white:hover{background:rgba(255,255,255,.92);transform:translateY(-1px)}
+.pdark .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 36px; }
+.pdark .pc { background: #fff; border: 1px solid var(--cl-border); border-radius: 22px; padding: 34px; position: relative; transition: all .22s; box-shadow: 0 1px 4px rgba(0,0,0,.04); display: flex; flex-direction: column; }
+.pdark .pc.pop { border-color: var(--green); background: linear-gradient(160deg, rgba(0,200,83,.06) 0%, #fff 60%); box-shadow: 0 8px 40px rgba(0,200,83,.14); }
+.pdark .pop-lb { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--green); color: #040a05; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 18px; border-radius: 100px; }
+.pdark .pc-plan { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--cl-text3); margin-bottom: 12px; }
+.pdark .pc-val { font-size: 46px; font-weight: 900; color: var(--cl-text); letter-spacing: -2px; line-height: 1; display: flex; align-items: baseline; gap: 4px; }
+.pdark .pc-val sup { font-size: 22px; color: var(--cl-text2); font-weight: 600; vertical-align: super; }
+.pdark .pc-val sub { font-size: 14px; color: var(--cl-text3); font-weight: 500; vertical-align: baseline; }
+.pdark .pc-per { font-size: 13px; color: var(--cl-text3); margin: 6px 0 6px; min-height: 20px; }
+.pdark .pc-savings { overflow: hidden; max-height: 0; opacity: 0; transition: max-height .25s ease, opacity .2s ease, margin .2s ease; font-size: 12px; font-weight: 600; color: var(--green-dark); }
+.pdark .pc-savings.show { max-height: 32px; opacity: 1; margin-top: 4px; margin-bottom: 6px; }
+.pdark .pc-desc { font-size: 13px; color: var(--cl-text2); margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--cl-border); margin-top: 14px; }
+.pdark .pc-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; flex: 1; }
+.pdark .pc-list li { display: flex; gap: 10px; font-size: 14px; color: var(--cl-text2); align-items: flex-start; }
+.pdark .pc-check { width: 20px; height: 20px; flex-shrink: 0; border-radius: 6px; background: rgba(0,200,83,0.15); border: 1px solid rgba(0,200,83,0.3); display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
+.pdark .pc-check svg { width: 11px; height: 11px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.pdark .bp { width: 100%; padding: 14px; border-radius: 10px; text-align: center; display: block; font-size: 14px; font-weight: 800; transition: all .2s; cursor: pointer; }
+.pdark .bp.out { border: 1.5px solid var(--cl-border); color: var(--cl-text2); background: transparent; }
+.pdark .bp.out:hover { border-color: rgba(0,150,60,.5); color: var(--cl-text); }
+.pdark .bp.fill { background: var(--green); color: #040a05; border: none; }
+.pdark .bp.fill:hover { background: #33d974; }
+.pdark .p-note { text-align: center; font-size: 13px; color: var(--cl-text3); margin-top: 22px; font-weight: 500; }
+.pdark .p-note strong { color: var(--green-dark); }
 
-.pdark .pd-footer{background:#0a0f0a;padding:64px 5% 32px;color:#f0f7f0}
-.pdark .foot-inner{max-width:1200px;margin:0 auto}
-.pdark .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:48px}
-.pdark .foot-brand p{font-size:13px;color:rgba(255,255,255,.55);line-height:1.75;margin-top:14px;max-width:280px}
-.pdark .foot-col h4{font-size:11px;font-weight:500;color:rgba(255,255,255,.7);margin-bottom:16px;text-transform:uppercase;letter-spacing:1.5px;font-family:var(--mono)}
-.pdark .foot-col a{display:block;font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;margin-bottom:10px;transition:color .2s}
-.pdark .foot-col a:hover{color:var(--g)}
-.pdark .foot-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.pdark .foot-bottom p{font-size:12px;color:rgba(255,255,255,.5);font-family:var(--mono)}
-.pdark .foot-socials{display:flex;gap:10px}
-.pdark .soc{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;transition:all .2s;cursor:pointer}
-.pdark .soc:hover{background:var(--gl);border-color:var(--border)}
-.pdark .soc svg{width:15px;height:15px;fill:rgba(255,255,255,.55);transition:fill .2s}
-.pdark .soc:hover svg{fill:var(--g)}
+/* FAQ */
+.pdark .faq-list { margin-top: 56px; border: 1px solid var(--cl-border); border-radius: 18px; overflow: hidden; background: #fff; }
+.pdark .faq-item { border-bottom: 1px solid var(--cl-border); }
+.pdark .faq-item:last-child { border-bottom: none; }
+.pdark .faq-q { width: 100%; padding: 22px 28px; font-size: 16px; font-weight: 700; color: var(--cl-text); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background .2s; user-select: none; background: transparent; border: none; text-align: left; }
+.pdark .faq-q:hover { background: var(--cl-bg); }
+.pdark .faq-arr { color: var(--green); font-size: 24px; transition: transform .3s; flex-shrink: 0; line-height: 1; font-weight: 400; }
+.pdark .faq-a { padding: 0 28px; max-height: 0; overflow: hidden; font-size: 15px; color: var(--cl-text2); line-height: 1.75; transition: max-height .35s ease, padding .35s ease; }
+.pdark .faq-item.open .faq-a { max-height: 260px; padding: 0 28px 22px; }
+.pdark .faq-item.open .faq-arr { transform: rotate(45deg); }
 
-@media(max-width:900px){
-  .pdark nav.pd-nav,.pdark .hdr-right .btn-outline{display:none}
-  .pdark .hero h1{letter-spacing:-2px}
-  .pdark .split,.pdark .hello-grid,.pdark .feat-grid{grid-template-columns:1fr}
-  .pdark .hero-mockup{display:none}
-  .pdark .pricing-grid,.pdark .testi-grid,.pdark .steps-grid,.pdark .foot-grid{grid-template-columns:1fr}
-  .pdark .metrics-inner{grid-template-columns:repeat(2,1fr)}
-  .pdark .metric{border-right:none;border-bottom:1px solid var(--border2);padding-bottom:24px}
+/* CTA FINAL */
+.pdark .cta-sec { text-align: center; padding: 100px 52px; position: relative; }
+.pdark .cta-sec::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 800px; height: 500px; background: radial-gradient(ellipse, rgba(0,200,83,.11) 0%, transparent 68%); pointer-events: none; z-index: 0; }
+.pdark .cta-sec > * { position: relative; z-index: 1; }
+.pdark .cta-sec h2 { font-size: clamp(36px, 4.5vw, 58px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; color: var(--dk-text); }
+.pdark .cta-sec p { font-size: 18px; color: var(--dk-text2); margin-bottom: 38px; font-weight: 400; }
+.pdark .cta-note { margin-top: 18px; font-size: 13px; color: var(--dk-text3); }
+.pdark .cta-note strong { color: var(--dk-text2); }
+
+/* FOOTER */
+.pdark .pd-foot { background: var(--dk-bg); border-top: 1px solid var(--dk-border); padding: 64px 52px 40px; }
+.pdark .f-inner { max-width: 1200px; margin: 0 auto; }
+.pdark .f-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
+.pdark .f-brand img { height: 28px; filter: brightness(0) invert(1); }
+.pdark .f-brand p { font-size: 14px; color: var(--dk-text3); margin-top: 12px; max-width: 240px; line-height: 1.65; }
+.pdark .f-col h4 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--dk-text3); margin-bottom: 16px; }
+.pdark .f-col a { display: block; font-size: 14px; color: var(--dk-text3); margin-bottom: 10px; transition: color .2s; cursor: pointer; }
+.pdark .f-col a:hover { color: var(--dk-text); }
+.pdark .f-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--dk-border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--dk-text3); flex-wrap: wrap; gap: 12px; }
+
+/* WA float */
+.pdark .wa { position: fixed; bottom: 28px; right: 28px; z-index: 300; width: 56px; height: 56px; border-radius: 50%; background: var(--whatsapp); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 28px rgba(37,211,102,.45); cursor: pointer; transition: transform .2s; }
+.pdark .wa:hover { transform: scale(1.1); }
+.pdark .wa svg { width: 28px; height: 28px; fill: white; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .pdark .pd-nav-bar { padding: 0 20px; }
+  .pdark .nav-links { display: none; }
+  .pdark .wrap, .pdark .pd-foot { padding-left: 20px; padding-right: 20px; }
+  .pdark .wrap { padding-top: 72px; padding-bottom: 72px; }
+  .pdark .what-grid, .pdark .feats-grid, .pdark .steps-grid, .pdark .testi-grid, .pdark .pricing-grid { grid-template-columns: 1fr; }
+  .pdark .stats-band { grid-template-columns: 1fr 1fr; }
+  .pdark .step::after { display: none; }
+  .pdark .vs-comparison { grid-template-columns: 1fr; gap: 16px; }
+  .pdark .vs-divider { width: 100%; height: 40px; }
+  .pdark .f-grid { grid-template-columns: 1fr 1fr; }
+  .pdark .dash-body { grid-template-columns: 1fr 1fr; }
+  .pdark .hero h1 { font-size: 40px; letter-spacing: -1.5px; }
+  .pdark .cta-sec { padding: 72px 20px; }
 }
 `;
 
 const TICKER_ITEMS = [
-  "Produtos ilimitados", "Checkout pelo WhatsApp", "Cupons e promoções", "Gestão de estoque",
-  "Domínio personalizado", "Relatórios em tempo real", "Temas profissionais", "Suporte humanizado",
-];
-
-const HELLO_ITEMS = [
-  "checkout nativo pelo WhatsApp", "zero comissão por venda", "catálogo automático integrado",
-  "temas profissionais inclusos", "gestão de estoque em tempo real", "domínio personalizado incluso",
-  "suporte humanizado via WhatsApp", "relatórios e analytics integrados",
+  "Produtos Ilimitados",
+  "Checkout pelo WhatsApp",
+  "Zero Comissão por Venda",
+  "Domínio Personalizado",
+  "Cupons e Promoções",
+  "Gestão de Estoque",
+  "Relatórios em Tempo Real",
+  "Temas Profissionais",
+  "Suporte Humanizado",
+  "Pagamentos Integrados",
 ];
 
 const FEATURES = [
-  { n: "01", t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor/tamanho e controle de estoque.", icon: <><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></> },
-  { n: "02", t: "Checkout pelo WhatsApp", d: "O cliente clica em 'comprar' e vai direto para o WhatsApp. Alta conversão, zero fricção.", icon: <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/> },
-  { n: "03", t: "Cupons e promoções", d: "Crie cupons de desconto, promoções relâmpago e frete grátis para vender mais.", icon: <path d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/> },
-  { n: "04", t: "Pagamentos integrados", d: "Aceite Pix, cartão de crédito e boleto. Integração com os principais gateways do Brasil.", icon: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/> },
-  { n: "05", t: "Domínio personalizado", d: "Use seu próprio domínio (.com.br) e passe mais credibilidade para seus clientes.", icon: <><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></> },
-  { n: "06", t: "Analytics em tempo real", d: "Veja quais produtos vendem mais, de onde vêm seus clientes e quanto você fatura.", icon: <><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></> },
+  { n: "01", ic: "📦", t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor e tamanho, e controle de estoque completo." },
+  { n: "02", ic: "💬", t: "Checkout pelo WhatsApp", d: "O cliente clica em 'comprar' e vai direto para o WhatsApp. Alta conversão, zero fricção, sem redirecionamentos." },
+  { n: "03", ic: "🏷️", t: "Cupons e promoções", d: "Crie cupons de desconto, promoções relâmpago e frete grátis para vender mais em datas especiais." },
+  { n: "04", ic: "💳", t: "Pagamentos integrados", d: "Aceite Pix, cartão de crédito e boleto. Integração com os principais gateways do Brasil já incluída." },
+  { n: "05", ic: "🌐", t: "Domínio personalizado", d: "Use seu próprio domínio (.com.br) e transmita mais credibilidade e profissionalismo." },
+  { n: "06", ic: "📈", t: "Analytics em tempo real", d: "Veja quais produtos vendem mais, de onde vêm seus clientes e quanto você fatura." },
 ];
 
 const TESTIMONIALS = [
-  { av: "AN", name: "Ana Costa", role: "loja de roupas · SP", text: "Em 3 semanas já tinha recuperado o investimento. Minha loja ficou profissional e meus clientes adoraram a facilidade de comprar direto pelo WhatsApp." },
-  { av: "MR", name: "Marcos Ribeiro", role: "pet shop · MG", text: "Nunca imaginei que criar uma loja seria tão fácil. Em 30 minutos estava tudo no ar. Hoje faço 3x mais vendas do que antes de usar a ShopBox." },
-  { av: "JS", name: "Juliana Santos", role: "cosméticos · RJ", text: "O suporte é incrível. Respondem em minutos pelo próprio WhatsApp. A plataforma é intuitiva e o checkout aumentou muito minha taxa de conversão." },
+  { av: "AC", name: "Ana Costa", role: "Loja de roupas · SP", text: "Em 3 semanas já tinha recuperado o investimento. Minha loja ficou profissional e meus clientes adoraram comprar direto pelo WhatsApp." },
+  { av: "MR", name: "Marcos Ribeiro", role: "Pet shop · MG", text: "Nunca imaginei que criar uma loja seria tão fácil. Em 30 minutos estava tudo no ar. Hoje faço 3x mais vendas do que antes." },
+  { av: "JS", name: "Juliana Santos", role: "Cosméticos · RJ", text: "O suporte é incrível. Respondem em minutos pelo próprio WhatsApp. A plataforma é intuitiva e minha taxa de conversão disparou." },
 ];
 
 const FAQS = [
   { q: "Preciso de cartão de crédito para testar?", a: "Não! Os 7 dias de teste são completamente gratuitos. Você só cadastra um meio de pagamento se decidir continuar após o período de teste." },
   { q: "Posso cancelar quando quiser?", a: "Sim, sem fidelidade. Você pode cancelar a qualquer momento diretamente pelo painel, sem burocracia e sem multas." },
   { q: "Como funciona o checkout pelo WhatsApp?", a: "Quando o cliente clica em 'comprar' na sua loja, ele é direcionado para uma conversa no WhatsApp onde finaliza o pedido. É direto, rápido e tem altíssima taxa de conversão." },
-  { q: "Quais formas de pagamento posso aceitar?", a: "Você pode aceitar Pix, boleto bancário e cartão de crédito/débito. As integrações com os principais gateways do Brasil já estão incluídas." },
+  { q: "Quais formas de pagamento posso aceitar?", a: "Você pode aceitar Pix, boleto bancário e cartão de crédito e débito. As integrações com os principais gateways do Brasil já estão incluídas em todos os planos." },
   { q: "Preciso de CNPJ para abrir minha loja?", a: "Não! Você pode começar com CPF. Quando formalizar como MEI ou empresa, basta atualizar os dados no painel sem precisar recriar a loja." },
   { q: "A ShopBox cobra comissão por venda?", a: "Não cobramos nenhuma comissão sobre suas vendas. Você paga apenas a mensalidade do plano e fica com 100% do que vender." },
+  { q: "A ShopBox funciona em qualquer nicho?", a: "Sim! A plataforma atende lojistas de moda, acessórios, cosméticos, pet shop, alimentos, artesanato e muito mais." },
 ];
+
+const WA_LINK = "https://wa.me/5518981586111?text=Ol%C3%A1,%20vim%20do%20site%20da%20Shopbox%20e%20quero%20vender%20mais%20pelo%20WhatsApp.";
+
+function WhatsAppIcon({ size = 17, color = "currentColor" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.125.553 4.122 1.524 5.855L.057 23.143l5.432-1.424A11.948 11.948 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.666-.523-5.184-1.434l-.372-.22-3.225.846.861-3.14-.242-.385A9.951 9.951 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+    </svg>
+  );
+}
 
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -293,186 +375,203 @@ function LandingPage() {
     <div className="pdark">
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
 
-      <header className="pd-header">
-        <Link to="/" className="pd-logo">
-          <span className="pd-logo-dot" />shopbox
+      {/* NAV */}
+      <nav className="pd-nav-bar">
+        <Link to="/" className="nav-logo">
+          <img src={logoUrl} alt="ShopBox" />
         </Link>
-        <nav className="pd-nav">
+        <div className="nav-links">
           <a href="#sobre">Funcionalidades</a>
           <a href="#como-funciona">Como funciona</a>
           <a href="#precos">Preços</a>
           <a href="#faq">FAQ</a>
-        </nav>
-        <div className="hdr-right">
+        </div>
+        <div className="nav-cta">
           <Link to="/login" className="btn-ghost">Entrar</Link>
-          <Link to="/cadastro" className="btn-g">Testar grátis</Link>
+          <Link to="/cadastro" className="btn-cta">Testar grátis</Link>
         </div>
-      </header>
+      </nav>
 
-      <section className="hero">
-        <div className="hero-glow" />
-        <div className="hero-grid" />
-        <div className="hero-badge">+12.000 lojas ativas no WhatsApp</div>
-        <h1>
-          A plataforma de<br />
-          <em>e-commerce</em> feita<br />
-          para o WhatsApp
-        </h1>
-        <p className="hero-sub">Monte sua loja em minutos, compartilhe o link no WhatsApp e comece a receber pedidos hoje mesmo.</p>
-        <div className="hero-ctas">
-          <Link to="/cadastro" className="btn-g btn-hero-lg">Testar grátis por 7 dias</Link>
-        </div>
-        <div className="hero-social-proof">
-          <div className="avatars">
-            {["AN","MR","JS","PL","+"].map((a,i) => <div key={i} className="avatar">{a}</div>)}
+      {/* HERO · DARK */}
+      <div className="dark">
+        <div className="hero-radial" />
+        <div className="hero">
+          <div className="hero-badge">+12.000 lojas ativas no WhatsApp</div>
+          <h1>
+            A plataforma de <em>e-commerce</em>
+            <br />
+            feita para o WhatsApp
+          </h1>
+          <p className="hero-sub">
+            Monte sua loja em minutos, compartilhe o link e comece a receber pedidos hoje. Sem marketplace, sem comissão, sem complicação.
+          </p>
+          <div className="hero-actions">
+            <Link to="/cadastro" className="btn-hero">
+              <WhatsAppIcon />
+              Testar grátis por 7 dias
+            </Link>
+            <a href="#como-funciona" className="btn-outline">Como funciona →</a>
           </div>
-          <p className="proof-text">Nota <strong>4.9</strong> por mais de <strong>12 mil</strong> lojistas</p>
-        </div>
+          <p className="hero-note">
+            Nota <strong>4.9</strong> por mais de <strong>12 mil lojistas</strong> · sem cartão de crédito
+          </p>
 
-        <div className="hero-mockup">
-          <div style={{ position: "relative" }}>
-            <div className="phone">
-              <div className="phone-bar">
-                <div className="phone-bar-av" />
-                <div className="phone-bar-txt"><p>Loja da Ana</p><span>online agora</span></div>
-              </div>
-              <div className="phone-chat">
-                <div className="bubble b-in">Oi! Ainda tem o vestido rosa?</div>
-                <div className="bubble b-out">Sim! Olha que lindo 😍</div>
-                <div className="b-card">
-                  <div className="b-card-img">👗</div>
-                  <div className="b-card-body">
-                    <p>Vestido Floral Rosa</p>
-                    <span>R$ 189,90</span>
-                  </div>
-                  <div className="b-card-btn">Comprar agora</div>
-                </div>
-                <div className="bubble b-in" style={{ fontSize: 11 }}>Amei! Como pago?</div>
-                <div className="bubble b-out" style={{ fontSize: 11 }}>Pix ou cartão ✅ Link de pagamento aqui</div>
-              </div>
+          <div className="hero-dash">
+            <div className="dash-bar">
+              <div className="dr" /><div className="dy" /><div className="dg" />
+              <span className="dash-url">minhaloja.shopboxapp.com.br</span>
             </div>
-            <div className="float-card">
-              <span className="float-dot" />
-              <div>
-                <p>Compra finalizada!</p>
-                <span>há 2 min · R$ 189,90</span>
+            <div className="dash-body">
+              <div className="dc"><div className="dc-l">Faturamento</div><div className="dc-v">R$47k</div><div className="dc-t">↑ +23% esse mês</div></div>
+              <div className="dc"><div className="dc-l">Pedidos</div><div className="dc-v">847</div><div className="dc-t">↑ +18% esse mês</div></div>
+              <div className="dc"><div className="dc-l">Conversão</div><div className="dc-v">94%</div><div className="dc-t">↑ 3x mais que site</div></div>
+              <div className="dc"><div className="dc-l">Clientes</div><div className="dc-v">1.2k</div><div className="dc-t">↑ +41 novos hoje</div></div>
+              <div className="dc dc-table">
+                <table>
+                  <thead><tr><th>Produto</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td>Vestido Floral Rosa</td><td>Ana C.</td><td>R$ 189,90</td><td><span className="tg">Pago</span></td></tr>
+                    <tr><td>Tênis Runner Pro</td><td>João M.</td><td>R$ 320,00</td><td><span className="tg">Pago</span></td></tr>
+                    <tr><td>Bolsa em Couro</td><td>Maria L.</td><td>R$ 450,00</td><td><span className="ty">Pendente</span></td></tr>
+                    <tr><td>Camisa Polo Classic</td><td>Pedro S.</td><td>R$ 89,90</td><td><span className="tg">Pago</span></td></tr>
+                  </tbody>
+                </table>
               </div>
-            </div>
-            <div className="float-metric">
-              <div className="float-metric-num">R$47k</div>
-              <div className="float-metric-lbl">faturamento esse mês</div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <div className="ticker-wrap">
-        <div className="ticker">
+      {/* MARQUEE */}
+      <div className="marquee-wrap">
+        <div className="marquee-track">
           {[...TICKER_ITEMS, ...TICKER_ITEMS].map((t, i) => (
-            <span key={i} className="ticker-item"><span className="ticker-dot" />{t}</span>
+            <div key={i} className="mi">{t}</div>
           ))}
         </div>
       </div>
 
-      <div id="sobre">
-        <div className="section" style={{ paddingBottom: 0 }}>
-          <div className="split">
-            <div>
-              <div className="stag">O que é a ShopBox</div>
-              <h2 className="stitle">Mais vendas,<br />menos complicação</h2>
-              <p className="ssub">A ShopBox foi criada para quem vende pelo WhatsApp e quer uma loja profissional sem depender de marketplaces ou pagar comissão por venda.</p>
-              <div className="split-features">
-                <div className="sf">
-                  <div className="sf-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-                  <div className="sf-txt">
-                    <h4>Checkout nativo pelo WhatsApp</h4>
-                    <p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos.</p>
-                  </div>
-                </div>
-                <div className="sf">
-                  <div className="sf-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
-                  <div className="sf-txt">
-                    <h4>Temas profissionais prontos</h4>
-                    <p>Escolha entre dezenas de temas e deixe sua loja com a cara da sua marca em minutos.</p>
-                  </div>
-                </div>
-                <div className="sf">
-                  <div className="sf-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
-                  <div className="sf-txt">
-                    <h4>Gestão completa de pedidos</h4>
-                    <p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo.</p>
-                  </div>
-                </div>
-              </div>
+      {/* O QUE É · CLEAN */}
+      <div className="clean" id="sobre" style={{ borderTop: "1px solid var(--cl-border)" }}>
+        <div className="wrap">
+          <div className="section-tag cl">O que é a ShopBox</div>
+          <h2 className="sh2">Mais vendas,<br />menos complicação</h2>
+          <p className="ssub" style={{ color: "var(--cl-text2)" }}>
+            A ShopBox foi criada para quem vende pelo WhatsApp e quer uma loja profissional — sem marketplace, sem taxa por venda, sem setup técnico.
+          </p>
+          <div className="what-grid">
+            <div className="wf-list">
+              <div className="wf"><div className="wf-ic">💬</div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
+              <div className="wf"><div className="wf-ic">🎨</div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
+              <div className="wf"><div className="wf-ic">📊</div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
+              <div className="wf"><div className="wf-ic">💳</div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
             </div>
-            <div className="dash-mockup">
-              <div className="dash-bar">
-                <div className="db" style={{ background: "#ff5f57" }} />
-                <div className="db" style={{ background: "#febc2e" }} />
-                <div className="db" style={{ background: "#28c840" }} />
-                <span style={{ fontSize: 12, color: "var(--muted)", fontFamily: "var(--mono)", marginLeft: 8 }}>shopbox — painel</span>
-              </div>
-              <div className="dash-content">
-                <div className="dash-row">
-                  <div className="dash-stat"><div className="dash-stat-n">R$47k</div><div className="dash-stat-l">Faturamento</div></div>
-                  <div className="dash-stat"><div className="dash-stat-n">847</div><div className="dash-stat-l">Pedidos</div></div>
-                  <div className="dash-stat"><div className="dash-stat-n">94%</div><div className="dash-stat-l">Conversão</div></div>
+            <div>
+              <div className="phone">
+                <div className="ph-head">
+                  <div className="ph-av">L</div>
+                  <div>
+                    <div className="ph-name">Loja da Ana</div>
+                    <div className="ph-on">● online agora</div>
+                  </div>
                 </div>
-                <div className="dash-table">
-                  <div className="dt-head"><span>Produto</span><span>Cliente</span><span>Status</span></div>
-                  <div className="dt-row"><span>Vestido Rosa</span><span>Ana C.</span><span className="dt-badge dt-pago">Pago</span></div>
-                  <div className="dt-row"><span>Tênis Runner</span><span>João M.</span><span className="dt-badge dt-pago">Pago</span></div>
-                  <div className="dt-row"><span>Bolsa Couro</span><span>Maria L.</span><span className="dt-badge dt-pend">Pendente</span></div>
-                  <div className="dt-row"><span>Camisa Polo</span><span>Pedro S.</span><span className="dt-badge dt-pago">Pago</span></div>
+                <div className="ph-prod">
+                  <div className="ph-img">👗</div>
+                  <div>
+                    <div className="ph-pn">Vestido Floral Rosa</div>
+                    <div className="ph-pp">R$ 189,90</div>
+                  </div>
+                </div>
+                <div className="ph-btn">
+                  <WhatsAppIcon size={15} color="white" />
+                  Comprar pelo WhatsApp
+                </div>
+                <div className="ph-stat">
+                  <div className="ph-sv">R$47k</div>
+                  <div className="ph-sl">faturamento esse mês</div>
                 </div>
               </div>
             </div>
           </div>
+          <div className="stats-band">
+            <div className="sc"><div className="sn"><em>12k</em>+</div><div className="sl">lojistas ativos</div></div>
+            <div className="sc"><div className="sn"><em>3x</em></div><div className="sl">mais conversão vs site comum</div></div>
+            <div className="sc"><div className="sn"><em>30</em>min</div><div className="sl">para montar sua loja</div></div>
+            <div className="sc"><div className="sn"><em>4.9</em>★</div><div className="sl">nota média dos lojistas</div></div>
+          </div>
         </div>
       </div>
 
-      <div className="metrics-strip">
-        <div className="metrics-inner">
-          {[["12k+","lojistas ativos"],["3x","mais conversão vs site comum"],["30min","para montar sua loja"],["4.9","nota média dos usuários"]].map(([n,l]) => (
-            <div key={l} className="metric">
-              <div className="metric-num">{n}</div>
-              <div className="metric-lbl">{l}</div>
+      {/* VS · DARK */}
+      <div className="dark2" style={{ borderTop: "1px solid var(--dk-border)" }}>
+        <div className="wrap">
+          <div className="section-tag">Por que a ShopBox</div>
+          <h2 className="sh2">Diga adeus às plataformas que cobram por cada venda</h2>
+          <p className="ssub" style={{ color: "var(--dk-text2)" }}>
+            Chatbots de IA, marketplaces genéricos e plataformas complexas — todos cobram comissão ou tiram o controle das suas vendas. A ShopBox não.
+          </p>
+          <div className="vs-comparison">
+            <div className="vs-card vs-card-bad">
+              <div className="vs-card-title">Outras plataformas</div>
+              {[
+                "Cobra comissão por venda",
+                "Redireciona para sites externos",
+                "Setup técnico complexo e demorado",
+                "Suporte lento, genérico e impessoal",
+                "Chatbot de IA com custo extra por interação",
+                "Analytics bloqueado em planos premium",
+                "Layouts engessados sem identidade",
+              ].map((item) => (
+                <div key={item} className="vs-item">
+                  <span className="ic-bad">
+                    <svg viewBox="0 0 14 14"><line x1="3" y1="3" x2="11" y2="11" /><line x1="11" y1="3" x2="3" y2="11" /></svg>
+                  </span>
+                  {item}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="hello-bg">
-        <div className="hello-inner">
-          <div className="hello-grid">
-            <div className="hello-text">
-              <div className="stag">Por que a ShopBox</div>
-              <h2 className="stitle">Diga olá para<br />uma loja que<br />realmente vende</h2>
-              <p className="ssub" style={{ marginTop: 8 }}>Diferente de plataformas genéricas, a ShopBox foi construída do zero para o WhatsApp. Cada detalhe foi pensado para converter visitantes em clientes.</p>
-              <Link to="/cadastro" className="btn-g" style={{ marginTop: 28, display: "inline-block", alignSelf: "flex-start" }}>Começar agora</Link>
-            </div>
-            <div className="hello-scroll">
-              <div className="hs-head"><span className="hs-dot" /><span>vantagens da ShopBox</span></div>
-              {HELLO_ITEMS.map((item) => (
-                <div key={item} className="hs-item">
-                  <div className="hs-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div>
-                  <span>{item}</span>
+            <div className="vs-divider"><div className="vs-badge-pill">VS</div></div>
+            <div className="vs-card vs-card-good">
+              <div className="vs-card-title">
+                <WhatsAppIcon size={22} />
+                ShopBox
+              </div>
+              {[
+                "Zero comissão — 100% da venda é seu",
+                "Checkout nativo dentro do WhatsApp",
+                "Loja no ar em menos de 30 minutos",
+                "Suporte humanizado via WhatsApp",
+                "Catálogo automático integrado ao chat",
+                "Analytics em tempo real em todos os planos",
+                "Temas profissionais com sua identidade",
+              ].map((item) => (
+                <div key={item} className="vs-item">
+                  <span className="ic-good">
+                    <svg viewBox="0 0 14 14"><polyline points="2,7 5.5,11 12,3" /></svg>
+                  </span>
+                  {item}
                 </div>
               ))}
             </div>
           </div>
+          <div style={{ textAlign: "center", marginTop: 40 }}>
+            <Link to="/cadastro" className="btn-hero" style={{ display: "inline-flex" }}>Começar agora →</Link>
+          </div>
         </div>
       </div>
 
-      <div id="funcionalidades">
-        <div className="section">
-          <div className="stag">Funcionalidades</div>
-          <h2 className="stitle">Tudo que sua loja precisa</h2>
-          <div className="feat-grid" style={{ marginTop: 48 }}>
+      {/* FUNCIONALIDADES · CLEAN */}
+      <div className="clean" id="sobre-feats" style={{ borderTop: "1px solid var(--cl-border)" }}>
+        <div className="wrap">
+          <div className="section-tag cl">Funcionalidades</div>
+          <h2 className="sh2">Tudo que sua loja precisa<br />para vender mais</h2>
+          <p className="ssub" style={{ color: "var(--cl-text2)" }}>
+            Cada recurso foi desenvolvido do zero para quem vende pelo WhatsApp.
+          </p>
+          <div className="feats-grid">
             {FEATURES.map((f) => (
-              <div key={f.n} className="feat-card">
-                <div className="feat-num">{f.n}</div>
-                <div className="feat-icon"><svg viewBox="0 0 24 24">{f.icon}</svg></div>
+              <div key={f.n} className="fc" data-n={f.n}>
+                <div className="fc-ic">{f.ic}</div>
                 <h3>{f.t}</h3>
                 <p>{f.d}</p>
               </div>
@@ -481,53 +580,57 @@ function LandingPage() {
         </div>
       </div>
 
-      <div id="como-funciona" className="steps-bg section-full">
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ textAlign: "center" }}>
-            <div className="stag" style={{ textAlign: "center" }}>Como funciona</div>
-            <h2 className="stitle">Comece a vender em 3 passos</h2>
-          </div>
+      {/* COMO FUNCIONA · DARK */}
+      <div className="dark" id="como-funciona" style={{ borderTop: "1px solid var(--dk-border)" }}>
+        <div className="wrap">
+          <div className="section-tag">Como funciona</div>
+          <h2 className="sh2">Comece a vender<br />em 3 passos</h2>
+          <p className="ssub" style={{ color: "var(--dk-text2)" }}>
+            Sem complexidade, sem burocracia. Sua loja no ar em menos de 30 minutos.
+          </p>
           <div className="steps-grid">
-            {[
-              { n: "01", t: "Crie sua conta", d: "Cadastre-se em menos de 2 minutos. Sem cartão de crédito, sem burocracia. 7 dias grátis para testar tudo." },
-              { n: "02", t: "Monte sua loja", d: "Adicione seus produtos, escolha um tema profissional e configure os meios de pagamento que preferir." },
-              { n: "03", t: "Compartilhe e venda", d: "Envie o link da sua loja pelo WhatsApp e comece a receber pedidos. Simples assim." },
-            ].map((s) => (
-              <div key={s.n} className="step-card" data-n={s.n}>
-                <div className="step-n">— passo {s.n}</div>
-                <h3>{s.t}</h3>
-                <p>{s.d}</p>
+            <div className="step"><div className="step-n">— passo 01</div><h3>Crie sua conta</h3><p>Cadastre-se em menos de 2 minutos. Sem cartão de crédito, sem burocracia. 7 dias grátis para testar tudo sem limites.</p></div>
+            <div className="step"><div className="step-n">— passo 02</div><h3>Monte sua loja</h3><p>Adicione seus produtos, escolha um tema profissional e configure os meios de pagamento que preferir. Tudo sem código.</p></div>
+            <div className="step"><div className="step-n">— passo 03</div><h3>Compartilhe e venda</h3><p>Envie o link da sua loja pelo WhatsApp e comece a receber pedidos. Seus clientes compram sem sair do app.</p></div>
+          </div>
+        </div>
+      </div>
+
+      {/* DEPOIMENTOS · DARK */}
+      <div className="dark2" style={{ borderTop: "1px solid var(--dk-border)" }}>
+        <div className="wrap">
+          <div className="section-tag">Depoimentos</div>
+          <h2 className="sh2">O que dizem sobre<br />a ShopBox</h2>
+          <p className="ssub" style={{ color: "var(--dk-text2)" }}>
+            Mais de 12.000 lojistas já transformaram seu negócio com a ShopBox.
+          </p>
+          <div className="testi-grid">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.av} className="tc">
+                <div className="tc-stars">★★★★★</div>
+                <p className="tc-text">{t.text}</p>
+                <div className="tc-auth">
+                  <div className="tc-av">{t.av}</div>
+                  <div>
+                    <div className="tc-name">{t.name}</div>
+                    <div className="tc-role">{t.role}</div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="section">
-        <div style={{ textAlign: "center" }}>
-          <div className="stag" style={{ textAlign: "center" }}>Depoimentos</div>
-          <h2 className="stitle">O que dizem sobre a ShopBox</h2>
-        </div>
-        <div className="testi-grid">
-          {TESTIMONIALS.map((t) => (
-            <div key={t.av} className="testi-card">
-              <div className="testi-stars">{Array.from({length:5}).map((_,i) => <span key={i} className="star">★</span>)}</div>
-              <p className="testi-text">"{t.text}"</p>
-              <div className="testi-author">
-                <div className="testi-av">{t.av}</div>
-                <div><div className="testi-name">{t.name}</div><div className="testi-role">{t.role}</div></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div id="precos" className="steps-bg section-full">
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      {/* PREÇOS · CLEAN */}
+      <div className="clean" id="precos" style={{ borderTop: "1px solid var(--cl-border)" }}>
+        <div className="wrap">
           <div style={{ textAlign: "center" }}>
-            <div className="stag" style={{ textAlign: "center" }}>Planos</div>
-            <h2 className="stitle">Sem surpresas, sem letras miúdas</h2>
-            <p className="ssub" style={{ margin: "0 auto", textAlign: "center" }}>7 dias grátis em todos os planos. Sem cartão de crédito.</p>
+            <div className="section-tag cl" style={{ justifyContent: "center" }}>Planos</div>
+            <h2 className="sh2" style={{ margin: "0 auto" }}>Sem surpresas,<br />sem letras miúdas</h2>
+            <p className="ssub" style={{ color: "var(--cl-text2)", margin: "14px auto 0" }}>
+              7 dias grátis em todos os planos. Sem cartão de crédito.
+            </p>
           </div>
           <div className="billing-toggle">
             <span className={`billing-label ${!isYearly ? "active" : ""}`}>Mensal</span>
@@ -545,99 +648,141 @@ function LandingPage() {
             <span className="billing-badge">2 meses grátis</span>
           </div>
           <div className="pricing-grid">
-            <PricingCard slug="inicial" label="Inicial" price="47" yearlyMonthly="38" yearlyTotal="456" savings="108" isYearly={isYearly} desc="Para quem está começando a vender online." feats={["Até 50 produtos","Checkout pelo WhatsApp","1 usuário","Relatórios básicos","Suporte por email"]} cta="outline" />
-            <PricingCard slug="profissional" label="Profissional" price="97" yearlyMonthly="78" yearlyTotal="936" savings="228" isYearly={isYearly} desc="Para lojas em crescimento que querem vender mais." feats={["Produtos ilimitados","Checkout + catálogo automático","3 usuários","Cupons e promoções","Domínio personalizado","Suporte prioritário"]} cta="g" pop />
-            <PricingCard slug="premium" label="Premium" price="197" yearlyMonthly="158" yearlyTotal="1.896" savings="468" isYearly={isYearly} desc="Para negócios que precisam de escala e controle total." feats={["Tudo do Profissional","Usuários ilimitados","API de integração","Relatórios avançados","Gerente de conta dedicado","SLA garantido"]} cta="outline" />
+            <PricingCard
+              label="Inicial"
+              price="47"
+              yearlyMonthly="38"
+              yearlyTotal="456"
+              savings="108"
+              isYearly={isYearly}
+              desc="Para quem está começando a vender online."
+              feats={["Até 50 produtos", "Checkout pelo WhatsApp", "1 usuário", "Relatórios básicos", "Suporte por email"]}
+              cta="out"
+            />
+            <PricingCard
+              label="Profissional"
+              price="97"
+              yearlyMonthly="78"
+              yearlyTotal="936"
+              savings="228"
+              isYearly={isYearly}
+              desc="Para lojas em crescimento que querem vender mais."
+              feats={["Produtos ilimitados", "Checkout + catálogo automático", "3 usuários", "Cupons e promoções", "Domínio personalizado", "Suporte prioritário"]}
+              cta="fill"
+              pop
+            />
+            <PricingCard
+              label="Premium"
+              price="197"
+              yearlyMonthly="158"
+              yearlyTotal="1.896"
+              savings="468"
+              isYearly={isYearly}
+              desc="Para negócios que precisam de escala e controle total."
+              feats={["Tudo do Profissional", "Usuários ilimitados", "API de integração", "Relatórios avançados", "Gerente de conta dedicado", "SLA garantido"]}
+              cta="out"
+            />
           </div>
           <p className="p-note">
-            {isYearly
-              ? "Cobrança anual antecipada · sem cartão de crédito · reembolso em até 7 dias"
-              : "7 dias grátis em todos os planos · sem cartão de crédito · cancele quando quiser"}
+            <strong>7 dias grátis</strong> em todos os planos · sem cartão de crédito · cancele quando quiser
           </p>
         </div>
       </div>
 
-      <div id="faq" className="faq-bg section-full">
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div style={{ textAlign: "center" }}>
-            <div className="stag" style={{ textAlign: "center" }}>FAQ</div>
-            <h2 className="stitle">Perguntas frequentes</h2>
-          </div>
-          <div className="faq-inner">
+      {/* FAQ · CLEAN2 */}
+      <div className="clean2" id="faq" style={{ borderTop: "1px solid var(--cl-border)" }}>
+        <div className="wrap">
+          <div className="section-tag" style={{ color: "var(--green-dark)" }}>FAQ</div>
+          <h2 className="sh2">Perguntas frequentes</h2>
+          <div className="faq-list">
             {FAQS.map((f, i) => (
-              <div key={i} className="faq-item">
-                <button className={`faq-q ${openFaq === i ? "open" : ""}`} onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+              <div key={i} className={`faq-item ${openFaq === i ? "open" : ""}`}>
+                <button className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                   {f.q}
-                  <span className="faq-icon"><svg viewBox="0 0 24 24" width={18} height={18}><path d="M12 5v14M5 12h14"/></svg></span>
+                  <span className="faq-arr">+</span>
                 </button>
-                <div className={`faq-a ${openFaq === i ? "open" : ""}`}>{f.a}</div>
+                <div className="faq-a">{f.a}</div>
               </div>
             ))}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 48, padding: 40, background: "var(--cl-bg)", border: "1px solid var(--cl-border)", borderRadius: 18 }}>
+            <p style={{ color: "var(--cl-text2)", marginBottom: 18, fontSize: 16 }}>Ainda tem dúvidas? Fale diretamente com a gente</p>
+            <a href={WA_LINK} target="_blank" rel="noreferrer" className="btn-hero" style={{ background: "var(--whatsapp)", boxShadow: "0 0 36px rgba(37,211,102,.3)", color: "#fff" }}>
+              <WhatsAppIcon color="#fff" />
+              Enviar mensagem
+            </a>
           </div>
         </div>
       </div>
 
-      <div className="cta-final">
-        <h2>Pronto para criar<br />sua loja?</h2>
-        <p>Mais de 12.000 lojistas já vendem pelo WhatsApp com a ShopBox</p>
-        <Link to="/cadastro" className="btn-white">Testar grátis por 7 dias</Link>
+      {/* CTA FINAL · DARK */}
+      <div className="dark" style={{ borderTop: "1px solid var(--dk-border)" }}>
+        <div className="cta-sec">
+          <h2>Pronto para criar sua loja?</h2>
+          <p>Mais de 12.000 lojistas já vendem pelo WhatsApp com a ShopBox</p>
+          <Link to="/cadastro" className="btn-hero" style={{ display: "inline-flex", fontSize: 17, padding: "16px 42px" }}>
+            Testar grátis por 7 dias
+          </Link>
+          <p className="cta-note">
+            Nota <strong>4.9</strong> · +12 mil lojistas · 7 dias grátis · sem cartão de crédito
+          </p>
+        </div>
       </div>
 
-      <footer className="pd-footer">
-        <div className="foot-inner">
-          <div className="foot-grid">
-            <div className="foot-brand">
-              <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 16, fontWeight: 700, color: "#fff" }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--g)", display: "inline-block" }} />shopbox
-              </div>
+      {/* FOOTER · DARK */}
+      <footer className="pd-foot">
+        <div className="f-inner">
+          <div className="f-grid">
+            <div className="f-brand">
+              <img src={logoUrl} alt="ShopBox" />
               <p>A plataforma de e-commerce feita para quem vende pelo WhatsApp. Simples, rápido e sem comissão.</p>
             </div>
-            <div className="foot-col">
+            <div className="f-col">
               <h4>Produto</h4>
-              <a href="#funcionalidades">Funcionalidades</a>
+              <a href="#sobre-feats">Funcionalidades</a>
               <a href="#">Temas</a>
               <a href="#">Integrações</a>
               <a href="#precos">Preços</a>
             </div>
-            <div className="foot-col">
+            <div className="f-col">
               <h4>Empresa</h4>
               <a href="#">Sobre nós</a>
               <a href="#">Blog</a>
               <a href="#">Parceiros</a>
               <a href="#">Contato</a>
             </div>
-            <div className="foot-col">
+            <div className="f-col">
               <h4>Suporte</h4>
               <a href="#">Central de ajuda</a>
-              <a href="#">WhatsApp</a>
-              <a href="#">Termos de uso</a>
-              <a href="#">Privacidade</a>
+              <a href={WA_LINK} target="_blank" rel="noreferrer">WhatsApp</a>
+              <Link to="/termos">Termos de uso</Link>
+              <Link to="/privacidade">Privacidade</Link>
             </div>
           </div>
-          <div className="foot-bottom">
-            <p>© 2025 ShopBox. Todos os direitos reservados.</p>
-            <div className="foot-socials">
-              <div className="soc"><svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></div>
-              <div className="soc"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></div>
-              <div className="soc"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></div>
-            </div>
+          <div className="f-bottom">
+            <span>© 2026 ShopBox. Todos os direitos reservados.</span>
+            <span>Feito com ❤️ para lojistas brasileiros</span>
           </div>
         </div>
       </footer>
+
+      {/* WA float */}
+      <a href={WA_LINK} target="_blank" rel="noreferrer" className="wa" title="Falar pelo WhatsApp">
+        <WhatsAppIcon size={28} color="white" />
+      </a>
     </div>
   );
 }
 
 function PricingCard({
-  slug, label, price, desc, feats, cta, pop,
+  label, price, desc, feats, cta, pop,
   isYearly = false, yearlyMonthly, yearlyTotal, savings,
 }: {
-  slug: "inicial" | "profissional" | "premium";
   label: string;
   price: string;
   desc: string;
   feats: string[];
-  cta: "g" | "outline";
+  cta: "fill" | "out";
   pop?: boolean;
   isYearly?: boolean;
   yearlyMonthly?: string;
@@ -645,27 +790,29 @@ function PricingCard({
   savings?: string;
 }) {
   const displayPrice = isYearly && yearlyMonthly ? yearlyMonthly : price;
-  const ctaLabel = "Testar grátis por 7 dias";
-  const btnClass = cta === "g" ? "btn-g" : "btn-outline";
-  const btnStyle = { textAlign: "center" as const, display: "block", width: "100%", padding: "12px", borderRadius: 999 };
-
   return (
-    <div className={`p-card ${pop ? "pop" : ""}`}>
-      {pop && <div className="pop-badge">Mais Popular</div>}
-      <div className="p-label">{label}</div>
-      <div className="p-price"><sup>R$</sup>{displayPrice}<sub>/mês</sub></div>
-      <div className={`p-savings ${isYearly && yearlyTotal ? "show" : ""}`} aria-hidden={!isYearly}>
+    <div className={`pc ${pop ? "pop" : ""}`}>
+      {pop && <div className="pop-lb">Mais Popular</div>}
+      <div className="pc-plan">{label}</div>
+      <div className="pc-val">
+        <sup>R$</sup>{displayPrice}<sub>/mês</sub>
+      </div>
+      <div className="pc-per">{isYearly ? "cobrança anual" : "cobrança mensal"}</div>
+      <div className={`pc-savings ${isYearly && yearlyTotal ? "show" : ""}`} aria-hidden={!isYearly}>
         R${yearlyTotal}/ano · economize R${savings}
       </div>
-      <p className="p-desc">{desc}</p>
-      <ul className="p-feats">
+      <p className="pc-desc">{desc}</p>
+      <ul className="pc-list">
         {feats.map((f) => (
-          <li key={f}><span className="p-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></span>{f}</li>
+          <li key={f}>
+            <span className="pc-check">
+              <svg viewBox="0 0 14 14"><polyline points="2,7 5.5,11 12,3" /></svg>
+            </span>
+            {f}
+          </li>
         ))}
       </ul>
-      <Link to="/cadastro" className={btnClass} style={btnStyle}>
-        {ctaLabel}
-      </Link>
+      <Link to="/cadastro" className={`bp ${cta}`}>Testar grátis por 7 dias</Link>
     </div>
   );
 }
