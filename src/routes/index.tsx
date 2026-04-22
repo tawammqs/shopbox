@@ -656,7 +656,7 @@ function LandingPage() {
           <div className="feats-grid">
             {FEATURES.map((f) => (
               <div key={f.n} className="fc" data-n={f.n}>
-                <div className="fc-ic">{f.ic}</div>
+                <div className="fc-ic"><f.Ic /></div>
                 <h3>{f.t}</h3>
                 <p>{f.d}</p>
               </div>
