@@ -270,7 +270,8 @@ const STYLES = `
 .pdark .fc { background: #fff; border: 1px solid var(--cl-border); border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: all .25s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
 .pdark .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 900; color: rgba(0,150,60,.05); line-height: 1; pointer-events: none; letter-spacing: -3px; }
 .pdark .fc:hover { border-color: rgba(0,150,60,.35); transform: translateY(-4px); box-shadow: 0 10px 40px rgba(0,150,60,.1); }
-.pdark .fc-ic { font-size: 28px; margin-bottom: 16px; }
+.pdark .fc-ic { width: 48px; height: 48px; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.pdark .fc-ic svg { width: 24px; height: 24px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pdark .fc h3 { font-size: 17px; font-weight: 800; color: var(--cl-text); margin-bottom: 8px; }
 .pdark .fc p  { font-size: 14px; color: var(--cl-text2); line-height: 1.65; }
 
