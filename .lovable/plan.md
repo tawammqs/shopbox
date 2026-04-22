@@ -1,46 +1,32 @@
 
 
-# Remover aba Avaliações + Ignorar estoque na vitrine
+## Substituir a logo da ShopBox
 
-## 1. Remover a aba "Avaliações" do painel do lojista
+Vou trocar o arquivo `src/assets/shopbox-logo.png` pela nova logo que você enviou (`ChatGPT_Image_22_de_abr._de_2026_07_23_36.png`).
 
-**Arquivos:**
-- `src/routes/admin.tsx` — remover o item `{ to: "/admin/avaliacoes", label: "Avaliações", icon: MessageSquare }` do array `NAV` (linha 36) e remover o import `MessageSquare` (não usado mais).
-- `src/routes/admin.avaliacoes.tsx` — **excluir o arquivo**. O TanStack Router regera `routeTree.gen.ts` automaticamente, então a rota some.
+### O que muda
 
-A página pública de produto continua mostrando avaliações já aprovadas (sem alteração). Só o item do menu do painel do lojista é removido.
+- **`src/assets/shopbox-logo.png`** — sobrescrito com a nova imagem.
 
-## 2. Mostrar todas as opções de tamanho/cor independentemente do estoque
+### Onde a nova logo aparece automaticamente (sem alterar código)
 
-Hoje o site da loja trata estoque zerado como "Esgotado": esmaece cores indisponíveis, risca tamanhos sem estoque, mostra overlay "Esgotado" no card e bloqueia os botões "Adicionar ao carrinho" e "Comprar pelo WhatsApp". O lojista quer que o cliente sempre consiga escolher e comprar, ignorando o estoque cadastrado.
+A logo já é importada em 4 lugares através do mesmo path `@/assets/shopbox-logo.png`, então a troca propaga sozinha:
 
-### 2a. `src/components/storefront/ProductCard.tsx` (cards de listagem)
+1. **Home / landing page** (`src/routes/index.tsx`) — header e footer
+2. **Header de marketing** (`src/components/marketing/MarketingHeader.tsx`) — usado em `/precos`, `/funcionalidades`, etc.
+3. **Footer de marketing** (`src/components/marketing/MarketingFooter.tsx`)
+4. **Painel admin** (`src/routes/admin.tsx`) — sidebar do lojista
 
-- Forçar `out = false` (remover a checagem `p.totalStock === 0`).
-- Remover o overlay "Esgotado" (bloco que renderiza quando `out`).
-- Remover o aviso "⚠️ Restam X unidades" (`lowStock`).
-- Botão "Adicionar"/"Escolher opções" sempre habilitado.
+### Observação sobre a imagem
 
-### 2b. `src/routes/loja.$slug.produto.$productSlug.tsx` (página de produto)
+A nova logo enviada tem **fundo branco** e o texto "shopbox" em **contorno branco/cinza muito claro** (preenchimento transparente, só o ícone do balão verde tem cor sólida). Isso significa que:
 
-- Forçar `colorAvailable` a sempre retornar `true` → todas as cores aparecem 100% opacas e clicáveis (sem o risco diagonal).
-- Forçar `sizeAvailableForColor` a sempre retornar `true` → todos os tamanhos clicáveis, sem `line-through` nem `disabled`.
-- Forçar `isOut = false` e `lowStock = false` → bloco de estoque exibe sempre "Em estoque"; botões "Adicionar ao carrinho" e "Comprar agora pelo WhatsApp" sempre habilitados.
-- Em `validate()`, remover a regra `if (variantStock === 0) return "Variação esgotada"` — só continua exigindo seleção de cor/tamanho quando o produto tiver variações.
+- Em fundos **claros/brancos** (footer da home, painel admin), o texto vai ficar quase invisível — só o ícone verde aparece bem.
+- Em fundos **escuros** (header escuro da home atual), o contorno branco do texto fica legível.
 
-### 2c. `src/lib/storefront.ts`
+Se você quiser que o texto "shopbox" fique sempre visível em qualquer fundo, me avisa que eu posso:
+- (a) usar essa logo só onde o fundo é escuro e manter a anterior nos fundos claros, ou
+- (b) você me envia uma versão com o texto preenchido (sólido preto ou verde) para usar em fundos claros.
 
-- Remover o filtro `if (opts.inStock)` em `fetchProductsForCategory` (já que estoque deixa de ser critério de exibição). O filtro "Em estoque" do menu de filtros simplesmente deixa de filtrar.
-
-### O que NÃO muda
-
-- O painel do lojista continua mostrando "Esgotado" e "Estoque baixo" em `/admin/produtos` (controle interno do lojista).
-- O cadastro de estoque por variação continua existindo no admin — apenas deixa de impactar a vitrine.
-- O botão "Avise-me quando chegar" (stock_notify_requests) deixa de aparecer naturalmente, pois não há mais cenário de "esgotado" exibido.
-
-## Detalhes técnicos
-
-- Nenhuma migração de banco. Nenhuma alteração em RLS ou edge functions.
-- `routeTree.gen.ts` é regerado pelo plugin do Vite ao excluir `admin.avaliacoes.tsx` — não editar manualmente.
-- Imports não usados (`MessageSquare` em `admin.tsx`) precisam ser removidos para não quebrar o ESLint/TS estrito.
+Por padrão vou só substituir o arquivo como pedido — me confirma se quer seguir assim ou ajustar.
 
