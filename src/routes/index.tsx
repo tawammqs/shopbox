@@ -1,5 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import {
+  MessageCircle, Palette, BarChart3, CreditCard,
+  Package, Tag, Globe, TrendingUp,
+  Users, Zap, Clock, Star,
+} from "lucide-react";
 import logoUrl from "@/assets/shopbox-logo.png";
 
 export const Route = createFileRoute("/")({
@@ -216,7 +221,8 @@ const STYLES = `
 .pdark .wf-list { display: flex; flex-direction: column; gap: 16px; }
 .pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 20px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: all .22s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
 .pdark .wf:hover { border-color: rgba(0,150,60,.35); box-shadow: 0 4px 24px rgba(0,150,60,.08); }
-.pdark .wf-ic { width: 42px; height: 42px; flex-shrink: 0; border-radius: 10px; background: rgba(0,200,83,.1); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; }
+.pdark .wf-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 4px; }
 .pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; }
 
@@ -239,9 +245,11 @@ const STYLES = `
 .pdark .stats-band { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--cl-border); border: 1px solid var(--cl-border); border-radius: 16px; overflow: hidden; margin-top: 60px; }
 .pdark .sc { background: #fff; padding: 32px 24px; text-align: center; transition: background .2s; }
 .pdark .sc:hover { background: var(--cl-bg2); }
-.pdark .sn { font-size: 42px; font-weight: 900; color: var(--cl-text); letter-spacing: -2px; }
-.pdark .sn em { font-style: normal; color: var(--green); }
-.pdark .sl { font-size: 13.5px; color: var(--cl-text2); margin-top: 6px; font-weight: 500; }
+.pdark .sc-ic { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; }
+.pdark .sc-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pdark .sn { font-size: 38px; font-weight: 900; color: var(--cl-text); letter-spacing: -1.5px; line-height: 1; }
+.pdark .sn em { font-style: normal; color: var(--cl-text); }
+.pdark .sl { font-size: 13.5px; color: var(--cl-text); margin-top: 8px; font-weight: 600; }
 
 /* VS */
 .pdark .vs-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: stretch; margin-top: 56px; }
@@ -267,7 +275,8 @@ const STYLES = `
 .pdark .fc { background: #fff; border: 1px solid var(--cl-border); border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: all .25s; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
 .pdark .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 900; color: rgba(0,150,60,.05); line-height: 1; pointer-events: none; letter-spacing: -3px; }
 .pdark .fc:hover { border-color: rgba(0,150,60,.35); transform: translateY(-4px); box-shadow: 0 10px 40px rgba(0,150,60,.1); }
-.pdark .fc-ic { font-size: 28px; margin-bottom: 16px; }
+.pdark .fc-ic { width: 48px; height: 48px; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.pdark .fc-ic svg { width: 24px; height: 24px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pdark .fc h3 { font-size: 17px; font-weight: 800; color: var(--cl-text); margin-bottom: 8px; }
 .pdark .fc p  { font-size: 14px; color: var(--cl-text2); line-height: 1.65; }
 
@@ -397,12 +406,12 @@ const TICKER_ITEMS = [
 ];
 
 const FEATURES = [
-  { n: "01", ic: "📦", t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor e tamanho, e controle de estoque completo." },
-  { n: "02", ic: "💬", t: "Checkout pelo WhatsApp", d: "O cliente clica em 'comprar' e vai direto para o WhatsApp. Alta conversão, zero fricção, sem redirecionamentos." },
-  { n: "03", ic: "🏷️", t: "Cupons e promoções", d: "Crie cupons de desconto, promoções relâmpago e frete grátis para vender mais em datas especiais." },
-  { n: "04", ic: "💳", t: "Pagamentos integrados", d: "Aceite Pix, cartão de crédito e boleto. Integração com os principais gateways do Brasil já incluída." },
-  { n: "05", ic: "🌐", t: "Domínio personalizado", d: "Use seu próprio domínio (.com.br) e transmita mais credibilidade e profissionalismo." },
-  { n: "06", ic: "📈", t: "Analytics em tempo real", d: "Veja quais produtos vendem mais, de onde vêm seus clientes e quanto você fatura." },
+  { n: "01", Ic: Package, t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor e tamanho, e controle de estoque completo." },
+  { n: "02", Ic: MessageCircle, t: "Checkout pelo WhatsApp", d: "O cliente clica em 'comprar' e vai direto para o WhatsApp. Alta conversão, zero fricção, sem redirecionamentos." },
+  { n: "03", Ic: Tag, t: "Cupons e promoções", d: "Crie cupons de desconto, promoções relâmpago e frete grátis para vender mais em datas especiais." },
+  { n: "04", Ic: CreditCard, t: "Pagamentos integrados", d: "Aceite Pix, cartão de crédito e boleto. Integração com os principais gateways do Brasil já incluída." },
+  { n: "05", Ic: Globe, t: "Domínio personalizado", d: "Use seu próprio domínio (.com.br) e transmita mais credibilidade e profissionalismo." },
+  { n: "06", Ic: TrendingUp, t: "Analytics em tempo real", d: "Veja quais produtos vendem mais, de onde vêm seus clientes e quanto você fatura." },
 ];
 
 const TESTIMONIALS = [
@@ -537,10 +546,10 @@ function LandingPage() {
           </p>
           <div className="what-grid">
             <div className="wf-list">
-              <div className="wf"><div className="wf-ic">💬</div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
-              <div className="wf"><div className="wf-ic">🎨</div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
-              <div className="wf"><div className="wf-ic">📊</div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
-              <div className="wf"><div className="wf-ic">💳</div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
+              <div className="wf"><div className="wf-ic"><MessageCircle /></div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
+              <div className="wf"><div className="wf-ic"><Palette /></div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
+              <div className="wf"><div className="wf-ic"><BarChart3 /></div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
+              <div className="wf"><div className="wf-ic"><CreditCard /></div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
             </div>
             <div>
               <div className="phone">
@@ -570,10 +579,10 @@ function LandingPage() {
             </div>
           </div>
           <div className="stats-band">
-            <div className="sc"><div className="sn"><em>12k</em>+</div><div className="sl">lojistas ativos</div></div>
-            <div className="sc"><div className="sn"><em>3x</em></div><div className="sl">mais conversão vs site comum</div></div>
-            <div className="sc"><div className="sn"><em>30</em>min</div><div className="sl">para montar sua loja</div></div>
-            <div className="sc"><div className="sn"><em>4.9</em>★</div><div className="sl">nota média dos lojistas</div></div>
+            <div className="sc"><div className="sc-ic"><Users /></div><div className="sn">12k+</div><div className="sl">lojistas ativos</div></div>
+            <div className="sc"><div className="sc-ic"><Zap /></div><div className="sn">3x</div><div className="sl">mais conversão vs site comum</div></div>
+            <div className="sc"><div className="sc-ic"><Clock /></div><div className="sn">30min</div><div className="sl">para montar sua loja</div></div>
+            <div className="sc"><div className="sc-ic"><Star /></div><div className="sn">4.9★</div><div className="sl">nota média dos lojistas</div></div>
           </div>
         </div>
       </div>
@@ -647,7 +656,7 @@ function LandingPage() {
           <div className="feats-grid">
             {FEATURES.map((f) => (
               <div key={f.n} className="fc" data-n={f.n}>
-                <div className="fc-ic">{f.ic}</div>
+                <div className="fc-ic"><f.Ic /></div>
                 <h3>{f.t}</h3>
                 <p>{f.d}</p>
               </div>
