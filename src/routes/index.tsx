@@ -70,7 +70,7 @@ const STYLES = `
   border-bottom: 1px solid var(--dk-border);
 }
 .pdark .nav-logo { display: flex; align-items: center; }
-.pdark .nav-logo img { height: 32px; display: block; filter: brightness(0) invert(1); }
+.pdark .nav-logo img { height: 56px; display: block; filter: brightness(0) invert(1); }
 .pdark .nav-links { display: flex; align-items: center; gap: 34px; }
 .pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; }
 .pdark .nav-links a:hover { color: var(--dk-text); }
