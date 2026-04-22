@@ -350,7 +350,7 @@ const STYLES = `
 .pdark .pd-foot { background: var(--dk-bg); border-top: 1px solid var(--dk-border); padding: 64px 52px 40px; }
 .pdark .f-inner { max-width: 1200px; margin: 0 auto; }
 .pdark .f-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
-.pdark .f-brand img { height: 48px; filter: brightness(0) invert(1); }
+.pdark .f-brand img { height: 96px; filter: brightness(0) invert(1); }
 .pdark .f-brand p { font-size: 14px; color: var(--dk-text3); margin-top: 12px; max-width: 240px; line-height: 1.65; }
 .pdark .f-col h4 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--dk-text3); margin-bottom: 16px; }
 .pdark .f-col a { display: block; font-size: 14px; color: var(--dk-text3); margin-bottom: 10px; transition: color .2s; cursor: pointer; }
