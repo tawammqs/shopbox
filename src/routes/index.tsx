@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logoUrl from "@/assets/shopbox-logo.png";
 
 export const Route = createFileRoute("/")({
@@ -68,25 +68,56 @@ const STYLES = `
   background: rgba(7,16,10,0.92);
   backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--dk-border);
+  gap: 16px;
+  transition: height .25s ease, padding .25s ease, background .25s ease;
 }
-.pdark .nav-logo { display: flex; align-items: center; }
-.pdark .nav-logo img { height: 90px; display: block; filter: brightness(0) invert(1); transition: height .2s; }
+.pdark .pd-nav-bar.scrolled {
+  height: 70px;
+  background: rgba(7,16,10,0.96);
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.pdark .nav-logo {
+  display: flex; align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 38%;
+  overflow: hidden;
+}
+.pdark .nav-logo img {
+  height: 90px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: brightness(0) invert(1);
+  transition: height .25s ease;
+}
+.pdark .pd-nav-bar.scrolled .nav-logo img { height: 56px; }
 @media (max-width: 1024px) {
-  .pdark .pd-nav-bar { height: 96px; }
+  .pdark .pd-nav-bar { height: 96px; padding: 0 28px; }
   .pdark .nav-logo img { height: 78px; }
+  .pdark .pd-nav-bar.scrolled { height: 64px; }
+  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 50px; }
 }
 @media (max-width: 640px) {
-  .pdark .pd-nav-bar { height: 84px; }
-  .pdark .nav-logo img { height: 68px; }
+  .pdark .pd-nav-bar { height: 72px; padding: 0 16px; gap: 10px; }
+  .pdark .nav-logo { max-width: 46%; }
+  .pdark .nav-logo img { height: 52px; }
+  .pdark .pd-nav-bar.scrolled { height: 58px; }
+  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 42px; }
 }
-.pdark .nav-links { display: flex; align-items: center; gap: 34px; }
-.pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; }
+.pdark .nav-links { display: flex; align-items: center; gap: 34px; flex-shrink: 1; min-width: 0; }
+.pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; white-space: nowrap; }
 .pdark .nav-links a:hover { color: var(--dk-text); }
-.pdark .nav-cta { display: flex; align-items: center; gap: 12px; }
-.pdark .btn-ghost { font-size: 14px; font-weight: 500; color: var(--dk-text2); padding: 8px 20px; border-radius: 8px; border: 1px solid var(--dk-border); transition: all .2s; background: transparent; cursor: pointer; }
+.pdark .nav-cta { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.pdark .btn-ghost { font-size: 14px; font-weight: 500; color: var(--dk-text2); padding: 8px 20px; border-radius: 8px; border: 1px solid var(--dk-border); transition: all .2s; background: transparent; cursor: pointer; white-space: nowrap; }
 .pdark .btn-ghost:hover { color: var(--dk-text); border-color: rgba(0,200,83,.4); }
-.pdark .btn-cta { font-size: 14px; font-weight: 700; color: #040a05; padding: 9px 22px; border-radius: 8px; background: var(--green); transition: all .2s; border: none; cursor: pointer; display: inline-block; }
+.pdark .btn-cta { font-size: 14px; font-weight: 700; color: #040a05; padding: 9px 22px; border-radius: 8px; background: var(--green); transition: all .2s; border: none; cursor: pointer; display: inline-block; white-space: nowrap; }
 .pdark .btn-cta:hover { background: #33d974; transform: translateY(-1px); }
+@media (max-width: 640px) {
+  .pdark .btn-ghost { display: none; }
+  .pdark .btn-cta { font-size: 12.5px; font-weight: 800; padding: 8px 14px; }
+}
 
 /* HERO */
 .pdark .hero {
@@ -133,12 +164,35 @@ const STYLES = `
 .pdark .dc-l { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--dk-text3); }
 .pdark .dc-v { font-size: 28px; font-weight: 900; color: var(--dk-text); margin-top: 6px; letter-spacing: -1px; }
 .pdark .dc-t { font-size: 12px; color: var(--green); margin-top: 4px; font-weight: 600; }
-.pdark .dc-table { grid-column: 1/-1; }
-.pdark .dc-table table { width: 100%; border-collapse: collapse; }
-.pdark .dc-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--dk-text3); padding: 8px 14px; text-align: left; font-weight: 600; }
-.pdark .dc-table td { font-size: 14px; color: var(--dk-text2); padding: 11px 14px; border-top: 1px solid var(--dk-border); }
-.pdark .tg { color: var(--green); background: rgba(0,200,83,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
-.pdark .ty { color: #fbb040; background: rgba(251,176,64,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+.pdark .dc-table { grid-column: 1/-1; position: relative; }
+.pdark .dc-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,200,83,.4) transparent;
+}
+.pdark .dc-table-scroll::-webkit-scrollbar { height: 6px; }
+.pdark .dc-table-scroll::-webkit-scrollbar-thumb { background: rgba(0,200,83,.35); border-radius: 4px; }
+.pdark .dc-table table { width: 100%; min-width: 480px; border-collapse: collapse; }
+.pdark .dc-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--dk-text3); padding: 8px 14px; text-align: left; font-weight: 600; white-space: nowrap; }
+.pdark .dc-table td { font-size: 14px; color: var(--dk-text2); padding: 11px 14px; border-top: 1px solid var(--dk-border); white-space: nowrap; }
+.pdark .dc-swipe-hint {
+  display: none;
+  font-size: 11px;
+  color: var(--dk-text3);
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: .3px;
+}
+.pdark .dc-swipe-hint::before { content: '← '; color: var(--green); }
+.pdark .dc-swipe-hint::after { content: ' →'; color: var(--green); }
+.pdark .tg { color: var(--green); background: rgba(0,200,83,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pdark .ty { color: #fbb040; background: rgba(251,176,64,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+@media (max-width: 900px) {
+  .pdark .dc-swipe-hint { display: block; }
+}
 @keyframes pdfadeUp { from { opacity: 0; transform: translateY(22px) } to { opacity: 1; transform: translateY(0) } }
 
 /* MARQUEE */
@@ -377,14 +431,22 @@ function WhatsAppIcon({ size = 17, color = "currentColor" }: { size?: number; co
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [scrolled, setScrolled] = useState(false);
   const isYearly = billing === "yearly";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="pdark">
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
 
       {/* NAV */}
-      <nav className="pd-nav-bar">
+      <nav className={`pd-nav-bar${scrolled ? " scrolled" : ""}`}>
         <Link to="/" className="nav-logo">
           <img src={logoUrl} alt="ShopBox" />
         </Link>
@@ -435,15 +497,18 @@ function LandingPage() {
               <div className="dc"><div className="dc-l">Conversão</div><div className="dc-v">94%</div><div className="dc-t">↑ 3x mais que site</div></div>
               <div className="dc"><div className="dc-l">Clientes</div><div className="dc-v">1.2k</div><div className="dc-t">↑ +41 novos hoje</div></div>
               <div className="dc dc-table">
-                <table>
-                  <thead><tr><th>Produto</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
-                  <tbody>
-                    <tr><td>Vestido Floral Rosa</td><td>Ana C.</td><td>R$ 189,90</td><td><span className="tg">Pago</span></td></tr>
-                    <tr><td>Tênis Runner Pro</td><td>João M.</td><td>R$ 320,00</td><td><span className="tg">Pago</span></td></tr>
-                    <tr><td>Bolsa em Couro</td><td>Maria L.</td><td>R$ 450,00</td><td><span className="ty">Pendente</span></td></tr>
-                    <tr><td>Camisa Polo Classic</td><td>Pedro S.</td><td>R$ 89,90</td><td><span className="tg">Pago</span></td></tr>
-                  </tbody>
-                </table>
+                <div className="dc-table-scroll">
+                  <table>
+                    <thead><tr><th>Produto</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
+                    <tbody>
+                      <tr><td>Vestido Floral Rosa</td><td>Ana C.</td><td>R$ 189,90</td><td><span className="tg">Pago</span></td></tr>
+                      <tr><td>Tênis Runner Pro</td><td>João M.</td><td>R$ 320,00</td><td><span className="tg">Pago</span></td></tr>
+                      <tr><td>Bolsa em Couro</td><td>Maria L.</td><td>R$ 450,00</td><td><span className="ty">Pendente</span></td></tr>
+                      <tr><td>Camisa Polo Classic</td><td>Pedro S.</td><td>R$ 89,90</td><td><span className="tg">Pago</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="dc-swipe-hint">arraste para ver mais</div>
               </div>
             </div>
           </div>
