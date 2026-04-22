@@ -431,14 +431,22 @@ function WhatsAppIcon({ size = 17, color = "currentColor" }: { size?: number; co
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [scrolled, setScrolled] = useState(false);
   const isYearly = billing === "yearly";
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className="pdark">
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
 
       {/* NAV */}
-      <nav className="pd-nav-bar">
+      <nav className={`pd-nav-bar${scrolled ? " scrolled" : ""}`}>
         <Link to="/" className="nav-logo">
           <img src={logoUrl} alt="ShopBox" />
         </Link>
