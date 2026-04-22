@@ -1,5 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import {
+  MessageCircle, Palette, BarChart3, CreditCard,
+  Package, Tag, Globe, TrendingUp,
+  Users, Zap, Clock, Star,
+} from "lucide-react";
 import logoUrl from "@/assets/shopbox-logo.png";
 
 export const Route = createFileRoute("/")({
