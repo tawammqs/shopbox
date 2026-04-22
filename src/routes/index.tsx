@@ -379,7 +379,7 @@ const STYLES = `
   .pdark .cta-sec { padding: 72px 20px; }
 }
 @media (max-width: 640px) {
-  .pdark .f-brand img { height: 64px; }
+  .pdark .f-brand img { height: 84px; }
 }
 `;
 
