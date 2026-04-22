@@ -1,32 +1,23 @@
 
 
-## Substituir a logo da ShopBox
+## Aumentar logo no mobile (header e rodapé)
 
-Vou trocar o arquivo `src/assets/shopbox-logo.png` pela nova logo que você enviou (`ChatGPT_Image_22_de_abr._de_2026_07_23_36.png`).
+### Tamanhos atuais no mobile (≤640px)
+- **Header**: 52px (32px ao rolar a página — modo "scrolled")
+- **Rodapé**: 48px (não tem regra mobile, herda do desktop)
 
-### O que muda
+### Tamanhos novos propostos
+- **Header mobile**: **72px** (em vez de 52px) — e **56px** quando scrolled (em vez de 42px)
+- **Header tablet (≤1024px)**: **88px** (em vez de 78px)
+- **Rodapé mobile**: **64px** (nova regra) — desktop continua 48px
 
-- **`src/assets/shopbox-logo.png`** — sobrescrito com a nova imagem.
+Também vou aumentar levemente a altura da barra do header mobile para acomodar a logo maior sem cortar:
+- Barra mobile: `72px` → `84px`
+- Barra mobile scrolled: `58px` → `68px`
+- `max-width` da logo no mobile: `46%` → `52%` (para não espremer demais)
 
-### Onde a nova logo aparece automaticamente (sem alterar código)
+### Arquivo alterado
+- `src/routes/index.tsx` — apenas as regras CSS dentro do `<style>` (blocos `.pdark .nav-logo img`, `.pdark .pd-nav-bar`, `.pdark .f-brand img` e os media queries `@media (max-width: 1024px)` e `@media (max-width: 640px)`).
 
-A logo já é importada em 4 lugares através do mesmo path `@/assets/shopbox-logo.png`, então a troca propaga sozinha:
-
-1. **Home / landing page** (`src/routes/index.tsx`) — header e footer
-2. **Header de marketing** (`src/components/marketing/MarketingHeader.tsx`) — usado em `/precos`, `/funcionalidades`, etc.
-3. **Footer de marketing** (`src/components/marketing/MarketingFooter.tsx`)
-4. **Painel admin** (`src/routes/admin.tsx`) — sidebar do lojista
-
-### Observação sobre a imagem
-
-A nova logo enviada tem **fundo branco** e o texto "shopbox" em **contorno branco/cinza muito claro** (preenchimento transparente, só o ícone do balão verde tem cor sólida). Isso significa que:
-
-- Em fundos **claros/brancos** (footer da home, painel admin), o texto vai ficar quase invisível — só o ícone verde aparece bem.
-- Em fundos **escuros** (header escuro da home atual), o contorno branco do texto fica legível.
-
-Se você quiser que o texto "shopbox" fique sempre visível em qualquer fundo, me avisa que eu posso:
-- (a) usar essa logo só onde o fundo é escuro e manter a anterior nos fundos claros, ou
-- (b) você me envia uma versão com o texto preenchido (sólido preto ou verde) para usar em fundos claros.
-
-Por padrão vou só substituir o arquivo como pedido — me confirma se quer seguir assim ou ajustar.
+Nenhuma mudança de marcação JSX, apenas valores de altura/largura.
 
