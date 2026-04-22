@@ -489,15 +489,18 @@ function LandingPage() {
               <div className="dc"><div className="dc-l">Conversão</div><div className="dc-v">94%</div><div className="dc-t">↑ 3x mais que site</div></div>
               <div className="dc"><div className="dc-l">Clientes</div><div className="dc-v">1.2k</div><div className="dc-t">↑ +41 novos hoje</div></div>
               <div className="dc dc-table">
-                <table>
-                  <thead><tr><th>Produto</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
-                  <tbody>
-                    <tr><td>Vestido Floral Rosa</td><td>Ana C.</td><td>R$ 189,90</td><td><span className="tg">Pago</span></td></tr>
-                    <tr><td>Tênis Runner Pro</td><td>João M.</td><td>R$ 320,00</td><td><span className="tg">Pago</span></td></tr>
-                    <tr><td>Bolsa em Couro</td><td>Maria L.</td><td>R$ 450,00</td><td><span className="ty">Pendente</span></td></tr>
-                    <tr><td>Camisa Polo Classic</td><td>Pedro S.</td><td>R$ 89,90</td><td><span className="tg">Pago</span></td></tr>
-                  </tbody>
-                </table>
+                <div className="dc-table-scroll">
+                  <table>
+                    <thead><tr><th>Produto</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
+                    <tbody>
+                      <tr><td>Vestido Floral Rosa</td><td>Ana C.</td><td>R$ 189,90</td><td><span className="tg">Pago</span></td></tr>
+                      <tr><td>Tênis Runner Pro</td><td>João M.</td><td>R$ 320,00</td><td><span className="tg">Pago</span></td></tr>
+                      <tr><td>Bolsa em Couro</td><td>Maria L.</td><td>R$ 450,00</td><td><span className="ty">Pendente</span></td></tr>
+                      <tr><td>Camisa Polo Classic</td><td>Pedro S.</td><td>R$ 89,90</td><td><span className="tg">Pago</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="dc-swipe-hint">arraste para ver mais</div>
               </div>
             </div>
           </div>
