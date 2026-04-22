@@ -546,10 +546,10 @@ function LandingPage() {
           </p>
           <div className="what-grid">
             <div className="wf-list">
-              <div className="wf"><div className="wf-ic">💬</div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
-              <div className="wf"><div className="wf-ic">🎨</div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
-              <div className="wf"><div className="wf-ic">📊</div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
-              <div className="wf"><div className="wf-ic">💳</div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
+              <div className="wf"><div className="wf-ic"><MessageCircle /></div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
+              <div className="wf"><div className="wf-ic"><Palette /></div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
+              <div className="wf"><div className="wf-ic"><BarChart3 /></div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
+              <div className="wf"><div className="wf-ic"><CreditCard /></div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
             </div>
             <div>
               <div className="phone">
