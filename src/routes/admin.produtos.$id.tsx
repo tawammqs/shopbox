@@ -59,6 +59,8 @@ function ProductFormPage() {
   const [sizes, setSizes] = useState<SizeRow[]>([]);
   const [stock, setStock] = useState<Record<string, number>>({});
   const [videos, setVideos] = useState<VideoRow[]>([]);
+  const [productVideoUrl, setProductVideoUrl] = useState<string | null>(null);
+  const [productVideoType, setProductVideoType] = useState<VideoType | null>(null);
 
   const planSlug = store?.plan?.slug as any;
 
