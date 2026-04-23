@@ -1,23 +1,19 @@
 
+## Ajustar altura da logo do badge "Criado com ShopBox"
 
-## Aumentar logo no mobile (header e rodapé)
+Aumentar a altura da logo no badge do rodapé das lojas para melhor visibilidade.
 
-### Tamanhos atuais no mobile (≤640px)
-- **Header**: 52px (32px ao rolar a página — modo "scrolled")
-- **Rodapé**: 48px (não tem regra mobile, herda do desktop)
+### Mudança
 
-### Tamanhos novos propostos
-- **Header mobile**: **72px** (em vez de 52px) — e **56px** quando scrolled (em vez de 42px)
-- **Header tablet (≤1024px)**: **88px** (em vez de 78px)
-- **Rodapé mobile**: **64px** (nova regra) — desktop continua 48px
+**Arquivo:** `src/components/storefront/StorefrontFooter.tsx`
 
-Também vou aumentar levemente a altura da barra do header mobile para acomodar a logo maior sem cortar:
-- Barra mobile: `72px` → `84px`
-- Barra mobile scrolled: `58px` → `68px`
-- `max-width` da logo no mobile: `46%` → `52%` (para não espremer demais)
+Atualizar as classes do `<img>` da logo do badge:
 
-### Arquivo alterado
-- `src/routes/index.tsx` — apenas as regras CSS dentro do `<style>` (blocos `.pdark .nav-logo img`, `.pdark .pd-nav-bar`, `.pdark .f-brand img` e os media queries `@media (max-width: 1024px)` e `@media (max-width: 640px)`).
+- **Antes:** `h-8 min-h-[32px] ... sm:h-9 sm:min-h-[36px]` (32px mobile / 36px desktop)
+- **Depois:** `h-10 min-h-[40px] ... sm:h-11 sm:min-h-[44px]` (40px mobile / 44px desktop)
 
-Nenhuma mudança de marcação JSX, apenas valores de altura/largura.
+Também atualizar o atributo `height={32}` para `height={40}` para refletir o novo tamanho base e evitar layout shift. O `width={120}` e `w-auto` permanecem para manter proporção automática.
 
+### Resultado
+
+Logo mais visível no badge, com 40px de altura no mobile e 44px no desktop, mantendo a proporção e o layout responsivo do rodapé intacto.
