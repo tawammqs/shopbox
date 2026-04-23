@@ -15,6 +15,8 @@ import { ProductRow } from "@/components/storefront/ProductRow";
 import { CheckoutFormDialog } from "@/components/storefront/CheckoutFormDialog";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { cn } from "@/lib/utils";
+import { VideoPreview } from "@/components/admin/VideoSourcePicker";
+import type { VideoType } from "@/lib/video";
 
 export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
   component: ProductPage,
