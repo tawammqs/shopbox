@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { useStorefront } from "./StoreContext";
+import shopboxLogo from "@/assets/shopbox-logo.png";
 
 export function StorefrontFooter() {
   const { store } = useStorefront();
@@ -92,8 +93,20 @@ export function StorefrontFooter() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {store.name} · Loja em ShopBox
+      <div className="border-t border-border py-4">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 text-xs text-muted-foreground sm:flex-row">
+          <span>© {new Date().getFullYear()} {store.name}</span>
+          <a
+            href="https://shopboxapp.com.br/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Criado com ShopBox"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-foreground/5 px-3 py-1.5 text-[12px] font-medium text-foreground/80 transition hover:bg-foreground/10 hover:text-foreground"
+          >
+            <span>Criado com</span>
+            <img src={shopboxLogo} alt="ShopBox" className="h-[18px] w-auto object-contain" />
+          </a>
+        </div>
       </div>
     </footer>
   );
