@@ -289,6 +289,18 @@ function ProductsListPage() {
         )}
       </div>
 
+      {/* Stats — vindos do antigo Dashboard */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <MiniStat label="Produtos" value={productCount} icon={Package} sub={`${maxProducts} no seu plano`} />
+        <MiniStat label="Categorias" value={overview.data?.categoryCount ?? 0} icon={FolderTree} />
+        <MiniStat
+          label="Estoque baixo"
+          value={overview.data?.lowStockCount ?? 0}
+          icon={AlertTriangle}
+          highlight={(overview.data?.lowStockCount ?? 0) > 0}
+        />
+      </div>
+
       {limitWarning && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700">
           ⚠️ Você está perto do limite ({productCount}/{maxProducts} produtos). <Link to="/admin/plano" className="underline">Faça upgrade</Link>.
