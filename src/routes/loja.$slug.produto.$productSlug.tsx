@@ -135,6 +135,7 @@ function ProductInner({ product }: { product: any }) {
   });
 
   return (
+    <>
     <div className="mx-auto max-w-7xl px-4 py-6">
       <nav className="mb-4 text-xs text-muted-foreground">
         <Link to="/loja/$slug" params={{ slug: store.slug }} className="hover:text-accent">Início</Link>
@@ -289,7 +290,7 @@ function ProductInner({ product }: { product: any }) {
             </Button>
           </div>
           <Button onClick={buyNow} disabled={isOut} className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a]">
-            <MessageCircle className="h-5 w-5" /> Comprar agora pelo WhatsApp
+            <WhatsAppIcon className="h-5 w-5" /> Comprar agora pelo WhatsApp
           </Button>
 
           <div className="flex gap-3">
@@ -376,6 +377,37 @@ function ProductInner({ product }: { product: any }) {
         <ProductRow title="Você também pode gostar" products={(relatedQ.data as ProductCardData[]).filter((p) => p.id !== product.id)} />
       )}
     </div>
+
+    <CheckoutFormDialog
+      open={buyNowOpen}
+      onClose={() => setBuyNowOpen(false)}
+      items={[{
+        productId: product.id,
+        slug: product.slug,
+        title: product.title,
+        image: images[0]?.url ?? "",
+        colorId,
+        colorName,
+        sizeId,
+        sizeLabel,
+        unitPrice: price,
+        quantity: qty,
+        storeId: store.id,
+      }]}
+      subtotal={price * qty}
+      coupon={null}
+      total={price * qty}
+      buyNow={{
+        productTitle: product.title,
+        productSlug: product.slug,
+        productUrl: typeof window !== "undefined" ? `${window.location.origin}/loja/${store.slug}/produto/${product.slug}` : "",
+        colorName,
+        sizeLabel,
+        quantity: qty,
+        unitPrice: price,
+      }}
+    />
+    </>
   );
 }
 
