@@ -427,3 +427,29 @@ function ProductsListPage() {
     </div>
   );
 }
+
+function MiniStat({
+  label,
+  value,
+  icon: Icon,
+  sub,
+  highlight,
+}: {
+  label: string;
+  value: number;
+  icon: any;
+  sub?: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className={`rounded-2xl border bg-card p-4 ${highlight ? "border-amber-500/50 bg-amber-500/5" : "border-border"}`}>
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+        <Icon className={`h-4 w-4 ${highlight ? "text-amber-600" : "text-muted-foreground"}`} />
+      </div>
+      <p className={`font-display text-2xl font-bold ${highlight ? "text-amber-700 dark:text-amber-300" : ""}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
