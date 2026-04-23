@@ -69,16 +69,18 @@ const STYLES = `
 .pdark .pd-nav-bar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between;
-  height: 140px;
+  height: 110px;
   padding: 0 48px;
-  background: rgba(7,16,10,0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: height .25s ease, padding .25s ease, background .25s ease;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: height .25s ease, padding .25s ease, background .25s ease, backdrop-filter .25s ease, box-shadow .25s ease;
 }
 .pdark .pd-nav-bar.scrolled {
-  height: 92px;
-  background: rgba(7,16,10,0.96);
+  height: 80px;
+  background: rgba(7,16,10,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 8px 24px rgba(0,0,0,.35);
 }
 .pdark .nav-logo {
@@ -856,10 +858,6 @@ function LandingPage() {
         </div>
       </footer>
 
-      {/* WA float */}
-      <a href={WA_LINK} target="_blank" rel="noreferrer" className="wa" title="Falar pelo WhatsApp">
-        <WhatsAppIcon size={28} color="white" />
-      </a>
     </div>
   );
 }
