@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCart, type CartItem, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront } from "./StoreContext";
-import { openWhatsAppCheckout } from "@/lib/whatsapp";
+import { openWhatsAppCheckout, buildBuyNowMessage, buildWhatsAppUrl, type CustomerInfo } from "@/lib/whatsapp";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";
 import { toast } from "sonner";
@@ -30,9 +30,19 @@ type Props = {
   subtotal: number;
   coupon: AppliedCoupon;
   total: number;
+  /** When set, sends a "buy now" single-product message instead of the full cart message and skips clearing the cart. */
+  buyNow?: {
+    productTitle: string;
+    productSlug: string;
+    productUrl: string;
+    colorName?: string | null;
+    sizeLabel?: string | null;
+    quantity: number;
+    unitPrice: number;
+  };
 };
 
-export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, total }: Props) {
+export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, total, buyNow }: Props) {
   const { store } = useStorefront();
   const clearCart = useCart((s) => s.clear);
 
@@ -97,9 +107,34 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
 
       if (error) throw error;
 
-      // Open WhatsApp only after successful save
-      openWhatsAppCheckout(store.whatsapp, items, subtotal, coupon, total, store.whatsapp_greeting);
-      clearCart();
+      const customer: CustomerInfo = {
+        name: form.name,
+        whatsapp: form.whatsapp,
+        email: form.email,
+        cpf: form.cpf,
+        cep: form.cep,
+        address: form.address,
+        city_state: form.city_state,
+      };
+
+      if (buyNow) {
+        // Buy-now: send single-product message and DO NOT clear cart
+        const msg = buildBuyNowMessage({
+          title: buyNow.productTitle,
+          colorName: buyNow.colorName,
+          sizeLabel: buyNow.sizeLabel,
+          quantity: buyNow.quantity,
+          unitPrice: buyNow.unitPrice,
+          productUrl: buyNow.productUrl,
+          greeting: store.whatsapp_greeting,
+          customer,
+        });
+        window.open(buildWhatsAppUrl(store.whatsapp, msg), "_blank");
+      } else {
+        // Cart checkout
+        openWhatsAppCheckout(store.whatsapp, items, subtotal, coupon, total, store.whatsapp_greeting, customer);
+        clearCart();
+      }
       onClose();
       toast.success("Pedido registrado! Continue no WhatsApp.");
     } catch (err: any) {

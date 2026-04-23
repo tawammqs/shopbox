@@ -1,12 +1,37 @@
 import { formatBRL } from "./format";
 import type { CartItem, AppliedCoupon } from "@/stores/cart";
 
+export type CustomerInfo = {
+  name?: string;
+  whatsapp?: string;
+  email?: string;
+  cpf?: string;
+  cep?: string;
+  address?: string;
+  city_state?: string;
+};
+
+function buildCustomerBlock(customer?: CustomerInfo | null): string[] {
+  if (!customer) return [];
+  const lines: string[] = [];
+  if (customer.name?.trim()) lines.push(`Nome: ${customer.name.trim()}`);
+  if (customer.whatsapp?.trim()) lines.push(`WhatsApp: ${customer.whatsapp.trim()}`);
+  if (customer.email?.trim()) lines.push(`Email: ${customer.email.trim()}`);
+  if (customer.cpf?.trim()) lines.push(`CPF: ${customer.cpf.trim()}`);
+  if (customer.cep?.trim()) lines.push(`CEP: ${customer.cep.trim()}`);
+  if (customer.address?.trim()) lines.push(`Endereço: ${customer.address.trim()}`);
+  if (customer.city_state?.trim()) lines.push(`Cidade/Estado: ${customer.city_state.trim()}`);
+  if (lines.length === 0) return [];
+  return ["", "👤 *Meus dados:*", ...lines];
+}
+
 export function buildCheckoutMessage(
   items: CartItem[],
   subtotal: number,
   coupon: AppliedCoupon,
   total: number,
   greeting?: string | null,
+  customer?: CustomerInfo | null,
 ) {
   const lines = items.map(
     (i) =>
@@ -23,7 +48,9 @@ export function buildCheckoutMessage(
   if (coupon) {
     out.push(`Cupom ${coupon.code}: -${formatBRL(coupon.discount)}`);
   }
-  out.push(`💰 *Total: ${formatBRL(total)}*`, "", "Aguardo o retorno para confirmar pagamento e entrega! 🙏");
+  out.push(`💰 *Total: ${formatBRL(total)}*`);
+  out.push(...buildCustomerBlock(customer));
+  out.push("", "Aguardo o retorno para confirmar pagamento e entrega! 🙏");
   return out.join("\n");
 }
 
@@ -39,8 +66,9 @@ export function openWhatsAppCheckout(
   coupon: AppliedCoupon,
   total: number,
   greeting?: string | null,
+  customer?: CustomerInfo | null,
 ) {
-  const url = buildWhatsAppUrl(phone, buildCheckoutMessage(items, subtotal, coupon, total, greeting));
+  const url = buildWhatsAppUrl(phone, buildCheckoutMessage(items, subtotal, coupon, total, greeting, customer));
   window.open(url, "_blank");
 }
 
@@ -52,6 +80,7 @@ export function buildBuyNowMessage(opts: {
   unitPrice: number;
   productUrl: string;
   greeting?: string | null;
+  customer?: CustomerInfo | null;
 }) {
   const lines = [
     opts.greeting?.trim() ? opts.greeting.trim() : "Olá! Tenho interesse neste produto:",
@@ -63,6 +92,7 @@ export function buildBuyNowMessage(opts: {
     `Valor: ${formatBRL(opts.unitPrice * opts.quantity)}`,
     "",
     `Link: ${opts.productUrl}`,
+    ...buildCustomerBlock(opts.customer),
   ].filter(Boolean) as string[];
   return lines.join("\n");
 }

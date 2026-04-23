@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, MessageCircle, ShoppingBag, Share2, Star } from "lucide-react";
+import { Heart, ShoppingBag, Share2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { fetchProductFull, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
@@ -10,8 +10,10 @@ import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { Button } from "@/components/ui/button";
-import { buildBuyNowMessage, buildShareProductMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
+import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
+import { CheckoutFormDialog } from "@/components/storefront/CheckoutFormDialog";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
@@ -66,6 +68,7 @@ function ProductInner({ product }: { product: any }) {
   const [colorId, setColorId] = useState<string | null>(colors[0]?.id ?? null);
   const [sizeId, setSizeId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  const [buyNowOpen, setBuyNowOpen] = useState(false);
 
   const stockFor = (cId: string | null, sId: string | null) =>
     stock.filter((x) => (cId ? x.color_id === cId : true) && (sId ? x.size_id === sId : true)).reduce((a, b) => a + b.quantity, 0);
@@ -116,17 +119,7 @@ function ProductInner({ product }: { product: any }) {
   const buyNow = () => {
     const err = validate();
     if (err) return toast.error(err);
-    const url = `${window.location.origin}/loja/${store.slug}/produto/${product.slug}`;
-    const msg = buildBuyNowMessage({
-      title: product.title,
-      colorName,
-      sizeLabel,
-      quantity: qty,
-      unitPrice: price,
-      productUrl: url,
-      greeting: store.whatsapp_greeting,
-    });
-    window.open(buildWhatsAppUrl(store.whatsapp, msg), "_blank");
+    setBuyNowOpen(true);
   };
 
   const share = () => {
@@ -142,6 +135,7 @@ function ProductInner({ product }: { product: any }) {
   });
 
   return (
+    <>
     <div className="mx-auto max-w-7xl px-4 py-6">
       <nav className="mb-4 text-xs text-muted-foreground">
         <Link to="/loja/$slug" params={{ slug: store.slug }} className="hover:text-accent">Início</Link>
@@ -296,7 +290,7 @@ function ProductInner({ product }: { product: any }) {
             </Button>
           </div>
           <Button onClick={buyNow} disabled={isOut} className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a]">
-            <MessageCircle className="h-5 w-5" /> Comprar agora pelo WhatsApp
+            <WhatsAppIcon className="h-5 w-5" /> Comprar agora pelo WhatsApp
           </Button>
 
           <div className="flex gap-3">
@@ -383,6 +377,37 @@ function ProductInner({ product }: { product: any }) {
         <ProductRow title="Você também pode gostar" products={(relatedQ.data as ProductCardData[]).filter((p) => p.id !== product.id)} />
       )}
     </div>
+
+    <CheckoutFormDialog
+      open={buyNowOpen}
+      onClose={() => setBuyNowOpen(false)}
+      items={[{
+        productId: product.id,
+        slug: product.slug,
+        title: product.title,
+        image: images[0]?.url ?? "",
+        colorId,
+        colorName,
+        sizeId,
+        sizeLabel,
+        unitPrice: price,
+        quantity: qty,
+        storeId: store.id,
+      }]}
+      subtotal={price * qty}
+      coupon={null}
+      total={price * qty}
+      buyNow={{
+        productTitle: product.title,
+        productSlug: product.slug,
+        productUrl: typeof window !== "undefined" ? `${window.location.origin}/loja/${store.slug}/produto/${product.slug}` : "",
+        colorName,
+        sizeLabel,
+        quantity: qty,
+        unitPrice: price,
+      }}
+    />
+    </>
   );
 }
 
