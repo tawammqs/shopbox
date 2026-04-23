@@ -1,36 +1,44 @@
 
 
-## Corrigir erro de RLS no upload de vídeo de depoimento
+## Corrigir policies do bucket `product-videos` (referência ambígua de `name`)
 
 ### Causa raiz
 
-O componente `VideoSourcePicker` usado no card "Vídeos depoimento" (em `admin.produtos.$id.tsx`) tenta enviar o arquivo para o bucket `product-videos` num caminho que **precisa começar com o `store_id` do usuário**, conforme a policy de INSERT do storage:
+As policies de INSERT/UPDATE/DELETE do bucket `product-videos` usam `storage.foldername(name)` **dentro** de um `EXISTS (SELECT 1 FROM public.stores s ...)`. Como `stores` também tem uma coluna chamada `name`, o Postgres resolve `name` para `s.name` (nome da loja) em vez de `storage.objects.name` (caminho do arquivo). A comparação `s.id::text = (storage.foldername(s.name))[1]` praticamente nunca é verdadeira → toda tentativa de upload é rejeitada com **"new row violates row-level security policy"**, que o front-end mapeia para **"Sem permissão para enviar…"**.
 
+A policy de SELECT funciona porque não usa `foldername`; o bucket é público e leitura passa.
+
+### Mudança
+
+**Nova migração** que recria as três policies de escrita do bucket `product-videos` qualificando a coluna como `storage.objects.name` para eliminar a ambiguidade:
+
+```sql
+DROP POLICY IF EXISTS "Owner uploads product videos" ON storage.objects;
+CREATE POLICY "Owner uploads product videos"
+  ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (
+    bucket_id = 'product-videos'
+    AND auth.uid() IS NOT NULL
+    AND EXISTS (
+      SELECT 1 FROM public.stores s
+      WHERE s.owner_user_id = auth.uid()
+        AND s.id::text = (storage.foldername(storage.objects.name))[1]
+    )
+  );
+
+-- mesma correção para "Owner updates product videos" (USING)
+-- mesma correção para "Owner deletes product videos" (USING)
 ```
-(storage.foldername(name))[1] = stores.id  AND  stores.owner_user_id = auth.uid()
-```
 
-Hoje o componente recebe `storeId={store?.id ?? ""}`. Quando `store` ainda não foi carregado (ou o `useMyStore` retorna sem dados naquele instante), o `storeId` vai como `""`, o path do upload vira algo como `"/1700000000-abc.mp4"`, e a policy rejeita com **"new row violates row-level security policy"**.
-
-Outro fator que pode contribuir: o `VideoSourcePicker` não bloqueia o clique do botão de upload enquanto a loja está carregando, então o usuário consegue tentar enviar antes do `store.id` existir.
-
-### Mudanças
-
-**1. `src/components/admin/VideoSourcePicker.tsx`**
-- No início do `handleFile`, validar que `storeId` é um UUID não-vazio. Se vier vazio, abortar com `toast.error("Aguarde — carregando dados da loja…")` e não chamar o `supabase.storage.upload`.
-- Desabilitar (`disabled`) o botão "Selecionar vídeo" quando `storeId` for vazio, com tooltip/label explicativo.
-- Melhorar a mensagem de erro do `catch`: se o erro do Supabase contiver "row-level security" ou "Unauthorized", mostrar mensagem clara: "Sem permissão para enviar. Verifique se você está logado como dono desta loja."
-
-**2. `src/routes/admin.produtos.$id.tsx`** (card de depoimentos)
-- Garantir que o card de depoimentos só renderiza o `VideoSourcePicker` quando `store?.id` já está disponível. Se `store` ainda está carregando, mostrar um placeholder de "Carregando…" no lugar das tabs do picker. Isso elimina a janela em que o usuário poderia clicar antes da hora.
+A policy de SELECT (`Public read product videos`) já está correta e fica intacta. O bucket continua público.
 
 ### Resultado
 
-- Usuário recebe feedback claro caso tente enviar antes da loja carregar (em vez do erro técnico de RLS).
-- Upload sempre vai para `{store_id}/...`, satisfazendo a policy do bucket.
-- O erro "new row violates row-level security policy" deixa de aparecer no fluxo normal de cadastro/edição de produto.
+- Upload de vídeo (produto principal e depoimento) volta a funcionar para o lojista logado dono da loja.
+- Caminho continua obrigatoriamente prefixado por `{store_id}/...`, mantendo o isolamento entre lojas.
+- Nenhuma mudança no front-end é necessária — o `VideoSourcePicker` já envia para o caminho correto.
 
 ### Detalhe técnico
 
-Não é necessário alterar policies do banco nem do storage — elas estão corretas e seguras (cada lojista só pode escrever na pasta da sua própria loja). A correção é puramente no front-end, garantindo que o `storeId` passado ao picker é sempre válido antes de iniciar o upload.
+A correção é **apenas** trocar `name` por `storage.objects.name` dentro do subselect. Isso força o planner a referenciar a coluna do storage em vez da coluna `name` da tabela `stores` introduzida pelo `EXISTS`. Sem essa qualificação, qualquer `EXISTS (SELECT … FROM uma_tabela_com_coluna_name …)` dentro de uma policy do storage sofre o mesmo silent shadowing.
 
