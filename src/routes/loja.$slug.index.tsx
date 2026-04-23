@@ -32,6 +32,7 @@ function HomePage() {
       {TAGS.map((t) => (
         <TagRow key={t.tag} storeId={store.id} tag={t.tag} label={t.label} />
       ))}
+      <HomeVideoSection />
       <CategoryGrid />
     </>
   );
