@@ -27,6 +27,11 @@ export function VideoSourcePicker({ storeId, videoUrl, videoType, onChange }: Pr
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(file: File) {
+    if (!storeId || storeId.trim().length < 10) {
+      toast.error("Aguarde — carregando dados da loja…");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
     if (!VIDEO_ALLOWED_TYPES.includes(file.type)) {
       toast.error("Formato inválido. Use MP4, MOV ou WebM.");
       return;
@@ -48,7 +53,12 @@ export function VideoSourcePicker({ storeId, videoUrl, videoType, onChange }: Pr
       onChange({ url: data.publicUrl, type: "upload" });
       toast.success("Vídeo enviado!");
     } catch (e: any) {
-      toast.error(e.message ?? "Erro no upload");
+      const msg = String(e?.message ?? "");
+      if (/row-level security|unauthorized|not authorized|permission/i.test(msg)) {
+        toast.error("Sem permissão para enviar. Verifique se você está logado como dono desta loja.");
+      } else {
+        toast.error(msg || "Erro no upload");
+      }
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -83,11 +93,14 @@ export function VideoSourcePicker({ storeId, videoUrl, videoType, onChange }: Pr
             type="button"
             variant="outline"
             className="w-full"
-            disabled={uploading}
+            disabled={uploading || !storeId}
             onClick={() => fileRef.current?.click()}
+            title={!storeId ? "Carregando dados da loja…" : undefined}
           >
             {uploading ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando…</>
+            ) : !storeId ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Carregando loja…</>
             ) : (
               <><Upload className="mr-2 h-4 w-4" /> Selecionar vídeo (MP4/MOV/WebM, até 100MB)</>
             )}

@@ -349,19 +349,25 @@ function ProductFormPage() {
                     : null;
                   return (
                     <div key={i} className="space-y-3 rounded-lg border border-border p-3">
-                      <div className="flex items-start gap-2">
+                       <div className="flex items-start gap-2">
                         <div className="flex-1">
-                          <VideoSourcePicker
-                            storeId={store?.id ?? ""}
-                            videoUrl={v.video_url || null}
-                            videoType={pickerType}
-                            onChange={({ url, type }) => {
-                              const next = [...videos];
-                              next[i].video_url = url ?? "";
-                              next[i].kind = type === "youtube" ? "youtube" : "mp4";
-                              setVideos(next);
-                            }}
-                          />
+                          {store?.id ? (
+                            <VideoSourcePicker
+                              storeId={store.id}
+                              videoUrl={v.video_url || null}
+                              videoType={pickerType}
+                              onChange={({ url, type }) => {
+                                const next = [...videos];
+                                next[i].video_url = url ?? "";
+                                next[i].kind = type === "youtube" ? "youtube" : "mp4";
+                                setVideos(next);
+                              }}
+                            />
+                          ) : (
+                            <div className="rounded-md border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
+                              Carregando dados da loja…
+                            </div>
+                          )}
                         </div>
                         <Button
                           size="icon"
