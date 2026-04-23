@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy } from "lucide-react";
+import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,30 @@ function ProductsListPage() {
   const productCount = products.length;
   const limitReached = productCount >= maxProducts;
   const limitWarning = productCount >= maxProducts - 5 && !limitReached;
+
+  // Stats (categorias + estoque baixo) — antes ficavam no Dashboard
+  const overview = useQuery({
+    queryKey: ["admin-products-overview", store?.id],
+    enabled: !!store,
+    queryFn: async () => {
+      const sid = store!.id;
+      const [cats, allProducts] = await Promise.all([
+        supabase.from("categories").select("id", { count: "exact", head: true }).eq("store_id", sid),
+        supabase
+          .from("products")
+          .select("id, low_stock_threshold, product_stock(quantity)")
+          .eq("store_id", sid),
+      ]);
+      const lowCount = (allProducts.data ?? []).filter((p: any) => {
+        const total = (p.product_stock ?? []).reduce((s: number, x: any) => s + (x.quantity ?? 0), 0);
+        return total > 0 && total <= (p.low_stock_threshold ?? 5);
+      }).length;
+      return {
+        categoryCount: cats.count ?? 0,
+        lowStockCount: lowCount,
+      };
+    },
+  });
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
@@ -265,6 +289,18 @@ function ProductsListPage() {
         )}
       </div>
 
+      {/* Stats — vindos do antigo Dashboard */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <MiniStat label="Produtos" value={productCount} icon={Package} sub={`${maxProducts} no seu plano`} />
+        <MiniStat label="Categorias" value={overview.data?.categoryCount ?? 0} icon={FolderTree} />
+        <MiniStat
+          label="Estoque baixo"
+          value={overview.data?.lowStockCount ?? 0}
+          icon={AlertTriangle}
+          highlight={(overview.data?.lowStockCount ?? 0) > 0}
+        />
+      </div>
+
       {limitWarning && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700">
           ⚠️ Você está perto do limite ({productCount}/{maxProducts} produtos). <Link to="/admin/plano" className="underline">Faça upgrade</Link>.
@@ -391,3 +427,29 @@ function ProductsListPage() {
     </div>
   );
 }
+
+function MiniStat({
+  label,
+  value,
+  icon: Icon,
+  sub,
+  highlight,
+}: {
+  label: string;
+  value: number;
+  icon: any;
+  sub?: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className={`rounded-2xl border bg-card p-4 ${highlight ? "border-amber-500/50 bg-amber-500/5" : "border-border"}`}>
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+        <Icon className={`h-4 w-4 ${highlight ? "text-amber-600" : "text-muted-foreground"}`} />
+      </div>
+      <p className={`font-display text-2xl font-bold ${highlight ? "text-amber-700 dark:text-amber-300" : ""}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
