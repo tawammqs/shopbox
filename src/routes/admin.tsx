@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, Users, ShoppingBag,
   Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Loader2,
-  Lock,
+  Lock, Video,
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";

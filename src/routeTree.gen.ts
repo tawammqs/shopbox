@@ -35,6 +35,7 @@ import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
 import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
+import { Route as AdminHomeVideoRouteImport } from './routes/admin.home-video'
 import { Route as AdminDescontosRouteImport } from './routes/admin.descontos'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
@@ -187,6 +188,11 @@ const AdminPedidosRoute = AdminPedidosRouteImport.update({
   path: '/pedidos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminHomeVideoRoute = AdminHomeVideoRouteImport.update({
+  id: '/home-video',
+  path: '/home-video',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDescontosRoute = AdminDescontosRouteImport.update({
   id: '/descontos',
   path: '/descontos',
@@ -315,6 +321,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -361,6 +368,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -409,6 +417,7 @@ export interface FileRoutesById {
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -459,6 +468,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/home-video'
     | '/admin/pedidos'
     | '/admin/plano'
     | '/checkout/return'
@@ -505,6 +515,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/home-video'
     | '/admin/pedidos'
     | '/admin/plano'
     | '/checkout/return'
@@ -552,6 +563,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/home-video'
     | '/admin/pedidos'
     | '/admin/plano'
     | '/checkout/return'
@@ -793,6 +805,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPedidosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/home-video': {
+      id: '/admin/home-video'
+      path: '/home-video'
+      fullPath: '/admin/home-video'
+      preLoaderRoute: typeof AdminHomeVideoRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/descontos': {
       id: '/admin/descontos'
       path: '/descontos'
@@ -943,6 +962,7 @@ interface AdminRouteChildren {
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminDescontosRoute: typeof AdminDescontosRoute
+  AdminHomeVideoRoute: typeof AdminHomeVideoRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminPlanoRoute: typeof AdminPlanoRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -957,6 +977,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminDescontosRoute: AdminDescontosRoute,
+  AdminHomeVideoRoute: AdminHomeVideoRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminPlanoRoute: AdminPlanoRoute,
   AdminIndexRoute: AdminIndexRoute,
