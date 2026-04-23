@@ -109,9 +109,9 @@ export function StorefrontFooter() {
               alt="ShopBox"
               loading="lazy"
               decoding="async"
-              width={120}
-              height={40}
-              className="h-10 min-h-[40px] w-auto shrink-0 object-contain sm:h-11 sm:min-h-[44px]"
+              width={135}
+              height={45}
+              className="h-[45px] min-h-[45px] w-auto shrink-0 object-contain sm:h-[49px] sm:min-h-[49px]"
             />
           </a>
         </div>
