@@ -51,6 +51,30 @@ function ProductsListPage() {
   const limitReached = productCount >= maxProducts;
   const limitWarning = productCount >= maxProducts - 5 && !limitReached;
 
+  // Stats (categorias + estoque baixo) — antes ficavam no Dashboard
+  const overview = useQuery({
+    queryKey: ["admin-products-overview", store?.id],
+    enabled: !!store,
+    queryFn: async () => {
+      const sid = store!.id;
+      const [cats, allProducts] = await Promise.all([
+        supabase.from("categories").select("id", { count: "exact", head: true }).eq("store_id", sid),
+        supabase
+          .from("products")
+          .select("id, low_stock_threshold, product_stock(quantity)")
+          .eq("store_id", sid),
+      ]);
+      const lowCount = (allProducts.data ?? []).filter((p: any) => {
+        const total = (p.product_stock ?? []).reduce((s: number, x: any) => s + (x.quantity ?? 0), 0);
+        return total > 0 && total <= (p.low_stock_threshold ?? 5);
+      }).length;
+      return {
+        categoryCount: cats.count ?? 0,
+        lowStockCount: lowCount,
+      };
+    },
+  });
+
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
       const { error } = await supabase.from("products").update({ active }).eq("id", id);
