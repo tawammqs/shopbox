@@ -91,7 +91,7 @@ const STYLES = `
   overflow: hidden;
 }
 .pdark .nav-logo img {
-  height: 120px;
+  height: 92px;
   max-width: 100%;
   width: auto;
   object-fit: contain;
@@ -99,7 +99,7 @@ const STYLES = `
   filter: brightness(0) invert(1);
   transition: height .25s ease;
 }
-.pdark .pd-nav-bar.scrolled .nav-logo img { height: 76px; }
+.pdark .pd-nav-bar.scrolled .nav-logo img { height: 64px; }
 @media (max-width: 1024px) {
   .pdark .pd-nav-bar { height: 124px; padding: 0 28px; }
   .pdark .nav-logo img { height: 108px; }
