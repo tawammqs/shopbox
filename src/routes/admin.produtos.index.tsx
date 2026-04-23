@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy } from "lucide-react";
+import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
