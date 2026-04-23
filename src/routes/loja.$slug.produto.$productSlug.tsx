@@ -320,6 +320,16 @@ function ProductInner({ product }: { product: any }) {
         </div>
       </div>
 
+      {/* Product video */}
+      {product.video_url && product.video_type && (
+        <section className="mt-12">
+          <h2 className="mb-4 font-display text-2xl font-bold">Veja em vídeo</h2>
+          <div className="mx-auto max-w-3xl">
+            <VideoPreview url={product.video_url} type={product.video_type as VideoType} />
+          </div>
+        </section>
+      )}
+
       {/* Videos */}
       {videos.length > 0 && (
         <section className="mt-14">
