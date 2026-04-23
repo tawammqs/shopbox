@@ -276,6 +276,16 @@ function ProductFormPage() {
             </div>
           </Section>
 
+          {/* Product video */}
+          <Section title="Vídeo do produto">
+            <VideoSourcePicker
+              storeId={store.id}
+              videoUrl={productVideoUrl}
+              videoType={productVideoType}
+              onChange={({ url, type }) => { setProductVideoUrl(url); setProductVideoType(type); }}
+            />
+          </Section>
+
           {/* Images */}
           <Section title="Galeria de imagens">
             <MultiImageUpload bucket="products" storeId={store.id} images={images} onChange={setImages} />
