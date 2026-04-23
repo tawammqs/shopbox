@@ -1,44 +1,61 @@
 
 
-## Corrigir policies do bucket `product-videos` (referência ambígua de `name`)
+## Plano: Carrossel de vídeos shoppable na home (4–5 vídeos)
 
-### Causa raiz
+A imagem de referência mostra **vários vídeos verticais** lado a lado, em formato carrossel, cada um com um card de produto sobreposto. Vou aplicar isso à seção "Descubra em vídeo".
 
-As policies de INSERT/UPDATE/DELETE do bucket `product-videos` usam `storage.foldername(name)` **dentro** de um `EXISTS (SELECT 1 FROM public.stores s ...)`. Como `stores` também tem uma coluna chamada `name`, o Postgres resolve `name` para `s.name` (nome da loja) em vez de `storage.objects.name` (caminho do arquivo). A comparação `s.id::text = (storage.foldername(s.name))[1]` praticamente nunca é verdadeira → toda tentativa de upload é rejeitada com **"new row violates row-level security policy"**, que o front-end mapeia para **"Sem permissão para enviar…"**.
+### 1. Banco de dados (migração)
 
-A policy de SELECT funciona porque não usa `foldername`; o bucket é público e leitura passa.
+A estrutura atual permite **apenas um vídeo por loja** (`UNIQUE (store_id)` em `home_video_sections`) — preciso permitir múltiplos.
 
-### Mudança
+- Remover o `UNIQUE` em `home_video_sections.store_id`.
+- Adicionar `position int not null default 0` em `home_video_sections` para ordenar o carrossel.
+- Adicionar `aspect text default 'vertical'` (`vertical | horizontal`) — vídeos do carrossel são preferencialmente verticais (9:16), conforme a imagem.
+- Índice `(store_id, position)` para ordenação.
+- Policies já estão corretas (não dependem do unique) — manter.
 
-**Nova migração** que recria as três policies de escrita do bucket `product-videos` qualificando a coluna como `storage.objects.name` para eliminar a ambiguidade:
+### 2. Storefront — `HomeVideoSection.tsx`
 
-```sql
-DROP POLICY IF EXISTS "Owner uploads product videos" ON storage.objects;
-CREATE POLICY "Owner uploads product videos"
-  ON storage.objects FOR INSERT TO authenticated
-  WITH CHECK (
-    bucket_id = 'product-videos'
-    AND auth.uid() IS NOT NULL
-    AND EXISTS (
-      SELECT 1 FROM public.stores s
-      WHERE s.owner_user_id = auth.uid()
-        AND s.id::text = (storage.foldername(storage.objects.name))[1]
-    )
-  );
+Reescrever para buscar **todos** os vídeos ativos da loja e renderizar um carrossel:
 
--- mesma correção para "Owner updates product videos" (USING)
--- mesma correção para "Owner deletes product videos" (USING)
-```
+- Query: `home_video_sections` filtrado por `store_id` + `is_active=true`, ordenado por `position`. Trazer junto `home_video_tags` (já exposto pela RLS pública) e produtos referenciados.
+- Layout: usar `embla-carousel-react` (já instalado e usado em `BannerCarousel.tsx` e `carousel.tsx`).
+  - Container `max-w-7xl`, título centralizado.
+  - Cada slide: vídeo vertical (aspect 9:16) com largura ~280–320px, bordas arredondadas, sombra, e card de produto flutuante na parte inferior (estilo igual à imagem: mini-thumb + nome + preço + preço cortado).
+  - Em desktop mostra 4–5 slides; em mobile, 1.5–2 com snap.
+  - Setas de navegação (prev/next) e suporte a arrastar.
+  - Autoplay opcional dos vídeos: o vídeo central no viewport entra em play (via IntersectionObserver), demais ficam pausados/silenciados — evita 5 vídeos tocando juntos.
+- Card de produto sobreposto: usa a **primeira tag** do vídeo como produto destaque (formato da imagem mostra um único card por vídeo). As demais tags continuam interativas como pulsantes (mantendo o `ShoppableVideo` existente em modo `view`).
+- Remover o `max-w-5xl` central — agora o conteúdo é o carrossel inteiro.
 
-A policy de SELECT (`Public read product videos`) já está correta e fica intacta. O bucket continua público.
+### 3. Admin — `admin.home-video.tsx`
+
+Refatorar para gerenciar **lista de vídeos**:
+
+- Trocar o estado único (`sectionId`, `videoUrl`, …) por uma **lista de seções** (`sections: Section[]`).
+- UI:
+  - Lista vertical de cards, cada um representando um vídeo, com:
+    - Thumbnail/preview pequeno
+    - Switch "Ativo"
+    - Título editável (ex: "Vídeo 1")
+    - Botão "Editar tags" (abre o editor `ShoppableVideo` em modo `edit` no card, igual hoje)
+    - Botão "Excluir"
+    - Setas ↑↓ para reordenar (atualiza `position`)
+  - Botão "Adicionar vídeo" no topo, limitado a **5 vídeos** (com aviso visual quando atingir o limite). Acima do limite, botão fica desabilitado com tooltip "Limite máximo: 5 vídeos".
+- Salvamento: um único botão "Salvar todos" que faz upsert em batch — para cada seção, cria/atualiza o registro e substitui as tags. Posições recalculadas pela ordem na lista.
+- Cabeçalho da página atualizado: "Vídeos da home (até 5)" em vez de "Vídeo da home".
+
+### 4. Detalhes técnicos
+
+- **Embla**: usar opções `{ align: "start", containScroll: "trimSnaps", dragFree: false }` para snap natural; plugin `WheelGesturesPlugin` não é necessário.
+- **Vídeos verticais**: `aspect-[9/16]` no container do slide, `object-cover` no `<video>`. Em vídeos horizontais (caso o lojista escolha), cair para `aspect-video`.
+- **Performance**: cada `<video>` com `preload="metadata"` e `muted playsInline`. IntersectionObserver dispara `play()` no slide visível e pausa nos demais.
+- **Card de produto sobreposto**: posicionado `absolute bottom-3 left-3 right-3`, fundo `bg-card/90 backdrop-blur`, contém thumb 40×40, título 2 linhas, preço atual em destaque + preço original riscado se houver promo.
+- **Edge case**: se um vídeo ativo não tiver tags, a seção ainda renderiza o vídeo no carrossel (sem card sobreposto), garantindo flexibilidade.
+- **YouTube no carrossel**: continua funcionando, mas IntersectionObserver não controla play (limitação documentada). Em vídeos vertical-aspect, iframe é exibido via `aspect-[9/16]` com `object-fit` simulado por `transform scale`.
 
 ### Resultado
 
-- Upload de vídeo (produto principal e depoimento) volta a funcionar para o lojista logado dono da loja.
-- Caminho continua obrigatoriamente prefixado por `{store_id}/...`, mantendo o isolamento entre lojas.
-- Nenhuma mudança no front-end é necessária — o `VideoSourcePicker` já envia para o caminho correto.
-
-### Detalhe técnico
-
-A correção é **apenas** trocar `name` por `storage.objects.name` dentro do subselect. Isso força o planner a referenciar a coluna do storage em vez da coluna `name` da tabela `stores` introduzida pelo `EXISTS`. Sem essa qualificação, qualquer `EXISTS (SELECT … FROM uma_tabela_com_coluna_name …)` dentro de uma policy do storage sofre o mesmo silent shadowing.
+- Lojista cadastra de 1 a 5 vídeos verticais com tags shoppable, gerencia ordem e ativação.
+- Cliente vê na home um carrossel horizontal com snap, vídeos verticais autoplay-on-view, card de produto sobreposto, navegação por setas/arrasto — igual à referência enviada.
 
