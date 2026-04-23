@@ -147,6 +147,8 @@ function ProductFormPage() {
         low_stock_threshold: Number(lowStock) || 5,
         meta_title: metaTitle || null,
         meta_description: metaDesc || null,
+        video_url: productVideoUrl,
+        video_type: productVideoType,
       };
 
       if (isNew) {
