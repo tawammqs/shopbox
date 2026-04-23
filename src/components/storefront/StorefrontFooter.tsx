@@ -104,7 +104,15 @@ export function StorefrontFooter() {
             className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background px-3.5 py-1.5 text-[12px] font-normal text-muted-foreground shadow-sm transition hover:border-foreground/30 hover:text-foreground"
           >
             <span className="tracking-tight">criado com</span>
-            <img src={shopboxLogo} alt="ShopBox" className="h-[26px] w-auto object-contain" />
+            <img
+              src={shopboxLogo}
+              alt="ShopBox"
+              loading="lazy"
+              decoding="async"
+              width={120}
+              height={32}
+              className="h-8 min-h-[32px] w-auto shrink-0 object-contain sm:h-9 sm:min-h-[36px]"
+            />
           </a>
         </div>
       </div>
