@@ -107,7 +107,7 @@ export function ShoppableVideo({
 
       {/* Tag overlay */}
       <div className={cn("absolute inset-0", mode === "view" && "pointer-events-none")}>
-        {tags.filter(isVisible).map((t) => {
+        {tags.filter(isVisible).map((t, i) => {
           const selected = selectedTagId === t.id;
           return (
             <button
@@ -119,19 +119,27 @@ export function ShoppableVideo({
                 e.stopPropagation();
                 onTagClick?.(t);
               }}
+              onKeyDown={(e) => {
+                if (mode !== "view") return;
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onTagClick?.(t);
+                }
+              }}
               className={cn(
                 "absolute -translate-x-1/2 -translate-y-1/2 pointer-events-auto",
                 "flex h-6 w-6 items-center justify-center rounded-full",
                 "bg-white shadow-lg ring-2 ring-white/80",
+                "focus:outline-none focus-visible:ring-4 focus-visible:ring-accent",
                 mode === "edit" ? "cursor-move" : "cursor-pointer hover:scale-125",
                 "transition-transform",
                 selected && "ring-4 ring-accent",
               )}
               style={{ left: `${t.position_x}%`, top: `${t.position_y}%` }}
-              aria-label="Tag de produto"
+              aria-label={`Ver produto marcado na posição ${i + 1}`}
             >
-              <span className="block h-2.5 w-2.5 animate-ping rounded-full bg-accent absolute" />
-              <span className="block h-2.5 w-2.5 rounded-full bg-accent" />
+              <span className="block h-2.5 w-2.5 animate-ping rounded-full bg-accent absolute" aria-hidden="true" />
+              <span className="block h-2.5 w-2.5 rounded-full bg-accent" aria-hidden="true" />
             </button>
           );
         })}
