@@ -32,6 +32,7 @@ const NAV = [
   { to: "/admin/produtos", label: "Produtos", icon: Package },
   { to: "/admin/categorias", label: "Categorias", icon: FolderTree },
   { to: "/admin/banners", label: "Banners", icon: Image },
+  { to: "/admin/home-video", label: "Vídeo da home", icon: Video },
   { to: "/admin/descontos", label: "Descontos", icon: Tag },
   { to: "/admin/clientes", label: "Clientes", icon: Users },
   { to: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
