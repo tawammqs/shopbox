@@ -98,6 +98,8 @@ function ProductFormPage() {
       setTags(p.tags ?? []);
       setActive(p.active); setLowStock(String(p.low_stock_threshold ?? 5));
       setMetaTitle(p.meta_title ?? ""); setMetaDesc(p.meta_description ?? "");
+      setProductVideoUrl((p as any).video_url ?? null);
+      setProductVideoType(((p as any).video_type ?? null) as VideoType | null);
       setImages((p.product_images ?? []).sort((a: any, b: any) => a.position - b.position).map((i: any) => ({ url: i.url, position: i.position })));
       const sortedColors = (p.product_colors ?? []).sort((a: any, b: any) => a.position - b.position);
       const sortedSizes = (p.product_sizes ?? []).sort((a: any, b: any) => a.position - b.position);
