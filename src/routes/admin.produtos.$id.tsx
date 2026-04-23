@@ -14,6 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ImageUpload, MultiImageUpload } from "@/components/admin/ImageUpload";
 import { PlanGate } from "@/components/admin/PlanGate";
 import { VariationsBuilder } from "@/components/admin/VariationsBuilder";
+import { VideoSourcePicker } from "@/components/admin/VideoSourcePicker";
+import type { VideoType } from "@/lib/video";
 import { slugify } from "@/lib/format";
 import { toast } from "sonner";
 
@@ -57,6 +59,8 @@ function ProductFormPage() {
   const [sizes, setSizes] = useState<SizeRow[]>([]);
   const [stock, setStock] = useState<Record<string, number>>({});
   const [videos, setVideos] = useState<VideoRow[]>([]);
+  const [productVideoUrl, setProductVideoUrl] = useState<string | null>(null);
+  const [productVideoType, setProductVideoType] = useState<VideoType | null>(null);
 
   const planSlug = store?.plan?.slug as any;
 
@@ -94,6 +98,8 @@ function ProductFormPage() {
       setTags(p.tags ?? []);
       setActive(p.active); setLowStock(String(p.low_stock_threshold ?? 5));
       setMetaTitle(p.meta_title ?? ""); setMetaDesc(p.meta_description ?? "");
+      setProductVideoUrl((p as any).video_url ?? null);
+      setProductVideoType(((p as any).video_type ?? null) as VideoType | null);
       setImages((p.product_images ?? []).sort((a: any, b: any) => a.position - b.position).map((i: any) => ({ url: i.url, position: i.position })));
       const sortedColors = (p.product_colors ?? []).sort((a: any, b: any) => a.position - b.position);
       const sortedSizes = (p.product_sizes ?? []).sort((a: any, b: any) => a.position - b.position);
@@ -141,6 +147,8 @@ function ProductFormPage() {
         low_stock_threshold: Number(lowStock) || 5,
         meta_title: metaTitle || null,
         meta_description: metaDesc || null,
+        video_url: productVideoUrl,
+        video_type: productVideoType,
       };
 
       if (isNew) {
@@ -266,6 +274,16 @@ function ProductFormPage() {
               <Field label="Preço *"><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></Field>
               <Field label="Preço promocional"><Input type="number" step="0.01" value={promoPrice} onChange={(e) => setPromoPrice(e.target.value)} /></Field>
             </div>
+          </Section>
+
+          {/* Product video */}
+          <Section title="Vídeo do produto">
+            <VideoSourcePicker
+              storeId={store.id}
+              videoUrl={productVideoUrl}
+              videoType={productVideoType}
+              onChange={({ url, type }) => { setProductVideoUrl(url); setProductVideoType(type); }}
+            />
           </Section>
 
           {/* Images */}

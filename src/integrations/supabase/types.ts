@@ -431,6 +431,87 @@ export type Database = {
         }
         Relationships: []
       }
+      home_video_sections: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          store_id: string
+          title: string
+          updated_at: string
+          video_type: string | null
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          store_id: string
+          title?: string
+          updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          store_id?: string
+          title?: string
+          updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      home_video_tags: {
+        Row: {
+          created_at: string
+          home_video_section_id: string
+          id: string
+          position_x: number
+          position_y: number
+          product_id: string
+          timestamp_end: number | null
+          timestamp_start: number | null
+        }
+        Insert: {
+          created_at?: string
+          home_video_section_id: string
+          id?: string
+          position_x?: number
+          position_y?: number
+          product_id: string
+          timestamp_end?: number | null
+          timestamp_start?: number | null
+        }
+        Update: {
+          created_at?: string
+          home_video_section_id?: string
+          id?: string
+          position_x?: number
+          position_y?: number
+          product_id?: string
+          timestamp_end?: number | null
+          timestamp_start?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_video_tags_home_video_section_id_fkey"
+            columns: ["home_video_section_id"]
+            isOneToOne: false
+            referencedRelation: "home_video_sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_video_tags_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_status_history: {
         Row: {
           changed_at: string
@@ -851,6 +932,8 @@ export type Database = {
           tags: Database["public"]["Enums"]["product_tag"][]
           title: string
           updated_at: string
+          video_type: string | null
+          video_url: string | null
           view_count: number
           wishlist_count: number
         }
@@ -876,6 +959,8 @@ export type Database = {
           tags?: Database["public"]["Enums"]["product_tag"][]
           title: string
           updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
           view_count?: number
           wishlist_count?: number
         }
@@ -901,6 +986,8 @@ export type Database = {
           tags?: Database["public"]["Enums"]["product_tag"][]
           title?: string
           updated_at?: string
+          video_type?: string | null
+          video_url?: string | null
           view_count?: number
           wishlist_count?: number
         }
