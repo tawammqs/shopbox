@@ -4,6 +4,7 @@ import { fetchActiveBanners, fetchProductsByTag, type ProductCardData } from "@/
 import { BannerCarousel } from "@/components/storefront/BannerCarousel";
 import { ProductRow } from "@/components/storefront/ProductRow";
 import { CategoryGrid } from "@/components/storefront/CategoryGrid";
+import { HomeVideoSection } from "@/components/storefront/HomeVideoSection";
 import { useStorefront } from "@/components/storefront/StoreContext";
 
 export const Route = createFileRoute("/loja/$slug/")({
