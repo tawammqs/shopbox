@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, MessageCircle, ShoppingBag, Share2, Star } from "lucide-react";
+import { Heart, ShoppingBag, Share2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { fetchProductFull, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
@@ -10,8 +10,10 @@ import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { Button } from "@/components/ui/button";
-import { buildBuyNowMessage, buildShareProductMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
+import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
+import { CheckoutFormDialog } from "@/components/storefront/CheckoutFormDialog";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
@@ -66,6 +68,7 @@ function ProductInner({ product }: { product: any }) {
   const [colorId, setColorId] = useState<string | null>(colors[0]?.id ?? null);
   const [sizeId, setSizeId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  const [buyNowOpen, setBuyNowOpen] = useState(false);
 
   const stockFor = (cId: string | null, sId: string | null) =>
     stock.filter((x) => (cId ? x.color_id === cId : true) && (sId ? x.size_id === sId : true)).reduce((a, b) => a + b.quantity, 0);
@@ -116,17 +119,7 @@ function ProductInner({ product }: { product: any }) {
   const buyNow = () => {
     const err = validate();
     if (err) return toast.error(err);
-    const url = `${window.location.origin}/loja/${store.slug}/produto/${product.slug}`;
-    const msg = buildBuyNowMessage({
-      title: product.title,
-      colorName,
-      sizeLabel,
-      quantity: qty,
-      unitPrice: price,
-      productUrl: url,
-      greeting: store.whatsapp_greeting,
-    });
-    window.open(buildWhatsAppUrl(store.whatsapp, msg), "_blank");
+    setBuyNowOpen(true);
   };
 
   const share = () => {
