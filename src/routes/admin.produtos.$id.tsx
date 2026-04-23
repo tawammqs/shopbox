@@ -341,41 +341,56 @@ function ProductFormPage() {
           <Section title="Vídeos depoimento">
             <PlanGate plan={planSlug} feature="video_testimonials">
               <div className="space-y-3">
-                {videos.map((v, i) => (
-                  <div key={i} className="space-y-2 rounded-lg border border-border p-3">
-                    <div className="flex items-center gap-2">
-                      <Select value={v.kind} onValueChange={(val) => {
-                        const next = [...videos]; next[i].kind = val as any; setVideos(next);
-                      }}>
-                        <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="youtube">YouTube</SelectItem>
-                          <SelectItem value="mp4">MP4</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Input placeholder="URL do vídeo" value={v.video_url} onChange={(e) => {
-                        const next = [...videos]; next[i].video_url = e.target.value; setVideos(next);
+                {videos.map((v, i) => {
+                  const pickerType: VideoType | null = v.video_url
+                    ? v.kind === "youtube"
+                      ? "youtube"
+                      : "mp4"
+                    : null;
+                  return (
+                    <div key={i} className="space-y-3 rounded-lg border border-border p-3">
+                      <div className="flex items-start gap-2">
+                        <div className="flex-1">
+                          <VideoSourcePicker
+                            storeId={store?.id ?? ""}
+                            videoUrl={v.video_url || null}
+                            videoType={pickerType}
+                            onChange={({ url, type }) => {
+                              const next = [...videos];
+                              next[i].video_url = url ?? "";
+                              next[i].kind = type === "youtube" ? "youtube" : "mp4";
+                              setVideos(next);
+                            }}
+                          />
+                        </div>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => setVideos(videos.filter((_, j) => j !== i))}
+                          aria-label="Remover vídeo"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input placeholder="Cliente" value={v.customer_name} onChange={(e) => {
+                          const next = [...videos]; next[i].customer_name = e.target.value; setVideos(next);
+                        }} />
+                        <Select value={String(v.rating)} onValueChange={(val) => {
+                          const next = [...videos]; next[i].rating = Number(val); setVideos(next);
+                        }}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {[5,4,3,2,1].map((r) => <SelectItem key={r} value={String(r)}>{"⭐".repeat(r)}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Textarea placeholder="Depoimento" rows={2} value={v.quote} onChange={(e) => {
+                        const next = [...videos]; next[i].quote = e.target.value; setVideos(next);
                       }} />
-                      <Button size="icon" variant="ghost" onClick={() => setVideos(videos.filter((_, j) => j !== i))}><X className="h-4 w-4" /></Button>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input placeholder="Cliente" value={v.customer_name} onChange={(e) => {
-                        const next = [...videos]; next[i].customer_name = e.target.value; setVideos(next);
-                      }} />
-                      <Select value={String(v.rating)} onValueChange={(val) => {
-                        const next = [...videos]; next[i].rating = Number(val); setVideos(next);
-                      }}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {[5,4,3,2,1].map((r) => <SelectItem key={r} value={String(r)}>{"⭐".repeat(r)}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Textarea placeholder="Depoimento" rows={2} value={v.quote} onChange={(e) => {
-                      const next = [...videos]; next[i].quote = e.target.value; setVideos(next);
-                    }} />
-                  </div>
-                ))}
+                  );
+                })}
                 <Button size="sm" variant="outline" onClick={() => setVideos([...videos, { video_url: "", kind: "youtube", customer_name: "", quote: "", rating: 5, position: videos.length }])}>
                   <Plus className="mr-1 h-3 w-3" /> Adicionar vídeo
                 </Button>
