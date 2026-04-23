@@ -110,8 +110,8 @@ export function StorefrontFooter() {
               loading="lazy"
               decoding="async"
               width={120}
-              height={32}
-              className="h-8 min-h-[32px] w-auto shrink-0 object-contain sm:h-9 sm:min-h-[36px]"
+              height={40}
+              className="h-10 min-h-[40px] w-auto shrink-0 object-contain sm:h-11 sm:min-h-[44px]"
             />
           </a>
         </div>
