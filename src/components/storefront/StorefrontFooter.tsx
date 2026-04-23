@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Youtube } from "lucide-react";
 import { useStorefront } from "./StoreContext";
-import shopboxLogo from "@/assets/shopbox-logo.png";
+import shopboxLogo from "@/assets/shopbox-badge-logo.png";
 
 export function StorefrontFooter() {
   const { store } = useStorefront();
