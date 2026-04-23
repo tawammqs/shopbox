@@ -433,9 +433,11 @@ export type Database = {
       }
       home_video_sections: {
         Row: {
+          aspect: string
           created_at: string
           id: string
           is_active: boolean
+          position: number
           store_id: string
           title: string
           updated_at: string
@@ -443,9 +445,11 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          aspect?: string
           created_at?: string
           id?: string
           is_active?: boolean
+          position?: number
           store_id: string
           title?: string
           updated_at?: string
@@ -453,9 +457,11 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          aspect?: string
           created_at?: string
           id?: string
           is_active?: boolean
+          position?: number
           store_id?: string
           title?: string
           updated_at?: string
