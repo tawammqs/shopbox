@@ -107,9 +107,34 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
 
       if (error) throw error;
 
-      // Open WhatsApp only after successful save
-      openWhatsAppCheckout(store.whatsapp, items, subtotal, coupon, total, store.whatsapp_greeting);
-      clearCart();
+      const customer: CustomerInfo = {
+        name: form.name,
+        whatsapp: form.whatsapp,
+        email: form.email,
+        cpf: form.cpf,
+        cep: form.cep,
+        address: form.address,
+        city_state: form.city_state,
+      };
+
+      if (buyNow) {
+        // Buy-now: send single-product message and DO NOT clear cart
+        const msg = buildBuyNowMessage({
+          title: buyNow.productTitle,
+          colorName: buyNow.colorName,
+          sizeLabel: buyNow.sizeLabel,
+          quantity: buyNow.quantity,
+          unitPrice: buyNow.unitPrice,
+          productUrl: buyNow.productUrl,
+          greeting: store.whatsapp_greeting,
+          customer,
+        });
+        window.open(buildWhatsAppUrl(store.whatsapp, msg), "_blank");
+      } else {
+        // Cart checkout
+        openWhatsAppCheckout(store.whatsapp, items, subtotal, coupon, total, store.whatsapp_greeting, customer);
+        clearCart();
+      }
       onClose();
       toast.success("Pedido registrado! Continue no WhatsApp.");
     } catch (err: any) {
