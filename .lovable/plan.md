@@ -1,55 +1,36 @@
 
-## Plano: Vídeo no Produto + Seção "Descubra em Vídeo" Shoppable
 
-### 1. Banco de dados (migração)
+## Corrigir erro de RLS no upload de vídeo de depoimento
 
-**Alterar `products`:**
-- `video_url text` (nullable)
-- `video_type text` (nullable, valida: `upload | mp4 | youtube`)
+### Causa raiz
 
-**Nova tabela `home_video_sections`:**
-- `id`, `store_id` (FK stores), `title`, `video_url`, `video_type`, `is_active`, timestamps
-- Único por loja (uma seção por store)
-- RLS: leitura pública se `is_active=true` e store ativa; lojista gerencia a sua
+O componente `VideoSourcePicker` usado no card "Vídeos depoimento" (em `admin.produtos.$id.tsx`) tenta enviar o arquivo para o bucket `product-videos` num caminho que **precisa começar com o `store_id` do usuário**, conforme a policy de INSERT do storage:
 
-**Nova tabela `home_video_tags`:**
-- `id`, `home_video_section_id` (FK), `product_id` (FK products), `position_x` (0–100), `position_y` (0–100), `timestamp_start` (int seg, nullable), `timestamp_end` (int seg, nullable), `created_at`
-- RLS: leitura pública via seção ativa; lojista da loja dona gerencia
+```
+(storage.foldername(name))[1] = stores.id  AND  stores.owner_user_id = auth.uid()
+```
 
-**Bucket `product-videos`** (público), com policies:
-- SELECT público
-- INSERT/UPDATE/DELETE pelo dono da loja (path prefixado por `store_id/`)
+Hoje o componente recebe `storeId={store?.id ?? ""}`. Quando `store` ainda não foi carregado (ou o `useMyStore` retorna sem dados naquele instante), o `storeId` vai como `""`, o path do upload vira algo como `"/1700000000-abc.mp4"`, e a policy rejeita com **"new row violates row-level security policy"**.
 
-### 2. Componente reutilizável `VideoSourcePicker`
-Tabs: **Upload | Link MP4 | YouTube**, com preview embutido. Upload faz client-side upload ao `product-videos` (limite 100MB, valida tipo mp4/mov/webm) e devolve `{url, type}`.
+Outro fator que pode contribuir: o `VideoSourcePicker` não bloqueia o clique do botão de upload enquanto a loja está carregando, então o usuário consegue tentar enviar antes do `store.id` existir.
 
-Helper `getYoutubeEmbed(url)` para extrair ID e gerar embed.
+### Mudanças
 
-### 3. Cadastro de produto (`admin.produtos.$id.tsx`)
-Adicionar card "Vídeo do produto" usando `VideoSourcePicker`, salvando `video_url` e `video_type` no `products`.
+**1. `src/components/admin/VideoSourcePicker.tsx`**
+- No início do `handleFile`, validar que `storeId` é um UUID não-vazio. Se vier vazio, abortar com `toast.error("Aguarde — carregando dados da loja…")` e não chamar o `supabase.storage.upload`.
+- Desabilitar (`disabled`) o botão "Selecionar vídeo" quando `storeId` for vazio, com tooltip/label explicativo.
+- Melhorar a mensagem de erro do `catch`: se o erro do Supabase contiver "row-level security" ou "Unauthorized", mostrar mensagem clara: "Sem permissão para enviar. Verifique se você está logado como dono desta loja."
 
-### 4. Página do produto pública (`loja.$slug.produto.$productSlug.tsx`)
-Renderizar `VideoPlayer` (componente novo) com o `video_url`/`video_type` do produto numa nova aba/seção, sem alterar o resto.
+**2. `src/routes/admin.produtos.$id.tsx`** (card de depoimentos)
+- Garantir que o card de depoimentos só renderiza o `VideoSourcePicker` quando `store?.id` já está disponível. Se `store` ainda está carregando, mostrar um placeholder de "Carregando…" no lugar das tabs do picker. Isso elimina a janela em que o usuário poderia clicar antes da hora.
 
-### 5. Painel admin: `/admin/home-video`
-Nova rota `admin.home-video.tsx`:
-- Toggle ativar/desativar
-- Título configurável
-- `VideoSourcePicker` para o vídeo principal
-- **TagOverlayEditor**: preview do vídeo + tags posicionadas via drag-and-drop (mouse/touch); seletor de produto, timestamps opcionais; lista lateral com editar/remover.
-- Adicionar link no menu lateral do admin
+### Resultado
 
-### 6. Home da loja (`loja.$slug.index.tsx`)
-Nova seção `<HomeVideoSection />` (componente novo) renderizada quando existe seção ativa para a loja:
-- Player responsivo grande
-- Tags pulsantes sobrepostas, respeitando `timestamp_start/end` (sincronizadas via `currentTime` do `<video>` ou para YouTube via IFrame API básica — para YouTube as tags ficam visíveis o tempo todo já que controlar timestamps via IFrame requer API extra; documentar)
-- Clique na tag abre mini card com foto/nome/preço/CTA "Ver produto"
+- Usuário recebe feedback claro caso tente enviar antes da loja carregar (em vez do erro técnico de RLS).
+- Upload sempre vai para `{store_id}/...`, satisfazendo a policy do bucket.
+- O erro "new row violates row-level security policy" deixa de aparecer no fluxo normal de cadastro/edição de produto.
 
-### 7. Componente `ShoppableVideo` (compartilhado)
-Usado tanto no editor admin (modo edição com drag) quanto na home (modo view). Props: `videoUrl`, `videoType`, `tags`, `mode: "edit" | "view"`, `onTagMove`, `onTagClick`, etc.
+### Detalhe técnico
 
-### Limitações declaradas ao usuário
-- Para vídeos **YouTube**, sincronização precisa por timestamp não está disponível sem IFrame API completa — tags YouTube ficam sempre visíveis (sem `timestamp_start/end`).
-- Para upload/MP4, sincronização funciona via evento `timeupdate` do `<video>`.
+Não é necessário alterar policies do banco nem do storage — elas estão corretas e seguras (cada lojista só pode escrever na pasta da sua própria loja). A correção é puramente no front-end, garantindo que o `storeId` passado ao picker é sempre válido antes de iniciar o upload.
 
-Começo aplicando a migração do banco.
