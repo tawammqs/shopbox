@@ -105,6 +105,7 @@ function TagPopover({
   storeSlug: string;
 }) {
   const { tag, product } = data;
+  const closeRef = useRef<HTMLButtonElement>(null);
   const img =
     (product.product_images ?? []).slice().sort((a: any, b: any) => a.position - b.position)[0]?.url ?? null;
   const price = effectivePrice(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
@@ -113,17 +114,30 @@ function TagPopover({
   const left = Math.min(Math.max(tag.position_x, 18), 82);
   const top = Math.min(Math.max(tag.position_y, 18), 82);
 
+  useEffect(() => {
+    closeRef.current?.focus();
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   return (
     <div
+      role="dialog"
+      aria-modal="false"
+      aria-label={`Produto: ${product.title}`}
       className="absolute z-10 w-60 -translate-x-1/2 rounded-xl border border-border bg-card p-3 shadow-xl"
       style={{ left: `${left}%`, top: `${top}%` }}
     >
       <button
+        ref={closeRef}
         onClick={onClose}
-        className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background shadow"
-        aria-label="Fechar"
+        className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-background shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        aria-label="Fechar card do produto"
       >
-        <X className="h-3.5 w-3.5" />
+        <X className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
       <div className="flex gap-3">
         {img && <img src={img} alt={product.title} className="h-16 w-16 shrink-0 rounded-md object-cover" />}
