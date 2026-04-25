@@ -67,6 +67,9 @@ function CategoryPage() {
     staleTime: 60_000,
   });
 
+  const tamanhoArr = splitCsv(search.tamanho);
+  const marcaArr = splitCsv(search.marca);
+
   const q = useQuery({
     queryKey: [
       "category-products",
@@ -76,8 +79,8 @@ function CategoryPage() {
       search.minPrice,
       search.maxPrice,
       search.inStock,
-      search.tamanho.join(","),
-      search.marca.join(","),
+      tamanhoArr.join(","),
+      marcaArr.join(","),
       search.page,
     ],
     queryFn: () =>
@@ -88,8 +91,8 @@ function CategoryPage() {
         minPrice: search.minPrice,
         maxPrice: search.maxPrice,
         inStock: search.inStock,
-        sizes: search.tamanho,
-        brands: search.marca,
+        sizes: tamanhoArr,
+        brands: marcaArr,
       }),
     enabled: !!cat,
     staleTime: 30_000,
@@ -101,7 +104,6 @@ function CategoryPage() {
       params: { slug: store.slug, categorySlug },
       search: (prev: any) => {
         const next: any = { ...prev, ...patch };
-        // serialize arrays back to comma-separated strings via the validator's csv transform
         if (Array.isArray(next.tamanho)) next.tamanho = next.tamanho.length ? next.tamanho.join(",") : undefined;
         if (Array.isArray(next.marca)) next.marca = next.marca.length ? next.marca.join(",") : undefined;
         if (patch.page == null) next.page = 1;
@@ -110,7 +112,7 @@ function CategoryPage() {
     });
 
   const toggleArrayFilter = (key: "tamanho" | "marca", value: string) => {
-    const current = search[key];
+    const current = key === "tamanho" ? tamanhoArr : marcaArr;
     const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
     setSearch({ [key]: next });
   };
