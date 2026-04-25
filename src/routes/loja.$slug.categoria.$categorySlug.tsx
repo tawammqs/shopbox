@@ -155,8 +155,8 @@ function CategoryPage() {
   const visibleBrands = showAllBrands ? allBrands : allBrands.slice(0, 6);
 
   const hasAnyFilter =
-    search.tamanho.length > 0 ||
-    search.marca.length > 0 ||
+    tamanhoArr.length > 0 ||
+    marcaArr.length > 0 ||
     search.minPrice != null ||
     search.maxPrice != null ||
     !!search.inStock;
@@ -171,11 +171,11 @@ function CategoryPage() {
     });
 
   const chips: { label: string; clear: () => void }[] = [
-    ...search.tamanho.map((t) => ({
+    ...tamanhoArr.map((t) => ({
       label: `Tamanho: ${t}`,
       clear: () => toggleArrayFilter("tamanho", t),
     })),
-    ...search.marca.map((b) => ({
+    ...marcaArr.map((b) => ({
       label: `Marca: ${b}`,
       clear: () => toggleArrayFilter("marca", b),
     })),
