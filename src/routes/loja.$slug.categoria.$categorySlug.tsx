@@ -236,7 +236,7 @@ function CategoryPage() {
             <FilterSection label="Tamanho">
               <ul className="space-y-2">
                 {visibleSizes.map((s) => {
-                  const checked = search.tamanho.includes(s.label);
+                  const checked = tamanhoArr.includes(s.label);
                   return (
                     <li key={s.label} className="flex items-center gap-2">
                       <Checkbox
@@ -270,7 +270,7 @@ function CategoryPage() {
             <FilterSection label="Marca">
               <ul className="space-y-2">
                 {visibleBrands.map((b) => {
-                  const checked = search.marca.includes(b.name);
+                  const checked = marcaArr.includes(b.name);
                   return (
                     <li key={b.name} className="flex items-center gap-2">
                       <Checkbox
