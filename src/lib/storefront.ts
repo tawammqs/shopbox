@@ -145,16 +145,121 @@ export async function fetchProductsForCategory(
   const { data, error, count } = await q;
   if (error) throw error;
 
-  let products = (data ?? []).map(normalizeProductCard);
+  let products = (data ?? []).map((row: any) => ({ ...normalizeProductCard(row), _raw: row }));
 
   // Client-side filters that need joined data
   if (opts.minPrice != null) products = products.filter((p) => effectivePrice(p.price, p.promo_price) >= opts.minPrice!);
   if (opts.maxPrice != null) products = products.filter((p) => effectivePrice(p.price, p.promo_price) <= opts.maxPrice!);
-  
+
   if (opts.colorNames?.length)
     products = products.filter((p) => p.colors.some((c) => opts.colorNames!.includes(c.name)));
 
-  return { products, total: count ?? products.length };
+  if (opts.sizes?.length) {
+    const wanted = new Set(opts.sizes.map((s) => s.toLowerCase()));
+    products = products.filter((p) => {
+      const sizes = (p._raw.product_sizes ?? []) as { id: string; label: string }[];
+      const stock = (p._raw.product_stock ?? []) as { size_id: string | null; quantity: number }[];
+      const inStockSizeIds = new Set(
+        stock.filter((s) => (s.quantity ?? 0) > 0 && s.size_id).map((s) => s.size_id as string),
+      );
+      return sizes.some((s) => wanted.has(s.label.toLowerCase()) && inStockSizeIds.has(s.id));
+    });
+  }
+
+  if (opts.inStock) products = products.filter((p) => p.totalStock > 0);
+
+  // Strip raw join data from final result
+  const cleaned = products.map(({ _raw, ...rest }) => rest);
+  return { products: cleaned, total: count ?? cleaned.length };
+}
+
+export async function fetchCategoryFacets(storeId: string, categoryIds: string[] | null) {
+  let q = supabase
+    .from("products")
+    .select(
+      `id, brand, price, promo_price,
+       product_sizes(id, label),
+       product_stock(quantity, size_id)`,
+    )
+    .eq("store_id", storeId)
+    .eq("active", true);
+
+  if (categoryIds && categoryIds.length > 0) {
+    const { data: links } = await supabase
+      .from("product_categories")
+      .select("product_id")
+      .in("category_id", categoryIds);
+    const productIds = Array.from(new Set((links ?? []).map((l: any) => l.product_id)));
+    if (productIds.length === 0) {
+      return { sizes: [], brands: [], priceMin: 0, priceMax: 0 };
+    }
+    q = q.in("id", productIds);
+  }
+
+  const { data, error } = await q;
+  if (error) throw error;
+
+  const rows = data ?? [];
+  const sizeCounts = new Map<string, number>();
+  const brandCounts = new Map<string, number>();
+  let priceMin = Infinity;
+  let priceMax = 0;
+
+  for (const p of rows as any[]) {
+    const eff = effectivePrice(Number(p.price), p.promo_price != null ? Number(p.promo_price) : null);
+    if (eff < priceMin) priceMin = eff;
+    if (eff > priceMax) priceMax = eff;
+
+    if (p.brand && String(p.brand).trim()) {
+      const b = String(p.brand).trim();
+      brandCounts.set(b, (brandCounts.get(b) ?? 0) + 1);
+    }
+
+    const sizes = (p.product_sizes ?? []) as { id: string; label: string }[];
+    const stock = (p.product_stock ?? []) as { size_id: string | null; quantity: number }[];
+    const inStockSizeIds = new Set(
+      stock.filter((s) => (s.quantity ?? 0) > 0 && s.size_id).map((s) => s.size_id as string),
+    );
+    const productSizeLabels = new Set<string>();
+    for (const s of sizes) {
+      if (inStockSizeIds.has(s.id)) productSizeLabels.add(s.label);
+    }
+    for (const label of productSizeLabels) {
+      sizeCounts.set(label, (sizeCounts.get(label) ?? 0) + 1);
+    }
+  }
+
+  if (!isFinite(priceMin)) priceMin = 0;
+
+  // Sort sizes intelligently: numeric ascending first, then letters in standard order
+  const letterOrder = ["PP", "P", "M", "G", "GG", "XGG", "XG"];
+  const sizeArr = Array.from(sizeCounts.entries()).map(([label, count]) => ({ label, count }));
+  sizeArr.sort((a, b) => {
+    const an = Number(a.label);
+    const bn = Number(b.label);
+    const aNum = !isNaN(an);
+    const bNum = !isNaN(bn);
+    if (aNum && bNum) return an - bn;
+    if (aNum) return -1;
+    if (bNum) return 1;
+    const ai = letterOrder.indexOf(a.label.toUpperCase());
+    const bi = letterOrder.indexOf(b.label.toUpperCase());
+    if (ai !== -1 && bi !== -1) return ai - bi;
+    if (ai !== -1) return -1;
+    if (bi !== -1) return 1;
+    return a.label.localeCompare(b.label);
+  });
+
+  const brandArr = Array.from(brandCounts.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return {
+    sizes: sizeArr,
+    brands: brandArr,
+    priceMin: Math.floor(priceMin),
+    priceMax: Math.ceil(priceMax),
+  };
 }
 
 export async function searchProductsLive(storeId: string, term: string, limit = 6) {
