@@ -137,6 +137,9 @@ export async function fetchProductsForCategory(
     case "ofertas":
       q = q.not("promo_price", "is", null).order("created_at", { ascending: false });
       break;
+    case "mais_vendidos":
+      q = q.order("view_count", { ascending: false });
+      break;
     default:
       q = q.order("created_at", { ascending: false });
   }
