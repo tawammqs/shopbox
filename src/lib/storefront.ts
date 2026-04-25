@@ -219,13 +219,9 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
     }
 
     const sizes = (p.product_sizes ?? []) as { id: string; label: string }[];
-    const stock = (p.product_stock ?? []) as { size_id: string | null; quantity: number }[];
-    const inStockSizeIds = new Set(
-      stock.filter((s) => (s.quantity ?? 0) > 0 && s.size_id).map((s) => s.size_id as string),
-    );
     const productSizeLabels = new Set<string>();
     for (const s of sizes) {
-      if (inStockSizeIds.has(s.id)) productSizeLabels.add(s.label);
+      if (s.label && String(s.label).trim()) productSizeLabels.add(s.label);
     }
     for (const label of productSizeLabels) {
       sizeCounts.set(label, (sizeCounts.get(label) ?? 0) + 1);
