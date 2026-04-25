@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 const csv = z
   .string()
   .optional()
-  .transform((v) => (v ? v.split(",").map((s) => s.trim()).filter(Boolean) : []));
+  .transform((v): string[] => (v ? v.split(",").map((s) => s.trim()).filter(Boolean) : []));
 
 const searchSchema = z.object({
   sort: fallback(
@@ -24,8 +24,8 @@ const searchSchema = z.object({
   minPrice: fallback(z.number().optional(), undefined).optional(),
   maxPrice: fallback(z.number().optional(), undefined).optional(),
   inStock: fallback(z.boolean().optional(), undefined).optional(),
-  tamanho: fallback(csv, []).default([]),
-  marca: fallback(csv, []).default([]),
+  tamanho: fallback(csv, "" as unknown as string[]).default("" as unknown as string[]),
+  marca: fallback(csv, "" as unknown as string[]).default("" as unknown as string[]),
   page: fallback(z.number().int().min(1).optional(), 1).default(1),
 });
 
