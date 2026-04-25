@@ -24,10 +24,13 @@ const searchSchema = z.object({
   minPrice: fallback(z.number().optional(), undefined).optional(),
   maxPrice: fallback(z.number().optional(), undefined).optional(),
   inStock: fallback(z.boolean().optional(), undefined).optional(),
-  tamanho: fallback(csv, "" as unknown as string[]).default("" as unknown as string[]),
-  marca: fallback(csv, "" as unknown as string[]).default("" as unknown as string[]),
+  tamanho: fallback(z.string().optional(), undefined).optional(),
+  marca: fallback(z.string().optional(), undefined).optional(),
   page: fallback(z.number().int().min(1).optional(), 1).default(1),
 });
+
+const splitCsv = (s: string | undefined): string[] =>
+  s ? s.split(",").map((x) => x.trim()).filter(Boolean) : [];
 
 export const Route = createFileRoute("/loja/$slug/categoria/$categorySlug")({
   validateSearch: zodValidator(searchSchema),
