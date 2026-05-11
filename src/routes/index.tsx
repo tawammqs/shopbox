@@ -5,7 +5,6 @@ import {
   Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
-import logoUrl from "@/assets/shopbox-logo.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,7 +21,7 @@ export const Route = createFileRoute("/")({
     links: [
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap",
       },
     ],
   }),
@@ -30,372 +29,295 @@ export const Route = createFileRoute("/")({
 });
 
 const STYLES = `
-.pdark, .pdark *, .pdark *::before, .pdark *::after { box-sizing: border-box; margin: 0; padding: 0; }
-.pdark {
-  --green: #00c853;
-  --green-mid: #00b248;
-  --green-dark: #007a32;
-  --green-xdark: #004d20;
-  --dk-bg: #07100a;
-  --dk-bg2: #0c180e;
-  --dk-surface: #121e14;
-  --dk-surface2: #182b1a;
-  --dk-border: rgba(0,200,83,0.14);
-  --dk-text: #eef8f0;
-  --dk-text2: #8fb898;
-  --dk-text3: #4e7557;
-  --cl-bg: #f4faf5;
-  --cl-bg2: #eaf4ec;
-  --cl-surface: #ffffff;
-  --cl-border: rgba(0,150,60,0.14);
-  --cl-text: #0a1a0d;
-  --cl-text2: #3d6345;
-  --cl-text3: #7aaa82;
-  --whatsapp: #25d366;
-  --ff: 'Public Sans', system-ui, sans-serif;
-  font-family: var(--ff);
+.psb, .psb *, .psb *::before, .psb *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Public Sans', system-ui, sans-serif; }
+.psb {
+  --green: #25D366;
+  --green-dk: #1ebe57;
+  --green-text: #166534;
+  --ink: #1a1a1a;
+  --ink-soft: #444;
+  --muted: #555;
+  --muted2: #888;
+  --muted3: #aaa;
+  --line: #e8e8e0;
+  --bg-cream: #fafaf8;
+  --bg-mint: #f0fdf4;
+  --line-mint: #bbf7d0;
+  --bg-rose: #fff5f5;
+  --line-rose: #fecaca;
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
+  color: var(--ink);
+  background: #fff;
 }
-.pdark a { text-decoration: none; color: inherit; }
+.psb a { text-decoration: none; color: inherit; }
+.psb button { font-family: inherit; cursor: pointer; }
 
-.pdark .dark  { background: var(--dk-bg);  color: var(--dk-text); position: relative; }
-.pdark .dark2 { background: var(--dk-bg2); color: var(--dk-text); position: relative; }
-.pdark .clean { background: var(--cl-bg);  color: var(--cl-text); }
-.pdark .clean2 { background: var(--cl-surface); color: var(--cl-text); }
+/* SECTION WRAPPERS */
+.psb .sec { padding: 96px 52px; }
+.psb .wrap { max-width: 1200px; margin: 0 auto; }
+
+.psb .sec-nav     { background: #fafaf8; border-bottom: 1px solid #e8e8e0; }
+.psb .sec-hero    { background: #fafaf8; }
+.psb .sec-marquee { background: #ffffff; border-top: 1px solid #e8e8e0; border-bottom: 1px solid #e8e8e0; }
+.psb .sec-about   { background: #f0fdf4; border-top: 1px solid #bbf7d0; border-bottom: 1px solid #bbf7d0; }
+.psb .sec-vs      { background: #fafaf8; border-bottom: 1px solid #e8e8e0; }
+.psb .sec-feats   { background: #ffffff; border-bottom: 1px solid #e8e8e0; }
+.psb .sec-steps   { background: #1a1a1a; color: #fff; }
+.psb .sec-testi   { background: #ffffff; border-top: 3px solid #25D366; border-bottom: 1px solid #e8e8e0; }
+.psb .sec-pricing { background: #fafaf8; border-top: 1px solid #e8e8e0; border-bottom: 1px solid #e8e8e0; }
+.psb .sec-faq     { background: #ffffff; border-bottom: 1px solid #e8e8e0; }
+.psb .sec-cta     { background: #1a1a1a; color: #fff; }
+.psb .sec-footer  { background: #0a0a0a; border-top: 1px solid #1f2937; color: #9ca3af; }
 
 /* NAV */
-.pdark .pd-nav-bar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 110px;
-  padding: 0 48px;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  transition: height .25s ease, padding .25s ease, background .25s ease, backdrop-filter .25s ease, box-shadow .25s ease;
-}
-.pdark .pd-nav-bar.scrolled {
-  height: 80px;
-  background: rgba(7,16,10,0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
-}
-.pdark .nav-logo {
-  display: flex; align-items: center;
-  flex: 0 1 auto;
-  min-width: 0;
-  max-width: 42%;
-  overflow: hidden;
-}
-.pdark .nav-logo img {
-  height: 92px;
-  max-width: 100%;
-  width: auto;
-  object-fit: contain;
-  display: block;
-  filter: brightness(0) invert(1);
-  transition: height .25s ease;
-}
-.pdark .pd-nav-bar.scrolled .nav-logo img { height: 64px; }
-@media (max-width: 1024px) {
-  .pdark .pd-nav-bar { height: 124px; padding: 0 28px; }
-  .pdark .nav-logo img { height: 108px; }
-  .pdark .pd-nav-bar.scrolled { height: 88px; }
-  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 72px; }
-}
-@media (max-width: 640px) {
-  .pdark .pd-nav-bar { height: 124px; padding: 0 16px; gap: 10px; }
-  .pdark .nav-logo { max-width: 62%; }
-  .pdark .nav-logo img { height: 110px; }
-  .pdark .pd-nav-bar.scrolled { height: 96px; }
-  .pdark .pd-nav-bar.scrolled .nav-logo img { height: 84px; }
-}
-.pdark .nav-links { display: flex; align-items: center; gap: 34px; flex-shrink: 1; min-width: 0; }
-.pdark .nav-links a { font-size: 14px; font-weight: 500; color: var(--dk-text2); transition: color .2s; cursor: pointer; white-space: nowrap; }
-.pdark .nav-links a:hover { color: var(--dk-text); }
-.pdark .nav-cta { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.pdark .btn-ghost { font-size: 14px; font-weight: 500; color: var(--dk-text2); padding: 8px 20px; border-radius: 8px; border: 1px solid var(--dk-border); transition: all .2s; background: transparent; cursor: pointer; white-space: nowrap; }
-.pdark .btn-ghost:hover { color: var(--dk-text); border-color: rgba(0,200,83,.4); }
-.pdark .btn-cta { font-size: 14px; font-weight: 700; color: #040a05; padding: 9px 22px; border-radius: 8px; background: var(--green); transition: all .2s; border: none; cursor: pointer; display: inline-block; white-space: nowrap; }
-.pdark .btn-cta:hover { background: #33d974; transform: translateY(-1px); }
-@media (max-width: 640px) {
-  .pdark .btn-ghost { display: none; }
-  .pdark .btn-cta { font-size: 12.5px; font-weight: 800; padding: 8px 14px; }
-}
+.psb .navbar { position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; }
+.psb .logo { font-weight: 900; font-size: 26px; letter-spacing: -1px; display: inline-flex; }
+.psb .logo .lo-a { color: #1a1a1a; }
+.psb .logo .lo-b { color: #25D366; }
+.psb .nav-links { display: flex; align-items: center; gap: 34px; }
+.psb .nav-links a { font-size: 14px; font-weight: 500; color: #555; transition: color .2s; white-space: nowrap; }
+.psb .nav-links a:hover { color: #1a1a1a; }
+.psb .nav-cta { display: flex; align-items: center; gap: 12px; }
+.psb .btn-ghost { font-size: 14px; font-weight: 500; color: #555; padding: 8px 20px; border-radius: 8px; border: 1px solid #e8e8e0; background: #fff; transition: all .2s; }
+.psb .btn-ghost:hover { color: #1a1a1a; border-color: #25D366; }
+.psb .btn-cta { font-size: 14px; font-weight: 700; color: #fff; padding: 9px 22px; border-radius: 8px; background: #25D366; border: none; transition: all .2s; white-space: nowrap; }
+.psb .btn-cta:hover { background: #1ebe57; transform: translateY(-1px); }
 
 /* HERO */
-.pdark .hero {
-  min-height: 100vh; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 110px 24px 80px;
-}
-.pdark .hero-radial {
-  position: absolute; top: -160px; left: 50%; transform: translateX(-50%);
-  width: 1000px; height: 680px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(0,200,83,.13) 0%, transparent 68%);
-  pointer-events: none; z-index: 0;
-}
-.pdark .hero > * { position: relative; z-index: 1; }
-.pdark .hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(0,200,83,.1); border: 1px solid rgba(0,200,83,.28);
-  border-radius: 100px; padding: 6px 18px;
-  font-size: 13px; font-weight: 600; color: var(--green);
-  margin-bottom: 32px; animation: pdfadeUp .55s ease both;
-}
-.pdark .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pdblink 2s infinite; }
-@keyframes pdblink { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
-.pdark .hero h1 { font-size: clamp(44px, 6.2vw, 80px); font-weight: 900; letter-spacing: -2.5px; line-height: 1.08; max-width: 860px; animation: pdfadeUp .55s .08s ease both; color: var(--dk-text); }
-.pdark .hero h1 em { font-style: normal; color: var(--green); }
-.pdark .hero-sub { margin-top: 22px; font-size: clamp(16px, 1.4vw, 19px); color: var(--dk-text2); max-width: 560px; line-height: 1.75; font-weight: 400; animation: pdfadeUp .55s .16s ease both; }
-.pdark .hero-actions { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; animation: pdfadeUp .55s .24s ease both; }
-.pdark .btn-hero { font-size: 16px; font-weight: 800; color: #040a05; padding: 14px 34px; border-radius: 10px; background: var(--green); display: inline-flex; align-items: center; gap: 9px; box-shadow: 0 0 36px rgba(0,200,83,.32); transition: all .22s; border: none; cursor: pointer; }
-.pdark .btn-hero:hover { background: #33d974; transform: translateY(-2px); box-shadow: 0 0 54px rgba(0,200,83,.42); }
-.pdark .btn-outline { font-size: 16px; font-weight: 600; color: var(--dk-text2); padding: 14px 34px; border-radius: 10px; border: 1px solid var(--dk-border); transition: all .22s; display: inline-flex; align-items: center; gap: 8px; background: transparent; cursor: pointer; }
-.pdark .btn-outline:hover { color: var(--dk-text); border-color: rgba(0,200,83,.45); }
-.pdark .hero-note { margin-top: 20px; font-size: 13px; color: var(--dk-text3); animation: pdfadeUp .55s .32s ease both; }
-.pdark .hero-note strong { color: var(--dk-text2); }
+.psb .hero { padding: 64px 24px 96px; text-align: center; }
+.psb .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e8e8e0; border-radius: 100px; padding: 6px 18px; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 32px; }
+.psb .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #25D366; }
+.psb .hero h1 { font-size: clamp(44px, 6.2vw, 80px); font-weight: 900; letter-spacing: -2px; line-height: 1.08; max-width: 860px; margin: 0 auto; color: #1a1a1a; }
+.psb .hero h1 em { font-weight: 900; color: #25D366; font-style: italic; }
+.psb .hero-sub { margin: 22px auto 0; font-size: clamp(16px, 1.4vw, 19px); color: #555; max-width: 600px; line-height: 1.7; font-weight: 400; }
+.psb .hero-actions { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.psb .btn-hero { font-size: 16px; font-weight: 700; color: #fff; padding: 14px 34px; border-radius: 10px; background: #25D366; display: inline-flex; align-items: center; gap: 9px; border: none; transition: all .22s; box-shadow: 0 8px 24px rgba(37,211,102,.28); }
+.psb .btn-hero:hover { background: #1ebe57; transform: translateY(-2px); }
+.psb .btn-outline { font-size: 16px; font-weight: 600; color: #555; padding: 14px 34px; border-radius: 10px; border: 1px solid #e8e8e0; background: #fff; display: inline-flex; align-items: center; gap: 8px; transition: all .22s; }
+.psb .btn-outline:hover { color: #1a1a1a; border-color: #25D366; }
+.psb .hero-note { margin-top: 20px; font-size: 13px; color: #888; }
+.psb .hero-note strong { color: #555; }
 
 /* HERO DASHBOARD */
-.pdark .hero-dash { margin-top: 68px; width: 100%; max-width: 1020px; background: var(--dk-surface); border: 1px solid var(--dk-border); border-radius: 22px; overflow: hidden; box-shadow: 0 0 100px rgba(0,200,83,.1), 0 48px 96px rgba(0,0,0,.55); animation: pdfadeUp .8s .4s ease both; }
-.pdark .dash-bar { background: var(--dk-bg2); padding: 13px 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--dk-border); }
-.pdark .dr { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57 }
-.pdark .dy { width: 12px; height: 12px; border-radius: 50%; background: #febc2e }
-.pdark .dg { width: 12px; height: 12px; border-radius: 50%; background: #28c840 }
-.pdark .dash-url { margin-left: 12px; font-size: 12px; color: var(--dk-text3); }
-.pdark .dash-body { padding: 28px; display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
-.pdark .dc { background: var(--dk-bg); border: 1px solid var(--dk-border); border-radius: 12px; padding: 20px; }
-.pdark .dc-l { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--dk-text3); }
-.pdark .dc-v { font-size: 28px; font-weight: 900; color: var(--dk-text); margin-top: 6px; letter-spacing: -1px; }
-.pdark .dc-t { font-size: 12px; color: var(--green); margin-top: 4px; font-weight: 600; }
-.pdark .dc-table { grid-column: 1/-1; position: relative; }
-.pdark .dc-table-scroll {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,200,83,.4) transparent;
-}
-.pdark .dc-table-scroll::-webkit-scrollbar { height: 6px; }
-.pdark .dc-table-scroll::-webkit-scrollbar-thumb { background: rgba(0,200,83,.35); border-radius: 4px; }
-.pdark .dc-table table { width: 100%; min-width: 480px; border-collapse: collapse; }
-.pdark .dc-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--dk-text3); padding: 8px 14px; text-align: left; font-weight: 600; white-space: nowrap; }
-.pdark .dc-table td { font-size: 14px; color: var(--dk-text2); padding: 11px 14px; border-top: 1px solid var(--dk-border); white-space: nowrap; }
-.pdark .dc-swipe-hint {
-  display: none;
-  font-size: 11px;
-  color: var(--dk-text3);
-  margin-top: 8px;
-  text-align: center;
-  font-weight: 500;
-  letter-spacing: .3px;
-}
-.pdark .dc-swipe-hint::before { content: '← '; color: var(--green); }
-.pdark .dc-swipe-hint::after { content: ' →'; color: var(--green); }
-.pdark .tg { color: var(--green); background: rgba(0,200,83,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; white-space: nowrap; }
-.pdark .ty { color: #fbb040; background: rgba(251,176,64,.1); padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; white-space: nowrap; }
-@media (max-width: 900px) {
-  .pdark .dc-swipe-hint { display: block; }
-}
-@keyframes pdfadeUp { from { opacity: 0; transform: translateY(22px) } to { opacity: 1; transform: translateY(0) } }
+.psb .hero-dash { margin: 64px auto 0; width: 100%; max-width: 1020px; background: #fff; border: 1px solid #e8e8e0; border-radius: 22px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,.08); text-align: left; }
+.psb .dash-bar { background: #fafaf8; padding: 13px 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e8e8e0; }
+.psb .dr { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.psb .dy { width: 12px; height: 12px; border-radius: 50%; background: #febc2e; }
+.psb .dg { width: 12px; height: 12px; border-radius: 50%; background: #28c840; }
+.psb .dash-url { margin-left: 12px; font-size: 12px; color: #aaa; }
+.psb .dash-body { padding: 28px; display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
+.psb .dc { background: #fafaf8; border: 1px solid #e8e8e0; border-radius: 12px; padding: 20px; }
+.psb .dc-l { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #888; }
+.psb .dc-v { font-size: 28px; font-weight: 900; color: #1a1a1a; margin-top: 6px; letter-spacing: -1px; }
+.psb .dc-t { font-size: 12px; color: #25D366; margin-top: 4px; font-weight: 600; }
+.psb .dc-table { grid-column: 1/-1; }
+.psb .dc-table-scroll { overflow-x: auto; }
+.psb .dc-table table { width: 100%; min-width: 480px; border-collapse: collapse; }
+.psb .dc-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; padding: 8px 14px; text-align: left; font-weight: 700; white-space: nowrap; }
+.psb .dc-table td { font-size: 14px; color: #555; padding: 11px 14px; border-top: 1px solid #e8e8e0; white-space: nowrap; }
+.psb .tg { color: #166534; background: #f0fdf4; padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 700; }
+.psb .ty { color: #92400e; background: #fef3c7; padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 700; }
 
 /* MARQUEE */
-.pdark .marquee-wrap { overflow: hidden; padding: 17px 0; border-top: 1px solid var(--dk-border); border-bottom: 1px solid var(--dk-border); background: var(--dk-bg2); }
-.pdark .marquee-track { display: flex; white-space: nowrap; animation: pdmq 28s linear infinite; }
-.pdark .marquee-track:hover { animation-play-state: paused; }
-.pdark .mi { display: inline-flex; align-items: center; gap: 9px; padding: 0 30px; font-size: 13.5px; font-weight: 600; color: var(--dk-text3); flex-shrink: 0; }
-.pdark .mi::before { content: '✓'; color: var(--green); }
-@keyframes pdmq { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+.psb .marquee-wrap { overflow: hidden; padding: 17px 0; }
+.psb .marquee-track { display: flex; white-space: nowrap; animation: psbmq 28s linear infinite; }
+.psb .marquee-track:hover { animation-play-state: paused; }
+.psb .mi { display: inline-flex; align-items: center; gap: 9px; padding: 0 30px; font-size: 13.5px; font-weight: 600; color: #555; flex-shrink: 0; }
+.psb .mi::before { content: '✓'; color: #25D366; }
+@keyframes psbmq { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 
-/* LAYOUT UTIL */
-.pdark .wrap { max-width: 1200px; margin: 0 auto; padding: 96px 52px; }
-.pdark .section-tag { display: inline-flex; align-items: center; gap: 10px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 2.2px; color: var(--green); margin-bottom: 18px; }
-.pdark .section-tag::before { content: ''; width: 18px; height: 1.5px; background: currentColor; }
-.pdark .section-tag.cl { color: var(--green-dark); }
-.pdark .sh2 { font-size: clamp(30px, 3.8vw, 50px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; max-width: 680px; margin-bottom: 18px; }
-.pdark .ssub { font-size: 17px; line-height: 1.75; font-weight: 400; max-width: 540px; }
+/* SECTION HEADERS */
+.psb .pill { display: inline-block; border: 1px solid #e8e8e0; background: #fff; color: #555; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 9999px; margin-bottom: 16px; }
+.psb .sh2 { font-size: clamp(28px, 3.8vw, 50px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; max-width: 700px; margin-bottom: 18px; color: #1a1a1a; }
+.psb .sec-steps .sh2, .psb .sec-cta .sh2 { color: #fff; }
+.psb .sec-steps .sh2 em, .psb .sec-cta .sh2 em { font-style: italic; color: #25D366; font-weight: 900; }
+.psb .ssub { font-size: 17px; line-height: 1.75; font-weight: 400; max-width: 560px; color: #555; }
+.psb .sec-steps .ssub { color: #aaa; }
 
 /* WHAT */
-.pdark .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 60px; }
-.pdark .wf-list { display: flex; flex-direction: column; gap: 16px; }
-.pdark .wf { display: flex; gap: 16px; align-items: flex-start; padding: 22px 22px; border-radius: 14px; border: 1px solid var(--cl-border); background: var(--cl-surface); transition: border-color .22s ease, box-shadow .22s ease, background .22s ease; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
-.pdark .wf:hover { border-color: rgba(0,150,60,.45); box-shadow: 0 6px 28px rgba(0,150,60,.12); background: #fbfffb; }
-.pdark .wf-body { display: flex; flex-direction: column; }
-.pdark .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; transition: background .22s ease, border-color .22s ease, transform .22s ease; }
-.pdark .wf:hover .wf-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.05); }
-.pdark .wf-ic > svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .wf-ic.wf-ic-wa > svg { stroke: none; fill: var(--green); }
-.pdark .wf h4 { font-size: 15px; font-weight: 700; color: var(--cl-text); margin-bottom: 6px; line-height: 1.3; }
-.pdark .wf p  { font-size: 14px; color: var(--cl-text2); line-height: 1.6; margin: 0; }
+.psb .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 60px; }
+.psb .wf-list { display: flex; flex-direction: column; gap: 16px; }
+.psb .wf { display: flex; gap: 16px; align-items: flex-start; padding: 22px; border-radius: 14px; border: 1px solid #bbf7d0; background: #fff; transition: all .22s; }
+.psb .wf:hover { border-color: #25D366; box-shadow: 0 6px 28px rgba(37,211,102,.12); }
+.psb .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; }
+.psb .wf-ic > svg { width: 22px; height: 22px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.psb .wf-ic.wf-ic-wa > svg { stroke: none; fill: #25D366; }
+.psb .wf h4 { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; line-height: 1.3; }
+.psb .wf p  { font-size: 14px; color: #555; line-height: 1.6; }
 
 /* PHONE MOCK */
-.pdark .phone { background: #fff; border: 1px solid var(--cl-border); border-radius: 26px; padding: 28px; max-width: 330px; margin: 0 auto; box-shadow: 0 12px 64px rgba(0,100,40,.1); }
-.pdark .ph-head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--cl-border); margin-bottom: 18px; }
-.pdark .ph-av { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--green), var(--green-dark)); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; color: #fff; }
-.pdark .ph-name { font-size: 15px; font-weight: 700; color: var(--cl-text); }
-.pdark .ph-on { font-size: 12px; color: var(--green); font-weight: 600; }
-.pdark .ph-prod { background: var(--cl-bg); border-radius: 14px; padding: 16px; display: flex; gap: 14px; align-items: center; margin-bottom: 14px; border: 1px solid var(--cl-border); }
-.pdark .ph-img { width: 56px; height: 56px; border-radius: 10px; background: linear-gradient(135deg,#d4f5dc,#a8e6b4); display: flex; align-items: center; justify-content: center; font-size: 26px; }
-.pdark .ph-pn { font-size: 14px; font-weight: 700; color: var(--cl-text); }
-.pdark .ph-pp { font-size: 20px; font-weight: 900; color: var(--green); margin-top: 2px; }
-.pdark .ph-btn { width: 100%; padding: 13px; background: var(--green); border-radius: 11px; text-align: center; color: #fff; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
-.pdark .ph-stat { margin-top: 18px; text-align: center; }
-.pdark .ph-sv { font-size: 30px; font-weight: 900; color: var(--green); letter-spacing: -1px; }
-.pdark .ph-sl { font-size: 12px; color: var(--cl-text3); font-weight: 500; }
+.psb .phone { background: #fff; border: 1px solid #bbf7d0; border-radius: 26px; padding: 28px; max-width: 330px; margin: 0 auto; box-shadow: 0 12px 64px rgba(0,100,40,.08); }
+.psb .ph-head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #e8e8e0; margin-bottom: 18px; }
+.psb .ph-av { width: 40px; height: 40px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; color: #fff; }
+.psb .ph-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.psb .ph-on { font-size: 12px; color: #25D366; font-weight: 600; }
+.psb .ph-prod { background: #fafaf8; border-radius: 14px; padding: 16px; display: flex; gap: 14px; align-items: center; margin-bottom: 14px; border: 1px solid #e8e8e0; }
+.psb .ph-img { width: 56px; height: 56px; border-radius: 10px; background: linear-gradient(135deg,#d4f5dc,#a8e6b4); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.psb .ph-pn { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.psb .ph-pp { font-size: 20px; font-weight: 900; color: #25D366; margin-top: 2px; }
+.psb .ph-btn { width: 100%; padding: 13px; background: #25D366; border-radius: 11px; text-align: center; color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.psb .ph-stat { margin-top: 18px; text-align: center; }
+.psb .ph-sv { font-size: 30px; font-weight: 900; color: #25D366; letter-spacing: -1px; }
+.psb .ph-sl { font-size: 12px; color: #888; font-weight: 500; }
 
 /* STATS */
-.pdark .stats-band { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--cl-border); border: 1px solid var(--cl-border); border-radius: 16px; overflow: hidden; margin-top: 60px; }
-.pdark .sc { background: #fff; padding: 32px 24px; text-align: center; transition: background .2s; }
-.pdark .sc:hover { background: var(--cl-bg2); }
-.pdark .sc-ic { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; transition: background .22s ease, border-color .22s ease, transform .22s ease; }
-.pdark .sc:hover .sc-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.05); }
-.pdark .sc-ic svg { width: 22px; height: 22px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .sn { font-size: 38px; font-weight: 900; color: #0a1a0d !important; letter-spacing: -1.5px; line-height: 1; }
-.pdark .sn em { font-style: normal; color: #0a1a0d !important; }
-.pdark .sl { font-size: 13.5px; color: #0a1a0d !important; margin-top: 8px; font-weight: 600; }
+.psb .stats-band { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: #bbf7d0; border: 1px solid #bbf7d0; border-radius: 16px; overflow: hidden; margin-top: 60px; }
+.psb .sc { background: #fff; padding: 32px 24px; text-align: center; }
+.psb .sc-ic { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; }
+.psb .sc-ic svg { width: 22px; height: 22px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.psb .sn { font-size: 38px; font-weight: 900; color: #1a1a1a; letter-spacing: -1.5px; line-height: 1; }
+.psb .sl { font-size: 13.5px; color: #555; margin-top: 8px; font-weight: 600; }
 
 /* VS */
-.pdark .vs-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: stretch; margin-top: 56px; }
-.pdark .vs-card { border-radius: 22px; padding: 36px; }
-.pdark .vs-card-bad { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
-.pdark .vs-card-good { background: rgba(0,200,83,0.05); border: 2px solid rgba(0,200,83,0.45); box-shadow: 0 0 60px rgba(0,200,83,0.1); }
-.pdark .vs-card-title { font-size: 16px; font-weight: 800; margin-bottom: 28px; color: var(--dk-text); display: flex; align-items: center; gap: 10px; }
-.pdark .vs-card-bad .vs-card-title { color: var(--dk-text2); }
-.pdark .vs-card-good .vs-card-title { color: var(--green); }
-.pdark .vs-divider { display: flex; align-items: center; justify-content: center; width: 72px; flex-shrink: 0; }
-.pdark .vs-badge-pill { background: var(--dk-bg); border: 1.5px solid var(--dk-border); border-radius: 100px; padding: 8px 14px; font-size: 12px; font-weight: 900; color: var(--dk-text3); letter-spacing: 1px; }
-.pdark .vs-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; line-height: 1.5; }
-.pdark .vs-item:last-child { border-bottom: none; }
-.pdark .vs-card-bad .vs-item { color: var(--dk-text3); }
-.pdark .vs-card-good .vs-item { color: var(--dk-text); font-weight: 500; }
-.pdark .ic-bad { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: rgba(224,85,85,0.12); border: 1px solid rgba(224,85,85,0.2); display: flex; align-items: center; justify-content: center; }
-.pdark .ic-bad svg { width: 14px; height: 14px; stroke: #e05555; fill: none; stroke-width: 2.5; stroke-linecap: round; }
-.pdark .ic-good { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: rgba(0,200,83,0.15); border: 1px solid rgba(0,200,83,0.3); display: flex; align-items: center; justify-content: center; }
-.pdark .ic-good svg { width: 14px; height: 14px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.psb .vs-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: stretch; margin-top: 56px; }
+.psb .vs-card { border-radius: 22px; padding: 36px; }
+.psb .vs-card-bad { background: #fff5f5; border: 1px solid #fecaca; }
+.psb .vs-card-good { background: #f0fdf4; border: 1px solid #bbf7d0; }
+.psb .vs-card-title { font-size: 16px; font-weight: 800; margin-bottom: 28px; display: flex; align-items: center; gap: 10px; }
+.psb .vs-card-bad .vs-card-title { color: #991b1b; }
+.psb .vs-card-good .vs-card-title { color: #166534; }
+.psb .vs-divider { display: flex; align-items: center; justify-content: center; width: 72px; flex-shrink: 0; }
+.psb .vs-badge-pill { background: #fff; border: 1.5px solid #e8e8e0; border-radius: 100px; padding: 8px 14px; font-size: 12px; font-weight: 900; color: #888; letter-spacing: 1px; }
+.psb .vs-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,.05); font-size: 14px; line-height: 1.5; }
+.psb .vs-item:last-child { border-bottom: none; }
+.psb .vs-card-bad .vs-item { color: #7c2d2d; }
+.psb .vs-card-good .vs-item { color: #1a1a1a; font-weight: 500; }
+.psb .ic-bad { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: #fee2e2; border: 1px solid #fecaca; display: flex; align-items: center; justify-content: center; }
+.psb .ic-bad svg { width: 14px; height: 14px; stroke: #dc2626; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+.psb .ic-good { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: #dcfce7; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; }
+.psb .ic-good svg { width: 14px; height: 14px; stroke: #16a34a; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 
 /* FEATURES */
-.pdark .feats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
-.pdark .fc { background: #fff; border: 1px solid var(--cl-border); border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease; box-shadow: 0 1px 4px rgba(0,0,0,.04); display: flex; flex-direction: column; }
-.pdark .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 900; color: rgba(0,150,60,.05); line-height: 1; pointer-events: none; letter-spacing: -3px; }
-.pdark .fc:hover { border-color: rgba(0,150,60,.45); transform: translateY(-4px); box-shadow: 0 12px 44px rgba(0,150,60,.14); }
-.pdark .fc-ic { width: 48px; height: 48px; flex-shrink: 0; border-radius: 12px; background: rgba(0,200,83,0.12); border: 1px solid rgba(0,200,83,0.28); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; padding: 0; transition: background .25s ease, border-color .25s ease, transform .25s ease; }
-.pdark .fc:hover .fc-ic { background: rgba(0,200,83,0.22); border-color: rgba(0,200,83,0.55); transform: scale(1.06); }
-.pdark .fc-ic svg { width: 24px; height: 24px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .fc h3 { font-size: 17px; font-weight: 800; color: var(--cl-text); margin-bottom: 10px; line-height: 1.3; }
-.pdark .fc p  { font-size: 14px; color: var(--cl-text2); line-height: 1.65; margin: 0; }
+.psb .feats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
+.psb .fc { background: #fafaf8; border: 1px solid #e8e8e0; border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: all .25s; }
+.psb .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 900; color: rgba(37,211,102,.08); line-height: 1; letter-spacing: -3px; }
+.psb .fc:hover { border-color: #25D366; transform: translateY(-4px); box-shadow: 0 12px 44px rgba(37,211,102,.12); }
+.psb .fc-ic { width: 48px; height: 48px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.psb .fc-ic svg { width: 24px; height: 24px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.psb .fc h3 { font-size: 17px; font-weight: 800; color: #1a1a1a; margin-bottom: 10px; }
+.psb .fc p  { font-size: 14px; color: #555; line-height: 1.65; }
 
-/* STEPS */
-.pdark .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; margin-top: 56px; }
-.pdark .step { position: relative; padding: 32px 28px; border-radius: 18px; background: var(--dk-surface); border: 1px solid var(--dk-border); }
-.pdark .step::after { content: '→'; position: absolute; right: -18px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--dk-text3); }
-.pdark .step:last-child::after { display: none; }
-.pdark .step-n { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; color: var(--green); margin-bottom: 14px; }
-.pdark .step h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: var(--dk-text); }
-.pdark .step p { font-size: 14px; color: var(--dk-text2); line-height: 1.65; }
+/* STEPS (dark) */
+.psb .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; margin-top: 56px; }
+.psb .step { padding: 32px 28px; border-radius: 18px; background: #232323; border: 1px solid #2f2f2f; }
+.psb .step-num { width: 44px; height: 44px; border-radius: 50%; background: #25D366; color: #fff; font-weight: 900; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.psb .step h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+.psb .step p { font-size: 14px; color: #aaa; line-height: 1.65; }
 
 /* TESTIMONIALS */
-.pdark .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
-.pdark .tc { background: var(--dk-surface); border: 1px solid var(--dk-border); border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 14px; transition: border-color .2s; }
-.pdark .tc:hover { border-color: rgba(0,200,83,.32); }
-.pdark .tc-stars { color: var(--green); font-size: 14px; letter-spacing: 2px; }
-.pdark .tc-text { font-size: 15px; color: var(--dk-text2); line-height: 1.75; flex: 1; font-weight: 400; }
-.pdark .tc-auth { display: flex; gap: 12px; align-items: center; border-top: 1px solid var(--dk-border); padding-top: 14px; }
-.pdark .tc-av { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--green-dark), var(--dk-bg)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--green); }
-.pdark .tc-name { font-size: 14px; font-weight: 700; color: var(--dk-text); }
-.pdark .tc-role { font-size: 12px; color: var(--dk-text3); }
+.psb .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
+.psb .tc { background: #fafaf8; border: 1px solid #e8e8e0; border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+.psb .tc-stars { color: #25D366; font-size: 14px; letter-spacing: 2px; }
+.psb .tc-text { font-size: 15px; color: #444; line-height: 1.75; flex: 1; }
+.psb .tc-auth { display: flex; gap: 12px; align-items: center; border-top: 1px solid #e8e8e0; padding-top: 14px; }
+.psb .tc-av { width: 40px; height: 40px; border-radius: 50%; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #166534; }
+.psb .tc-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
+.psb .tc-role { font-size: 12px; color: #888; }
 
 /* PRICING */
-.pdark .billing-toggle { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 40px; }
-.pdark .billing-label { font-size: 14px; font-weight: 600; color: var(--cl-text3); transition: color .2s; }
-.pdark .billing-label.active { color: var(--cl-text); }
-.pdark .billing-switch { position: relative; display: inline-flex; height: 28px; width: 50px; align-items: center; border-radius: 999px; background: #d1ddd3; cursor: pointer; border: none; transition: background .2s; padding: 0; flex-shrink: 0; }
-.pdark .billing-switch.on { background: var(--green); }
-.pdark .billing-switch:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
-.pdark .billing-thumb { display: inline-block; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transform: translateX(4px); transition: transform .2s; }
-.pdark .billing-switch.on .billing-thumb { transform: translateX(26px); }
-.pdark .billing-badge { display: inline-flex; align-items: center; background: rgba(0,200,83,.12); color: var(--green-dark); font-size: 11px; font-weight: 700; padding: 5px 11px; border-radius: 999px; }
-
-.pdark .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 36px; }
-.pdark .pc { background: #fff; border: 1px solid var(--cl-border); border-radius: 22px; padding: 34px; position: relative; transition: all .22s; box-shadow: 0 1px 4px rgba(0,0,0,.04); display: flex; flex-direction: column; }
-.pdark .pc.pop { border-color: var(--green); background: linear-gradient(160deg, rgba(0,200,83,.06) 0%, #fff 60%); box-shadow: 0 8px 40px rgba(0,200,83,.14); }
-.pdark .pop-lb { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--green); color: #040a05; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 18px; border-radius: 100px; }
-.pdark .pc-plan { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--cl-text3); margin-bottom: 12px; }
-.pdark .pc-val { font-size: 46px; font-weight: 900; color: var(--cl-text); letter-spacing: -2px; line-height: 1; display: flex; align-items: baseline; gap: 4px; }
-.pdark .pc-val sup { font-size: 22px; color: var(--cl-text2); font-weight: 600; vertical-align: super; }
-.pdark .pc-val sub { font-size: 14px; color: var(--cl-text3); font-weight: 500; vertical-align: baseline; }
-.pdark .pc-per { font-size: 13px; color: var(--cl-text3); margin: 6px 0 6px; min-height: 20px; }
-.pdark .pc-savings { overflow: hidden; max-height: 0; opacity: 0; transition: max-height .25s ease, opacity .2s ease, margin .2s ease; font-size: 12px; font-weight: 600; color: var(--green-dark); }
-.pdark .pc-savings.show { max-height: 32px; opacity: 1; margin-top: 4px; margin-bottom: 6px; }
-.pdark .pc-desc { font-size: 13px; color: var(--cl-text2); margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--cl-border); margin-top: 14px; }
-.pdark .pc-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; flex: 1; }
-.pdark .pc-list li { display: flex; gap: 10px; font-size: 14px; color: var(--cl-text2); align-items: flex-start; }
-.pdark .pc-check { width: 20px; height: 20px; flex-shrink: 0; border-radius: 6px; background: rgba(0,200,83,0.15); border: 1px solid rgba(0,200,83,0.3); display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
-.pdark .pc-check svg { width: 11px; height: 11px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.pdark .bp { width: 100%; padding: 14px; border-radius: 10px; text-align: center; display: block; font-size: 14px; font-weight: 800; transition: all .2s; cursor: pointer; }
-.pdark .bp.out { border: 1.5px solid var(--cl-border); color: var(--cl-text2); background: transparent; }
-.pdark .bp.out:hover { border-color: rgba(0,150,60,.5); color: var(--cl-text); }
-.pdark .bp.fill { background: var(--green); color: #040a05; border: none; }
-.pdark .bp.fill:hover { background: #33d974; }
-.pdark .p-note { text-align: center; font-size: 13px; color: var(--cl-text3); margin-top: 22px; font-weight: 500; }
-.pdark .p-note strong { color: var(--green-dark); }
+.psb .pricing-wrap { max-width: 900px; margin: 0 auto; padding: 0; }
+.psb .pricing-head { text-align: left; }
+.psb .pricing-h2 { font-family: 'Public Sans', sans-serif; font-weight: 900; font-size: 38px; letter-spacing: -1.5px; line-height: 1.1; color: #1a1a1a; }
+.psb .pricing-sub { font-size: 15px; color: #888; margin-top: 12px; margin-bottom: 32px; }
+.psb .billing-toggle-bar { display: inline-flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #e8e8e0; border-radius: 9999px; padding: 6px 20px; margin-bottom: 40px; cursor: pointer; user-select: none; }
+.psb .billing-lbl { font-size: 14px; font-weight: 500; transition: color .2s; }
+.psb .billing-pill { position: relative; width: 44px; height: 24px; background: #25D366; border-radius: 9999px; flex-shrink: 0; }
+.psb .billing-knob { position: absolute; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .2s ease; }
+.psb .save-badge { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 9999px; transition: opacity .2s; }
+.psb .plans-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.psb .plan-card { background: #fff; border: 1px solid #e8e8e0; border-radius: 14px; padding: 28px 24px; transition: transform .2s, box-shadow .2s; display: flex; flex-direction: column; }
+.psb .plan-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.07); }
+.psb .plan-card.featured { background: #1a1a1a; border: 2px solid #1a1a1a; transform: scale(1.03); position: relative; }
+.psb .plan-card.featured:hover { transform: scale(1.03) translateY(-3px); }
+.psb .plan-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #25D366; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 9999px; white-space: nowrap; letter-spacing: 0.05em; }
+.psb .plan-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+.psb .plan-card.featured .plan-label { color: #25D366; }
+.psb .plan-price { display: flex; align-items: baseline; gap: 4px; line-height: 1; }
+.psb .plan-num { font-weight: 900; font-size: 42px; letter-spacing: -2px; color: #1a1a1a; }
+.psb .plan-card.featured .plan-num { color: #fff; }
+.psb .plan-suffix { font-size: 13px; font-weight: 400; color: #aaa; }
+.psb .plan-card.featured .plan-suffix { color: #555; }
+.psb .plan-note { font-size: 12px; min-height: 18px; margin-top: 6px; color: #bbb; }
+.psb .plan-card.featured .plan-note { color: #25D366; }
+.psb .plan-btn { width: 100%; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; margin: 24px 0; text-align: center; display: block; transition: all .2s; }
+.psb .plan-btn.ghost { border: 1.5px solid #e8e8e0; background: transparent; color: #555; }
+.psb .plan-btn.ghost:hover { border-color: #25D366; color: #1a1a1a; }
+.psb .plan-btn.fill { background: #25D366; color: #fff; border: none; }
+.psb .plan-btn.fill:hover { background: #1ebe57; }
+.psb .plan-feats { display: flex; flex-direction: column; gap: 9px; font-size: 13px; }
+.psb .plan-feats li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.45; }
+.psb .feat-yes { color: #25D366; font-weight: 700; flex-shrink: 0; }
+.psb .plan-card .plan-feats li.inc { color: #444; }
+.psb .plan-card.featured .plan-feats li.inc { color: #ccc; }
+.psb .feat-no { color: #ddd; font-weight: 700; flex-shrink: 0; }
+.psb .plan-card .plan-feats li.exc { color: #bbb; }
+.psb .plan-card.featured .feat-no { color: #444; }
+.psb .plan-card.featured .plan-feats li.exc { color: #555; }
+.psb .plan-divider { border-top: 1px solid #f0f0ea; margin: 8px 0; }
+.psb .plan-card.featured .plan-divider { border-color: #2a2a2a; }
+.psb .pricing-fine { text-align: center; margin-top: 24px; font-size: 13px; color: #aaa; }
+.psb .guarantee-bar { max-width: 560px; margin: 28px auto 0; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px 24px; display: flex; align-items: center; gap: 14px; }
+.psb .g-icon { font-size: 28px; flex-shrink: 0; }
+.psb .g-title { font-size: 14px; font-weight: 700; color: #166534; }
+.psb .g-sub { font-size: 12px; color: #555; line-height: 1.5; margin-top: 2px; }
 
 /* FAQ */
-.pdark .faq-list { margin-top: 56px; border: 1px solid var(--cl-border); border-radius: 18px; overflow: hidden; background: #fff; }
-.pdark .faq-item { border-bottom: 1px solid var(--cl-border); }
-.pdark .faq-item:last-child { border-bottom: none; }
-.pdark .faq-q { width: 100%; padding: 22px 28px; font-size: 16px; font-weight: 700; color: var(--cl-text); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background .2s; user-select: none; background: transparent; border: none; text-align: left; }
-.pdark .faq-q:hover { background: var(--cl-bg); }
-.pdark .faq-arr { color: var(--green); font-size: 24px; transition: transform .3s; flex-shrink: 0; line-height: 1; font-weight: 400; }
-.pdark .faq-a { padding: 0 28px; max-height: 0; overflow: hidden; font-size: 15px; color: var(--cl-text2); line-height: 1.75; transition: max-height .35s ease, padding .35s ease; }
-.pdark .faq-item.open .faq-a { max-height: 260px; padding: 0 28px 22px; }
-.pdark .faq-item.open .faq-arr { transform: rotate(45deg); }
+.psb .faq-list { margin-top: 56px; border: 1px solid #e8e8e0; border-radius: 18px; overflow: hidden; background: #fff; max-width: 820px; }
+.psb .faq-item { border-bottom: 1px solid #e8e8e0; }
+.psb .faq-item:last-child { border-bottom: none; }
+.psb .faq-q { width: 100%; padding: 22px 28px; font-size: 16px; font-weight: 700; color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; text-align: left; transition: background .2s; }
+.psb .faq-q:hover { background: #fafaf8; }
+.psb .faq-arr { color: #25D366; font-size: 24px; transition: transform .3s; line-height: 1; }
+.psb .faq-a { padding: 0 28px; max-height: 0; overflow: hidden; font-size: 15px; color: #555; line-height: 1.75; transition: max-height .35s ease, padding .35s ease; }
+.psb .faq-item.open .faq-a { max-height: 300px; padding: 0 28px 22px; }
+.psb .faq-item.open .faq-arr { transform: rotate(45deg); }
 
 /* CTA FINAL */
-.pdark .cta-sec { text-align: center; padding: 100px 52px; position: relative; }
-.pdark .cta-sec::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 800px; height: 500px; background: radial-gradient(ellipse, rgba(0,200,83,.11) 0%, transparent 68%); pointer-events: none; z-index: 0; }
-.pdark .cta-sec > * { position: relative; z-index: 1; }
-.pdark .cta-sec h2 { font-size: clamp(36px, 4.5vw, 58px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; color: var(--dk-text); }
-.pdark .cta-sec p { font-size: 18px; color: var(--dk-text2); margin-bottom: 38px; font-weight: 400; }
-.pdark .cta-note { margin-top: 18px; font-size: 13px; color: var(--dk-text3); }
-.pdark .cta-note strong { color: var(--dk-text2); }
+.psb .cta-inner { text-align: center; }
+.psb .cta-inner h2 { font-size: clamp(36px, 4.5vw, 58px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; color: #fff; }
+.psb .cta-inner p { font-size: 18px; color: #aaa; margin-bottom: 38px; }
+.psb .cta-btn { background: #25D366; color: #fff; border: none; font-size: 17px; font-weight: 700; padding: 16px 42px; border-radius: 10px; display: inline-flex; align-items: center; gap: 9px; transition: all .2s; }
+.psb .cta-btn:hover { background: #1ebe57; transform: translateY(-2px); }
+.psb .cta-note { margin-top: 18px; font-size: 13px; color: #888; }
 
 /* FOOTER */
-.pdark .pd-foot { background: var(--dk-bg); border-top: 1px solid var(--dk-border); padding: 64px 52px 40px; }
-.pdark .f-inner { max-width: 1200px; margin: 0 auto; }
-.pdark .f-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
-.pdark .f-brand img { height: 96px; filter: brightness(0) invert(1); }
-.pdark .f-brand p { font-size: 14px; color: var(--dk-text3); margin-top: 12px; max-width: 240px; line-height: 1.65; }
-.pdark .f-col h4 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--dk-text3); margin-bottom: 16px; }
-.pdark .f-col a { display: block; font-size: 14px; color: var(--dk-text3); margin-bottom: 10px; transition: color .2s; cursor: pointer; }
-.pdark .f-col a:hover { color: var(--dk-text); }
-.pdark .f-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--dk-border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--dk-text3); flex-wrap: wrap; gap: 12px; }
-
-/* WA float */
-.pdark .wa { position: fixed; bottom: 28px; right: 28px; z-index: 300; width: 56px; height: 56px; border-radius: 50%; background: var(--whatsapp); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 28px rgba(37,211,102,.45); cursor: pointer; transition: transform .2s; }
-.pdark .wa:hover { transform: scale(1.1); }
-.pdark .wa svg { width: 28px; height: 28px; fill: white; }
+.psb .sec-footer { padding: 64px 52px 40px; }
+.psb .f-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; max-width: 1200px; margin: 0 auto; }
+.psb .f-brand .logo { font-size: 30px; }
+.psb .f-brand .logo .lo-a { color: #fff; }
+.psb .f-brand p { font-size: 14px; color: #6b7280; margin-top: 12px; max-width: 240px; line-height: 1.65; }
+.psb .f-col h4 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #6b7280; margin-bottom: 16px; }
+.psb .f-col a { display: block; font-size: 14px; color: #9ca3af; margin-bottom: 10px; transition: color .2s; }
+.psb .f-col a:hover { color: #fff; }
+.psb .f-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6b7280; flex-wrap: wrap; gap: 12px; max-width: 1200px; margin-left: auto; margin-right: auto; }
 
 /* RESPONSIVE */
+@media (max-width: 1024px) {
+  .psb .navbar { padding: 14px 24px; }
+  .psb .nav-links { display: none; }
+}
 @media (max-width: 900px) {
-  .pdark .pd-nav-bar { padding: 0 20px; }
-  .pdark .nav-links { display: none; }
-  .pdark .wrap, .pdark .pd-foot { padding-left: 20px; padding-right: 20px; }
-  .pdark .wrap { padding-top: 72px; padding-bottom: 72px; }
-  .pdark .what-grid, .pdark .feats-grid, .pdark .steps-grid, .pdark .testi-grid, .pdark .pricing-grid { grid-template-columns: 1fr; }
-  .pdark .stats-band { grid-template-columns: 1fr 1fr; }
-  .pdark .step::after { display: none; }
-  .pdark .vs-comparison { grid-template-columns: 1fr; gap: 16px; }
-  .pdark .vs-divider { width: 100%; height: 40px; }
-  .pdark .f-grid { grid-template-columns: 1fr 1fr; }
-  .pdark .dash-body { grid-template-columns: 1fr 1fr; }
-  .pdark .hero h1 { font-size: 40px; letter-spacing: -1.5px; }
-  .pdark .cta-sec { padding: 72px 20px; }
+  .psb .sec { padding: 72px 20px; }
+  .psb .what-grid, .psb .feats-grid, .psb .steps-grid, .psb .testi-grid, .psb .vs-comparison { grid-template-columns: 1fr; }
+  .psb .vs-comparison { gap: 16px; }
+  .psb .vs-divider { width: 100%; height: 40px; }
+  .psb .stats-band { grid-template-columns: 1fr 1fr; }
+  .psb .f-grid { grid-template-columns: 1fr 1fr; }
+  .psb .dash-body { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .psb .sec-pricing { padding: 48px 20px; }
+  .psb .pricing-h2 { font-size: 28px; }
+  .psb .plans-grid { grid-template-columns: 1fr; }
+  .psb .plan-card.featured { transform: scale(1); }
+  .psb .plan-card.featured:hover { transform: translateY(-3px); }
+  .psb .plan-num { font-size: 36px; }
+  .psb .billing-toggle-bar { font-size: 13px; }
 }
 @media (max-width: 640px) {
-  .pdark .f-brand img { height: 84px; }
+  .psb .hero h1 { font-size: 38px; letter-spacing: -1.5px; }
 }
 `;
 
@@ -447,56 +369,127 @@ function WhatsAppIcon({ size = 17, color = "currentColor" }: { size?: number; co
   );
 }
 
+function Logo({ className = "logo" }: { className?: string }) {
+  return (
+    <span className={className}>
+      <span className="lo-a">Shop</span><span className="lo-b">Box</span>
+    </span>
+  );
+}
+
+const PLANS = [
+  {
+    label: "INICIAL",
+    monthly: 47,
+    annual: 38,
+    annualNote: "R$451/ano — economize R$113",
+    included: [
+      "Até 200 produtos",
+      "Checkout pelo WhatsApp",
+      "Variações de cor e tamanho",
+      "Controle de estoque",
+      "3 fotos por produto",
+      "1 banner (desktop + mobile)",
+      "2 temas gratuitos",
+      "CRM básico (100 clientes)",
+      "Suporte via Central de Ajuda",
+    ],
+    excluded: ["Cupons e promoções", "Fotos ilimitadas", "Domínio personalizado"],
+    featured: false,
+  },
+  {
+    label: "PROFISSIONAL",
+    monthly: 97,
+    annual: 78,
+    annualNote: "R$934/ano — economize R$230",
+    included: [
+      "Tudo do Plano Inicial",
+      "Produtos ilimitados",
+      "Fotos ilimitadas por produto",
+      "Banners ilimitados",
+      "Integra Google Analytics e Pixel do Facebook",
+      "Vídeos no produto (YouTube, Reels, Vimeo)",
+      "Cupons e promoções completas",
+      "Combos (Leve 2 Pague 1, 2 por R$X)",
+      "Pop-up de cupom de boas-vindas",
+      "CRM ilimitado + exportar CSV",
+      "Bulk actions de produtos",
+      "Marketplace de temas premium",
+      "Suporte via WhatsApp",
+    ],
+    excluded: ["Domínio personalizado", "Relatórios avançados"],
+    featured: true,
+  },
+  {
+    label: "PREMIUM",
+    monthly: 197,
+    annual: 158,
+    annualNote: "R$1.891/ano — economize R$453",
+    included: [
+      "Tudo do Plano Profissional",
+      "Múltiplas categorias por produto",
+      "Edição de pedidos",
+      "Notificador de pedidos",
+      "Domínio personalizado (.com.br)",
+      "Cor de destaque da loja personalizada",
+      "Analytics avançado (produtos mais vistos)",
+      "SEO por produto (meta title, description)",
+      "Frete por CEP configurável",
+      "Relatórios avançados",
+      "3 temas gratuitos incluídos",
+      "Suporte prioritário via WhatsApp",
+    ],
+    excluded: [],
+    featured: false,
+  },
+];
+
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
-  const [scrolled, setScrolled] = useState(false);
-  const isYearly = billing === "yearly";
+  const [isAnnual, setIsAnnual] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
+    const onScroll = () => {};
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <div className="pdark">
+    <div className="psb">
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
 
       {/* NAV */}
-      <nav className={`pd-nav-bar${scrolled ? " scrolled" : ""}`}>
-        <Link to="/" className="nav-logo">
-          <img src={logoUrl} alt="ShopBox" />
-        </Link>
-        <div className="nav-links">
-          <a href="#sobre">Funcionalidades</a>
-          <a href="#como-funciona">Como funciona</a>
-          <a href="#precos">Preços</a>
-          <a href="#faq">FAQ</a>
-        </div>
-        <div className="nav-cta">
-          <Link to="/login" className="btn-ghost">Entrar</Link>
-          <Link to="/cadastro" className="btn-cta">Testar grátis</Link>
-        </div>
-      </nav>
+      <div className="sec-nav">
+        <nav className="navbar">
+          <Link to="/" aria-label="ShopBox"><Logo /></Link>
+          <div className="nav-links">
+            <a href="#sobre">Funcionalidades</a>
+            <a href="#como-funciona">Como funciona</a>
+            <a href="#precos">Preços</a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <div className="nav-cta">
+            <Link to="/login" className="btn-ghost">Entrar</Link>
+            <Link to="/cadastro" className="btn-cta">Testar grátis</Link>
+          </div>
+        </nav>
+      </div>
 
-      {/* HERO · DARK */}
-      <div className="dark">
-        <div className="hero-radial" />
-        <div className="hero">
+      {/* HERO */}
+      <div className="sec-hero">
+        <div className="hero wrap">
           <div className="hero-badge">+12.000 lojas ativas no WhatsApp</div>
           <h1>
-            A plataforma de <em>e-commerce</em>
+            A plataforma de <em>Vendas pelo WhatsApp.</em>
             <br />
-            feita para o WhatsApp
+            feita para vender de verdade
           </h1>
           <p className="hero-sub">
             Monte sua loja em minutos, compartilhe o link e comece a receber pedidos hoje. Sem marketplace, sem comissão, sem complicação.
           </p>
           <div className="hero-actions">
             <Link to="/cadastro" className="btn-hero">
-              <WhatsAppIcon />
+              <WhatsAppIcon color="#fff" />
               Testar grátis por 7 dias
             </Link>
             <a href="#como-funciona" className="btn-outline">Como funciona →</a>
@@ -527,7 +520,6 @@ function LandingPage() {
                     </tbody>
                   </table>
                 </div>
-                <div className="dc-swipe-hint">arraste para ver mais</div>
               </div>
             </div>
           </div>
@@ -535,28 +527,30 @@ function LandingPage() {
       </div>
 
       {/* MARQUEE */}
-      <div className="marquee-wrap">
-        <div className="marquee-track">
-          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((t, i) => (
-            <div key={i} className="mi">{t}</div>
-          ))}
+      <div className="sec-marquee">
+        <div className="marquee-wrap">
+          <div className="marquee-track">
+            {[...TICKER_ITEMS, ...TICKER_ITEMS].map((t, i) => (
+              <div key={i} className="mi">{t}</div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* O QUE É · CLEAN */}
-      <div className="clean" id="sobre" style={{ borderTop: "1px solid var(--cl-border)" }}>
-        <div className="wrap">
-          <div className="section-tag cl">O que é a ShopBox</div>
+      {/* VITRINE / O QUE É (mint) */}
+      <div className="sec-about" id="sobre">
+        <div className="wrap sec">
+          <div className="pill">O que é a ShopBox</div>
           <h2 className="sh2">Mais vendas,<br />menos complicação</h2>
-          <p className="ssub" style={{ color: "var(--cl-text2)" }}>
+          <p className="ssub">
             A ShopBox foi criada para quem vende pelo WhatsApp e quer uma loja profissional — sem marketplace, sem taxa por venda, sem setup técnico.
           </p>
           <div className="what-grid">
             <div className="wf-list">
-              <div className="wf"><div className="wf-ic wf-ic-wa"><WhatsAppIcon size={22} color="#00c853" /></div><div className="wf-body"><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
-              <div className="wf"><div className="wf-ic"><Palette /></div><div className="wf-body"><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
-              <div className="wf"><div className="wf-ic"><ClipboardList /></div><div className="wf-body"><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
-              <div className="wf"><div className="wf-ic"><CreditCard /></div><div className="wf-body"><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
+              <div className="wf"><div className="wf-ic wf-ic-wa"><WhatsAppIcon size={22} color="#25D366" /></div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
+              <div className="wf"><div className="wf-ic"><Palette /></div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
+              <div className="wf"><div className="wf-ic"><ClipboardList /></div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
+              <div className="wf"><div className="wf-ic"><CreditCard /></div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
             </div>
             <div>
               <div className="phone">
@@ -575,7 +569,7 @@ function LandingPage() {
                   </div>
                 </div>
                 <div className="ph-btn">
-                  <WhatsAppIcon size={15} color="white" />
+                  <WhatsAppIcon size={15} color="#fff" />
                   Comprar pelo WhatsApp
                 </div>
                 <div className="ph-stat">
@@ -594,12 +588,12 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* VS · DARK */}
-      <div className="dark2" style={{ borderTop: "1px solid var(--dk-border)" }}>
-        <div className="wrap">
-          <div className="section-tag">Por que a ShopBox</div>
+      {/* VS (cream) */}
+      <div className="sec-vs">
+        <div className="wrap sec">
+          <div className="pill">Por que a ShopBox</div>
           <h2 className="sh2">Diga adeus às plataformas que cobram por cada venda</h2>
-          <p className="ssub" style={{ color: "var(--dk-text2)" }}>
+          <p className="ssub">
             Chatbots de IA, marketplaces genéricos e plataformas complexas — todos cobram comissão ou tiram o controle das suas vendas. A ShopBox não.
           </p>
           <div className="vs-comparison">
@@ -625,7 +619,7 @@ function LandingPage() {
             <div className="vs-divider"><div className="vs-badge-pill">VS</div></div>
             <div className="vs-card vs-card-good">
               <div className="vs-card-title">
-                <WhatsAppIcon size={22} />
+                <WhatsAppIcon size={22} color="#166534" />
                 ShopBox
               </div>
               {[
@@ -647,19 +641,17 @@ function LandingPage() {
             </div>
           </div>
           <div style={{ textAlign: "center", marginTop: 40 }}>
-            <Link to="/cadastro" className="btn-hero" style={{ display: "inline-flex" }}>Começar agora →</Link>
+            <Link to="/cadastro" className="btn-hero">Começar agora →</Link>
           </div>
         </div>
       </div>
 
-      {/* FUNCIONALIDADES · CLEAN */}
-      <div className="clean" id="sobre-feats" style={{ borderTop: "1px solid var(--cl-border)" }}>
-        <div className="wrap">
-          <div className="section-tag cl">Funcionalidades</div>
+      {/* FUNCIONALIDADES (white) */}
+      <div className="sec-feats" id="sobre-feats">
+        <div className="wrap sec">
+          <div className="pill">Funcionalidades</div>
           <h2 className="sh2">Tudo que sua loja precisa<br />para vender mais</h2>
-          <p className="ssub" style={{ color: "var(--cl-text2)" }}>
-            Cada recurso foi desenvolvido do zero para quem vende pelo WhatsApp.
-          </p>
+          <p className="ssub">Cada recurso foi desenvolvido do zero para quem vende pelo WhatsApp.</p>
           <div className="feats-grid">
             {FEATURES.map((f) => (
               <div key={f.n} className="fc" data-n={f.n}>
@@ -672,30 +664,26 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* COMO FUNCIONA · DARK */}
-      <div className="dark" id="como-funciona" style={{ borderTop: "1px solid var(--dk-border)" }}>
-        <div className="wrap">
-          <div className="section-tag">Como funciona</div>
-          <h2 className="sh2">Comece a vender<br />em 3 passos</h2>
-          <p className="ssub" style={{ color: "var(--dk-text2)" }}>
-            Sem complexidade, sem burocracia. Sua loja no ar em menos de 30 minutos.
-          </p>
+      {/* COMO FUNCIONA (dark) */}
+      <div className="sec-steps" id="como-funciona">
+        <div className="wrap sec">
+          <div className="pill" style={{ background: "#232323", border: "1px solid #2f2f2f", color: "#aaa" }}>Como funciona</div>
+          <h2 className="sh2">Comece a vender em <em>3 passos.</em></h2>
+          <p className="ssub">Sem complexidade, sem burocracia. Sua loja no ar em menos de 30 minutos.</p>
           <div className="steps-grid">
-            <div className="step"><div className="step-n">— passo 01</div><h3>Crie sua conta</h3><p>Cadastre-se em menos de 2 minutos. Sem cartão de crédito, sem burocracia. 7 dias grátis para testar tudo sem limites.</p></div>
-            <div className="step"><div className="step-n">— passo 02</div><h3>Monte sua loja</h3><p>Adicione seus produtos, escolha um tema profissional e configure os meios de pagamento que preferir. Tudo sem código.</p></div>
-            <div className="step"><div className="step-n">— passo 03</div><h3>Compartilhe e venda</h3><p>Envie o link da sua loja pelo WhatsApp e comece a receber pedidos. Seus clientes compram sem sair do app.</p></div>
+            <div className="step"><div className="step-num">1</div><h3>Crie sua conta</h3><p>Cadastre-se em menos de 2 minutos. Sem cartão de crédito, sem burocracia. 7 dias grátis para testar tudo sem limites.</p></div>
+            <div className="step"><div className="step-num">2</div><h3>Monte sua loja</h3><p>Adicione seus produtos, escolha um tema profissional e configure os meios de pagamento que preferir. Tudo sem código.</p></div>
+            <div className="step"><div className="step-num">3</div><h3>Compartilhe e venda</h3><p>Envie o link da sua loja pelo WhatsApp e comece a receber pedidos. Seus clientes compram sem sair do app.</p></div>
           </div>
         </div>
       </div>
 
-      {/* DEPOIMENTOS · DARK */}
-      <div className="dark2" style={{ borderTop: "1px solid var(--dk-border)" }}>
-        <div className="wrap">
-          <div className="section-tag">Depoimentos</div>
+      {/* DEPOIMENTOS (white) */}
+      <div className="sec-testi">
+        <div className="wrap sec">
+          <div className="pill">Depoimentos</div>
           <h2 className="sh2">O que dizem sobre<br />a ShopBox</h2>
-          <p className="ssub" style={{ color: "var(--dk-text2)" }}>
-            Mais de 12.000 lojistas já transformaram seu negócio com a ShopBox.
-          </p>
+          <p className="ssub">Mais de 12.000 lojistas já transformaram seu negócio com a ShopBox.</p>
           <div className="testi-grid">
             {TESTIMONIALS.map((t) => (
               <div key={t.av} className="tc">
@@ -714,77 +702,81 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* PREÇOS · CLEAN */}
-      <div className="clean" id="precos" style={{ borderTop: "1px solid var(--cl-border)" }}>
-        <div className="wrap">
-          <div style={{ textAlign: "center" }}>
-            <div className="section-tag cl" style={{ justifyContent: "center" }}>Planos</div>
-            <h2 className="sh2" style={{ margin: "0 auto" }}>Sem surpresas,<br />sem letras miúdas</h2>
-            <p className="ssub" style={{ color: "var(--cl-text2)", margin: "14px auto 0" }}>
-              7 dias grátis em todos os planos. Sem cartão de crédito.
-            </p>
-          </div>
-          <div className="billing-toggle">
-            <span className={`billing-label ${!isYearly ? "active" : ""}`}>Mensal</span>
+      {/* PRICING (cream) */}
+      <div className="sec-pricing" id="precos" style={{ padding: "72px 40px" }}>
+        <div className="pricing-wrap">
+          <div className="pricing-head">
+            <span className="pill">Planos</span>
+            <h2 className="pricing-h2">Sem surpresas,<br />sem letras miúdas.</h2>
+            <p className="pricing-sub">Escolha o plano certo para sua loja. Mude quando quiser.</p>
+
             <button
               type="button"
-              role="switch"
-              aria-checked={isYearly}
+              className="billing-toggle-bar"
+              onClick={() => setIsAnnual((v) => !v)}
               aria-label="Alternar entre cobrança mensal e anual"
-              onClick={() => setBilling(isYearly ? "monthly" : "yearly")}
-              className={`billing-switch ${isYearly ? "on" : ""}`}
             >
-              <span className="billing-thumb" />
+              <span className="billing-lbl" style={{ color: isAnnual ? "#aaa" : "#1a1a1a" }}>Mensal</span>
+              <span className="billing-pill">
+                <span className="billing-knob" style={{ left: isAnnual ? "23px" : "3px" }} />
+              </span>
+              <span className="billing-lbl" style={{ color: isAnnual ? "#1a1a1a" : "#aaa" }}>Anual</span>
+              <span className="save-badge" style={{ opacity: isAnnual ? 1 : 0.4 }}>Economize 20%</span>
             </button>
-            <span className={`billing-label ${isYearly ? "active" : ""}`}>Anual</span>
-            <span className="billing-badge">2 meses grátis</span>
           </div>
-          <div className="pricing-grid">
-            <PricingCard
-              label="Inicial"
-              price="47"
-              yearlyMonthly="38"
-              yearlyTotal="456"
-              savings="108"
-              isYearly={isYearly}
-              desc="Para quem está começando a vender online."
-              feats={["Até 50 produtos", "Checkout pelo WhatsApp", "1 usuário", "Relatórios básicos", "Suporte por email"]}
-              cta="out"
-            />
-            <PricingCard
-              label="Profissional"
-              price="97"
-              yearlyMonthly="78"
-              yearlyTotal="936"
-              savings="228"
-              isYearly={isYearly}
-              desc="Para lojas em crescimento que querem vender mais."
-              feats={["Produtos ilimitados", "Checkout + catálogo automático", "3 usuários", "Cupons e promoções", "Domínio personalizado", "Suporte prioritário"]}
-              cta="fill"
-              pop
-            />
-            <PricingCard
-              label="Premium"
-              price="197"
-              yearlyMonthly="158"
-              yearlyTotal="1.896"
-              savings="468"
-              isYearly={isYearly}
-              desc="Para negócios que precisam de escala e controle total."
-              feats={["Tudo do Profissional", "Usuários ilimitados", "API de integração", "Relatórios avançados", "Gerente de conta dedicado", "SLA garantido"]}
-              cta="out"
-            />
+
+          <div className="plans-grid">
+            {PLANS.map((p) => (
+              <div key={p.label} className={`plan-card${p.featured ? " featured" : ""}`}>
+                {p.featured && <span className="plan-badge">MAIS POPULAR</span>}
+                <div className="plan-label">{p.label}</div>
+                <div className="plan-price">
+                  <span className="plan-num">R${isAnnual ? p.annual : p.monthly}</span>
+                  <span className="plan-suffix">/mês</span>
+                </div>
+                <div className="plan-note">{isAnnual ? p.annualNote : ""}</div>
+
+                <Link to="/cadastro" className={`plan-btn ${p.featured ? "fill" : "ghost"}`}>
+                  Testar grátis por 7 dias
+                </Link>
+
+                <ul className="plan-feats">
+                  {p.included.map((f) => (
+                    <li key={f} className="inc">
+                      <span className="feat-yes">✓</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                  {p.excluded.length > 0 && <li className="plan-divider" />}
+                  {p.excluded.map((f) => (
+                    <li key={f} className="exc">
+                      <span className="feat-no">✗</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-          <p className="p-note">
-            <strong>7 dias grátis</strong> em todos os planos · sem cartão de crédito · cancele quando quiser
+
+          <p className="pricing-fine">
+            7 dias grátis em todos os planos · sem cartão · cancele quando quiser
           </p>
+
+          <div className="guarantee-bar">
+            <div className="g-icon">🛡️</div>
+            <div>
+              <div className="g-title">Garantia de 7 dias sem risco</div>
+              <div className="g-sub">Não ficou satisfeito? Devolvemos 100% do valor pago. Sem perguntas, sem burocracia.</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* FAQ · CLEAN2 */}
-      <div className="clean2" id="faq" style={{ borderTop: "1px solid var(--cl-border)" }}>
-        <div className="wrap">
-          <div className="section-tag" style={{ color: "var(--green-dark)" }}>FAQ</div>
+      {/* FAQ (white) */}
+      <div className="sec-faq" id="faq">
+        <div className="wrap sec">
+          <div className="pill">FAQ</div>
           <h2 className="sh2">Perguntas frequentes</h2>
           <div className="faq-list">
             {FAQS.map((f, i) => (
@@ -797,9 +789,9 @@ function LandingPage() {
               </div>
             ))}
           </div>
-          <div style={{ textAlign: "center", marginTop: 48, padding: 40, background: "var(--cl-bg)", border: "1px solid var(--cl-border)", borderRadius: 18 }}>
-            <p style={{ color: "var(--cl-text2)", marginBottom: 18, fontSize: 16 }}>Ainda tem dúvidas? Fale diretamente com a gente</p>
-            <a href={WA_LINK} target="_blank" rel="noreferrer" className="btn-hero" style={{ background: "var(--whatsapp)", boxShadow: "0 0 36px rgba(37,211,102,.3)", color: "#fff" }}>
+          <div style={{ textAlign: "center", marginTop: 48, padding: 40, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 18 }}>
+            <p style={{ color: "#555", marginBottom: 18, fontSize: 16 }}>Ainda tem dúvidas? Fale diretamente com a gente</p>
+            <a href={WA_LINK} target="_blank" rel="noreferrer" className="btn-hero">
               <WhatsAppIcon color="#fff" />
               Enviar mensagem
             </a>
@@ -807,100 +799,54 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* CTA FINAL · DARK */}
-      <div className="dark" style={{ borderTop: "1px solid var(--dk-border)" }}>
-        <div className="cta-sec">
+      {/* CTA FINAL (dark) */}
+      <div className="sec-cta">
+        <div className="wrap sec cta-inner">
           <h2>Pronto para criar sua loja?</h2>
           <p>Mais de 12.000 lojistas já vendem pelo WhatsApp com a ShopBox</p>
-          <Link to="/cadastro" className="btn-hero" style={{ display: "inline-flex", fontSize: 17, padding: "16px 42px" }}>
+          <Link to="/cadastro" className="cta-btn">
             Testar grátis por 7 dias
           </Link>
           <p className="cta-note">
-            Nota <strong>4.9</strong> · +12 mil lojistas · 7 dias grátis · sem cartão de crédito
+            Nota <strong style={{ color: "#ccc" }}>4.9</strong> · +12 mil lojistas · 7 dias grátis · sem cartão de crédito
           </p>
         </div>
       </div>
 
-      {/* FOOTER · DARK */}
-      <footer className="pd-foot">
-        <div className="f-inner">
-          <div className="f-grid">
-            <div className="f-brand">
-              <img src={logoUrl} alt="ShopBox" />
-              <p>A plataforma de e-commerce feita para quem vende pelo WhatsApp. Simples, rápido e sem comissão.</p>
-            </div>
-            <div className="f-col">
-              <h4>Produto</h4>
-              <a href="#sobre-feats">Funcionalidades</a>
-              <a href="#">Temas</a>
-              <a href="#">Integrações</a>
-              <a href="#precos">Preços</a>
-            </div>
-            <div className="f-col">
-              <h4>Empresa</h4>
-              <a href="#">Sobre nós</a>
-              <a href="#">Blog</a>
-              <a href="#">Parceiros</a>
-              <a href="#">Contato</a>
-            </div>
-            <div className="f-col">
-              <h4>Suporte</h4>
-              <a href="#">Central de ajuda</a>
-              <a href={WA_LINK} target="_blank" rel="noreferrer">WhatsApp</a>
-              <Link to="/termos">Termos de uso</Link>
-              <Link to="/privacidade">Privacidade</Link>
-            </div>
+      {/* FOOTER */}
+      <footer className="sec-footer">
+        <div className="f-grid">
+          <div className="f-brand">
+            <Logo />
+            <p>A plataforma de e-commerce feita para quem vende pelo WhatsApp. Simples, rápido e sem comissão.</p>
           </div>
-          <div className="f-bottom">
-            <span>© 2026 ShopBox. Todos os direitos reservados.</span>
-            <span>Feito com ❤️ para lojistas brasileiros</span>
+          <div className="f-col">
+            <h4>Produto</h4>
+            <a href="#sobre-feats">Funcionalidades</a>
+            <a href="#">Temas</a>
+            <a href="#">Integrações</a>
+            <a href="#precos">Preços</a>
+          </div>
+          <div className="f-col">
+            <h4>Empresa</h4>
+            <a href="#">Sobre nós</a>
+            <a href="#">Blog</a>
+            <a href="#">Parceiros</a>
+            <a href="#">Contato</a>
+          </div>
+          <div className="f-col">
+            <h4>Suporte</h4>
+            <a href="#">Central de ajuda</a>
+            <a href={WA_LINK} target="_blank" rel="noreferrer">WhatsApp</a>
+            <Link to="/termos">Termos de uso</Link>
+            <Link to="/privacidade">Privacidade</Link>
           </div>
         </div>
+        <div className="f-bottom">
+          <span>© 2026 ShopBox. Todos os direitos reservados.</span>
+          <span>Feito com ❤️ para lojistas brasileiros</span>
+        </div>
       </footer>
-
-    </div>
-  );
-}
-
-function PricingCard({
-  label, price, desc, feats, cta, pop,
-  isYearly = false, yearlyMonthly, yearlyTotal, savings,
-}: {
-  label: string;
-  price: string;
-  desc: string;
-  feats: string[];
-  cta: "fill" | "out";
-  pop?: boolean;
-  isYearly?: boolean;
-  yearlyMonthly?: string;
-  yearlyTotal?: string;
-  savings?: string;
-}) {
-  const displayPrice = isYearly && yearlyMonthly ? yearlyMonthly : price;
-  return (
-    <div className={`pc ${pop ? "pop" : ""}`}>
-      {pop && <div className="pop-lb">Mais Popular</div>}
-      <div className="pc-plan">{label}</div>
-      <div className="pc-val">
-        <sup>R$</sup>{displayPrice}<sub>/mês</sub>
-      </div>
-      <div className="pc-per">{isYearly ? "cobrança anual" : "cobrança mensal"}</div>
-      <div className={`pc-savings ${isYearly && yearlyTotal ? "show" : ""}`} aria-hidden={!isYearly}>
-        R${yearlyTotal}/ano · economize R${savings}
-      </div>
-      <p className="pc-desc">{desc}</p>
-      <ul className="pc-list">
-        {feats.map((f) => (
-          <li key={f}>
-            <span className="pc-check">
-              <svg viewBox="0 0 14 14"><polyline points="2,7 5.5,11 12,3" /></svg>
-            </span>
-            {f}
-          </li>
-        ))}
-      </ul>
-      <Link to="/cadastro" className={`bp ${cta}`}>Testar grátis por 7 dias</Link>
     </div>
   );
 }
