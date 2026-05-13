@@ -416,7 +416,7 @@ function ProductFormPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <Section title="Status">
             <div className="flex items-center justify-between">
               <Label>Ativo</Label>
@@ -474,7 +474,7 @@ function ProductFormPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="product-form-section rounded-2xl border border-border bg-card p-5">
+    <div className="form-card form-section product-form-section min-w-0 rounded-2xl border border-border bg-card p-5">
       <h3 className="mb-3 font-display text-base font-semibold">{title}</h3>
       {children}
     </div>
@@ -482,7 +482,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
+    <div className="min-w-0">
       <Label className="mb-1.5 block text-xs">{label}</Label>
       {children}
     </div>
