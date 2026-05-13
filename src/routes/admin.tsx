@@ -381,7 +381,14 @@ function SubscriptionGate({
               "Gerenciar pagamento"
             )}
           </Button>
-          <Button variant="outline" onClick={onRefresh} className="w-full">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              await onRefresh();
+              toast.message("Se o pagamento foi confirmado, seu painel já está liberado. Caso contrário, aguarde alguns minutos.");
+            }}
+            className="w-full"
+          >
             Já paguei — atualizar
           </Button>
           <Button variant="ghost" onClick={() => signOut()} className="w-full">

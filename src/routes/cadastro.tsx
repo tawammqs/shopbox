@@ -13,8 +13,6 @@ import {
   SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
-import { getStripe, createCheckoutSession } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEGMENT_GROUPS } from "@/lib/segments";
 import { Eye, EyeOff, Check, Loader2, ArrowLeft } from "lucide-react";
@@ -108,7 +106,7 @@ function SignupPage() {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [storeSlug, setStoreSlug] = useState("");
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<AccountForm>({
@@ -161,13 +159,6 @@ function SignupPage() {
 
   async function handleCreateStore() {
     if (!accountData || !selectedPlan) return;
-    const priceId = isYearly
-      ? selectedPlan.stripe_price_id_yearly
-      : selectedPlan.stripe_price_id;
-    if (!priceId) {
-      toast.error("Plano sem preço configurado para esse ciclo. Tente outro.");
-      return;
-    }
     setSubmitting(true);
     try {
       // 1) Sign up user (auto-confirm habilitado no auth — não precisa de email)
@@ -200,15 +191,18 @@ function SignupPage() {
         return;
       }
 
-      // 3) Create store as INCOMPLETE — webhook will activate after payment confirms
+      // 3) Create store já em TRIAL de 7 dias — sem exigir cartão.
+      // O upgrade para plano pago acontece depois em /admin/plano.
+      const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       const { error: storeError } = await supabase.from("stores").insert({
         owner_user_id: userId,
         name: accountData.storeName,
         slug: storeSlug,
         segment: accountData.segment,
         plan_id: selectedPlan.id,
-        subscription_status: "incomplete",
-        active: false,
+        subscription_status: "trialing",
+        trial_ends_at: trialEndsAt,
+        active: true,
         whatsapp: "",
       });
       if (storeError) {
@@ -217,15 +211,8 @@ function SignupPage() {
         return;
       }
 
-      // 4) Create checkout session with 7-day trial
-      const secret = await createCheckoutSession({
-        priceId,
-        customerEmail: accountData.email,
-        userId,
-        trialPeriodDays: 7,
-        returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
-      });
-      setClientSecret(secret);
+      toast.success("Loja criada! Você tem 7 dias grátis para testar tudo.");
+      navigate({ to: "/admin/dashboard" });
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -616,43 +603,30 @@ function SignupPage() {
               </div>
             </div>
 
-            {!clientSecret ? (
-              <>
-                <div className="rounded-xl bg-[#e6f8f6] p-4 text-xs text-[#00857a]">
-                  💳 Pagamento processado com segurança via Stripe. PIX também disponível em breve.
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-[#6b7280] hover:text-[#111827]"
-                  >
-                    <ArrowLeft className="h-4 w-4" /> Voltar
-                  </button>
-                  <Button
-                    size="lg"
-                    onClick={handleCreateStore}
-                    disabled={submitting}
-                    className="rounded-full bg-[#00b7a8] text-white hover:bg-[#009b8e]"
-                  >
-                    {submitting ? (
-                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Criando sua loja...</>
-                    ) : (
-                      "Criar minha loja →"
-                    )}
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white p-2 shadow-sm">
-                <EmbeddedCheckoutProvider
-                  stripe={getStripe()}
-                  options={{ fetchClientSecret: () => Promise.resolve(clientSecret) }}
-                >
-                  <EmbeddedCheckout />
-                </EmbeddedCheckoutProvider>
-              </div>
-            )}
+            <div className="rounded-xl bg-[#e6f8f6] p-4 text-xs text-[#00857a]">
+              ✨ Sem cartão de crédito. Você terá 7 dias grátis para testar tudo. Faça upgrade no painel quando quiser.
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="inline-flex items-center gap-1 text-sm font-medium text-[#6b7280] hover:text-[#111827]"
+              >
+                <ArrowLeft className="h-4 w-4" /> Voltar
+              </button>
+              <Button
+                size="lg"
+                onClick={handleCreateStore}
+                disabled={submitting}
+                className="rounded-full bg-[#00b7a8] text-white hover:bg-[#009b8e]"
+              >
+                {submitting ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Criando sua loja...</>
+                ) : (
+                  "Começar 7 dias grátis →"
+                )}
+              </Button>
+            </div>
           </div>
         )}
       </div>
