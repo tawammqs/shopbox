@@ -308,9 +308,9 @@ function SubscriptionGate({
 }: {
   status: string | null | undefined;
   isPostCheckout: boolean;
-  onRefresh: () => void;
+  onRefresh: () => void | Promise<unknown>;
 }) {
-  const [opening, setOpening] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   if (isPostCheckout && (status === "incomplete" || !status)) {
     return (
@@ -326,43 +326,19 @@ function SubscriptionGate({
     );
   }
 
-  async function openPortal() {
-    setOpening(true);
+  const isExpiredTrial = status === "trialing"; // trial flag but window expired
+  const title = isExpiredTrial ? "Período de teste encerrado" : "Pagamento pendente";
+  const desc = "Assine um plano para continuar usando a ShopBox.";
+
+  async function handleRefresh() {
+    setRefreshing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-portal-session", {
-        body: {
-          environment: getStripeEnvironment(),
-          returnUrl: `${window.location.origin}/admin/dashboard`,
-        },
-      });
-      if (error || !data?.url) throw new Error(error?.message || "Não foi possível abrir o portal");
-      window.open(data.url, "_blank");
-    } catch (e: any) {
-      toast.error(e.message ?? "Erro ao abrir portal");
+      await onRefresh();
+      toast.message("Status atualizado. Se você assinou, seu painel já está liberado.");
     } finally {
-      setOpening(false);
+      setRefreshing(false);
     }
   }
-
-  const labelByStatus: Record<string, { title: string; desc: string }> = {
-    incomplete: {
-      title: "Pagamento pendente",
-      desc: "Seu cadastro foi criado, mas o pagamento ainda não foi confirmado. Reative sua assinatura para liberar o painel.",
-    },
-    canceled: {
-      title: "Assinatura cancelada",
-      desc: "Sua assinatura foi cancelada. Reative para voltar a usar a ShopBox.",
-    },
-    unpaid: {
-      title: "Pagamento em atraso",
-      desc: "Não conseguimos cobrar sua assinatura. Atualize sua forma de pagamento para reativar a loja.",
-    },
-    inactive: {
-      title: "Loja inativa",
-      desc: "Sua loja está inativa. Reative seu plano para continuar.",
-    },
-  };
-  const info = labelByStatus[status ?? "inactive"] ?? labelByStatus.inactive;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/20 px-4 py-10">
@@ -370,26 +346,15 @@ function SubscriptionGate({
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
           <Lock className="h-6 w-6" />
         </div>
-        <h1 className="font-display text-xl font-bold">{info.title}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{info.desc}</p>
+        <h1 className="font-display text-xl font-bold">{title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
 
         <div className="mt-6 space-y-2">
-          <Button onClick={openPortal} disabled={opening} className="w-full" size="lg">
-            {opening ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Abrindo…</>
-            ) : (
-              "Gerenciar pagamento"
-            )}
+          <Button asChild className="w-full bg-[#1a1a1a] text-white hover:bg-[#1a1a1a]/90" size="lg">
+            <Link to="/admin/plano">Ver planos</Link>
           </Button>
-          <Button
-            variant="outline"
-            onClick={async () => {
-              await onRefresh();
-              toast.message("Se o pagamento foi confirmado, seu painel já está liberado. Caso contrário, aguarde alguns minutos.");
-            }}
-            className="w-full"
-          >
-            Já paguei — atualizar
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing} className="w-full">
+            {refreshing ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Atualizando…</> : "Já assinei — atualizar"}
           </Button>
           <Button variant="ghost" onClick={() => signOut()} className="w-full">
             <LogOut className="mr-2 h-4 w-4" /> Sair
