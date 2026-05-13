@@ -260,7 +260,7 @@ function ProductFormPage() {
             <div className="grid gap-4">
               <Field label="Título *"><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
               <Field label="Slug (URL)"><Input value={slug} onChange={(e) => setSlug(slugify(e.target.value))} /></Field>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Marca"><Input value={brand} onChange={(e) => setBrand(e.target.value)} /></Field>
                 <Field label="SKU"><Input value={sku} onChange={(e) => setSku(e.target.value)} /></Field>
               </div>
