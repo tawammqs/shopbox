@@ -146,8 +146,8 @@ export function MultiImageUpload({
               <X className="h-4 w-4" />
             </button>
             <div className="image-reorder">
-              <button type="button" onClick={() => move(i, -1)} aria-label="Mover para a esquerda">←</button>
-              <button type="button" onClick={() => move(i, 1)} aria-label="Mover para a direita">→</button>
+              <button type="button" onClick={() => move(i, -1)} aria-label="Mover para a esquerda" data-disabled={i === 0}>←</button>
+              <button type="button" onClick={() => move(i, 1)} aria-label="Mover para a direita" data-disabled={i === images.length - 1}>→</button>
             </div>
           </div>
         ))}
