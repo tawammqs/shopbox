@@ -110,14 +110,14 @@ function AdminLayout() {
 
 
   return (
-    <div className="flex min-h-screen bg-muted/20">
+    <div className="admin-layout flex min-h-screen w-full max-w-full overflow-x-hidden bg-muted/20">
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
+      <aside className="admin-sidebar hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
         <SidebarContent storeId={store.id} storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
       </aside>
 
       {/* Main */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="admin-main-content flex min-w-0 flex-1 flex-col overflow-x-hidden">
         <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-2 border-b border-border bg-card/95 px-4 backdrop-blur md:px-6">
           <div className="flex items-center gap-2 md:hidden">
             <Sheet>
@@ -132,7 +132,7 @@ function AdminLayout() {
           </div>
           <div className="hidden flex-1 md:block" />
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild>
+            <Button variant="outline" size="sm" className="admin-hide-mobile" asChild>
               <a href={`/loja/${store.slug}`} target="_blank" rel="noopener">
                 <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Ver loja
               </a>
@@ -145,7 +145,7 @@ function AdminLayout() {
 
         <PaymentTestModeBanner />
 
-        <main className="flex-1 p-4 md:p-8">
+        <main className="admin-page-content flex-1 min-w-0 max-w-full overflow-x-hidden p-4 md:p-8">
           <Outlet />
         </main>
       </div>

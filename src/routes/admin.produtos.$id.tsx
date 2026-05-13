@@ -247,14 +247,14 @@ function ProductFormPage() {
   const sizeKeys = sizes.length ? sizes.map((s) => s.label) : [null];
 
   return (
-    <div className="admin-product-form mx-auto max-w-5xl space-y-6 p-4 md:p-0">
-      <div className="flex items-center gap-3">
+    <div className="product-form-page admin-product-form mx-auto w-full max-w-5xl min-w-0 space-y-6 p-4 md:p-0">
+      <div className="product-form-wrapper flex min-w-0 items-center gap-3">
         <Button asChild variant="ghost" size="icon"><Link to="/admin/produtos"><ArrowLeft className="h-4 w-4" /></Link></Button>
-        <h1 className="font-display text-xl font-bold md:text-2xl">{isNew ? "Novo produto" : title || "Editar produto"}</h1>
+        <h1 className="min-w-0 truncate font-display text-xl font-bold md:text-2xl">{isNew ? "Novo produto" : title || "Editar produto"}</h1>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="product-form-container grid min-w-0 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           {/* Basic info */}
           <Section title="Informações básicas">
             <div className="grid gap-4">
@@ -416,7 +416,7 @@ function ProductFormPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <Section title="Status">
             <div className="flex items-center justify-between">
               <Label>Ativo</Label>
@@ -474,7 +474,7 @@ function ProductFormPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="product-form-section rounded-2xl border border-border bg-card p-5">
+    <div className="form-card form-section product-form-section min-w-0 rounded-2xl border border-border bg-card p-5">
       <h3 className="mb-3 font-display text-base font-semibold">{title}</h3>
       {children}
     </div>
@@ -482,7 +482,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
+    <div className="min-w-0">
       <Label className="mb-1.5 block text-xs">{label}</Label>
       {children}
     </div>
