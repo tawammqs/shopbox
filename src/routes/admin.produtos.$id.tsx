@@ -304,7 +304,7 @@ function ProductFormPage() {
           {/* Stock matrix */}
           {(colors.length > 0 || sizes.length > 0) && (
             <Section title="Estoque por variação">
-              <div className="overflow-x-auto">
+              <div className="stock-matrix overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
                 <table className="w-full text-sm">
                   <thead>
                     <tr>
