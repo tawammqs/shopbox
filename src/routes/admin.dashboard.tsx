@@ -7,6 +7,7 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
 import { formatBRL } from "@/lib/format";
 import { planLabel, PLAN_LIMITS } from "@/lib/plans";
+import { accessTypeOf, trialDaysRemaining, trialHoursRemaining } from "@/lib/access";
 
 export const Route = createFileRoute("/admin/dashboard")({
   component: DashboardPage,
