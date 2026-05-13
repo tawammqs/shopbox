@@ -1,15 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
-import { X } from "lucide-react";
+import { X, SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { fetchProductsForCategory, fetchCategoryFacets } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 
 const csv = z
   .string()
@@ -133,6 +135,8 @@ function CategoryPage() {
 
   const [showAllSizes, setShowAllSizes] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileSortOpen, setMobileSortOpen] = useState(false);
 
   if (!cat) {
     return (
@@ -207,8 +211,17 @@ function CategoryPage() {
         </p>
       </header>
 
+      {/* Mobile sticky filter/sort bar */}
+      <MobileFilterBar
+        activeFiltersCount={chips.length}
+        sortLabel={search.sort !== "relevance" ? SORT_LABELS[search.sort] : null}
+        chips={chips}
+        onOpenFilters={() => setMobileFiltersOpen(true)}
+        onOpenSort={() => setMobileSortOpen(true)}
+      />
+
       <div className="grid gap-6 md:grid-cols-[220px_1fr]">
-        <aside className="space-y-6 text-sm">
+        <aside className="hidden space-y-6 text-sm md:block">
           {hasAnyFilter && (
             <button
               onClick={clearAll}
@@ -383,7 +396,410 @@ function CategoryPage() {
           )}
         </div>
       </div>
+
+      {/* Mobile filter bottom sheet */}
+      <MobileFilterSheet
+        open={mobileFiltersOpen}
+        onClose={() => setMobileFiltersOpen(false)}
+        sizes={allSizes}
+        brands={allBrands}
+        priceMin={priceMin}
+        priceMax={priceMax}
+        initialSizes={tamanhoArr}
+        initialBrands={marcaArr}
+        initialMinPrice={search.minPrice}
+        initialMaxPrice={search.maxPrice}
+        initialInStock={!!search.inStock}
+        productCount={total}
+        onApply={(next) => {
+          setSearch({
+            tamanho: next.sizes,
+            marca: next.brands,
+            minPrice: next.minPrice,
+            maxPrice: next.maxPrice,
+            inStock: next.inStock || undefined,
+          });
+          setMobileFiltersOpen(false);
+          if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+        onClear={clearAll}
+      />
+
+      {/* Mobile sort bottom sheet */}
+      <MobileSortSheet
+        open={mobileSortOpen}
+        onClose={() => setMobileSortOpen(false)}
+        current={search.sort}
+        onSelect={(v) => {
+          setSearch({ sort: v });
+          setMobileSortOpen(false);
+        }}
+      />
     </div>
+  );
+}
+
+// ===== Mobile components =====
+
+function MobileFilterBar({
+  activeFiltersCount,
+  sortLabel,
+  chips,
+  onOpenFilters,
+  onOpenSort,
+}: {
+  activeFiltersCount: number;
+  sortLabel: string | null;
+  chips: { label: string; clear: () => void }[];
+  onOpenFilters: () => void;
+  onOpenSort: () => void;
+}) {
+  return (
+    <div className="sticky top-0 z-40 -mx-4 mb-4 border-b border-[#e8e8e0] bg-white px-4 py-2.5 md:hidden">
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={onOpenFilters}
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-[#e8e8e0] bg-white px-4 py-2 text-[13px] font-medium text-[#1a1a1a]"
+        >
+          <SlidersHorizontal className="h-3.5 w-3.5" />
+          Filtrar
+          {activeFiltersCount > 0 && (
+            <span className="ml-0.5 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#25D366] px-1.5 text-[11px] font-bold text-white">
+              {activeFiltersCount}
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={onOpenSort}
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-[#e8e8e0] bg-white px-4 py-2 text-[13px] font-medium text-[#1a1a1a]"
+        >
+          <ArrowUpDown className="h-3.5 w-3.5" />
+          {sortLabel ? `Ordenar: ${sortLabel}` : "Ordenar"}
+        </button>
+      </div>
+
+      {chips.length > 0 && (
+        <div
+          className="mt-2 flex gap-1.5 overflow-x-auto pb-1"
+          style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}
+        >
+          {chips.map((c, i) => (
+            <button
+              key={i}
+              onClick={c.clear}
+              className="inline-flex shrink-0 items-center gap-1 rounded-full border border-[#bbf7d0] bg-[#f0fdf4] px-2.5 py-1 text-[12px] text-[#166534]"
+            >
+              {c.label}
+              <X className="h-3 w-3" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+type SizeFacet = { label: string; count: number };
+type BrandFacet = { name: string; count: number };
+
+function MobileFilterSheet({
+  open,
+  onClose,
+  sizes,
+  brands,
+  priceMin,
+  priceMax,
+  initialSizes,
+  initialBrands,
+  initialMinPrice,
+  initialMaxPrice,
+  initialInStock,
+  productCount,
+  onApply,
+  onClear,
+}: {
+  open: boolean;
+  onClose: () => void;
+  sizes: SizeFacet[];
+  brands: BrandFacet[];
+  priceMin: number;
+  priceMax: number;
+  initialSizes: string[];
+  initialBrands: string[];
+  initialMinPrice: number | undefined;
+  initialMaxPrice: number | undefined;
+  initialInStock: boolean;
+  productCount: number;
+  onApply: (next: {
+    sizes: string[];
+    brands: string[];
+    minPrice: number | undefined;
+    maxPrice: number | undefined;
+    inStock: boolean;
+  }) => void;
+  onClear: () => void;
+}) {
+  const [pendingSizes, setPendingSizes] = useState<string[]>(initialSizes);
+  const [pendingBrands, setPendingBrands] = useState<string[]>(initialBrands);
+  const [pendingRange, setPendingRange] = useState<[number, number]>([
+    initialMinPrice ?? priceMin,
+    initialMaxPrice ?? priceMax,
+  ]);
+  const [pendingInStock, setPendingInStock] = useState(initialInStock);
+  const [showAllSizes, setShowAllSizes] = useState(false);
+  const [showAllBrands, setShowAllBrands] = useState(false);
+
+  // Re-sync pending state when sheet opens
+  useEffect(() => {
+    if (open) {
+      setPendingSizes(initialSizes);
+      setPendingBrands(initialBrands);
+      setPendingRange([initialMinPrice ?? priceMin, initialMaxPrice ?? priceMax]);
+      setPendingInStock(initialInStock);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const visibleSizes = showAllSizes ? sizes : sizes.slice(0, 12);
+  const visibleBrands = showAllBrands ? brands : brands.slice(0, 8);
+
+  const hasAny =
+    pendingSizes.length > 0 ||
+    pendingBrands.length > 0 ||
+    pendingRange[0] > priceMin ||
+    pendingRange[1] < priceMax ||
+    pendingInStock;
+
+  const toggle = (arr: string[], v: string) =>
+    arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
+
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent
+        side="bottom"
+        className="flex h-[85vh] flex-col rounded-t-2xl p-0 md:hidden"
+      >
+        <div className="mx-auto mt-3 h-1 w-10 shrink-0 rounded-full bg-[#e0e0e0]" />
+        <div className="flex shrink-0 items-center justify-between border-b border-[#e8e8e0] px-5 py-4">
+          <h2 className="text-base font-bold text-[#1a1a1a]">Filtros</h2>
+          <button onClick={onClose} aria-label="Fechar" className="text-[#aaa]">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-5" style={{ WebkitOverflowScrolling: "touch" }}>
+          {sizes.length > 0 && (
+            <section className="border-b border-[#f0f0ea] py-5">
+              <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#aaa]">
+                Tamanho
+              </h3>
+              <div className="grid grid-cols-4 gap-2">
+                {visibleSizes.map((s) => {
+                  const sel = pendingSizes.includes(s.label);
+                  return (
+                    <button
+                      key={s.label}
+                      type="button"
+                      onClick={() => setPendingSizes((arr) => toggle(arr, s.label))}
+                      className={cn(
+                        "flex min-h-[44px] items-center justify-center rounded-lg border px-2 py-2.5 text-sm font-medium transition",
+                        sel
+                          ? "border-[#1a1a1a] bg-[#1a1a1a] text-white"
+                          : "border-[#e8e8e0] bg-white text-[#555]",
+                      )}
+                    >
+                      {s.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {sizes.length > 12 && (
+                <button
+                  onClick={() => setShowAllSizes((v) => !v)}
+                  className="mt-3 text-[13px] text-[#555] underline"
+                >
+                  {showAllSizes ? "Ver menos" : "Ver mais"}
+                </button>
+              )}
+            </section>
+          )}
+
+          {brands.length > 0 && (
+            <section className="border-b border-[#f0f0ea] py-5">
+              <h3 className="mb-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#aaa]">
+                Marca
+              </h3>
+              <ul>
+                {visibleBrands.map((b) => {
+                  const sel = pendingBrands.includes(b.name);
+                  return (
+                    <li
+                      key={b.name}
+                      className="flex min-h-[44px] items-center justify-between border-b border-[#f9f9f9] py-2.5"
+                    >
+                      <label className="flex flex-1 cursor-pointer items-center gap-3">
+                        <Checkbox
+                          checked={sel}
+                          onCheckedChange={() =>
+                            setPendingBrands((arr) => toggle(arr, b.name))
+                          }
+                          className="h-5 w-5"
+                        />
+                        <span className="text-sm text-[#333]">{b.name}</span>
+                      </label>
+                      <span className="text-[13px] text-[#aaa]">({b.count})</span>
+                    </li>
+                  );
+                })}
+              </ul>
+              {brands.length > 8 && (
+                <button
+                  onClick={() => setShowAllBrands((v) => !v)}
+                  className="mt-3 text-[13px] text-[#555] underline"
+                >
+                  {showAllBrands ? "Ver menos" : "Ver mais"}
+                </button>
+              )}
+            </section>
+          )}
+
+          <section className="border-b border-[#f0f0ea] py-5">
+            <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#aaa]">
+              Faixa de preço
+            </h3>
+            <Slider
+              min={priceMin}
+              max={priceMax}
+              step={Math.max(1, Math.round((priceMax - priceMin) / 100))}
+              value={pendingRange}
+              onValueChange={(v) => setPendingRange(v as [number, number])}
+            />
+            <div className="mt-3 flex gap-2">
+              <input
+                type="number"
+                value={pendingRange[0]}
+                onChange={(e) =>
+                  setPendingRange([Number(e.target.value) || priceMin, pendingRange[1]])
+                }
+                placeholder="De R$"
+                className="h-11 flex-1 rounded-lg border border-[#e8e8e0] px-2 text-center text-base"
+              />
+              <input
+                type="number"
+                value={pendingRange[1]}
+                onChange={(e) =>
+                  setPendingRange([pendingRange[0], Number(e.target.value) || priceMax])
+                }
+                placeholder="Até R$"
+                className="h-11 flex-1 rounded-lg border border-[#e8e8e0] px-2 text-center text-base"
+              />
+            </div>
+          </section>
+
+          <section className="flex items-center justify-between py-5">
+            <span className="text-sm font-medium text-[#333]">Apenas em estoque</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={pendingInStock}
+              onClick={() => setPendingInStock((v) => !v)}
+              className={cn(
+                "relative h-6 w-11 rounded-full transition-colors",
+                pendingInStock ? "bg-[#25D366]" : "bg-[#e0e0e0]",
+              )}
+            >
+              <span
+                className={cn(
+                  "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform",
+                  pendingInStock ? "translate-x-[22px]" : "translate-x-0.5",
+                )}
+              />
+            </button>
+          </section>
+        </div>
+
+        <div className="flex shrink-0 gap-2.5 border-t border-[#e8e8e0] bg-white px-5 py-4">
+          <button
+            type="button"
+            disabled={!hasAny}
+            onClick={() => {
+              onClear();
+              onClose();
+            }}
+            className="h-12 flex-1 rounded-lg border border-[#e8e8e0] bg-transparent text-sm font-semibold text-[#555] disabled:opacity-50"
+          >
+            Limpar filtros
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onApply({
+                sizes: pendingSizes,
+                brands: pendingBrands,
+                minPrice: pendingRange[0] > priceMin ? pendingRange[0] : undefined,
+                maxPrice: pendingRange[1] < priceMax ? pendingRange[1] : undefined,
+                inStock: pendingInStock,
+              })
+            }
+            className="h-12 flex-[2] rounded-lg bg-[#1a1a1a] text-sm font-semibold text-white"
+          >
+            Ver {productCount} produto{productCount !== 1 ? "s" : ""}
+          </button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function MobileSortSheet({
+  open,
+  onClose,
+  current,
+  onSelect,
+}: {
+  open: boolean;
+  onClose: () => void;
+  current: string;
+  onSelect: (v: any) => void;
+}) {
+  return (
+    <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent side="bottom" className="rounded-t-2xl p-0 md:hidden">
+        <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-[#e0e0e0]" />
+        <div className="flex items-center justify-between border-b border-[#e8e8e0] px-5 py-4">
+          <h2 className="text-base font-bold text-[#1a1a1a]">Ordenar por</h2>
+          <button onClick={onClose} aria-label="Fechar" className="text-[#aaa]">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+        <ul className="pb-4">
+          {Object.entries(SORT_LABELS).map(([v, l]) => {
+            const sel = current === v;
+            return (
+              <li key={v}>
+                <button
+                  type="button"
+                  onClick={() => onSelect(v)}
+                  className="flex min-h-[56px] w-full items-center justify-between border-b border-[#f9f9f9] px-5 py-4 text-left"
+                >
+                  <span
+                    className={cn(
+                      "text-[15px]",
+                      sel ? "font-bold text-[#1a1a1a]" : "text-[#333]",
+                    )}
+                  >
+                    {l}
+                  </span>
+                  {sel && <Check className="h-5 w-5 text-[#25D366]" />}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </SheetContent>
+    </Sheet>
   );
 }
 
