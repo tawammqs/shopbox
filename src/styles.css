@@ -372,7 +372,7 @@
   }
 
   /* Stock matrix: smaller inputs */
-  .admin-product-form .stock-matrix { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+  .admin-product-form .stock-matrix { overflow-x: auto !important; -webkit-overflow-scrolling: touch; width: 100%; }
   .admin-product-form .stock-matrix table { min-width: max-content; border-collapse: collapse; }
   .admin-product-form .stock-matrix th,
   .admin-product-form .stock-matrix td { min-width: 64px; height: 44px; padding: 4px; font-size: 14px; }
