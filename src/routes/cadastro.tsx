@@ -603,43 +603,30 @@ function SignupPage() {
               </div>
             </div>
 
-            {!clientSecret ? (
-              <>
-                <div className="rounded-xl bg-[#e6f8f6] p-4 text-xs text-[#00857a]">
-                  💳 Pagamento processado com segurança via Stripe. PIX também disponível em breve.
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-[#6b7280] hover:text-[#111827]"
-                  >
-                    <ArrowLeft className="h-4 w-4" /> Voltar
-                  </button>
-                  <Button
-                    size="lg"
-                    onClick={handleCreateStore}
-                    disabled={submitting}
-                    className="rounded-full bg-[#00b7a8] text-white hover:bg-[#009b8e]"
-                  >
-                    {submitting ? (
-                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Criando sua loja...</>
-                    ) : (
-                      "Criar minha loja →"
-                    )}
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white p-2 shadow-sm">
-                <EmbeddedCheckoutProvider
-                  stripe={getStripe()}
-                  options={{ fetchClientSecret: () => Promise.resolve(clientSecret) }}
-                >
-                  <EmbeddedCheckout />
-                </EmbeddedCheckoutProvider>
-              </div>
-            )}
+            <div className="rounded-xl bg-[#e6f8f6] p-4 text-xs text-[#00857a]">
+              ✨ Sem cartão de crédito. Você terá 7 dias grátis para testar tudo. Faça upgrade no painel quando quiser.
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="inline-flex items-center gap-1 text-sm font-medium text-[#6b7280] hover:text-[#111827]"
+              >
+                <ArrowLeft className="h-4 w-4" /> Voltar
+              </button>
+              <Button
+                size="lg"
+                onClick={handleCreateStore}
+                disabled={submitting}
+                className="rounded-full bg-[#00b7a8] text-white hover:bg-[#009b8e]"
+              >
+                {submitting ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Criando sua loja...</>
+                ) : (
+                  "Começar 7 dias grátis →"
+                )}
+              </Button>
+            </div>
           </div>
         )}
       </div>
