@@ -247,10 +247,10 @@ function ProductFormPage() {
   const sizeKeys = sizes.length ? sizes.map((s) => s.label) : [null];
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="admin-product-form mx-auto max-w-5xl space-y-6 p-4 md:p-0">
       <div className="flex items-center gap-3">
         <Button asChild variant="ghost" size="icon"><Link to="/admin/produtos"><ArrowLeft className="h-4 w-4" /></Link></Button>
-        <h1 className="font-display text-2xl font-bold">{isNew ? "Novo produto" : title || "Editar produto"}</h1>
+        <h1 className="font-display text-xl font-bold md:text-2xl">{isNew ? "Novo produto" : title || "Editar produto"}</h1>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -260,7 +260,7 @@ function ProductFormPage() {
             <div className="grid gap-4">
               <Field label="Título *"><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
               <Field label="Slug (URL)"><Input value={slug} onChange={(e) => setSlug(slugify(e.target.value))} /></Field>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Marca"><Input value={brand} onChange={(e) => setBrand(e.target.value)} /></Field>
                 <Field label="SKU"><Input value={sku} onChange={(e) => setSku(e.target.value)} /></Field>
               </div>
@@ -270,7 +270,7 @@ function ProductFormPage() {
 
           {/* Pricing */}
           <Section title="Preço">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label="Preço *"><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></Field>
               <Field label="Preço promocional"><Input type="number" step="0.01" value={promoPrice} onChange={(e) => setPromoPrice(e.target.value)} /></Field>
             </div>
@@ -304,7 +304,7 @@ function ProductFormPage() {
           {/* Stock matrix */}
           {(colors.length > 0 || sizes.length > 0) && (
             <Section title="Estoque por variação">
-              <div className="overflow-x-auto">
+              <div className="stock-matrix overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
                 <table className="w-full text-sm">
                   <thead>
                     <tr>
@@ -458,7 +458,7 @@ function ProductFormPage() {
             <Field label="Avisar quando ≤"><Input type="number" min={0} value={lowStock} onChange={(e) => setLowStock(e.target.value)} /></Field>
           </Section>
 
-          <div className="sticky top-20 space-y-2">
+          <div className="admin-save-bar space-y-2 md:sticky md:top-20">
             <Button onClick={() => save.mutate()} disabled={save.isPending} className="w-full" size="lg">
               <Save className="mr-2 h-4 w-4" /> {save.isPending ? "Salvando…" : "Salvar"}
             </Button>
