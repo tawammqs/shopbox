@@ -209,8 +209,17 @@ function CategoryPage() {
         </p>
       </header>
 
+      {/* Mobile sticky filter/sort bar */}
+      <MobileFilterBar
+        activeFiltersCount={chips.length}
+        sortLabel={search.sort !== "relevance" ? SORT_LABELS[search.sort] : null}
+        chips={chips}
+        onOpenFilters={() => setMobileFiltersOpen(true)}
+        onOpenSort={() => setMobileSortOpen(true)}
+      />
+
       <div className="grid gap-6 md:grid-cols-[220px_1fr]">
-        <aside className="space-y-6 text-sm">
+        <aside className="hidden space-y-6 text-sm md:block">
           {hasAnyFilter && (
             <button
               onClick={clearAll}
