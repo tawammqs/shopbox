@@ -7,6 +7,7 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
 import { formatBRL } from "@/lib/format";
 import { planLabel, PLAN_LIMITS } from "@/lib/plans";
+import { accessTypeOf, trialDaysRemaining, trialHoursRemaining } from "@/lib/access";
 
 export const Route = createFileRoute("/admin/dashboard")({
   component: DashboardPage,
@@ -86,8 +87,40 @@ function DashboardPage() {
 
   const o = ordersStats.data;
 
+  const accessType = accessTypeOf(store);
+  const daysLeft = trialDaysRemaining(store.trial_ends_at);
+  const hoursLeft = trialHoursRemaining(store.trial_ends_at);
+  const showTrialBanner = accessType === "trial";
+  const trialUrgent = showTrialBanner && daysLeft <= 1;
+
   return (
     <div className="space-y-6">
+      {showTrialBanner && (
+        <div
+          className={
+            trialUrgent
+              ? "rounded-2xl border border-amber-300 bg-amber-50 p-4 text-amber-900"
+              : "rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900"
+          }
+        >
+          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <div className="flex-1">
+              <p className="text-sm font-semibold">
+                {trialUrgent
+                  ? `⚠️ Seu período de teste termina em ${hoursLeft}h`
+                  : `🎉 Você está no período de teste — ${daysLeft} ${daysLeft === 1 ? "dia restante" : "dias restantes"}`}
+              </p>
+              <p className="mt-0.5 text-xs opacity-80">
+                Aproveite todos os recursos da ShopBox. Assine antes do fim do teste para não perder acesso.
+              </p>
+            </div>
+            <Button asChild size="sm" className="bg-[#1a1a1a] text-white hover:bg-[#1a1a1a]/90">
+              <Link to="/admin/plano">Ver planos</Link>
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div>
         <h1 className="font-display text-3xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">Visão geral da sua loja</p>

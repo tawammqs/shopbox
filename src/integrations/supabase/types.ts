@@ -1715,6 +1715,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      store_has_access: { Args: { p_user_id: string }; Returns: boolean }
       store_has_theme: {
         Args: { _store_id: string; _theme_id: string }
         Returns: boolean
