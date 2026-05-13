@@ -135,6 +135,8 @@ function CategoryPage() {
 
   const [showAllSizes, setShowAllSizes] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [mobileSortOpen, setMobileSortOpen] = useState(false);
 
   if (!cat) {
     return (
