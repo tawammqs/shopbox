@@ -417,3 +417,89 @@
   /* Hide "Ver loja" CTA on mobile to save header space */
   .admin-hide-mobile { display: none !important; }
 }
+
+/* ===== Status toggle (custom switch) ===== */
+.status-toggle-btn {
+  width: 52px;
+  height: 28px;
+  border-radius: 9999px;
+  border: none;
+  background: hsl(var(--muted, 0 0% 90%));
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.status-toggle-btn[data-active="true"] { background: #25D366; }
+.status-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.2s;
+}
+.status-toggle-thumb[data-active="true"] { transform: translateX(24px); }
+
+/* ===== Tag toggle buttons ===== */
+.tag-toggle-btn {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 16px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 10px;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+.tag-toggle-btn[data-selected="true"] {
+  background: hsl(var(--foreground));
+  color: hsl(var(--background));
+  border: 2px solid hsl(var(--foreground));
+}
+.tag-toggle-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  background: transparent;
+  border: 1.5px solid hsl(var(--border));
+  color: transparent;
+  flex-shrink: 0;
+}
+.tag-toggle-check[data-selected="true"] {
+  background: #fff;
+  color: #1a1a1a;
+  border-color: #fff;
+}
+
+/* ===== Category tree: always show row actions on touch devices ===== */
+@media (hover: none) {
+  .category-row-actions {
+    opacity: 1 !important;
+  }
+}
+@media (max-width: 767px) {
+  .category-row-actions { opacity: 1 !important; }
+  .category-row-actions button { width: 32px !important; height: 32px !important; }
+
+  /* No truncation in product form labels/buttons on mobile */
+  .product-form-page button,
+  .product-form-page label,
+  .product-form-page span {
+    white-space: normal;
+  }
+}
