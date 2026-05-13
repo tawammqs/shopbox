@@ -32,7 +32,7 @@ function SuperadminMetricasPage() {
       const [storesRes, plansRes] = await Promise.all([
         supabase
           .from("stores")
-          .select("id, name, slug, owner_user_id, subscription_status, plan_id, created_at, current_period_end, trial_ends_at, stripe_customer_id, active")
+          .select("id, name, slug, owner_user_id, subscription_status, plan_id, created_at, current_period_end, trial_ends_at, active")
           .order("created_at", { ascending: false }),
         supabase
           .from("plans")
