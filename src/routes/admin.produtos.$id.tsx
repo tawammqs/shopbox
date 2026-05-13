@@ -459,15 +459,29 @@ function ProductFormPage() {
           </Section>
 
           <Section title="Tags / Vitrines">
-            <div className="tags-grid space-y-2">
-              {TAGS.map((t) => (
-                <label key={t} className="flex items-center gap-2 text-sm">
-                  <Checkbox checked={tags.includes(t)} onCheckedChange={(v) => {
-                    setTags(v ? [...tags, t] : tags.filter((x) => x !== t));
-                  }} />
-                  {TAG_LABELS[t]}
-                </label>
-              ))}
+            <div className="tags-list flex flex-col gap-2">
+              {TAGS.map((t) => {
+                const isSelected = tags.includes(t);
+                const emoji = t === "destaques" ? "⭐" : t === "lancamentos" ? "🆕" : t === "ofertas" ? "🏷️" : "🏠";
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTags(isSelected ? tags.filter((x) => x !== t) : [...tags, t])}
+                    aria-pressed={isSelected}
+                    className="tag-toggle-btn"
+                    data-selected={isSelected ? "true" : "false"}
+                  >
+                    <span className="flex items-center gap-2 min-w-0">
+                      <span className="text-lg leading-none">{emoji}</span>
+                      <span className="text-sm font-medium">{TAG_LABELS[t]}</span>
+                    </span>
+                    <span className="tag-toggle-check" data-selected={isSelected ? "true" : "false"}>
+                      {isSelected ? "✓" : ""}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </Section>
 
