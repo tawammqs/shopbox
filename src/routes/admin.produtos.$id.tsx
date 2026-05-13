@@ -442,7 +442,7 @@ function ProductFormPage() {
           </Section>
 
           <Section title="Tags / Vitrines">
-            <div className="space-y-2">
+            <div className="tags-grid space-y-2">
               {TAGS.map((t) => (
                 <label key={t} className="flex items-center gap-2 text-sm">
                   <Checkbox checked={tags.includes(t)} onCheckedChange={(v) => {
@@ -459,10 +459,10 @@ function ProductFormPage() {
           </Section>
 
           <div className="admin-save-bar space-y-2 md:sticky md:top-20">
-            <Button onClick={() => save.mutate()} disabled={save.isPending} className="w-full" size="lg">
+            <Button onClick={() => save.mutate()} disabled={save.isPending} className="save-confirm w-full" size="lg">
               <Save className="mr-2 h-4 w-4" /> {save.isPending ? "Salvando…" : "Salvar"}
             </Button>
-            <Button variant="outline" className="w-full" asChild>
+            <Button variant="outline" className="save-cancel w-full" asChild>
               <Link to="/admin/produtos">Cancelar</Link>
             </Button>
           </div>
