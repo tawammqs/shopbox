@@ -418,9 +418,26 @@ function ProductFormPage() {
         {/* Sidebar */}
         <div className="min-w-0 space-y-4">
           <Section title="Status">
-            <div className="flex items-center justify-between">
-              <Label>Ativo</Label>
-              <Switch checked={active} onCheckedChange={setActive} />
+            <div className="status-toggle-row flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-semibold text-foreground">
+                  {active ? "Produto ativo" : "Produto inativo"}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {active ? "Visível na loja" : "Oculto da loja"}
+                </div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={active}
+                aria-label="Alternar status do produto"
+                onClick={() => setActive(!active)}
+                className="status-toggle-btn"
+                data-active={active ? "true" : "false"}
+              >
+                <span className="status-toggle-thumb" data-active={active ? "true" : "false"} />
+              </button>
             </div>
           </Section>
 
