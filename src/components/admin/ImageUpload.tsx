@@ -135,16 +135,19 @@ export function MultiImageUpload({
     <div>
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
         {images.map((img, i) => (
-          <div key={i} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
+          <div key={i} className="product-image-card group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
             <img src={img.url} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-black/40 opacity-0 transition group-hover:opacity-100">
-              <button type="button" onClick={() => remove(i)} className="absolute right-1 top-1 rounded bg-white/90 p-1 text-destructive">
-                <X className="h-3 w-3" />
-              </button>
-              <div className="absolute bottom-1 left-1 flex gap-1">
-                <button type="button" onClick={() => move(i, -1)} className="rounded bg-white/90 px-1.5 text-xs">←</button>
-                <button type="button" onClick={() => move(i, 1)} className="rounded bg-white/90 px-1.5 text-xs">→</button>
-              </div>
+            <button
+              type="button"
+              onClick={() => remove(i)}
+              aria-label="Remover imagem"
+              className="image-delete-btn"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="image-reorder">
+              <button type="button" onClick={() => move(i, -1)} aria-label="Mover para a esquerda">←</button>
+              <button type="button" onClick={() => move(i, 1)} aria-label="Mover para a direita">→</button>
             </div>
           </div>
         ))}
