@@ -458,7 +458,7 @@ function ProductFormPage() {
             <Field label="Avisar quando ≤"><Input type="number" min={0} value={lowStock} onChange={(e) => setLowStock(e.target.value)} /></Field>
           </Section>
 
-          <div className="sticky top-20 space-y-2">
+          <div className="admin-save-bar space-y-2 md:sticky md:top-20">
             <Button onClick={() => save.mutate()} disabled={save.isPending} className="w-full" size="lg">
               <Save className="mr-2 h-4 w-4" /> {save.isPending ? "Salvando…" : "Salvar"}
             </Button>
