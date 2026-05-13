@@ -270,7 +270,7 @@ function ProductFormPage() {
 
           {/* Pricing */}
           <Section title="Preço">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field label="Preço *"><Input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></Field>
               <Field label="Preço promocional"><Input type="number" step="0.01" value={promoPrice} onChange={(e) => setPromoPrice(e.target.value)} /></Field>
             </div>
