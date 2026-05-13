@@ -161,13 +161,6 @@ function SignupPage() {
 
   async function handleCreateStore() {
     if (!accountData || !selectedPlan) return;
-    const priceId = isYearly
-      ? selectedPlan.stripe_price_id_yearly
-      : selectedPlan.stripe_price_id;
-    if (!priceId) {
-      toast.error("Plano sem preço configurado para esse ciclo. Tente outro.");
-      return;
-    }
     setSubmitting(true);
     try {
       // 1) Sign up user (auto-confirm habilitado no auth — não precisa de email)
@@ -200,15 +193,18 @@ function SignupPage() {
         return;
       }
 
-      // 3) Create store as INCOMPLETE — webhook will activate after payment confirms
+      // 3) Create store já em TRIAL de 7 dias — sem exigir cartão.
+      // O upgrade para plano pago acontece depois em /admin/plano.
+      const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       const { error: storeError } = await supabase.from("stores").insert({
         owner_user_id: userId,
         name: accountData.storeName,
         slug: storeSlug,
         segment: accountData.segment,
         plan_id: selectedPlan.id,
-        subscription_status: "incomplete",
-        active: false,
+        subscription_status: "trialing",
+        trial_ends_at: trialEndsAt,
+        active: true,
         whatsapp: "",
       });
       if (storeError) {
@@ -217,15 +213,8 @@ function SignupPage() {
         return;
       }
 
-      // 4) Create checkout session with 7-day trial
-      const secret = await createCheckoutSession({
-        priceId,
-        customerEmail: accountData.email,
-        userId,
-        trialPeriodDays: 7,
-        returnUrl: `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
-      });
-      setClientSecret(secret);
+      toast.success("Loja criada! Você tem 7 dias grátis para testar tudo.");
+      navigate({ to: "/admin/dashboard" });
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
