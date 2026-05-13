@@ -474,7 +474,7 @@ function ProductFormPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="product-form-section rounded-2xl border border-border bg-card p-5">
       <h3 className="mb-3 font-display text-base font-semibold">{title}</h3>
       {children}
     </div>
