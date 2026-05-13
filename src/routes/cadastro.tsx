@@ -106,7 +106,7 @@ function SignupPage() {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [storeSlug, setStoreSlug] = useState("");
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<AccountForm>({
