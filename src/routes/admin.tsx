@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { planLabel, hasStoreAccess } from "@/lib/plans";
-import { getStripeEnvironment } from "@/lib/stripe";
+
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import shopboxLogo from "@/assets/shopbox-logo.png";
