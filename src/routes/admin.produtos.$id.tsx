@@ -247,14 +247,14 @@ function ProductFormPage() {
   const sizeKeys = sizes.length ? sizes.map((s) => s.label) : [null];
 
   return (
-    <div className="admin-product-form mx-auto max-w-5xl space-y-6 p-4 md:p-0">
-      <div className="flex items-center gap-3">
+    <div className="product-form-page admin-product-form mx-auto w-full max-w-5xl min-w-0 space-y-6 p-4 md:p-0">
+      <div className="product-form-wrapper flex min-w-0 items-center gap-3">
         <Button asChild variant="ghost" size="icon"><Link to="/admin/produtos"><ArrowLeft className="h-4 w-4" /></Link></Button>
-        <h1 className="font-display text-xl font-bold md:text-2xl">{isNew ? "Novo produto" : title || "Editar produto"}</h1>
+        <h1 className="min-w-0 truncate font-display text-xl font-bold md:text-2xl">{isNew ? "Novo produto" : title || "Editar produto"}</h1>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="product-form-container grid min-w-0 gap-6 lg:grid-cols-3">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           {/* Basic info */}
           <Section title="Informações básicas">
             <div className="grid gap-4">
