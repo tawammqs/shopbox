@@ -13,8 +13,6 @@ import {
   SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
-import { getStripe, createCheckoutSession } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEGMENT_GROUPS } from "@/lib/segments";
 import { Eye, EyeOff, Check, Loader2, ArrowLeft } from "lucide-react";
