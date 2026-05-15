@@ -91,7 +91,7 @@ function ProductFormPage() {
   useEffect(() => {
     if (productQ.data) {
       const p = productQ.data;
-      setTitle(p.title); setSlug(p.slug); setBrand(p.brand ?? "");
+      setTitle(p.title); setSlug(p.slug); setSlugEdited(true); setBrand(p.brand ?? "");
       setDescription(p.description ?? ""); setSku(p.sku ?? "");
       setPrice(String(p.price)); setPromoPrice(p.promo_price ? String(p.promo_price) : "");
       const linked = ((p.product_categories ?? []) as any[]).map((r) => r.category_id).filter(Boolean);
