@@ -122,21 +122,61 @@ function ProductFormPage() {
     }
   }, [productQ.data]);
 
+  const [slugEdited, setSlugEdited] = useState(false);
+  const [slugStatus, setSlugStatus] = useState<"idle" | "checking" | "available" | "adjusted">("idle");
+
   useEffect(() => {
-    if (isNew && title && !slug) setSlug(slugify(title));
-  }, [title, isNew, slug]);
+    if (isNew && title && !slugEdited) setSlug(slugify(title));
+  }, [title, isNew, slugEdited]);
+
+  // Debounced slug availability check
+  useEffect(() => {
+    if (!store?.id || !slug) {
+      setSlugStatus("idle");
+      return;
+    }
+    setSlugStatus("checking");
+    const t = setTimeout(async () => {
+      let q = supabase
+        .from("products")
+        .select("id")
+        .eq("store_id", store.id)
+        .eq("slug", slug)
+        .limit(1);
+      if (!isNew && id) q = q.neq("id", id);
+      const { data } = await q.maybeSingle();
+      setSlugStatus(data ? "adjusted" : "available");
+    }, 400);
+    return () => clearTimeout(t);
+  }, [slug, store?.id, isNew, id]);
+
+  async function buildUniqueSlug(baseInput: string, storeId: string, ignoreId: string | null): Promise<string> {
+    const base = slugify(baseInput).slice(0, 80) || "produto";
+    let q = supabase
+      .from("products")
+      .select("slug")
+      .eq("store_id", storeId)
+      .like("slug", `${base}%`);
+    if (ignoreId) q = q.neq("id", ignoreId);
+    const { data } = await q;
+    const taken = new Set((data ?? []).map((r: any) => r.slug));
+    if (!taken.has(base)) return base;
+    return `${base}-${Date.now().toString(36)}`;
+  }
 
   const save = useMutation({
     mutationFn: async () => {
       if (!store) throw new Error("Loja não carregada");
       if (!title.trim()) throw new Error("Título obrigatório");
-      const finalSlug = slug || slugify(title);
+
+      const baseSlug = slug || slugify(title);
+      let finalSlug = await buildUniqueSlug(baseSlug, store.id, isNew ? null : (id as string));
 
       let productId = isNew ? null : id;
-      const payload = {
+      const buildPayload = (s: string) => ({
         store_id: store.id,
         title: title.trim(),
-        slug: finalSlug,
+        slug: s,
         brand: brand || null,
         description: description || null,
         sku: sku || null,
@@ -150,15 +190,25 @@ function ProductFormPage() {
         meta_description: metaDesc || null,
         video_url: productVideoUrl,
         video_type: productVideoType,
-      };
+      });
 
       if (isNew) {
-        const { data, error } = await supabase.from("products").insert(payload).select("id").single();
+        let { data, error } = await supabase.from("products").insert(buildPayload(finalSlug)).select("id").single();
+        if (error && (error as any).code === "23505") {
+          finalSlug = `${slugify(baseSlug)}-${Date.now().toString(36)}`;
+          ({ data, error } = await supabase.from("products").insert(buildPayload(finalSlug)).select("id").single());
+        }
         if (error) throw error;
-        productId = data.id;
+        productId = data!.id;
+        setSlug(finalSlug);
       } else {
-        const { error } = await supabase.from("products").update(payload).eq("id", id);
+        let { error } = await supabase.from("products").update(buildPayload(finalSlug)).eq("id", id);
+        if (error && (error as any).code === "23505") {
+          finalSlug = `${slugify(baseSlug)}-${Date.now().toString(36)}`;
+          ({ error } = await supabase.from("products").update(buildPayload(finalSlug)).eq("id", id));
+        }
         if (error) throw error;
+        setSlug(finalSlug);
       }
 
       // Sync category links (many-to-many)
