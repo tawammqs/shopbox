@@ -1,61 +1,109 @@
 
+# Plano de implementação
 
-## Plano: Carrossel de vídeos shoppable na home (4–5 vídeos)
+São 3 frentes independentes. Posso fazer todas, mas recomendo aprovar/ajustar cada bloco antes — principalmente o **Impersonate**, que é sensível.
 
-A imagem de referência mostra **vários vídeos verticais** lado a lado, em formato carrossel, cada um com um card de produto sobreposto. Vou aplicar isso à seção "Descubra em vídeo".
+---
 
-### 1. Banco de dados (migração)
+## Bloco 1 — Superadmin: busca + acesso à conta do lojista
 
-A estrutura atual permite **apenas um vídeo por loja** (`UNIQUE (store_id)` em `home_video_sections`) — preciso permitir múltiplos.
+### 1.1 Busca aprimorada em `/superadmin/clientes`
+A página já tem busca por e-mail/nome/slug. Vou adicionar:
+- Busca também por **WhatsApp** (normalizando dígitos) e por **ID da loja/usuário**.
+- Cada linha passa a mostrar de forma copiável: **e-mail de login**, **WhatsApp** e **ID**.
+- Botão "Copiar e-mail" e "Copiar WhatsApp" em cada cliente.
 
-- Remover o `UNIQUE` em `home_video_sections.store_id`.
-- Adicionar `position int not null default 0` em `home_video_sections` para ordenar o carrossel.
-- Adicionar `aspect text default 'vertical'` (`vertical | horizontal`) — vídeos do carrossel são preferencialmente verticais (9:16), conforme a imagem.
-- Índice `(store_id, position)` para ordenação.
-- Policies já estão corretas (não dependem do unique) — manter.
+Isso já resolve "achar o login da LZ Multimarcas" sem depender de impersonate.
 
-### 2. Storefront — `HomeVideoSection.tsx`
+### 1.2 Enviar link de redefinição de senha (a partir do superadmin)
+Botão **"Enviar link de redefinição"** em cada cliente. Internamente chama uma server function protegida (só para `platform_admin`) que usa o admin client para gerar um link de recovery (`supabase.auth.admin.generateLink({ type: 'recovery' })`) e:
+- Opção A (padrão): dispara o e-mail de recovery do Supabase para o lojista.
+- Opção B: retorna o link e copia para a área de transferência (caso o e-mail dela esteja errado).
 
-Reescrever para buscar **todos** os vídeos ativos da loja e renderizar um carrossel:
+### 1.3 Impersonate (entrar como lojista) — **precisa decidir o modelo**
 
-- Query: `home_video_sections` filtrado por `store_id` + `is_active=true`, ordenado por `position`. Trazer junto `home_video_tags` (já exposto pela RLS pública) e produtos referenciados.
-- Layout: usar `embla-carousel-react` (já instalado e usado em `BannerCarousel.tsx` e `carousel.tsx`).
-  - Container `max-w-7xl`, título centralizado.
-  - Cada slide: vídeo vertical (aspect 9:16) com largura ~280–320px, bordas arredondadas, sombra, e card de produto flutuante na parte inferior (estilo igual à imagem: mini-thumb + nome + preço + preço cortado).
-  - Em desktop mostra 4–5 slides; em mobile, 1.5–2 com snap.
-  - Setas de navegação (prev/next) e suporte a arrastar.
-  - Autoplay opcional dos vídeos: o vídeo central no viewport entra em play (via IntersectionObserver), demais ficam pausados/silenciados — evita 5 vídeos tocando juntos.
-- Card de produto sobreposto: usa a **primeira tag** do vídeo como produto destaque (formato da imagem mostra um único card por vídeo). As demais tags continuam interativas como pulsantes (mantendo o `ShoppableVideo` existente em modo `view`).
-- Remover o `max-w-5xl` central — agora o conteúdo é o carrossel inteiro.
+Existem 2 caminhos viáveis. **Eu recomendo o A.** Me diz qual prefere:
 
-### 3. Admin — `admin.home-video.tsx`
+**Opção A — Magic link de admin (mais simples e seguro)**
+- Server function `superadmin_impersonate(store_id)` protegida por `has_role('platform_admin')`.
+- Gera um magic link com `supabase.auth.admin.generateLink({ type: 'magiclink', email: <email_do_lojista> })`.
+- Abre em **aba anônima** (instrução para o admin) para não desconectar sua sessão de superadmin.
+- Registra em uma tabela nova `impersonation_log` (admin_user_id, target_user_id, store_id, reason, created_at).
+- Vantagem: zero gambiarra com tokens; o Supabase emite uma sessão real e expira normalmente.
+- Desvantagem: você fica logado *como* o lojista naquela aba até deslogar.
 
-Refatorar para gerenciar **lista de vídeos**:
+**Opção B — Banner "Você está visualizando como X" sem trocar de sessão**
+- Mantém você logado como superadmin, mas adiciona um parâmetro `?impersonate=<store_id>` que, junto com `has_role('platform_admin')`, faz as queries do `/admin/*` agirem sobre aquela loja (RLS já libera para platform_admin).
+- Vantagem: não desloga você, banner sempre visível, fácil de sair.
+- Desvantagem: precisa adaptar os hooks `useMyStore` e várias queries do painel admin para aceitar o store_id "fingido". Mais trabalho, mais chance de bug.
 
-- Trocar o estado único (`sectionId`, `videoUrl`, …) por uma **lista de seções** (`sections: Section[]`).
-- UI:
-  - Lista vertical de cards, cada um representando um vídeo, com:
-    - Thumbnail/preview pequeno
-    - Switch "Ativo"
-    - Título editável (ex: "Vídeo 1")
-    - Botão "Editar tags" (abre o editor `ShoppableVideo` em modo `edit` no card, igual hoje)
-    - Botão "Excluir"
-    - Setas ↑↓ para reordenar (atualiza `position`)
-  - Botão "Adicionar vídeo" no topo, limitado a **5 vídeos** (com aviso visual quando atingir o limite). Acima do limite, botão fica desabilitado com tooltip "Limite máximo: 5 vídeos".
-- Salvamento: um único botão "Salvar todos" que faz upsert em batch — para cada seção, cria/atualiza o registro e substitui as tags. Posições recalculadas pela ordem na lista.
-- Cabeçalho da página atualizado: "Vídeos da home (até 5)" em vez de "Vídeo da home".
+**Permissões em ambos os casos:** apenas `user_roles.role = 'platform_admin'`. Toda ação fica em `impersonation_log`.
 
-### 4. Detalhes técnicos
+---
 
-- **Embla**: usar opções `{ align: "start", containScroll: "trimSnaps", dragFree: false }` para snap natural; plugin `WheelGesturesPlugin` não é necessário.
-- **Vídeos verticais**: `aspect-[9/16]` no container do slide, `object-cover` no `<video>`. Em vídeos horizontais (caso o lojista escolha), cair para `aspect-video`.
-- **Performance**: cada `<video>` com `preload="metadata"` e `muted playsInline`. IntersectionObserver dispara `play()` no slide visível e pausa nos demais.
-- **Card de produto sobreposto**: posicionado `absolute bottom-3 left-3 right-3`, fundo `bg-card/90 backdrop-blur`, contém thumb 40×40, título 2 linhas, preço atual em destaque + preço original riscado se houver promo.
-- **Edge case**: se um vídeo ativo não tiver tags, a seção ainda renderiza o vídeo no carrossel (sem card sobreposto), garantindo flexibilidade.
-- **YouTube no carrossel**: continua funcionando, mas IntersectionObserver não controla play (limitação documentada). Em vídeos vertical-aspect, iframe é exibido via `aspect-[9/16]` com `object-fit` simulado por `transform scale`.
+## Bloco 2 — Recuperação de senha completa (lojistas)
 
-### Resultado
+Hoje existe `/recuperar-senha` e `/reset-password`. Vou:
 
-- Lojista cadastra de 1 a 5 vídeos verticais com tags shoppable, gerencia ordem e ativação.
-- Cliente vê na home um carrossel horizontal com snap, vídeos verticais autoplay-on-view, card de produto sobreposto, navegação por setas/arrasto — igual à referência enviada.
+1. **Permitir recuperação por e-mail OU WhatsApp** em `/recuperar-senha`:
+   - Mesmo padrão do login: se for WhatsApp, usa `email_for_whatsapp(_whatsapp)` para resolver o e-mail e dispara `resetPasswordForEmail`.
+   - Mensagem genérica de sucesso (não revela se o cadastro existe — boa prática anti-enumeração).
+
+2. **Validar o formulário de nova senha em `/reset-password`**:
+   - Mínimo 8 caracteres, com letra e número.
+   - Confirmar senha.
+   - Mensagens de erro claras em PT-BR.
+
+3. **Personalizar o template de e-mail de recovery** com a marca ShopBox (logo, cores, copy em português, CTA "Redefinir senha"). Para isso vou configurar os templates de auth do Lovable Cloud — emails saem do seu domínio em vez do remetente padrão.
+   - **Pré-requisito:** ter um domínio de e-mail configurado. Se ainda não tiver, eu te mostro o diálogo de setup antes.
+
+4. **WhatsApp como canal de reset (opcional, me confirma)**: enviar o link de redefinição via WhatsApp também exige um provedor (uazapi, Z-API, etc.). Hoje o projeto não tem isso integrado. Posso:
+   - (a) Deixar só por e-mail por enquanto, OU
+   - (b) Adicionar um campo de "WhatsApp API token" e implementar o envio. Me diz qual.
+
+---
+
+## Bloco 3 — Ajustes finais mobile no formulário de produto
+
+Tudo isso é só CSS/UX, sem mexer em lógica de dados:
+
+1. **Teste real iPhone Safari**: vou usar o browser tool em viewport 390×844 para abrir `/admin/produtos/<id>`, focar cada input e confirmar:
+   - Nenhum corte horizontal (sem scroll lateral).
+   - `font-size: 16px` em todos os inputs (já está, vou validar) → sem zoom no focus.
+   - Botões com `touch-action: manipulation` para evitar delay/zoom de duplo-toque.
+
+2. **CategoryTreePicker — ações sempre visíveis no touch**:
+   - Já adicionei `@media (hover: none)` na última iteração; vou auditar e garantir que **editar / excluir / reordenar** apareçam sempre, com alvos de 36px+.
+   - Adicionar feedback de "pressionado" (`:active`) já que não há `:hover`.
+
+3. **Estado vazio de categorias**:
+   - Quando `categories.length === 0`, mostrar card com texto "Nenhuma categoria criada ainda" e botão "+ Criar primeira categoria" (já existe a função, só falta o empty state).
+
+4. **Seletor múltiplo de categorias em mobile**:
+   - Hoje o `CategoryTreePicker` mostra a árvore inline.
+   - No mobile (`max-width: 767px`) vou trocar por:
+     - Um campo "trigger" com chips das categorias selecionadas + "+ Adicionar categoria".
+     - Ao tocar, abre um **Sheet** (drawer de baixo) com a árvore rolável, busca no topo, e botão "Concluir" fixo embaixo.
+     - Desktop continua com a árvore inline (sem regressão).
+
+---
+
+## Arquitetura técnica resumida
+
+- **Server functions novas** em `src/lib/superadmin.functions.ts`:
+  - `searchClients(query)` — busca unificada (email, whatsapp, store name/slug, ids).
+  - `sendPasswordResetForUser(user_id)` — admin-only, dispara recovery.
+  - `impersonateStore(store_id, reason)` — admin-only, gera magic link (se Opção A).
+- **Tabela nova** `impersonation_log` (RLS: só `platform_admin` lê).
+- **Migrações**: criar tabela + ampliar `email_for_whatsapp` se necessário.
+- **Componentes novos**:
+  - `src/components/admin/MobileCategoryPicker.tsx` (Sheet com árvore).
+  - Botões de copiar em `/superadmin/clientes`.
+
+## O que eu **preciso** de você antes de começar
+
+1. **Impersonate: Opção A (magic link, abre em anônima) ou Opção B (banner + RLS)?**
+2. **Reset por WhatsApp: por e-mail apenas, ou integrar um provedor agora?**
+3. **Templates de e-mail brandados:** posso configurar agora (vai precisar de um domínio próprio)?
+4. **Posso fazer os 3 blocos no mesmo turno**, ou prefere começar só pelo Bloco 1?
 

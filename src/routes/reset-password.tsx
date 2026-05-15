@@ -34,12 +34,16 @@ function ResetPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (password !== confirm) {
-      toast.error("As senhas não conferem");
-      return;
-    }
     if (password.length < 8) {
       toast.error("A senha deve ter pelo menos 8 caracteres");
+      return;
+    }
+    if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+      toast.error("Use letras e números na sua senha");
+      return;
+    }
+    if (password !== confirm) {
+      toast.error("As senhas não conferem");
       return;
     }
     setLoading(true);

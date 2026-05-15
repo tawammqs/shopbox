@@ -518,6 +518,36 @@ export type Database = {
           },
         ]
       }
+      impersonation_log: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          id: string
+          reason: string | null
+          target_store_id: string | null
+          target_user_id: string
+        }
+        Insert: {
+          action?: string
+          admin_user_id: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          target_store_id?: string | null
+          target_user_id: string
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+          target_store_id?: string | null
+          target_user_id?: string
+        }
+        Relationships: []
+      }
       order_status_history: {
         Row: {
           changed_at: string
