@@ -310,7 +310,20 @@ function ProductFormPage() {
           <Section title="Informações básicas">
             <div className="grid gap-4">
               <Field label="Título *"><Input value={title} onChange={(e) => setTitle(e.target.value)} /></Field>
-              <Field label="Slug (URL)"><Input value={slug} onChange={(e) => setSlug(slugify(e.target.value))} /></Field>
+              <Field label="Slug (URL)">
+                <Input
+                  value={slug}
+                  onChange={(e) => { setSlugEdited(true); setSlug(slugify(e.target.value)); }}
+                  placeholder="slug-do-produto"
+                  className="font-mono"
+                />
+                {slugStatus === "available" && (
+                  <p className="mt-1 text-xs text-emerald-600">✓ Slug disponível</p>
+                )}
+                {slugStatus === "adjusted" && (
+                  <p className="mt-1 text-xs text-amber-600">⚠ Slug já utilizado — será ajustado automaticamente ao salvar</p>
+                )}
+              </Field>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Field label="Marca"><Input value={brand} onChange={(e) => setBrand(e.target.value)} /></Field>
                 <Field label="SKU"><Input value={sku} onChange={(e) => setSku(e.target.value)} /></Field>
