@@ -645,7 +645,7 @@ function CategoryTreePicker({
             <>
               <Checkbox checked={checked} onCheckedChange={(v) => onToggle(c.id, !!v)} />
               <span className="flex-1 truncate">{c.name}</span>
-              <div className="category-row-actions flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="category-row-actions flex items-center gap-0.5 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100">
                 {depth === 0 && (
                   <Button
                     size="icon"
