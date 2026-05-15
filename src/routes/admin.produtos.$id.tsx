@@ -698,11 +698,13 @@ function CategoryTreePicker({
     );
   }
 
-  return (
+  const selectedCats = categories.filter((c) => selectedIds.includes(c.id));
+
+  const treeBody = (
     <div className="space-y-2">
-      <div className="max-h-72 space-y-0.5 overflow-y-auto pr-1">
+      <div className="max-h-[60vh] space-y-0.5 overflow-y-auto pr-1 md:max-h-72">
         {roots.length === 0 && (
-          <p className="text-xs text-muted-foreground">Nenhuma categoria criada ainda.</p>
+          <p className="text-xs text-muted-foreground">Nenhuma categoria encontrada. Crie a primeira abaixo.</p>
         )}
         {roots.map((c) => renderRow(c, 0))}
       </div>
@@ -722,6 +724,62 @@ function CategoryTreePicker({
         </Button>
       )}
     </div>
+  );
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      {/* Desktop: inline tree */}
+      <div className="hidden md:block">{treeBody}</div>
+
+      {/* Mobile: chips + Sheet trigger */}
+      <div className="md:hidden space-y-2">
+        {selectedCats.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {selectedCats.map((c) => (
+              <span
+                key={c.id}
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-muted/40 px-2 py-1 text-xs"
+              >
+                {c.name}
+                <button
+                  type="button"
+                  onClick={() => onToggle(c.id, false)}
+                  className="rounded-full p-0.5 hover:bg-muted"
+                  aria-label={`Remover ${c.name}`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <Button type="button" variant="outline" className="w-full justify-between text-base h-11">
+              <span className="truncate">
+                {selectedCats.length === 0
+                  ? "Selecionar categorias"
+                  : `${selectedCats.length} categoria${selectedCats.length > 1 ? "s" : ""} selecionada${selectedCats.length > 1 ? "s" : ""}`}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[85vh] flex flex-col p-0">
+            <SheetHeader className="border-b border-border p-4 text-left">
+              <SheetTitle>Categorias</SheetTitle>
+            </SheetHeader>
+            <div className="flex-1 overflow-y-auto p-4">{treeBody}</div>
+            <SheetFooter className="border-t border-border p-4">
+              <SheetClose asChild>
+                <Button type="button" className="w-full" size="lg">Concluir</Button>
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   );
 }
 
