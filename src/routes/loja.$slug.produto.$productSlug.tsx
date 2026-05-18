@@ -291,33 +291,33 @@ function ProductInner({ product }: { product: any }) {
           </div>
 
           {/* qty + actions */}
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center rounded-md border border-input">
+          <div className="flex w-full max-w-full items-center gap-2 overflow-hidden">
+            <div className="inline-flex shrink-0 items-center rounded-md border border-input">
               <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 hover:bg-muted">−</button>
               <span className="min-w-[2.5ch] text-center text-sm">{qty}</span>
               <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2 hover:bg-muted">+</button>
             </div>
-            <Button onClick={addToCart} disabled={isOut} className="h-12 flex-1">
-              <ShoppingBag className="h-4 w-4" /> Adicionar ao carrinho
+            <Button onClick={addToCart} disabled={isOut} className="h-12 min-w-0 flex-1 truncate px-2 text-sm sm:px-4 sm:text-base">
+              <ShoppingBag className="h-4 w-4 shrink-0" /> <span className="truncate">Adicionar ao carrinho</span>
             </Button>
           </div>
-          <Button onClick={buyNow} disabled={isOut} className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a]">
-            <WhatsAppIcon className="h-5 w-5" /> Comprar agora pelo WhatsApp
+          <Button onClick={buyNow} disabled={isOut} className="h-12 w-full max-w-full bg-[#25d366] px-2 text-sm text-white hover:bg-[#20bd5a] sm:text-base">
+            <WhatsAppIcon className="h-5 w-5 shrink-0" /> <span className="truncate">Comprar agora pelo WhatsApp</span>
           </Button>
 
-          <div className="flex gap-3">
+          <div className="flex w-full max-w-full gap-2 overflow-hidden">
             <button
               onClick={() => { toggleWish(product.id); toast.success(wished ? "Removido" : "Salvo na lista"); }}
-              className="flex flex-1 items-center justify-center gap-2 rounded-md border border-border py-2 text-sm hover:bg-muted"
+              className="flex min-w-0 flex-1 items-center justify-center gap-2 truncate rounded-md border border-border py-2 text-sm hover:bg-muted"
             >
-              <Heart className={cn("h-4 w-4", wished && "fill-destructive text-destructive")} />
-              {wished ? "Salvo" : "Favoritar"}
+              <Heart className={cn("h-4 w-4 shrink-0", wished && "fill-destructive text-destructive")} />
+              <span className="truncate">{wished ? "Salvo" : "Favoritar"}</span>
             </button>
             <button
               onClick={share}
-              className="flex flex-1 items-center justify-center gap-2 rounded-md border border-border py-2 text-sm hover:bg-muted"
+              className="flex min-w-0 flex-1 items-center justify-center gap-2 truncate rounded-md border border-border py-2 text-sm hover:bg-muted"
             >
-              <Share2 className="h-4 w-4" /> Compartilhar
+              <Share2 className="h-4 w-4 shrink-0" /> <span className="truncate">Compartilhar</span>
             </button>
           </div>
 
