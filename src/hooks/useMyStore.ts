@@ -30,6 +30,9 @@ export type MyStore = {
   subscription_status: string;
   trial_ends_at: string | null;
   current_period_end: string | null;
+  facebook_pixel_id: string | null;
+  meta_conversion_token: string | null;
+  google_analytics_id: string | null;
   plan?: { id: string; slug: PlanSlug; name: string; max_products: number; price_cents: number; features: any } | null;
 };
 
