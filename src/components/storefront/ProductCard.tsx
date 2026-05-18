@@ -6,6 +6,7 @@ import { useStorefront } from "./StoreContext";
 import { useWishlist } from "@/stores/wishlist";
 import { useCart } from "@/stores/cart";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
+import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
 import { cn } from "@/lib/utils";
 
