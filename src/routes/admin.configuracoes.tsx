@@ -195,3 +195,54 @@ function SettingsPage() {
     </div>
   );
 }
+
+function FeedUrlField({ slug }: { slug: string }) {
+  const [open, setOpen] = useState(false);
+  const url =
+    (typeof window !== "undefined" ? window.location.origin : "https://shopboxapp.com.br") +
+    `/feed/${slug}/meta.xml`;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("URL copiada");
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+  return (
+    <div className="space-y-2">
+      <Label>Feed de Produtos para Meta</Label>
+      <div className="flex gap-2">
+        <Input value={url} readOnly className="font-mono text-xs" />
+        <Button type="button" variant="outline" size="sm" onClick={copy}>
+          <Copy className="mr-1 h-3.5 w-3.5" /> Copiar
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Cole esta URL no Gerenciador de Catálogos do Meta para sincronizar seus produtos
+        automaticamente. Atualizado a cada hora.
+      </p>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+          >
+            Como configurar o catálogo no Meta
+            <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <ol className="mt-2 list-decimal space-y-1 rounded-lg bg-muted/40 p-3 pl-7 text-xs text-muted-foreground">
+            <li>Acesse business.facebook.com</li>
+            <li>Clique em "Catálogos" no menu</li>
+            <li>Clique em "Criar catálogo" → "E-commerce"</li>
+            <li>Escolha "Feed de dados programado"</li>
+            <li>Cole a URL acima e defina frequência: "A cada hora"</li>
+            <li>Pronto! Seus produtos serão importados automaticamente.</li>
+          </ol>
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
+}
