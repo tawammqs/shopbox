@@ -71,6 +71,7 @@ function StorefrontLayout() {
         <StorefrontFooter />
         <CartDrawer />
         <WelcomePopup />
+        <MarketingScripts pixelId={store.facebook_pixel_id} gaId={store.google_analytics_id} />
       </div>
     </StoreProvider>
   );
