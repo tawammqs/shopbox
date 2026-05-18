@@ -116,7 +116,7 @@ function ProductInner({ product }: { product: any }) {
       quantity: qty,
       storeId: store.id,
     });
-    trackAddToCart({ id: product.id, title: product.title, value: price, quantity: qty });
+    void trackAddToCart(store, { id: product.id, title: product.title, value: price, quantity: qty });
     toast.success("Adicionado ao carrinho");
   };
 
