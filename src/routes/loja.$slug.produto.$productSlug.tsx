@@ -116,8 +116,14 @@ function ProductInner({ product }: { product: any }) {
       quantity: qty,
       storeId: store.id,
     });
+    trackAddToCart({ id: product.id, title: product.title, value: price, quantity: qty });
     toast.success("Adicionado ao carrinho");
   };
+
+  useEffect(() => {
+    trackViewContent({ id: product.id, title: product.title, value: price });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id]);
 
   const buyNow = () => {
     const err = validate();
