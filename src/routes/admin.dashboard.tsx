@@ -267,7 +267,61 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Marketing integrations */}
+      <MarketingStatusCard
+        pixelId={store.facebook_pixel_id}
+        capiToken={store.meta_conversion_token}
+        productCount={productCount}
+      />
     </div>
+  );
+}
+
+function MarketingStatusCard({
+  pixelId,
+  capiToken,
+  productCount,
+}: {
+  pixelId: string | null;
+  capiToken: string | null;
+  productCount: number;
+}) {
+  const masked = pixelId ? `#${pixelId.slice(0, 4)}…${pixelId.slice(-4)}` : "";
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6">
+      <h3 className="font-display text-lg font-semibold">📊 Integrações de Marketing</h3>
+      <ul className="mt-4 space-y-2.5 text-sm">
+        <li className="flex items-center justify-between">
+          <span>Pixel do Facebook</span>
+          <StatusBadge active={!!pixelId} activeLabel={`Ativo ${masked}`} />
+        </li>
+        <li className="flex items-center justify-between">
+          <span>Feed de Produtos</span>
+          <StatusBadge active={productCount > 0} activeLabel={`Ativo (${productCount} produtos)`} />
+        </li>
+        <li className="flex items-center justify-between">
+          <span>API de Conversões</span>
+          <StatusBadge active={!!capiToken} />
+        </li>
+      </ul>
+      <Button asChild variant="outline" size="sm" className="mt-4">
+        <Link to="/admin/configuracoes" hash="integracoes">
+          Configurar integrações <ArrowRight className="ml-1 h-3.5 w-3.5" />
+        </Link>
+      </Button>
+    </div>
+  );
+}
+
+function StatusBadge({ active, activeLabel }: { active: boolean; activeLabel?: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+      <span
+        className={`h-2 w-2 rounded-full ${active ? "bg-[#25D366]" : "bg-muted-foreground/40"}`}
+      />
+      {active ? activeLabel ?? "Ativo" : "Não configurado"}
+    </span>
   );
 }
 
