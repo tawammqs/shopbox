@@ -170,7 +170,7 @@ function SettingsPage() {
 
           {/* Product feed */}
           <PlanGate plan={planSlug} feature="meta_feed">
-            <FeedUrlField slug={store.slug} />
+            <FeedUrlField slug={store.slug} storeId={store.id} />
           </PlanGate>
 
           {/* GA4 */}
