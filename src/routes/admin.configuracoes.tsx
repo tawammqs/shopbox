@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save } from "lucide-react";
+import { Save, Copy, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { PlanGate } from "@/components/admin/PlanGate";
 import { toast } from "sonner";
@@ -33,6 +34,9 @@ function SettingsPage() {
         instagram: store.instagram ?? "", facebook: store.facebook ?? "", tiktok: store.tiktok ?? "", youtube: store.youtube ?? "",
         custom_domain: store.custom_domain ?? "",
         seo_title: (store.seo_meta as any)?.title ?? "", seo_desc: (store.seo_meta as any)?.description ?? "",
+        facebook_pixel_id: store.facebook_pixel_id ?? "",
+        meta_conversion_token: store.meta_conversion_token ?? "",
+        google_analytics_id: store.google_analytics_id ?? "",
       });
       setBadges(store.trust_badges ?? []);
     }
@@ -68,6 +72,7 @@ function SettingsPage() {
           <TabsTrigger value="badges">Selos</TabsTrigger>
           <TabsTrigger value="domain">Domínio</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
+          <TabsTrigger value="integracoes" id="integracoes">Integrações</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
@@ -119,11 +124,125 @@ function SettingsPage() {
           <div><Label>Meta título padrão</Label><Input value={form.seo_title ?? ""} onChange={(e) => set("seo_title", e.target.value)} /></div>
           <div><Label>Meta descrição padrão</Label><Textarea rows={3} value={form.seo_desc ?? ""} onChange={(e) => set("seo_desc", e.target.value)} /></div>
         </TabsContent>
+
+        <TabsContent value="integracoes" className="space-y-6">
+          <div className="rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
+            <p>
+              Conecte seu Pixel do Facebook, API de Conversões da Meta, Google Analytics e
+              sincronize seus produtos com o Catálogo do Meta para anúncios e remarketing.
+            </p>
+          </div>
+
+          {/* Facebook Pixel */}
+          <PlanGate plan={planSlug} feature="meta_pixel">
+            <div className="space-y-2">
+              <Label>ID do Pixel do Facebook</Label>
+              <Input
+                value={form.facebook_pixel_id ?? ""}
+                onChange={(e) => set("facebook_pixel_id", e.target.value.trim())}
+                placeholder="Ex: 1234567890123456"
+                inputMode="numeric"
+                maxLength={32}
+              />
+              <p className="text-xs text-muted-foreground">
+                Cole aqui o ID do seu Pixel. Encontre em: Meta Business → Gerenciador de Eventos → seu Pixel → Configurações.
+              </p>
+            </div>
+          </PlanGate>
+
+          {/* Conversion API token */}
+          <PlanGate plan={planSlug} feature="meta_capi">
+            <div className="space-y-2">
+              <Label>Token da API de Conversões (opcional)</Label>
+              <Input
+                type="password"
+                value={form.meta_conversion_token ?? ""}
+                onChange={(e) => set("meta_conversion_token", e.target.value.trim())}
+                placeholder="Token de acesso..."
+                autoComplete="off"
+                maxLength={512}
+              />
+              <p className="text-xs text-muted-foreground">
+                Melhora a precisão do rastreamento mesmo com bloqueadores. Opcional, mas recomendado.
+              </p>
+            </div>
+          </PlanGate>
+
+          {/* Product feed */}
+          <PlanGate plan={planSlug} feature="meta_feed">
+            <FeedUrlField slug={store.slug} />
+          </PlanGate>
+
+          {/* GA4 */}
+          <div className="space-y-2 border-t border-border pt-6">
+            <Label>ID do Google Analytics 4</Label>
+            <Input
+              value={form.google_analytics_id ?? ""}
+              onChange={(e) => set("google_analytics_id", e.target.value.trim())}
+              placeholder="Ex: G-XXXXXXXXXX"
+              maxLength={32}
+            />
+            <p className="text-xs text-muted-foreground">
+              Injeta o GA4 na sua loja e dispara os principais eventos automaticamente.
+            </p>
+          </div>
+        </TabsContent>
       </Tabs>
 
       <Button onClick={() => save.mutate({})} disabled={save.isPending}>
         <Save className="mr-2 h-4 w-4" /> {save.isPending ? "Salvando…" : "Salvar configurações"}
       </Button>
+    </div>
+  );
+}
+
+function FeedUrlField({ slug }: { slug: string }) {
+  const [open, setOpen] = useState(false);
+  const url =
+    (typeof window !== "undefined" ? window.location.origin : "https://shopboxapp.com.br") +
+    `/feed/${slug}/meta.xml`;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("URL copiada");
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+  return (
+    <div className="space-y-2">
+      <Label>Feed de Produtos para Meta</Label>
+      <div className="flex gap-2">
+        <Input value={url} readOnly className="font-mono text-xs" />
+        <Button type="button" variant="outline" size="sm" onClick={copy}>
+          <Copy className="mr-1 h-3.5 w-3.5" /> Copiar
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Cole esta URL no Gerenciador de Catálogos do Meta para sincronizar seus produtos
+        automaticamente. Atualizado a cada hora.
+      </p>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+          >
+            Como configurar o catálogo no Meta
+            <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <ol className="mt-2 list-decimal space-y-1 rounded-lg bg-muted/40 p-3 pl-7 text-xs text-muted-foreground">
+            <li>Acesse business.facebook.com</li>
+            <li>Clique em "Catálogos" no menu</li>
+            <li>Clique em "Criar catálogo" → "E-commerce"</li>
+            <li>Escolha "Feed de dados programado"</li>
+            <li>Cole a URL acima e defina frequência: "A cada hora"</li>
+            <li>Pronto! Seus produtos serão importados automaticamente.</li>
+          </ol>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 }

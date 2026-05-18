@@ -7,6 +7,7 @@ import { X, SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { fetchProductsForCategory, fetchCategoryFacets } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { trackViewCategory } from "@/lib/tracking";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -137,6 +138,10 @@ function CategoryPage() {
   const [showAllBrands, setShowAllBrands] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
+
+  useEffect(() => {
+    if (cat?.name) trackViewCategory(cat.name);
+  }, [cat?.name]);
 
   if (!cat) {
     return (

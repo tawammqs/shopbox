@@ -7,6 +7,7 @@ import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
 import { CheckoutFormDialog } from "./CheckoutFormDialog";
+import { trackInitiateCheckout } from "@/lib/tracking";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -82,6 +83,11 @@ export function CartDrawer() {
 
   const checkout = () => {
     if (items.length === 0) return;
+    trackInitiateCheckout({
+      ids: items.map((i) => i.productId),
+      numItems: items.reduce((s, i) => s + i.quantity, 0),
+      value: total,
+    });
     setCheckoutOpen(true);
   };
 

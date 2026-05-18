@@ -30,6 +30,9 @@ export type MyStore = {
   subscription_status: string;
   trial_ends_at: string | null;
   current_period_end: string | null;
+  facebook_pixel_id: string | null;
+  meta_conversion_token: string | null;
+  google_analytics_id: string | null;
   plan?: { id: string; slug: PlanSlug; name: string; max_products: number; price_cents: number; features: any } | null;
 };
 
@@ -90,6 +93,7 @@ export function useMyStore() {
           custom_domain, trust_badges, shipping_rates, seo_meta, welcome_popup,
           notify_stock_enabled, active, plan_id, subscription_status,
           trial_ends_at, current_period_end,
+          facebook_pixel_id, meta_conversion_token, google_analytics_id,
           plan:plans!stores_plan_id_fkey(id, slug, name, max_products, price_cents, features)
         `)
         .eq("owner_user_id", user!.id)

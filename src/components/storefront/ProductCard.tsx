@@ -6,6 +6,7 @@ import { useStorefront } from "./StoreContext";
 import { useWishlist } from "@/stores/wishlist";
 import { useCart } from "@/stores/cart";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
+import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +42,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       quantity: 1,
       storeId: store.id,
     });
+    trackAddToCart({ id: p.id, title: p.title, value: price, quantity: 1 });
     toast.success("Adicionado ao carrinho");
   };
 

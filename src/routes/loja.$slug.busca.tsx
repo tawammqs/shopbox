@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { searchProductsLive } from "@/lib/storefront";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { effectivePrice, formatBRL } from "@/lib/format";
+import { trackSearch } from "@/lib/tracking";
 
 const schema = z.object({ q: fallback(z.string().optional(), "").default("") });
 
@@ -16,6 +18,10 @@ export const Route = createFileRoute("/loja/$slug/busca")({
 function SearchPage() {
   const { store } = useStorefront();
   const { q } = Route.useSearch();
+
+  useEffect(() => {
+    if (q && q.length >= 2) trackSearch(q);
+  }, [q]);
 
   const query = useQuery({
     queryKey: ["search", store.id, q],

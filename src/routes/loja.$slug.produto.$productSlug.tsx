@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
+import { trackViewContent, trackAddToCart } from "@/lib/tracking";
 import { Button } from "@/components/ui/button";
 import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
@@ -115,12 +116,21 @@ function ProductInner({ product }: { product: any }) {
       quantity: qty,
       storeId: store.id,
     });
+    trackAddToCart({ id: product.id, title: product.title, value: price, quantity: qty });
     toast.success("Adicionado ao carrinho");
   };
+
+  useEffect(() => {
+    trackViewContent({ id: product.id, title: product.title, value: price });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id]);
 
   const buyNow = () => {
     const err = validate();
     if (err) return toast.error(err);
+    import("@/lib/tracking").then((m) =>
+      m.trackInitiateCheckout({ ids: [product.id], numItems: qty, value: price * qty }),
+    );
     setBuyNowOpen(true);
   };
 
