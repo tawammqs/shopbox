@@ -72,6 +72,7 @@ function SettingsPage() {
           <TabsTrigger value="badges">Selos</TabsTrigger>
           <TabsTrigger value="domain">Domínio</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
+          <TabsTrigger value="integracoes" id="integracoes">Integrações</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
