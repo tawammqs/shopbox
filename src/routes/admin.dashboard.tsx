@@ -270,8 +270,10 @@ function DashboardPage() {
 
       {/* Marketing integrations */}
       <MarketingStatusCard
+        planSlug={planSlug}
         pixelId={store.facebook_pixel_id}
         capiToken={store.meta_conversion_token}
+        gaId={store.google_analytics_id}
         productCount={productCount}
       />
     </div>
@@ -279,49 +281,97 @@ function DashboardPage() {
 }
 
 function MarketingStatusCard({
+  planSlug,
   pixelId,
   capiToken,
+  gaId,
   productCount,
 }: {
+  planSlug: string | undefined;
   pixelId: string | null;
   capiToken: string | null;
+  gaId: string | null;
   productCount: number;
 }) {
-  const masked = pixelId ? `#${pixelId.slice(0, 4)}…${pixelId.slice(-4)}` : "";
+  const canUsePixel = planSlug === "profissional" || planSlug === "premium";
+  const canUseCAPI = planSlug === "premium";
+  const hasPixel = !!pixelId?.trim();
+  const hasCAPI = !!capiToken?.trim();
+  const hasGA4 = !!gaId?.trim();
+
+  const rows = [
+    {
+      label: "Pixel do Facebook",
+      active: hasPixel && canUsePixel,
+      locked: !canUsePixel,
+      detail: hasPixel ? `ID: ${pixelId!.slice(0, 8)}…` : "Não configurado",
+      plan: "Profissional",
+    },
+    {
+      label: "Feed de Produtos",
+      active: canUsePixel,
+      locked: !canUsePixel,
+      detail: canUsePixel ? `${productCount} produtos ativos` : "Não disponível",
+      plan: "Profissional",
+    },
+    {
+      label: "API de Conversões",
+      active: hasCAPI && canUseCAPI,
+      locked: !canUseCAPI,
+      detail: hasCAPI ? "Token configurado" : "Não configurado",
+      plan: "Premium",
+    },
+    {
+      label: "Google Analytics 4",
+      active: hasGA4 && canUsePixel,
+      locked: !canUsePixel,
+      detail: hasGA4 ? `ID: ${gaId}` : "Não configurado",
+      plan: "Profissional",
+    },
+  ];
+
   return (
     <div className="rounded-2xl border border-border bg-card p-6">
-      <h3 className="font-display text-lg font-semibold">📊 Integrações de Marketing</h3>
-      <ul className="mt-4 space-y-2.5 text-sm">
-        <li className="flex items-center justify-between">
-          <span>Pixel do Facebook</span>
-          <StatusBadge active={!!pixelId} activeLabel={`Ativo ${masked}`} />
-        </li>
-        <li className="flex items-center justify-between">
-          <span>Feed de Produtos</span>
-          <StatusBadge active={productCount > 0} activeLabel={`Ativo (${productCount} produtos)`} />
-        </li>
-        <li className="flex items-center justify-between">
-          <span>API de Conversões</span>
-          <StatusBadge active={!!capiToken} />
-        </li>
-      </ul>
-      <Button asChild variant="outline" size="sm" className="mt-4">
-        <Link to="/admin/configuracoes" hash="integracoes">
-          Configurar integrações <ArrowRight className="ml-1 h-3.5 w-3.5" />
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="font-display text-lg font-semibold">📊 Integrações de Marketing</h3>
+        <Link
+          to="/admin/configuracoes"
+          hash="integracoes"
+          className="text-xs font-medium text-accent hover:underline"
+        >
+          Configurar →
         </Link>
-      </Button>
+      </div>
+      <ul className="space-y-3">
+        {rows.map((row) => (
+          <li
+            key={row.label}
+            className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5"
+          >
+            <div className="flex items-center gap-2.5">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  row.locked
+                    ? "bg-muted-foreground/30"
+                    : row.active
+                      ? "bg-[#25D366]"
+                      : "bg-muted-foreground/40"
+                }`}
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{row.label}</span>
+                {row.locked && (
+                  <span className="text-[10px] text-muted-foreground">🔒 {row.plan}</span>
+                )}
+              </div>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {row.locked ? `Plano ${row.plan}` : row.detail}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
-  );
-}
-
-function StatusBadge({ active, activeLabel }: { active: boolean; activeLabel?: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-xs font-medium">
-      <span
-        className={`h-2 w-2 rounded-full ${active ? "bg-[#25D366]" : "bg-muted-foreground/40"}`}
-      />
-      {active ? activeLabel ?? "Ativo" : "Não configurado"}
-    </span>
   );
 }
 
