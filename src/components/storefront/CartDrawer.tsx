@@ -83,7 +83,7 @@ export function CartDrawer() {
 
   const checkout = () => {
     if (items.length === 0) return;
-    trackInitiateCheckout({
+    void trackInitiateCheckout(store, {
       ids: items.map((i) => i.productId),
       numItems: items.reduce((s, i) => s + i.quantity, 0),
       value: total,

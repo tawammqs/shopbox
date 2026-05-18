@@ -1,4 +1,8 @@
-// Marketing pixel + GA4 helpers (storefront-only, browser-safe).
+// Unified marketing tracking: browser Meta Pixel + server-side Conversions API
+// + GA4. All trackers are deduplicated by event_id so the browser Pixel and
+// CAPI events match in Meta's Event Manager.
+import { sendMetaCapiEvent } from "./meta-capi.functions";
+
 declare global {
   interface Window {
     fbq?: (...args: any[]) => void;
@@ -10,12 +14,15 @@ declare global {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Init helpers
+// ---------------------------------------------------------------------------
+
 export function initPixel(pixelId: string | null | undefined) {
   if (typeof window === "undefined" || !pixelId) return;
   if (window.__sb_pixel_inited === pixelId) return;
   window.__sb_pixel_inited = pixelId;
 
-  // Standard Meta Pixel base code
   (function (f: any, b: any, e: string, v: string) {
     if (f.fbq) return;
     const n: any = (f.fbq = function () {
@@ -55,10 +62,15 @@ export function initGA(measurementId: string | null | undefined) {
   window.gtag("config", measurementId);
 }
 
-function fbq(event: string, params?: Record<string, any>) {
+// ---------------------------------------------------------------------------
+// Internal helpers
+// ---------------------------------------------------------------------------
+
+function fbq(event: string, params?: Record<string, any>, options?: { eventID: string }) {
   if (typeof window === "undefined" || !window.fbq) return;
   try {
-    window.fbq("track", event, params);
+    if (options) window.fbq("track", event, params, options);
+    else window.fbq("track", event, params);
   } catch {}
 }
 
@@ -69,23 +81,75 @@ function gtag(event: string, params?: Record<string, any>) {
   } catch {}
 }
 
-export function trackPageView() {
-  fbq("PageView");
+function getCookie(name: string): string {
+  if (typeof document === "undefined") return "";
+  const m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return m ? decodeURIComponent(m[2]) : "";
 }
 
-export function trackViewContent(p: { id: string; title: string; value: number }) {
-  fbq("ViewContent", {
-    content_ids: [p.id],
-    content_name: p.title,
-    content_type: "product",
-    value: p.value,
-    currency: "BRL",
-  });
-  gtag("view_item", {
-    currency: "BRL",
-    value: p.value,
-    items: [{ item_id: p.id, item_name: p.title, price: p.value }],
-  });
+// Stable, URL-safe base64 (browser btoa keeps + / =)
+function b64(s: string): string {
+  if (typeof btoa === "function") return btoa(unescape(encodeURIComponent(s)));
+  // Fallback (SSR) — sufficient as id generator
+  let out = "";
+  for (let i = 0; i < s.length; i++) out += s.charCodeAt(i).toString(36);
+  return out;
+}
+
+function generateEventId(eventName: string, data: object): string {
+  const key = `${eventName}_${JSON.stringify(data)}`;
+  return b64(key).slice(0, 32).replace(/[^a-zA-Z0-9]/g, "");
+}
+
+// In-memory dedup of fired events. Cleared on SPA route change via
+// clearEventCache() so the same product can re-track on a new page view.
+const firedEvents = new Set<string>();
+
+export function clearEventCache() {
+  firedEvents.clear();
+}
+
+type StoreLike = { id: string; facebook_pixel_id?: string | null };
+
+async function fireCapi(
+  store: StoreLike,
+  eventName: string,
+  eventId: string,
+  payload: {
+    value?: number;
+    content_ids?: string[];
+    content_name?: string;
+    num_items?: number;
+  },
+) {
+  if (!store?.facebook_pixel_id) return;
+  try {
+    await sendMetaCapiEvent({
+      data: {
+        store_id: store.id,
+        event_name: eventName,
+        event_id: eventId,
+        value: payload.value,
+        content_ids: payload.content_ids,
+        content_name: payload.content_name,
+        num_items: payload.num_items,
+        fbp: getCookie("_fbp"),
+        fbc: getCookie("_fbc"),
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+        event_source_url: typeof window !== "undefined" ? window.location.href : "",
+      },
+    });
+  } catch {
+    // Silent — CAPI failures must never break UX
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Trackers
+// ---------------------------------------------------------------------------
+
+export function trackPageView() {
+  fbq("PageView");
 }
 
 export function trackViewCategory(name: string) {
@@ -93,37 +157,128 @@ export function trackViewCategory(name: string) {
   gtag("view_item_list", { item_list_name: name });
 }
 
-export function trackAddToCart(p: { id: string; title: string; value: number; quantity: number }) {
-  fbq("AddToCart", {
-    content_ids: [p.id],
-    content_name: p.title,
-    content_type: "product",
-    value: p.value * p.quantity,
-    currency: "BRL",
-    num_items: p.quantity,
-  });
-  gtag("add_to_cart", {
-    currency: "BRL",
-    value: p.value * p.quantity,
-    items: [{ item_id: p.id, item_name: p.title, price: p.value, quantity: p.quantity }],
-  });
-}
-
-export function trackInitiateCheckout(p: { ids: string[]; numItems: number; value: number }) {
-  fbq("InitiateCheckout", {
-    content_ids: p.ids,
-    num_items: p.numItems,
-    value: p.value,
-    currency: "BRL",
-  });
-  gtag("begin_checkout", {
-    currency: "BRL",
-    value: p.value,
-    items: p.ids.map((id) => ({ item_id: id })),
-  });
-}
-
 export function trackSearch(term: string) {
   fbq("Search", { search_string: term, content_type: "product" });
   gtag("search", { search_term: term });
+}
+
+export async function trackViewContent(
+  store: StoreLike,
+  product: { id: string; title: string; value: number },
+) {
+  const eventId = generateEventId("ViewContent", { productId: product.id });
+  if (firedEvents.has(eventId)) return;
+  firedEvents.add(eventId);
+
+  fbq(
+    "ViewContent",
+    {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      value: product.value,
+      currency: "BRL",
+    },
+    { eventID: eventId },
+  );
+
+  gtag("view_item", {
+    currency: "BRL",
+    value: product.value,
+    items: [{ item_id: product.id, item_name: product.title, price: product.value }],
+  });
+
+  await fireCapi(store, "ViewContent", eventId, {
+    value: product.value,
+    content_ids: [product.id],
+    content_name: product.title,
+    num_items: 1,
+  });
+}
+
+export async function trackAddToCart(
+  store: StoreLike,
+  product: { id: string; title: string; value: number; quantity: number },
+) {
+  const eventId = generateEventId("AddToCart", {
+    productId: product.id,
+    quantity: product.quantity,
+    ts: Math.floor(Date.now() / 10000), // 10s window dedup
+  });
+  if (firedEvents.has(eventId)) return;
+  firedEvents.add(eventId);
+
+  const value = product.value * product.quantity;
+
+  fbq(
+    "AddToCart",
+    {
+      content_ids: [product.id],
+      content_name: product.title,
+      content_type: "product",
+      value,
+      currency: "BRL",
+      num_items: product.quantity,
+    },
+    { eventID: eventId },
+  );
+
+  gtag("add_to_cart", {
+    currency: "BRL",
+    value,
+    items: [
+      {
+        item_id: product.id,
+        item_name: product.title,
+        price: product.value,
+        quantity: product.quantity,
+      },
+    ],
+  });
+
+  await fireCapi(store, "AddToCart", eventId, {
+    value,
+    content_ids: [product.id],
+    content_name: product.title,
+    num_items: product.quantity,
+  });
+}
+
+export async function trackInitiateCheckout(
+  store: StoreLike,
+  payload: { ids: string[]; numItems: number; value: number },
+) {
+  const eventId = generateEventId("InitiateCheckout", {
+    items: [...payload.ids].sort().join(","),
+    ts: Math.floor(Date.now() / 30000), // 30s window dedup
+  });
+  if (firedEvents.has(eventId)) return;
+  firedEvents.add(eventId);
+
+  fbq(
+    "InitiateCheckout",
+    {
+      content_ids: payload.ids,
+      content_type: "product",
+      value: payload.value,
+      currency: "BRL",
+      num_items: payload.numItems,
+    },
+    { eventID: eventId },
+  );
+
+  gtag("begin_checkout", {
+    currency: "BRL",
+    value: payload.value,
+    items: payload.ids.map((id) => ({ item_id: id })),
+  });
+
+  // Fire CAPI then add a small delay so both Pixel + CAPI go out before the
+  // caller opens the WhatsApp link in a new tab.
+  await fireCapi(store, "InitiateCheckout", eventId, {
+    value: payload.value,
+    content_ids: payload.ids,
+    num_items: payload.numItems,
+  });
+  await new Promise((r) => setTimeout(r, 300));
 }

@@ -63,7 +63,7 @@ export const Route = createFileRoute("/feed/$slug/meta.xml")({
         const from = (page - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE - 1;
 
-        const { data: products, error: prodErr } = await supabaseAdmin
+        const { data: products, error: prodErr, count } = await supabaseAdmin
           .from("products")
           .select(
             `id, slug, title, description, brand, price, promo_price,
@@ -72,6 +72,7 @@ export const Route = createFileRoute("/feed/$slug/meta.xml")({
              product_colors(name),
              product_sizes(label),
              product_stock(quantity)`,
+            { count: "exact" },
           )
           .eq("store_id", store.id)
           .eq("active", true)
@@ -81,6 +82,9 @@ export const Route = createFileRoute("/feed/$slug/meta.xml")({
         if (prodErr) {
           return new Response(`Error: ${prodErr.message}`, { status: 500 });
         }
+
+        const totalCount = count ?? 0;
+        const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
         // Build category lookup for product_type
         const catIds = Array.from(
@@ -167,6 +171,9 @@ ${colorTags ? colorTags + "\n" : ""}${sizeTags ? sizeTags + "\n" : ""}    </item
     <title>${xmlEscape(store.name)}</title>
     <link>${xmlEscape(storeUrl)}</link>
     <description>${xmlEscape(store.tagline || `Loja online de ${store.name}`)}</description>
+    <g:total_results>${totalCount}</g:total_results>
+    <g:start_index>${from + 1}</g:start_index>
+    <g:items_per_page>${PAGE_SIZE}</g:items_per_page>
 ${items.join("\n")}
   </channel>
 </rss>
@@ -177,6 +184,9 @@ ${items.join("\n")}
           headers: {
             "Content-Type": "application/xml; charset=utf-8",
             "Cache-Control": "public, max-age=3600, s-maxage=3600",
+            "X-Total-Count": String(totalCount),
+            "X-Total-Pages": String(totalPages),
+            "X-Current-Page": String(page),
           },
         });
       },
