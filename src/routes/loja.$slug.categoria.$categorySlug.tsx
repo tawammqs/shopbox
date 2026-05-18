@@ -139,6 +139,10 @@ function CategoryPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
 
+  useEffect(() => {
+    if (cat?.name) trackViewCategory(cat.name);
+  }, [cat?.name]);
+
   if (!cat) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
