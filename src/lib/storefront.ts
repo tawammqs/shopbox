@@ -14,6 +14,8 @@ export type StoreRow = {
   facebook: string | null;
   tiktok: string | null;
   youtube: string | null;
+  facebook_pixel_id: string | null;
+  google_analytics_id: string | null;
   trust_badges: string[];
   welcome_popup: {
     enabled?: boolean;
@@ -28,7 +30,7 @@ export async function fetchStoreBySlug(slug: string): Promise<StoreRow | null> {
   const { data, error } = await supabase
     .from("stores")
     .select(
-      "id, slug, name, tagline, logo_url, accent_color, whatsapp, whatsapp_greeting, instagram, facebook, tiktok, youtube, trust_badges, welcome_popup",
+      "id, slug, name, tagline, logo_url, accent_color, whatsapp, whatsapp_greeting, instagram, facebook, tiktok, youtube, facebook_pixel_id, google_analytics_id, trust_badges, welcome_popup",
     )
     .eq("slug", slug)
     .eq("active", true)
