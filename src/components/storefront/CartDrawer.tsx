@@ -7,6 +7,7 @@ import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
 import { CheckoutFormDialog } from "./CheckoutFormDialog";
+import { trackInitiateCheckout } from "@/lib/tracking";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
