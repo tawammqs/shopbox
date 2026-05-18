@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
+import { trackViewContent, trackAddToCart } from "@/lib/tracking";
 import { Button } from "@/components/ui/button";
 import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
