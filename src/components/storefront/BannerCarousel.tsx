@@ -26,19 +26,19 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
   if (!banners.length) return null;
 
   return (
-    <section className="relative">
-      <div className="overflow-hidden" ref={emblaRef}>
+    <section className="relative mt-3 px-4 md:mt-4 md:px-6">
+      <div className="overflow-hidden rounded-xl md:rounded-[14px]" ref={emblaRef}>
         <div className="flex">
           {banners.map((b) => {
             const link = b.button_link || `/loja/${store.slug}`;
             return (
-              <div key={b.id} className="relative min-w-0 flex-[0_0_100%]">
+              <div key={b.id} className="relative min-w-0 flex-[0_0_100%] overflow-hidden rounded-xl md:rounded-[14px]">
                 <picture>
                   {b.mobile_url && <source media="(max-width: 768px)" srcSet={b.mobile_url} />}
                   <img
                     src={b.desktop_url ?? b.mobile_url ?? ""}
                     alt={b.title ?? ""}
-                    className="h-[60vh] max-h-[600px] min-h-[280px] w-full object-cover md:h-[480px]"
+                    className="block h-[60vh] max-h-[600px] min-h-[280px] w-full rounded-xl object-cover md:h-[480px] md:rounded-[14px]"
                     loading="eager"
                   />
                 </picture>
