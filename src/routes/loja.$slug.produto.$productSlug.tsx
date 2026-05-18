@@ -128,6 +128,9 @@ function ProductInner({ product }: { product: any }) {
   const buyNow = () => {
     const err = validate();
     if (err) return toast.error(err);
+    import("@/lib/tracking").then((m) =>
+      m.trackInitiateCheckout({ ids: [product.id], numItems: qty, value: price * qty }),
+    );
     setBuyNowOpen(true);
   };
 
