@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save } from "lucide-react";
+import { Save, Copy, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { PlanGate } from "@/components/admin/PlanGate";
 import { toast } from "sonner";
