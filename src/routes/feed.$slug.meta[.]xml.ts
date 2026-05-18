@@ -171,6 +171,9 @@ ${colorTags ? colorTags + "\n" : ""}${sizeTags ? sizeTags + "\n" : ""}    </item
     <title>${xmlEscape(store.name)}</title>
     <link>${xmlEscape(storeUrl)}</link>
     <description>${xmlEscape(store.tagline || `Loja online de ${store.name}`)}</description>
+    <g:total_results>${totalCount}</g:total_results>
+    <g:start_index>${from + 1}</g:start_index>
+    <g:items_per_page>${PAGE_SIZE}</g:items_per_page>
 ${items.join("\n")}
   </channel>
 </rss>
@@ -181,6 +184,9 @@ ${items.join("\n")}
           headers: {
             "Content-Type": "application/xml; charset=utf-8",
             "Cache-Control": "public, max-age=3600, s-maxage=3600",
+            "X-Total-Count": String(totalCount),
+            "X-Total-Pages": String(totalPages),
+            "X-Current-Page": String(page),
           },
         });
       },
