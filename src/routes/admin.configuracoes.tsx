@@ -124,6 +124,69 @@ function SettingsPage() {
           <div><Label>Meta título padrão</Label><Input value={form.seo_title ?? ""} onChange={(e) => set("seo_title", e.target.value)} /></div>
           <div><Label>Meta descrição padrão</Label><Textarea rows={3} value={form.seo_desc ?? ""} onChange={(e) => set("seo_desc", e.target.value)} /></div>
         </TabsContent>
+
+        <TabsContent value="integracoes" className="space-y-6">
+          <div className="rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
+            <p>
+              Conecte seu Pixel do Facebook, API de Conversões da Meta, Google Analytics e
+              sincronize seus produtos com o Catálogo do Meta para anúncios e remarketing.
+            </p>
+          </div>
+
+          {/* Facebook Pixel */}
+          <PlanGate plan={planSlug} feature="meta_pixel">
+            <div className="space-y-2">
+              <Label>ID do Pixel do Facebook</Label>
+              <Input
+                value={form.facebook_pixel_id ?? ""}
+                onChange={(e) => set("facebook_pixel_id", e.target.value.trim())}
+                placeholder="Ex: 1234567890123456"
+                inputMode="numeric"
+                maxLength={32}
+              />
+              <p className="text-xs text-muted-foreground">
+                Cole aqui o ID do seu Pixel. Encontre em: Meta Business → Gerenciador de Eventos → seu Pixel → Configurações.
+              </p>
+            </div>
+          </PlanGate>
+
+          {/* Conversion API token */}
+          <PlanGate plan={planSlug} feature="meta_capi">
+            <div className="space-y-2">
+              <Label>Token da API de Conversões (opcional)</Label>
+              <Input
+                type="password"
+                value={form.meta_conversion_token ?? ""}
+                onChange={(e) => set("meta_conversion_token", e.target.value.trim())}
+                placeholder="Token de acesso..."
+                autoComplete="off"
+                maxLength={512}
+              />
+              <p className="text-xs text-muted-foreground">
+                Melhora a precisão do rastreamento mesmo com bloqueadores. Opcional, mas recomendado.
+              </p>
+            </div>
+          </PlanGate>
+
+          {/* Product feed */}
+          <PlanGate plan={planSlug} feature="meta_feed">
+            <FeedUrlField slug={store.slug} />
+          </PlanGate>
+
+          {/* GA4 */}
+          <div className="space-y-2 border-t border-border pt-6">
+            <Label>ID do Google Analytics 4</Label>
+            <Input
+              value={form.google_analytics_id ?? ""}
+              onChange={(e) => set("google_analytics_id", e.target.value.trim())}
+              placeholder="Ex: G-XXXXXXXXXX"
+              maxLength={32}
+            />
+            <p className="text-xs text-muted-foreground">
+              Injeta o GA4 na sua loja e dispara os principais eventos automaticamente.
+            </p>
+          </div>
+        </TabsContent>
       </Tabs>
 
       <Button onClick={() => save.mutate({})} disabled={save.isPending}>
