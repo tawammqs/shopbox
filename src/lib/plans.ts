@@ -33,7 +33,10 @@ export type Feature =
   | "seo_per_product"
   | "analytics"
   | "welcome_popup"
-  | "customers";
+  | "customers"
+  | "meta_pixel"
+  | "meta_feed"
+  | "meta_capi";
 
 export const FEATURE_MIN_PLAN: Record<Feature, PlanSlug> = {
   bulk_actions: "profissional",
@@ -41,9 +44,12 @@ export const FEATURE_MIN_PLAN: Record<Feature, PlanSlug> = {
   video_testimonials: "profissional",
   welcome_popup: "profissional",
   customers: "profissional",
+  meta_pixel: "profissional",
+  meta_feed: "profissional",
   custom_domain: "premium",
   seo_per_product: "premium",
   analytics: "premium",
+  meta_capi: "premium",
 };
 
 export function planAllows(plan: PlanSlug | null | undefined, feature: Feature) {
