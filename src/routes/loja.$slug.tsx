@@ -7,6 +7,7 @@ import { StorefrontNav, MobileNavDrawer } from "@/components/storefront/Storefro
 import { StorefrontFooter } from "@/components/storefront/StorefrontFooter";
 import { CartDrawer } from "@/components/storefront/CartDrawer";
 import { WelcomePopup } from "@/components/storefront/WelcomePopup";
+import { MarketingScripts } from "@/components/storefront/MarketingScripts";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/loja/$slug")({
