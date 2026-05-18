@@ -148,23 +148,23 @@ function ProductInner({ product }: { product: any }) {
 
   return (
     <>
-    <div className="mx-auto max-w-7xl px-4 py-6">
+    <div className="mx-auto w-full max-w-7xl overflow-x-hidden px-3 py-4 sm:px-4 sm:py-6">
       <nav className="mb-4 text-xs text-muted-foreground">
         <Link to="/loja/$slug" params={{ slug: store.slug }} className="hover:text-accent">Início</Link>
         <span className="mx-2">/</span>
-        <span className="text-foreground">{product.title}</span>
+        <span className="break-words text-foreground">{product.title}</span>
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2">
         {/* Gallery */}
-        <div>
+        <div className="min-w-0">
           <div className="aspect-[3/4] overflow-hidden rounded-xl bg-muted">
             {images[imgIdx] && (
               <img src={images[imgIdx].url} alt={product.title} className="h-full w-full object-cover" />
             )}
           </div>
           {images.length > 1 && (
-            <div className="mt-3 flex gap-2 overflow-x-auto">
+            <div className="mt-3 flex w-full max-w-full gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {images.map((img, i) => (
                 <button
                   key={img.id}
