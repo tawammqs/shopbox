@@ -1244,10 +1244,13 @@ export type Database = {
           current_period_end: string | null
           custom_domain: string | null
           facebook: string | null
+          facebook_pixel_id: string | null
           favicon_url: string | null
+          google_analytics_id: string | null
           id: string
           instagram: string | null
           logo_url: string | null
+          meta_conversion_token: string | null
           name: string
           notify_stock_enabled: boolean
           owner_user_id: string
@@ -1276,10 +1279,13 @@ export type Database = {
           current_period_end?: string | null
           custom_domain?: string | null
           facebook?: string | null
+          facebook_pixel_id?: string | null
           favicon_url?: string | null
+          google_analytics_id?: string | null
           id?: string
           instagram?: string | null
           logo_url?: string | null
+          meta_conversion_token?: string | null
           name: string
           notify_stock_enabled?: boolean
           owner_user_id: string
@@ -1308,10 +1314,13 @@ export type Database = {
           current_period_end?: string | null
           custom_domain?: string | null
           facebook?: string | null
+          facebook_pixel_id?: string | null
           favicon_url?: string | null
+          google_analytics_id?: string | null
           id?: string
           instagram?: string | null
           logo_url?: string | null
+          meta_conversion_token?: string | null
           name?: string
           notify_stock_enabled?: boolean
           owner_user_id?: string
