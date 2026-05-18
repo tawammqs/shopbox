@@ -42,7 +42,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       quantity: 1,
       storeId: store.id,
     });
-    trackAddToCart({ id: p.id, title: p.title, value: price, quantity: 1 });
+    void trackAddToCart(store, { id: p.id, title: p.title, value: price, quantity: 1 });
     toast.success("Adicionado ao carrinho");
   };
 
