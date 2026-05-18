@@ -47,6 +47,7 @@ import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
+import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
 import { Route as LovableEmailTransactionalSendInternalRouteImport } from './routes/lovable/email/transactional/send-internal'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -248,6 +249,11 @@ const LojaSlugBuscaRoute = LojaSlugBuscaRouteImport.update({
   path: '/busca',
   getParentRoute: () => LojaSlugRoute,
 } as any)
+const FeedSlugMetaDotxmlRoute = FeedSlugMetaDotxmlRouteImport.update({
+  id: '/feed/$slug/meta.xml',
+  path: '/feed/$slug/meta.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   id: '/produtos/$id',
   path: '/produtos/$id',
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -381,6 +388,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -431,6 +439,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -482,6 +491,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/superadmin/'
     | '/admin/produtos/$id'
+    | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
@@ -528,6 +538,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/superadmin'
     | '/admin/produtos/$id'
+    | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
@@ -577,6 +588,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/superadmin/'
     | '/admin/produtos/$id'
+    | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
@@ -612,6 +624,7 @@ export interface RootRouteChildren {
   HooksCartRecoveryRoute: typeof HooksCartRecoveryRoute
   HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
+  FeedSlugMetaDotxmlRoute: typeof FeedSlugMetaDotxmlRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -889,6 +902,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojaSlugBuscaRouteImport
       parentRoute: typeof LojaSlugRoute
     }
+    '/feed/$slug/meta.xml': {
+      id: '/feed/$slug/meta.xml'
+      path: '/feed/$slug/meta.xml'
+      fullPath: '/feed/$slug/meta.xml'
+      preLoaderRoute: typeof FeedSlugMetaDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/produtos/$id': {
       id: '/admin/produtos/$id'
       path: '/produtos/$id'
@@ -1045,6 +1065,7 @@ const rootRouteChildren: RootRouteChildren = {
   HooksCartRecoveryRoute: HooksCartRecoveryRoute,
   HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
+  FeedSlugMetaDotxmlRoute: FeedSlugMetaDotxmlRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
