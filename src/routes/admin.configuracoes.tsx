@@ -196,50 +196,99 @@ function SettingsPage() {
   );
 }
 
-function FeedUrlField({ slug }: { slug: string }) {
+function FeedUrlField({ slug, storeId }: { slug: string; storeId: string }) {
   const [open, setOpen] = useState(false);
-  const url =
-    (typeof window !== "undefined" ? window.location.origin : "https://shopboxapp.com.br") +
-    `/feed/${slug}/meta.xml`;
+  const [copied, setCopied] = useState(false);
+
+  // Production stable URL pattern requested by the team
+  const url = `https://${slug}.shopboxapp.com.br/feed/meta.xml`;
+
+  const productCount = useQuery({
+    queryKey: ["feed-active-product-count", storeId],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("products")
+        .select("*", { count: "exact", head: true })
+        .eq("store_id", storeId)
+        .eq("active", true);
+      return count ?? 0;
+    },
+  });
+
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("URL copiada");
     } catch {
-      toast.error("Não foi possível copiar");
+      const el = document.createElement("textarea");
+      el.value = url;
+      el.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(el);
+      el.select();
+      try {
+        document.execCommand("copy");
+      } catch {}
+      document.body.removeChild(el);
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
   };
+
   return (
     <div className="space-y-2">
       <Label>Feed de Produtos para Meta</Label>
-      <div className="flex gap-2">
-        <Input value={url} readOnly className="font-mono text-xs" />
-        <Button type="button" variant="outline" size="sm" onClick={copy}>
-          <Copy className="mr-1 h-3.5 w-3.5" /> Copiar
-        </Button>
+      <div className="flex items-stretch gap-2">
+        <input
+          readOnly
+          value={url}
+          onFocus={(e) => e.currentTarget.select()}
+          className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg border border-[#e8e8e0] bg-white px-3.5 py-3 font-mono text-[13px] text-[#374151] outline-none"
+          style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
+        />
+        <button
+          type="button"
+          onClick={copy}
+          title="Copiar URL"
+          aria-label="Copiar URL do feed"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border transition-all duration-200"
+          style={
+            copied
+              ? { background: "#f0fdf4", borderColor: "#bbf7d0" }
+              : { background: "#ffffff", borderColor: "#e8e8e0" }
+          }
+        >
+          {copied ? (
+            <Check className="h-4 w-4 text-emerald-600" />
+          ) : (
+            <Copy className="h-4 w-4 text-[#374151]" />
+          )}
+        </button>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Cole esta URL no Gerenciador de Catálogos do Meta para sincronizar seus produtos
-        automaticamente. Atualizado a cada hora.
+      <p className="text-[12px] text-[#888]">
+        Última sincronização:{" "}
+        {productCount.isLoading
+          ? "carregando…"
+          : `${productCount.data ?? 0} produtos ativos`}
       </p>
+      <p className="text-[12px] text-[#aaa]">Atualizado automaticamente a cada hora</p>
+
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger asChild>
           <button
             type="button"
             className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
           >
-            Como configurar o catálogo no Meta
+            Como configurar no Meta
             <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <ol className="mt-2 list-decimal space-y-1 rounded-lg bg-muted/40 p-3 pl-7 text-xs text-muted-foreground">
             <li>Acesse business.facebook.com</li>
-            <li>Clique em "Catálogos" no menu</li>
-            <li>Clique em "Criar catálogo" → "E-commerce"</li>
+            <li>Vá em Catálogos → Criar catálogo → E-commerce</li>
             <li>Escolha "Feed de dados programado"</li>
-            <li>Cole a URL acima e defina frequência: "A cada hora"</li>
-            <li>Pronto! Seus produtos serão importados automaticamente.</li>
+            <li>Cole a URL acima</li>
+            <li>Defina frequência: "A cada hora"</li>
+            <li>Clique em Salvar — seus produtos serão importados!</li>
           </ol>
         </CollapsibleContent>
       </Collapsible>
