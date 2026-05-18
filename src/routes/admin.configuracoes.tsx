@@ -34,6 +34,9 @@ function SettingsPage() {
         instagram: store.instagram ?? "", facebook: store.facebook ?? "", tiktok: store.tiktok ?? "", youtube: store.youtube ?? "",
         custom_domain: store.custom_domain ?? "",
         seo_title: (store.seo_meta as any)?.title ?? "", seo_desc: (store.seo_meta as any)?.description ?? "",
+        facebook_pixel_id: store.facebook_pixel_id ?? "",
+        meta_conversion_token: store.meta_conversion_token ?? "",
+        google_analytics_id: store.google_analytics_id ?? "",
       });
       setBadges(store.trust_badges ?? []);
     }
