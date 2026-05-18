@@ -121,7 +121,7 @@ function ProductInner({ product }: { product: any }) {
   };
 
   useEffect(() => {
-    trackViewContent({ id: product.id, title: product.title, value: price });
+    void trackViewContent(store, { id: product.id, title: product.title, value: price });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product.id]);
 
@@ -129,7 +129,7 @@ function ProductInner({ product }: { product: any }) {
     const err = validate();
     if (err) return toast.error(err);
     import("@/lib/tracking").then((m) =>
-      m.trackInitiateCheckout({ ids: [product.id], numItems: qty, value: price * qty }),
+      m.trackInitiateCheckout(store, { ids: [product.id], numItems: qty, value: price * qty }),
     );
     setBuyNowOpen(true);
   };
