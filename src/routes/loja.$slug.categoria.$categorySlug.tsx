@@ -73,7 +73,7 @@ function CategoryPage() {
   const tamanhoArr = splitCsv(search.tamanho);
   const marcaArr = splitCsv(search.marca);
 
-  const q = useQuery({
+  const q = useInfiniteQuery({
     queryKey: [
       "category-products",
       store.id,
@@ -84,12 +84,11 @@ function CategoryPage() {
       search.inStock,
       tamanhoArr.join(","),
       marcaArr.join(","),
-      search.page,
     ],
-    queryFn: () =>
+    queryFn: ({ pageParam = 0 }) =>
       fetchProductsForCategory(store.id, ids, {
         limit: PAGE_SIZE,
-        offset,
+        offset: pageParam * PAGE_SIZE,
         sort: search.sort,
         minPrice: search.minPrice,
         maxPrice: search.maxPrice,
@@ -97,6 +96,11 @@ function CategoryPage() {
         sizes: tamanhoArr,
         brands: marcaArr,
       }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((acc, p) => acc + p.products.length, 0);
+      return loaded < (lastPage.total ?? 0) ? allPages.length : undefined;
+    },
     enabled: !!cat,
     staleTime: 30_000,
   });
