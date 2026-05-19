@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { X, SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
@@ -61,7 +61,7 @@ function CategoryPage() {
   const subIds = categories.filter((c) => c.parent_id === cat?.id).map((c) => c.id);
   const ids = cat ? [cat.id, ...subIds] : null;
 
-  const offset = (search.page - 1) * PAGE_SIZE;
+  
 
   const facets = useQuery({
     queryKey: ["category-facets", store.id, categorySlug],
@@ -73,7 +73,7 @@ function CategoryPage() {
   const tamanhoArr = splitCsv(search.tamanho);
   const marcaArr = splitCsv(search.marca);
 
-  const q = useQuery({
+  const q = useInfiniteQuery({
     queryKey: [
       "category-products",
       store.id,
@@ -84,12 +84,11 @@ function CategoryPage() {
       search.inStock,
       tamanhoArr.join(","),
       marcaArr.join(","),
-      search.page,
     ],
-    queryFn: () =>
+    queryFn: ({ pageParam = 0 }) =>
       fetchProductsForCategory(store.id, ids, {
         limit: PAGE_SIZE,
-        offset,
+        offset: pageParam * PAGE_SIZE,
         sort: search.sort,
         minPrice: search.minPrice,
         maxPrice: search.maxPrice,
@@ -97,6 +96,11 @@ function CategoryPage() {
         sizes: tamanhoArr,
         brands: marcaArr,
       }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((acc, p) => acc + p.products.length, 0);
+      return loaded < (lastPage.total ?? 0) ? allPages.length : undefined;
+    },
     enabled: !!cat,
     staleTime: 30_000,
   });
@@ -154,9 +158,28 @@ function CategoryPage() {
     );
   }
 
-  const products = q.data?.products ?? [];
-  const total = q.data?.total ?? 0;
-  const hasMore = offset + products.length < total;
+  const products = useMemo(
+    () => (q.data?.pages ?? []).flatMap((p) => p.products),
+    [q.data],
+  );
+  const total = q.data?.pages?.[0]?.total ?? 0;
+  const hasMore = !!q.hasNextPage;
+
+  const loaderRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = loaderRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && q.hasNextPage && !q.isFetchingNextPage) {
+          q.fetchNextPage();
+        }
+      },
+      { threshold: 0.1, rootMargin: "200px" },
+    );
+    observer.observe(el);
+    return () => observer.unobserve(el);
+  }, [q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage]);
 
   const allSizes = facets.data?.sizes ?? [];
   const allBrands = facets.data?.brands ?? [];
@@ -385,20 +408,26 @@ function CategoryPage() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
               {products.map((p) => (
                 <ProductCard key={p.id} p={p} />
               ))}
             </div>
           )}
 
-          {hasMore && (
-            <div className="mt-8 text-center">
-              <Button variant="outline" onClick={() => setSearch({ page: search.page + 1 })}>
-                Carregar mais
-              </Button>
-            </div>
-          )}
+          <div ref={loaderRef} className="py-6">
+            {q.isFetchingNextPage && (
+              <div className="flex items-center justify-center gap-2 py-2 text-sm text-muted-foreground">
+                <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground" />
+                Carregando mais produtos...
+              </div>
+            )}
+            {!hasMore && products.length > 0 && (
+              <p className="text-center text-xs text-muted-foreground">
+                ✓ Todos os {products.length} produtos carregados
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
