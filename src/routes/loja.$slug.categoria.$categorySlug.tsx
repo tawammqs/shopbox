@@ -61,7 +61,7 @@ function CategoryPage() {
   const subIds = categories.filter((c) => c.parent_id === cat?.id).map((c) => c.id);
   const ids = cat ? [cat.id, ...subIds] : null;
 
-  const offset = (search.page - 1) * PAGE_SIZE;
+  
 
   const facets = useQuery({
     queryKey: ["category-facets", store.id, categorySlug],
