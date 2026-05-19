@@ -158,9 +158,28 @@ function CategoryPage() {
     );
   }
 
-  const products = q.data?.products ?? [];
-  const total = q.data?.total ?? 0;
-  const hasMore = offset + products.length < total;
+  const products = useMemo(
+    () => (q.data?.pages ?? []).flatMap((p) => p.products),
+    [q.data],
+  );
+  const total = q.data?.pages?.[0]?.total ?? 0;
+  const hasMore = !!q.hasNextPage;
+
+  const loaderRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = loaderRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && q.hasNextPage && !q.isFetchingNextPage) {
+          q.fetchNextPage();
+        }
+      },
+      { threshold: 0.1, rootMargin: "200px" },
+    );
+    observer.observe(el);
+    return () => observer.unobserve(el);
+  }, [q.hasNextPage, q.isFetchingNextPage, q.fetchNextPage]);
 
   const allSizes = facets.data?.sizes ?? [];
   const allBrands = facets.data?.brands ?? [];
