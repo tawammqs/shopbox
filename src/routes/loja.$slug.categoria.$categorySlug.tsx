@@ -408,20 +408,26 @@ function CategoryPage() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
               {products.map((p) => (
                 <ProductCard key={p.id} p={p} />
               ))}
             </div>
           )}
 
-          {hasMore && (
-            <div className="mt-8 text-center">
-              <Button variant="outline" onClick={() => setSearch({ page: search.page + 1 })}>
-                Carregar mais
-              </Button>
-            </div>
-          )}
+          <div ref={loaderRef} className="py-6">
+            {q.isFetchingNextPage && (
+              <div className="flex items-center justify-center gap-2 py-2 text-sm text-muted-foreground">
+                <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground" />
+                Carregando mais produtos...
+              </div>
+            )}
+            {!hasMore && products.length > 0 && (
+              <p className="text-center text-xs text-muted-foreground">
+                ✓ Todos os {products.length} produtos carregados
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
