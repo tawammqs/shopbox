@@ -158,9 +158,13 @@ function ProductInner({ product }: { product: any }) {
       <div className="grid gap-8 md:grid-cols-2">
         {/* Gallery */}
         <div className="min-w-0">
-          <div className="aspect-[3/4] overflow-hidden rounded-xl bg-muted">
+          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-border bg-white">
             {images[imgIdx] && (
-              <img src={images[imgIdx].url} alt={product.title} className="h-full w-full object-cover" />
+              <img
+                src={images[imgIdx].url}
+                alt={product.title}
+                className="h-full w-full object-contain p-4"
+              />
             )}
           </div>
           {images.length > 1 && (
@@ -170,11 +174,11 @@ function ProductInner({ product }: { product: any }) {
                   key={img.id}
                   onClick={() => setImgIdx(i)}
                   className={cn(
-                    "h-20 w-20 shrink-0 overflow-hidden rounded-md border-2",
-                    i === imgIdx ? "border-accent" : "border-transparent",
+                    "h-20 w-20 shrink-0 overflow-hidden rounded-md border-2 bg-white",
+                    i === imgIdx ? "border-accent" : "border-border",
                   )}
                 >
-                  <img src={img.url} alt="" className="h-full w-full object-cover" />
+                  <img src={img.url} alt="" className="h-full w-full object-contain p-1" />
                 </button>
               ))}
             </div>
