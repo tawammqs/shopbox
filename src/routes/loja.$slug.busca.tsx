@@ -51,8 +51,8 @@ function SearchPage() {
                 params={{ slug: store.slug, productSlug: r.slug }}
                 className="group block"
               >
-                <div className="aspect-[3/4] overflow-hidden rounded-xl bg-muted">
-                  {r.image && <img src={r.image} alt={r.title} className="h-full w-full object-cover transition group-hover:scale-105" loading="lazy" />}
+                <div className="aspect-square overflow-hidden rounded-xl bg-white p-2">
+                  {r.image && <img src={r.image} alt={r.title} className="h-full w-full object-contain transition group-hover:scale-105" loading="lazy" />}
                 </div>
                 <h3 className="mt-2 line-clamp-2 text-sm font-medium">{r.title}</h3>
                 <p className="text-sm font-semibold text-accent">{formatBRL(price)}</p>
