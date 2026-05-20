@@ -54,13 +54,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-muted">
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-white p-2">
         {img1 && (
           <img
             src={img1}
             alt={p.title}
             loading="lazy"
-            className={cn("h-full w-full object-cover transition duration-500", hover && img2 !== img1 && "opacity-0")}
+            className={cn("h-full w-full object-contain transition duration-500", hover && img2 !== img1 && "opacity-0")}
           />
         )}
         {img2 && img2 !== img1 && (
@@ -69,7 +69,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
             alt=""
             loading="lazy"
             className={cn(
-              "absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500",
+              "absolute inset-0 h-full w-full object-contain p-2 opacity-0 transition duration-500",
               hover && "opacity-100",
             )}
           />
