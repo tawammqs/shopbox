@@ -60,6 +60,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap",
       },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
