@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { X, ShoppingBag, Trash2, Tag, Truck } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { useCart, type AppliedCoupon } from "@/stores/cart";
@@ -6,6 +7,7 @@ import { useStorefront } from "./StoreContext";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
+import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { CheckoutFormDialog } from "./CheckoutFormDialog";
 import { trackInitiateCheckout } from "@/lib/tracking";
 import { toast } from "sonner";
