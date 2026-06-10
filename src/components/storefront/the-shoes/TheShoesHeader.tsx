@@ -186,16 +186,53 @@ export function TheShoesHeader() {
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Início
               </Link>
-              {roots.map((c) => (
-                <Link key={c.id}
-                  to="/loja/$slug/categoria/$categorySlug"
-                  params={{ slug: store.slug, categorySlug: c.slug }}
-                  onClick={() => setNavOpen(false)}
-                  className="flex items-center justify-between border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
-                  <span>{c.name}</span>
-                  <span className="text-[16px] text-[#aaa]">›</span>
-                </Link>
-              ))}
+              {roots.map((c) => {
+                const subs = categories.filter((s) => s.parent_id === c.id);
+                if (subs.length === 0) {
+                  return (
+                    <Link key={c.id}
+                      to="/loja/$slug/categoria/$categorySlug"
+                      params={{ slug: store.slug, categorySlug: c.slug }}
+                      onClick={() => setNavOpen(false)}
+                      className="flex items-center justify-between border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
+                      <span>{c.name}</span>
+                      <span className="text-[16px] text-[#aaa]">›</span>
+                    </Link>
+                  );
+                }
+                const isOpen = openCatId === c.id;
+                return (
+                  <div key={c.id} className="border-b border-[#f5f5f5]">
+                    <button
+                      type="button"
+                      onClick={() => setOpenCatId(isOpen ? null : c.id)}
+                      className="flex w-full items-center justify-between py-4 text-[16px] font-medium text-[#111]">
+                      <span>{c.name}</span>
+                      <span className="text-[16px] text-[#aaa]" style={{ transform: isOpen ? "rotate(90deg)" : "none", transition: "transform .2s" }}>›</span>
+                    </button>
+                    {isOpen && (
+                      <div className="pb-2">
+                        <Link
+                          to="/loja/$slug/categoria/$categorySlug"
+                          params={{ slug: store.slug, categorySlug: c.slug }}
+                          onClick={() => setNavOpen(false)}
+                          className="block py-2 pl-3 text-[14px] text-[#666]">
+                          Ver todos em {c.name}
+                        </Link>
+                        {subs.map((s) => (
+                          <Link key={s.id}
+                            to="/loja/$slug/categoria/$categorySlug"
+                            params={{ slug: store.slug, categorySlug: s.slug }}
+                            onClick={() => setNavOpen(false)}
+                            className="block py-2 pl-3 text-[14px] text-[#333]">
+                            {s.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
               <div className="mt-4">
                 <TheShoesVipBanner renderTrigger={(open) => (
                   <button
