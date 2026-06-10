@@ -231,11 +231,12 @@ export function TheShoesCartDrawer() {
               </div>
 
               <button onClick={checkout}
-                className="flex h-[52px] w-full items-center justify-center gap-[10px] rounded-lg text-[15px] font-bold text-white hover:opacity-95"
-                style={{ background: ACCENT }}>
-                <Lock className="h-4 w-4" />
+                className="flex h-[52px] w-full items-center justify-center gap-[10px] rounded-lg text-[15px] font-bold hover:opacity-95"
+                style={{ background: "#d9f523", color: "#111111" }}>
+                <Lock className="h-4 w-4" style={{ color: "#111111" }} />
                 Finalizar compra
               </button>
+
             </footer>
           </>
         )}
