@@ -24,6 +24,16 @@ export type CouponPopup = {
   whatsapp_group_url: string;
 };
 
+export type VideoEntry = {
+  video_url: string;
+  product_id: string;
+};
+
+export type VideoSection = {
+  title: string;
+  videos: VideoEntry[];
+};
+
 export type TheShoesSettings = {
   announcement_bar: AnnouncementBar;
   section1_title: string;
@@ -51,6 +61,7 @@ export type TheShoesSettings = {
   cart_upsell_threshold: number;
   whatsapp_button: string;
   coupon_popup: CouponPopup;
+  video_section: VideoSection;
 };
 
 export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
@@ -105,11 +116,23 @@ export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
     coupon_code: "PRIMEIRA05",
     whatsapp_group_url: "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r",
   },
+  video_section: {
+    title: "Veja mais detalhes em vídeo",
+    videos: [],
+  },
 };
 
 export function mergeSettings(raw: unknown): TheShoesSettings {
   const r = (raw ?? {}) as Partial<TheShoesSettings>;
-  return { ...DEFAULT_THE_SHOES_SETTINGS, ...r };
+  return {
+    ...DEFAULT_THE_SHOES_SETTINGS,
+    ...r,
+    video_section: {
+      ...DEFAULT_THE_SHOES_SETTINGS.video_section,
+      ...(r.video_section ?? {}),
+      videos: r.video_section?.videos ?? [],
+    },
+  };
 }
 
 export async function fetchTheShoesSettings(storeId: string): Promise<TheShoesSettings> {
