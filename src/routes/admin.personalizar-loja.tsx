@@ -228,10 +228,35 @@ function PersonalizarPage() {
       <Card title="Instagram">
         <TextField label="@usuário" value={s.instagram_handle}
           onChange={(v) => update("instagram_handle", v)} />
+        <div>
+          <Label className="mb-2 block">Imagens do feed (até 12)</Label>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Para mostrar seu feed real do Instagram, faça upload das suas fotos aqui.
+          </p>
+          <ListEditor
+            items={s.instagram_images}
+            onChange={(v) => update("instagram_images", v.slice(0, 12))}
+            empty={{ image_url: "", link: "" }}
+            render={(it, set) => (
+              <>
+                <div>
+                  <Label className="mb-2 block">Imagem</Label>
+                  <ImageUpload bucket="banners" storeId={store.id}
+                    value={it.image_url || null}
+                    onChange={(url) => set({ ...it, image_url: url ?? "" })}
+                    aspect="aspect-square" />
+                </div>
+                <TextField label="Link (opcional)" value={it.link} onChange={(v) => set({ ...it, link: v })} />
+              </>
+            )}
+          />
+        </div>
       </Card>
 
       {/* Footer */}
       <Card title="Rodapé">
+        <TextField label="Texto rolante do rodapé" value={s.footer_marquee_text}
+          onChange={(v) => update("footer_marquee_text", v)} />
         <div>
           <Label className="mb-1 block">Sobre a loja</Label>
           <Textarea value={s.footer_about} onChange={(e) => update("footer_about", e.target.value)} rows={4} />
