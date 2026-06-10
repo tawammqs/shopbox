@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Bell, Menu, Search, User, X } from "lucide-react";
+import { TheShoesVipBanner } from "../TheShoesExtras";
 import { useStorefront } from "../StoreContext";
 import { useCart } from "@/stores/cart";
 import { searchProductsLive } from "@/lib/storefront";
