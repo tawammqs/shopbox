@@ -6,6 +6,7 @@ import { ProductRow } from "@/components/storefront/ProductRow";
 import { CategoryGrid } from "@/components/storefront/CategoryGrid";
 import { HomeVideoSection } from "@/components/storefront/HomeVideoSection";
 import { useStorefront } from "@/components/storefront/StoreContext";
+import { TheShoesCategoryGrid, TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: HomePage,
@@ -29,6 +30,8 @@ function HomePage() {
   return (
     <>
       {banners.data && <BannerCarousel banners={banners.data} />}
+      <TheShoesCategoryGrid />
+      <TheShoesVipBanner />
       {TAGS.map((t) => (
         <TagRow key={t.tag} storeId={store.id} tag={t.tag} label={t.label} />
       ))}

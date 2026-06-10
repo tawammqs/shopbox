@@ -1672,6 +1672,38 @@ export type Database = {
         }
         Relationships: []
       }
+      vip_group_leads: {
+        Row: {
+          created_at: string
+          id: string
+          source: string | null
+          store_id: string | null
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          source?: string | null
+          store_id?: string | null
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          source?: string | null
+          store_id?: string | null
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vip_group_leads_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
