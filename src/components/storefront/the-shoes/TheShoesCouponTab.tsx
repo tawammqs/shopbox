@@ -105,9 +105,11 @@ export function TheShoesCouponTab() {
 
   const openVipGroup = () => window.open(cfg.whatsapp_group_url, "_blank", "noopener,noreferrer");
 
+  const dmSans = "'DM Sans', 'Helvetica Neue', -apple-system, sans-serif";
+
   const inputBase: React.CSSProperties = {
     width: "100%", height: 48, borderRadius: 4, padding: "0 16px",
-    fontFamily: "DM Sans, sans-serif", fontSize: 14, color: "#333",
+    fontFamily: dmSans, fontSize: 15, fontWeight: 400, color: "#111",
     outline: "none", boxSizing: "border-box",
   };
 
@@ -137,26 +139,39 @@ export function TheShoesCouponTab() {
             style={{
               background: "#fff", borderRadius: 0, width: "100%", maxWidth: 340,
               overflow: "hidden", animation: "tsCouponIn 0.25s ease forwards",
-              fontFamily: "DM Sans, sans-serif",
+              fontFamily: dmSans,
             }}
           >
             {/* Header */}
             <div style={{
-              background: "#111", padding: "20px 24px",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
+              background: "#f8f7f2", padding: "16px 20px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              position: "relative",
             }}>
               {store.logo_url ? (
-                <img src={store.logo_url} alt={store.name}
-                  style={{ height: 28, width: "auto", filter: "brightness(0) invert(1)" }} />
+                <img
+                  src={store.logo_url}
+                  alt="The Shoes"
+                  style={{
+                    height: 32, width: "auto", objectFit: "contain",
+                    display: "block", margin: "0 auto",
+                  }}
+                />
               ) : (
-                <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{store.name}</span>
+                <span style={{
+                  color: "#111", fontWeight: 700, fontSize: 16, fontFamily: dmSans,
+                }}>
+                  {store.name}
+                </span>
               )}
               <button
                 type="button" onClick={close} aria-label="Fechar"
                 style={{
+                  position: "absolute", right: 12, top: "50%",
+                  transform: "translateY(-50%)",
                   width: 28, height: 28, borderRadius: "50%",
-                  border: "1.5px solid rgba(255,255,255,0.4)", background: "transparent",
-                  color: "#fff", fontSize: 16, cursor: "pointer",
+                  border: "1.5px solid rgba(0,0,0,0.2)", background: "transparent",
+                  color: "#111", fontSize: 16, cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >×</button>
@@ -165,7 +180,8 @@ export function TheShoesCouponTab() {
             {/* Body */}
             <div style={{ padding: "28px 24px" }}>
               <p style={{
-                fontSize: 14, color: "#444", textAlign: "center", lineHeight: 1.65,
+                fontFamily: dmSans, fontSize: 14, fontWeight: 400,
+                color: "#444", textAlign: "center", lineHeight: 1.65,
                 marginBottom: 24,
               }}>
                 {cfg.description}
@@ -173,28 +189,52 @@ export function TheShoesCouponTab() {
 
               {!revealed ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <label style={{
+                    fontFamily: dmSans, fontSize: 13, fontWeight: 600, color: "#333",
+                    display: "block",
+                  }}>
+                    Nome
+                  </label>
                   <input
                     type="text" value={name}
                     onChange={(e) => { setName(e.target.value); if (errors.name) setErrors({ ...errors, name: false }); }}
-                    placeholder="Nome*"
+                    placeholder="Seu nome completo"
                     style={{ ...inputBase, border: `1px solid ${errors.name ? "#e53935" : "#e0e0e0"}` }}
                   />
+                  <label style={{
+                    fontFamily: dmSans, fontSize: 13, fontWeight: 600, color: "#333",
+                    display: "block", marginTop: 4,
+                  }}>
+                    E-mail
+                  </label>
                   <input
                     type="email" value={email}
                     onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors({ ...errors, email: false }); }}
-                    placeholder="E-mail*"
+                    placeholder="seu@email.com"
                     style={{ ...inputBase, border: `1px solid ${errors.email ? "#e53935" : "#e0e0e0"}` }}
                   />
+                  <label style={{
+                    fontFamily: dmSans, fontSize: 13, fontWeight: 600, color: "#333",
+                    display: "block", marginTop: 4,
+                  }}>
+                    Whatsapp
+                  </label>
                   <input
                     type="tel" inputMode="numeric" value={whatsapp}
                     onChange={(e) => { setWhatsapp(formatWhatsapp(e.target.value)); if (errors.whatsapp) setErrors({ ...errors, whatsapp: false }); }}
-                    placeholder="Whatsapp*"
+                    placeholder="(00) 00000-0000"
                     style={{ ...inputBase, border: `1px solid ${errors.whatsapp ? "#e53935" : "#e0e0e0"}` }}
                   />
+                  <label style={{
+                    fontFamily: dmSans, fontSize: 13, fontWeight: 600, color: "#333",
+                    display: "block", marginTop: 4,
+                  }}>
+                    Aniversário
+                  </label>
                   <input
                     type="text" value={birthday}
                     onChange={(e) => setBirthday(e.target.value)}
-                    placeholder="Aniversário (DD/MM)"
+                    placeholder="DD/MM"
                     style={{ ...inputBase, border: "1px solid #e0e0e0" }}
                   />
 
@@ -211,7 +251,10 @@ export function TheShoesCouponTab() {
                         borderRadius: 3, flexShrink: 0,
                       }}
                     />
-                    <span style={{ fontSize: 12, color: "#666", lineHeight: 1.45 }}>
+                    <span style={{
+                      fontFamily: dmSans, fontSize: 12, fontWeight: 400,
+                      color: "#666", lineHeight: 1.45,
+                    }}>
                       Concordo com a{" "}
                       <a href="/politicas" target="_blank" rel="noreferrer"
                          style={{ textDecoration: "underline", color: "#666" }}>
@@ -224,9 +267,11 @@ export function TheShoesCouponTab() {
                     type="button" onClick={onSubmit} disabled={!agreed || submitting}
                     style={{
                       width: "100%", height: 48, marginTop: 8,
-                      background: !agreed ? "#ccc" : "#111", color: "#fff",
-                      border: "none", borderRadius: 4,
-                      fontFamily: "DM Sans, sans-serif",
+                      background: !agreed ? "#f0f0ea" : "#f8f7f2",
+                      color: !agreed ? "#aaa" : "#111111",
+                      border: !agreed ? "1.5px solid #ddd" : "1.5px solid #111111",
+                      borderRadius: 4,
+                      fontFamily: dmSans,
                       fontSize: 14, fontWeight: 700, letterSpacing: "0.05em",
                       textTransform: "uppercase",
                       cursor: !agreed || submitting ? "not-allowed" : "pointer",
@@ -239,10 +284,11 @@ export function TheShoesCouponTab() {
               ) : (
                 <div style={{ textAlign: "center" }}>
                   <div style={{
-                    background: "#f5f5f5", borderRadius: 4, padding: "20px 24px",
-                    margin: "0 0 28px",
+                    background: "#f5f5f0", borderRadius: 4, padding: "20px 24px",
+                    margin: "0 0 24px",
+                    fontFamily: dmSans,
                     fontSize: 28, fontWeight: 800, color: "#111",
-                    letterSpacing: "0.1em",
+                    letterSpacing: "0.1em", textAlign: "center",
                   }}>
                     {cfg.coupon_code}
                   </div>
@@ -252,28 +298,30 @@ export function TheShoesCouponTab() {
                       type="button" onClick={copyCode}
                       style={{
                         width: "100%", height: 48,
-                        background: "#111", color: "#fff", border: "none", borderRadius: 4,
-                        fontFamily: "DM Sans, sans-serif",
+                        background: "#f8f7f2", color: "#111111",
+                        border: "1.5px solid #111111", borderRadius: 4,
+                        fontFamily: dmSans,
                         fontSize: 13, fontWeight: 700, letterSpacing: "0.05em",
                         textTransform: "uppercase", cursor: "pointer",
                       }}
                     >
-                      {copied ? "✓ Copiado!" : "Clique para copiar CUPOM"}
+                      {copied ? "✓ COPIADO!" : "Clique para copiar CUPOM"}
                     </button>
 
                     <button
                       type="button" onClick={openVipGroup}
                       style={{
                         width: "100%", height: 48,
-                        background: "#25D366", color: "#fff", border: "none", borderRadius: 4,
-                        fontFamily: "DM Sans, sans-serif",
+                        background: "#25D366", color: "#ffffff",
+                        border: "none", borderRadius: 4,
+                        fontFamily: dmSans,
                         fontSize: 13, fontWeight: 700, letterSpacing: "0.05em",
                         textTransform: "uppercase", cursor: "pointer",
                         display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
                       }}
                     >
                       <WhatsAppIcon />
-                      Clique para GRUPO VIP
+                      ENTRAR NO GRUPO VIP
                     </button>
                   </div>
                 </div>
