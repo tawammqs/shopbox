@@ -18,9 +18,12 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
     const store = await fetchStoreBySlug(params.slug);
-    if (!store) return { store: null, categories: [] };
-    const categories = await fetchCategories(store.id);
-    return { store, categories };
+    if (!store) return { store: null, categories: [], activeThemeSlug: null };
+    const [categories, activeThemeSlug] = await Promise.all([
+      fetchCategories(store.id),
+      fetchActiveThemeSlug(store.id),
+    ]);
+    return { store, categories, activeThemeSlug };
   },
   head: ({ loaderData }) => ({
     meta: loaderData?.store
