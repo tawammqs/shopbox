@@ -12,7 +12,8 @@ import { trackAddToCart, trackInitiateCheckout } from "@/lib/tracking";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const ACCENT = "#c0392b";
+const ACCENT = "#111111";
+const FREE_SHIPPING_THRESHOLD = 599.99;
 
 function TruckIcon({ size = 20 }: { size?: number }) {
   return (
