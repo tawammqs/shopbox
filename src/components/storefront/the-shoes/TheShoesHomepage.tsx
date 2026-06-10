@@ -9,6 +9,7 @@ import { useStorefront } from "../StoreContext";
 import { fetchActiveBanners, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { fetchTheShoesSettings, type TheShoesSettings } from "@/lib/the-shoes-theme";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
+import { getInstallment } from "@/lib/installments";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { trackAddToCart } from "@/lib/tracking";
@@ -216,6 +217,23 @@ function TsProductCard({ p }: { p: ProductCardData }) {
             <span className="text-[16px] font-semibold text-[#111]">{formatBRL(price)}</span>
           )}
         </div>
+        {(() => {
+          const inst = getInstallment(p.price, p.promo_price);
+          if (!inst.show) return null;
+          return (
+            <span style={{
+              display: 'block',
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: '11px',
+              fontWeight: 400,
+              color: '#aaa',
+              marginTop: '2px',
+              lineHeight: 1.3,
+            }}>
+              3x de {inst.formatted} sem juros
+            </span>
+          );
+        })()}
       </div>
     </Link>
   );
