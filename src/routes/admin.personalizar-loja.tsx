@@ -203,6 +203,25 @@ function PersonalizarPage() {
         />
       </Card>
 
+      {/* Video section */}
+      <Card title="Sessão de Vídeos">
+        <p className="text-xs text-muted-foreground">
+          Adicione vídeos curtos para sua loja e vincule cada um a um produto.
+          Os clientes verão estes vídeos na seção "Veja mais detalhes em vídeo" da página inicial.
+        </p>
+        <TextField
+          label="Título da seção"
+          value={s.video_section.title}
+          onChange={(v) => update("video_section", { ...s.video_section, title: v })}
+        />
+        <VideoSectionEditor
+          storeId={store.id}
+          videos={s.video_section.videos}
+          onChange={(videos) => update("video_section", { ...s.video_section, videos })}
+        />
+      </Card>
+
+
       {/* FAQ */}
       <Card title="Dúvidas frequentes (FAQ)">
         <TextField label="Título" value={s.faq_title} onChange={(v) => update("faq_title", v)} />
