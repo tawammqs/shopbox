@@ -97,6 +97,14 @@ export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
   cart_upsell_message: "Frete grátis nas compras acima de R$199!",
   cart_upsell_threshold: 199,
   whatsapp_button: "5511999999999",
+  coupon_popup: {
+    enabled: true,
+    tab_text: "5% NA PRIMEIRA COMPRA",
+    tab_bg_color: "#111111",
+    description: "Preencha seus dados para resgatar seu cupom de 5% na primeira compra e participar do nosso grupo de clientes VIP!",
+    coupon_code: "PRIMEIRA05",
+    whatsapp_group_url: "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r",
+  },
 };
 
 export function mergeSettings(raw: unknown): TheShoesSettings {
