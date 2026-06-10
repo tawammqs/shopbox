@@ -36,6 +36,7 @@ const NAV = [
   { to: "/admin/descontos", label: "Descontos", icon: Tag },
   { to: "/admin/clientes", label: "Clientes", icon: Users },
   { to: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
+  { to: "/admin/perguntas", label: "Perguntas & Avaliações", icon: MessageSquare },
   { to: "/admin/personalizar-loja", label: "Personalizar Loja", icon: Paintbrush },
   { to: "/admin/configuracoes", label: "Configurações", icon: Settings },
   { to: "/admin/plano", label: "Plano & Cobrança", icon: CreditCard },
