@@ -13,6 +13,29 @@ function formatWhatsapp(raw: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
+function LockSmall() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+      stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
+      <circle cx="12" cy="16" r="1" fill="white" />
+    </svg>
+  );
+}
+
+function LockBig() {
+  return (
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="none"
+      stroke="#111" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"
+      style={{ display: "block", margin: "0 auto 16px" }}>
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
+      <circle cx="12" cy="16" r="1" fill="#111" />
+    </svg>
+  );
+}
+
 export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: () => void) => React.ReactNode } = {}) {
   const { store } = useStorefront();
   const [open, setOpen] = useState(false);
