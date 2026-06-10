@@ -124,7 +124,15 @@ export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
 
 export function mergeSettings(raw: unknown): TheShoesSettings {
   const r = (raw ?? {}) as Partial<TheShoesSettings>;
-  return { ...DEFAULT_THE_SHOES_SETTINGS, ...r };
+  return {
+    ...DEFAULT_THE_SHOES_SETTINGS,
+    ...r,
+    video_section: {
+      ...DEFAULT_THE_SHOES_SETTINGS.video_section,
+      ...(r.video_section ?? {}),
+      videos: r.video_section?.videos ?? [],
+    },
+  };
 }
 
 export async function fetchTheShoesSettings(storeId: string): Promise<TheShoesSettings> {
