@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCart, type CartItem, type AppliedCoupon } from "@/stores/cart";
-import { useStorefront } from "./StoreContext";
+import { useStorefront, useIsMioTheme } from "./StoreContext";
 import { openWhatsAppCheckout, buildBuyNowMessage, buildWhatsAppUrl, type CustomerInfo } from "@/lib/whatsapp";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";

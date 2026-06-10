@@ -5,7 +5,7 @@ import { BannerCarousel } from "@/components/storefront/BannerCarousel";
 import { ProductRow } from "@/components/storefront/ProductRow";
 import { CategoryGrid } from "@/components/storefront/CategoryGrid";
 import { HomeVideoSection } from "@/components/storefront/HomeVideoSection";
-import { useStorefront } from "@/components/storefront/StoreContext";
+import { useStorefront, useIsMioTheme } from "@/components/storefront/StoreContext";
 import { Fragment } from "react";
 import { TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
 import { TheShoesHomepage } from "@/components/storefront/the-shoes/TheShoesHomepage";
