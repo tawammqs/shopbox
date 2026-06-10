@@ -18,6 +18,7 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { cn } from "@/lib/utils";
 import { VideoPreview } from "@/components/admin/VideoSourcePicker";
 import type { VideoType } from "@/lib/video";
+import { TheShoesProductPage } from "@/components/storefront/the-shoes/TheShoesProductPage";
 
 export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
   component: ProductPage,
@@ -49,6 +50,10 @@ function ProductPage() {
         <Link to="/loja/$slug" params={{ slug: store.slug }} className="mt-4 inline-block text-accent">Voltar</Link>
       </div>
     );
+  }
+
+  if (store.slug === "the-shoes") {
+    return <TheShoesProductPage product={data} />;
   }
 
   return <ProductInner product={data} />;

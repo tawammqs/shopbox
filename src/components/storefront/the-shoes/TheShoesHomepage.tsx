@@ -556,21 +556,7 @@ function AchadinhosInline({ storeId, tag }: { storeId: string; tag: string }) {
 
   return (
     <section className="ts-achadinhos">
-      <div className="ts-achadinhos-bg">
-        {products.slice(0, 8).map((p) => {
-          const img = p.images?.[0]?.url ?? "";
-          return (
-            <div key={p.id} style={{
-              backgroundImage: img ? `url(${img})` : undefined,
-              backgroundColor: "#f0f0f0",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              aspectRatio: "4/5",
-            }} />
-          );
-        })}
-      </div>
-      <div className="ts-achadinhos-overlay" />
+      <div className="ts-achadinhos-bg" style={{ background: "#f3f3f3" }} />
       <div className="ts-achadinhos-content">
         <div className="ts-achadinhos-card">
           <LockIcon />

@@ -6,13 +6,14 @@ import { useCart } from "@/stores/cart";
 import { useStorefront } from "../StoreContext";
 import { formatBRL, effectivePrice, discountPct } from "@/lib/format";
 import { fetchBestSellersForStore, type ProductCardData } from "@/lib/storefront";
-import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
+
 import { CheckoutFormDialog } from "../CheckoutFormDialog";
 import { trackAddToCart, trackInitiateCheckout } from "@/lib/tracking";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const ACCENT = "#c0392b";
+const ACCENT = "#111111";
+const FREE_SHIPPING_THRESHOLD = 599.99;
 
 function TruckIcon({ size = 20 }: { size?: number }) {
   return (
@@ -42,14 +43,6 @@ export function TheShoesCartDrawer() {
   const total = Math.max(0, subtotal - (coupon?.discount ?? 0));
   const cartCount = items.reduce((a, b) => a + b.quantity, 0);
 
-  const settingsQ = useQuery({
-    queryKey: ["the-shoes-settings", store.id],
-    queryFn: () => fetchTheShoesSettings(store.id),
-    staleTime: 30_000,
-  });
-  const upsellThreshold = settingsQ.data?.cart_upsell_threshold ?? 0;
-  const upsellMessage = settingsQ.data?.cart_upsell_message ?? "frete grátis";
-
   const bestSellersQ = useQuery({
     queryKey: ["ts-bestsellers", store.id],
     queryFn: () => fetchBestSellersForStore(store.id, 8),
@@ -65,9 +58,9 @@ export function TheShoesCartDrawer() {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  const pct = upsellThreshold > 0 ? Math.min(100, (subtotal / upsellThreshold) * 100) : 0;
-  const remaining = Math.max(0, upsellThreshold - subtotal);
-  const reachedUpsell = upsellThreshold > 0 && subtotal >= upsellThreshold;
+  const pct = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const reachedUpsell = subtotal >= FREE_SHIPPING_THRESHOLD;
 
   const addCrossSell = (p: ProductCardData) => {
     if (p.colors.length > 0) {
@@ -191,7 +184,7 @@ export function TheShoesCartDrawer() {
                           <div className="min-w-0 flex-1">
                             <p className="line-clamp-2 text-[12px] font-semibold leading-tight text-[#111]">{p.title}</p>
                             <div className="mt-1 flex items-baseline gap-1">
-                              <span className="text-[12px] font-bold text-[#c0392b]">{formatBRL(price)}</span>
+                              <span className="text-[12px] font-bold text-[#111]">{formatBRL(price)}</span>
                               {dpct > 0 && (
                                 <span className="text-[10px] text-[#aaa] line-through">{formatBRL(p.price)}</span>
                               )}
@@ -221,25 +214,23 @@ export function TheShoesCartDrawer() {
 
             <footer className="border-t border-[#f0f0f0] bg-white px-5 py-4">
               {/* Progress bar */}
-              {upsellThreshold > 0 && (
-                <div className="mb-4 rounded-[10px] bg-[#f8f8f8] p-4">
-                  <div className="relative mb-2 h-[6px] rounded-full bg-[#e0e0e0]">
-                    <div className="absolute -top-[18px] grid h-9 w-9 -translate-x-1/2 place-items-center rounded-full transition-all duration-500"
-                      style={{ left: `${Math.min(pct, 95)}%`, background: "#dfdac8" }}>
-                      <TruckIcon size={20} />
-                    </div>
-                    <div className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${pct}%`, background: "#25D366" }} />
+              <div className="mb-4 rounded-[10px] bg-[#f8f8f8] p-4">
+                <div className="relative mb-2 h-[6px] rounded-full bg-[#eeeeee]">
+                  <div className="absolute -top-[18px] grid h-9 w-9 -translate-x-1/2 place-items-center rounded-full transition-all duration-500"
+                    style={{ left: `${Math.min(pct, 95)}%`, background: "#111" }}>
+                    <TruckIcon size={20} />
                   </div>
-                  <p className="text-center text-[12px] text-[#555]">
-                    {reachedUpsell ? (
-                      <>🎉 <strong>{upsellMessage}</strong> desbloqueado!</>
-                    ) : (
-                      <>Gaste <strong>{formatBRL(remaining)}</strong> a mais para <strong>{upsellMessage}</strong></>
-                    )}
-                  </p>
+                  <div className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${pct}%`, background: "#111" }} />
                 </div>
-              )}
+                <p className="text-center text-[12px] text-[#555]">
+                  {reachedUpsell ? (
+                    <>🎉 Você ganhou <strong>FRETE GRÁTIS</strong>!</>
+                  ) : (
+                    <>Faltam <strong>{formatBRL(remaining)}</strong> para o <strong>frete grátis</strong></>
+                  )}
+                </p>
+              </div>
 
               <div className="mb-3 flex items-center justify-between py-2">
                 <span className="text-[15px] font-semibold text-[#111]">Total</span>
