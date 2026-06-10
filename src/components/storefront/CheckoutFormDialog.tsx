@@ -49,8 +49,10 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
   const { store } = useStorefront();
   const clearCart = useCart((s) => s.clear);
 
+  const isTheShoes = store.slug === "the-shoes";
+
   const [form, setForm] = useState({
-    name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "",
+    name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "", paymentMethod: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
