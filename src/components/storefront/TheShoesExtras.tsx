@@ -13,7 +13,7 @@ function formatWhatsapp(raw: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
-export function TheShoesVipBanner() {
+export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: () => void) => React.ReactNode } = {}) {
   const { store } = useStorefront();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
