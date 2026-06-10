@@ -8,6 +8,7 @@ import { StorefrontFooter } from "@/components/storefront/StorefrontFooter";
 import { CartDrawer } from "@/components/storefront/CartDrawer";
 import { WelcomePopup } from "@/components/storefront/WelcomePopup";
 import { MarketingScripts } from "@/components/storefront/MarketingScripts";
+import { TheShoesHeader } from "@/components/storefront/the-shoes/TheShoesHeader";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/loja/$slug")({
@@ -56,16 +57,24 @@ function StorefrontLayout() {
     );
   }
 
+  const isTheShoes = store.slug === "the-shoes";
+
   return (
     <StoreProvider value={{ store, categories }}>
       <div
         className="storefront-root min-h-screen bg-background"
         data-store-slug={store.slug}
-        style={{ ["--accent" as any]: store.accent_color }}
+        style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
-        <StorefrontHeader onOpenMobileNav={() => setNavOpen(true)} />
-        <StorefrontNav />
-        <MobileNavDrawer open={navOpen} onClose={() => setNavOpen(false)} />
+        {isTheShoes ? (
+          <TheShoesHeader />
+        ) : (
+          <>
+            <StorefrontHeader onOpenMobileNav={() => setNavOpen(true)} />
+            <StorefrontNav />
+            <MobileNavDrawer open={navOpen} onClose={() => setNavOpen(false)} />
+          </>
+        )}
         <main>
           <Outlet />
         </main>
