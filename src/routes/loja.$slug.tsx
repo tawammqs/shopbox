@@ -71,6 +71,7 @@ function StorefrontLayout() {
       <div
         className="storefront-root min-h-screen bg-background"
         data-store-slug={store.slug}
+        data-theme={isTheShoes ? "mio" : undefined}
         style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
         {isTheShoes ? (
