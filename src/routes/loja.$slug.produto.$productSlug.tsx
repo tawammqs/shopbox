@@ -158,31 +158,44 @@ function ProductInner({ product }: { product: any }) {
       <div className="grid gap-8 md:grid-cols-2">
         {/* Gallery */}
         <div className="min-w-0">
-          <div className="flex aspect-square items-center justify-center overflow-hidden rounded-xl border border-border bg-white">
-            {images[imgIdx] && (
-              <img
-                src={images[imgIdx].url}
-                alt={product.title}
-                className="h-full w-full object-contain p-4"
-              />
-            )}
-          </div>
-          {images.length > 1 && (
-            <div className="mt-3 flex w-full max-w-full gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {images.map((img, i) => (
-                <button
-                  key={img.id}
-                  onClick={() => setImgIdx(i)}
-                  className={cn(
-                    "h-20 w-20 shrink-0 overflow-hidden rounded-md border-2 bg-white",
-                    i === imgIdx ? "border-accent" : "border-border",
+          {(() => {
+            const containStores = ["dona-aranha", "donaranha"];
+            const useContain = containStores.includes(store.slug);
+            const aspect = useContain ? "aspect-square" : "aspect-[4/5]";
+            const fit = useContain ? "object-contain" : "object-cover";
+            const padding = useContain ? "p-4" : "p-0";
+            const bg = useContain ? "bg-white" : "bg-transparent";
+            return (
+              <>
+                <div className={cn("flex items-center justify-center overflow-hidden rounded-xl border border-border", aspect, bg)}>
+                  {images[imgIdx] && (
+                    <img
+                      src={images[imgIdx].url}
+                      alt={product.title}
+                      className={cn("h-full w-full", fit, padding)}
+                    />
                   )}
-                >
-                  <img src={img.url} alt="" className="h-full w-full object-contain p-1" />
-                </button>
-              ))}
-            </div>
-          )}
+                </div>
+                {images.length > 1 && (
+                  <div className="mt-3 flex w-full max-w-full gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    {images.map((img, i) => (
+                      <button
+                        key={img.id}
+                        onClick={() => setImgIdx(i)}
+                        className={cn(
+                          "h-20 w-20 shrink-0 overflow-hidden rounded-md border-2",
+                          bg,
+                          i === imgIdx ? "border-accent" : "border-border",
+                        )}
+                      >
+                        <img src={img.url} alt="" className={cn("h-full w-full", fit, useContain ? "p-1" : "p-0")} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
 
         {/* Info */}

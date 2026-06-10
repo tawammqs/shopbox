@@ -46,6 +46,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     toast.success("Adicionado ao carrinho");
   };
 
+  const containStores = ["dona-aranha", "donaranha"];
+  const useContain = containStores.includes(store.slug);
+  const imgFit = useContain ? "object-contain" : "object-cover";
+  const imgPadding = useContain ? "p-2" : "p-0";
+  const containerBg = useContain ? "bg-white" : "bg-transparent";
+  const containerAspect = useContain ? "aspect-square" : "aspect-[4/5]";
+
   return (
     <Link
       to="/loja/$slug/produto/$productSlug"
@@ -54,13 +61,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <div className="relative aspect-square overflow-hidden rounded-xl bg-white p-2">
+      <div className={cn("relative overflow-hidden rounded-xl", containerAspect, containerBg)}>
         {img1 && (
           <img
             src={img1}
             alt={p.title}
             loading="lazy"
-            className={cn("h-full w-full object-contain transition duration-500", hover && img2 !== img1 && "opacity-0")}
+            className={cn("h-full w-full transition duration-500", imgFit, imgPadding, hover && img2 !== img1 && "opacity-0")}
           />
         )}
         {img2 && img2 !== img1 && (
@@ -69,7 +76,9 @@ export function ProductCard({ p }: { p: ProductCardData }) {
             alt=""
             loading="lazy"
             className={cn(
-              "absolute inset-0 h-full w-full object-contain p-2 opacity-0 transition duration-500",
+              "absolute inset-0 h-full w-full opacity-0 transition duration-500",
+              imgFit,
+              imgPadding,
               hover && "opacity-100",
             )}
           />

@@ -59,7 +59,8 @@ function StorefrontLayout() {
   return (
     <StoreProvider value={{ store, categories }}>
       <div
-        className="min-h-screen bg-background"
+        className="storefront-root min-h-screen bg-background"
+        data-store-slug={store.slug}
         style={{ ["--accent" as any]: store.accent_color }}
       >
         <StorefrontHeader onOpenMobileNav={() => setNavOpen(true)} />
