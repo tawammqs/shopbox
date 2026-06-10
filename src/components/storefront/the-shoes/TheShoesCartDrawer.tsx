@@ -171,7 +171,8 @@ export function TheShoesCartDrawer() {
                       return (
                         <div key={p.id}
                           className="flex w-[260px] shrink-0 items-center gap-3 rounded-[10px] p-3"
-                          style={{ background: "#fce4ec" }}>
+                          style={{ background: "#f3f3f3" }}>
+
                           <div className="h-[56px] w-[56px] shrink-0 overflow-hidden rounded-md bg-white">
                             {img && <img src={img} alt="" className="h-full w-full object-cover" />}
                           </div>
@@ -230,11 +231,12 @@ export function TheShoesCartDrawer() {
               </div>
 
               <button onClick={checkout}
-                className="flex h-[52px] w-full items-center justify-center gap-[10px] rounded-lg text-[15px] font-bold text-white hover:opacity-95"
-                style={{ background: ACCENT }}>
-                <Lock className="h-4 w-4" />
+                className="flex h-[52px] w-full items-center justify-center gap-[10px] rounded-lg text-[15px] font-bold hover:opacity-95"
+                style={{ background: "#d9f523", color: "#111111" }}>
+                <Lock className="h-4 w-4" style={{ color: "#111111" }} />
                 Finalizar compra
               </button>
+
             </footer>
           </>
         )}

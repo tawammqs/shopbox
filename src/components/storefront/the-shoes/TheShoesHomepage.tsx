@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef, useEffect, useState, type ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Plus, Minus, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useStorefront } from "../StoreContext";
@@ -13,7 +13,17 @@ import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { trackAddToCart } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
-import { TheShoesVipBanner } from "../TheShoesExtras";
+import { supabase } from "@/integrations/supabase/client";
+
+const VIP_GROUP_URL = "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r";
+
+function formatWhatsapp(raw: string): string {
+  const d = raw.replace(/\D/g, "").slice(0, 11);
+  if (!d) return "";
+  if (d.length <= 2) return `(${d}`;
+  if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
 
 const ACCENT = "#111111";
 
@@ -49,7 +59,8 @@ export function TheShoesHomepage() {
       <ProductCarouselSection
         storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag}
       />
-      <div className="ts-section-narrow"><TheShoesVipBanner /></div>
+      <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
+
       <MarqueeBar cfg={s.marquee1} />
       <PromoBannerSection promo={s.promo_banner} />
       <ProductCarouselSection
@@ -440,46 +451,156 @@ function PillRow({ items, direction }: { items: TheShoesSettings["testimonials"]
   );
 }
 
-/* -------------- FAQ (cream box) -------------- */
+/* -------------- FAQ (cream box, Mio Capelli style) -------------- */
 function FaqSection({ title, items, whatsapp }: { title: string; items: TheShoesSettings["faq_items"]; whatsapp: string }) {
   const [open, setOpen] = useState<number | null>(null);
   if (!items?.length) return null;
   return (
     <section className="ts-faq-section">
-      <div className="ts-faq-box">
-        <h2 className="mb-8 text-[28px] md:text-[32px] font-extrabold text-[#111]" style={{ letterSpacing: "-0.5px" }}>{title}</h2>
-        <div>
-          {items.map((it, i) => {
-            const isOpen = open === i;
-            return (
-              <div key={i} className="ts-faq-item">
-                <button onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 text-left">
-                  <span className="text-[15px] font-semibold text-[#111]">{it.question}</span>
-                  {isOpen
-                    ? <Minus className="h-[22px] w-[22px] shrink-0 text-[#111]" />
-                    : <Plus className="h-[22px] w-[22px] shrink-0 text-[#111]" />}
-                </button>
-                {isOpen && (
-                  <div className="pt-4 text-[14px] text-[#555]" style={{ lineHeight: 1.8 }}>{it.answer}</div>
-                )}
-              </div>
-            );
-          })}
+      <div className="ts-faq-wrap">
+        <p className="ts-faq-eyebrow">Ainda na dúvida?</p>
+        <h2 className="ts-faq-title">{title || "The Shoes responde"}</h2>
+        <div className="ts-faq-box">
+          <div>
+            {items.map((it, i) => {
+              const isOpen = open === i;
+              return (
+                <div key={i} className="ts-faq-item">
+                  <button onClick={() => setOpen(isOpen ? null : i)}
+                    className="flex w-full items-center justify-between gap-4 text-left">
+                    <span className="ts-faq-q">{it.question}</span>
+                    <span className="ts-faq-icon">{isOpen ? "∧" : "∨"}</span>
+                  </button>
+                  {isOpen && (
+                    <div className="ts-faq-a">{it.answer}</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="ts-faq-divider" />
+          <p className="ts-faq-help">
+            Não encontrou a resposta para a sua pergunta?<br />
+            Fale com o nosso time de atendimento.
+          </p>
+          {whatsapp && (
+            <div className="flex justify-center">
+              <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="ts-faq-cta">
+                <WhatsAppLogo size={20} />
+                Chamar no WhatsApp
+              </a>
+            </div>
+          )}
         </div>
       </div>
-      {whatsapp && (
-        <div className="mt-8 flex justify-center">
-          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"
-            className="inline-flex items-center gap-[10px] rounded-full bg-[#25D366] px-9 py-[14px] text-[15px] font-semibold text-white hover:opacity-90">
-            <WhatsAppLogo size={20} />
-            Chamar no WhatsApp
-          </a>
-        </div>
-      )}
     </section>
   );
 }
+
+/* -------------- Achadinhos inline (always-visible card, blurred grid bg) -------------- */
+function AchadinhosInline({ storeId, tag }: { storeId: string; tag: string }) {
+  const { store } = useStorefront();
+  const q = useQuery({
+    queryKey: ["ts-achadinhos-bg", storeId, tag],
+    queryFn: () => fetchProductsByTag(storeId, tag, 8),
+    staleTime: 60_000,
+  });
+  const products = q.data ?? [];
+  const [value, setValue] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [shake, setShake] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const onSubmit = async () => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 11) {
+      setInvalid(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await supabase.from("vip_group_leads" as any).insert({
+        store_id: store.id, whatsapp: digits, source: "achadinhos_inline",
+      });
+      window.open(VIP_GROUP_URL, "_blank", "noopener,noreferrer");
+      setSuccess(true);
+      setValue("");
+    } catch {
+      toast.error("Não foi possível concluir. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <section className="ts-achadinhos">
+      <div className="ts-achadinhos-bg">
+        {products.slice(0, 8).map((p) => {
+          const img = p.images?.[0]?.url ?? "";
+          return (
+            <div key={p.id} style={{
+              backgroundImage: img ? `url(${img})` : undefined,
+              backgroundColor: "#f0f0f0",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              aspectRatio: "4/5",
+            }} />
+          );
+        })}
+      </div>
+      <div className="ts-achadinhos-overlay" />
+      <div className="ts-achadinhos-content">
+        <div className="ts-achadinhos-card">
+          <span style={{ fontSize: 44, display: "block", marginBottom: 14 }}>🔒</span>
+          <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>
+            Achadinhos da The Shoes
+          </h2>
+          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 22 }}>
+            Digite seu WhatsApp e tenha acesso às ofertas mais incríveis da The Shoes. Exclusivo para clientes VIPs 😉
+          </p>
+          <input
+            type="tel"
+            inputMode="numeric"
+            value={value}
+            onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
+            placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD + XXXXX-XXXX)"}
+            disabled={success}
+            style={{
+              width: "100%", height: 52,
+              border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
+              borderRadius: 10, padding: "0 16px", fontSize: 16,
+              fontFamily: "DM Sans, sans-serif", textAlign: "center",
+              color: "#111", marginBottom: 12, outline: "none",
+              boxSizing: "border-box",
+            }}
+          />
+          {success ? (
+            <p style={{ color: "#25D366", fontSize: 15, fontWeight: 600, padding: "16px 0" }}>
+              ✓ Redirecionando para o grupo VIP! 🎉
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={submitting}
+              style={{
+                width: "100%", height: 52, background: "#25D366", color: "#fff",
+                border: "none", borderRadius: 10, fontSize: 16, fontWeight: 700,
+                cursor: "pointer", opacity: submitting ? 0.7 : 1,
+                animation: shake ? "tsShake 0.4s ease" : undefined,
+              }}>
+              {submitting ? "Enviando..." : "Desbloquear e ver ofertas"}
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 /* -------------- Instagram (manual uploads) -------------- */
 function InstagramSection({ handle, images }: { handle: string; images: TheShoesSettings["instagram_images"] }) {
@@ -591,15 +712,60 @@ function TheShoesStyles() {
       }
 
       /* FAQ */
-      .ts-faq-section { background: #ffffff; padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
-      @media (min-width: 1024px) { .ts-faq-section { padding: 64px 80px; } }
-      .ts-faq-box {
-        background: #dfdac8; border-radius: 16px;
-        padding: 36px 24px; max-width: 800px; margin: 0 auto;
-      }
-      @media (min-width: 768px) { .ts-faq-box { padding: 48px 40px; } }
+      .ts-faq-section { background: #ffffff; padding: 48px 20px; }
+      @media (min-width: 768px) { .ts-faq-section { padding: 64px 40px; } }
+      .ts-faq-wrap { max-width: 860px; margin: 0 auto; }
+      .ts-faq-eyebrow { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 8px; }
+      .ts-faq-title { font-size: 28px; font-weight: 900; color: #111; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.1; }
+      @media (min-width: 768px) { .ts-faq-title { font-size: 40px; } }
+      .ts-faq-box { background: #dfdac8; border-radius: 16px; padding: 28px 20px; width: 100%; }
+      @media (min-width: 768px) { .ts-faq-box { padding: 40px 40px 32px; } }
       .ts-faq-item { border-bottom: 1px solid rgba(0,0,0,0.12); padding: 20px 0; }
       .ts-faq-item:last-child { border-bottom: 0; }
+      .ts-faq-q { font-size: 15px; font-weight: 600; color: #111; flex: 1; padding-right: 16px; }
+      .ts-faq-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(0,0,0,0.08);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; color: #111; flex-shrink: 0;
+      }
+      .ts-faq-a { font-size: 14px; color: #555; line-height: 1.8; padding-top: 12px; animation: tsFade 0.2s ease; }
+      .ts-faq-divider { border-top: 1px solid rgba(0,0,0,0.1); margin: 24px 0; }
+      .ts-faq-help { font-size: 13px; color: #555; line-height: 1.6; text-align: center; margin-bottom: 16px; }
+      .ts-faq-cta {
+        background: #25D366; color: #fff; border: none; border-radius: 9999px;
+        padding: 14px 40px; font-size: 15px; font-weight: 600; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 10px;
+      }
+      @media (max-width: 767px) { .ts-faq-cta { width: 100%; justify-content: center; } }
+      @keyframes tsFade { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes tsShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+      /* Achadinhos inline */
+      .ts-achadinhos { position: relative; overflow: hidden; min-height: 320px; }
+      @media (min-width: 768px) { .ts-achadinhos { min-height: 400px; } }
+      .ts-achadinhos-bg {
+        position: absolute; inset: 0;
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;
+        filter: blur(3px); transform: scale(1.05); opacity: 0.6;
+      }
+      @media (min-width: 768px) {
+        .ts-achadinhos-bg { grid-template-columns: repeat(4, 1fr); }
+      }
+      .ts-achadinhos-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
+      .ts-achadinhos-content {
+        position: relative; z-index: 10;
+        display: flex; align-items: center; justify-content: center;
+        min-height: 320px; padding: 48px 20px;
+      }
+      @media (min-width: 768px) { .ts-achadinhos-content { min-height: 400px; } }
+      .ts-achadinhos-card {
+        background: #fff; border-radius: 16px; padding: 28px 20px;
+        max-width: 420px; width: 100%; text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      }
+      @media (min-width: 768px) { .ts-achadinhos-card { padding: 40px 32px; } }
+
 
       /* Banner numbered indicators */
       .ts-banner-indicators {

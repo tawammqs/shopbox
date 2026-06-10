@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Menu, Search, User, X } from "lucide-react";
+import { X } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { useStorefront } from "../StoreContext";
 import { useCart } from "@/stores/cart";
@@ -8,8 +8,6 @@ import { searchProductsLive } from "@/lib/storefront";
 import { effectivePrice, formatBRL } from "@/lib/format";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
-
-const ACCENT = "#c0392b";
 
 export function TheShoesHeader() {
   const { store, categories } = useStorefront();
@@ -51,9 +49,46 @@ export function TheShoesHeader() {
     setSearchOpen(false);
   };
 
+  const hamburger = (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+         stroke="#111" strokeWidth="1.8" strokeLinecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  );
+  const bellIcon = (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+         stroke="#111" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 01-3.46 0"/>
+    </svg>
+  );
+  const userIcon = (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+         stroke="#111" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>
+  );
+  const searchIcon = (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+         stroke="#111" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+  );
+  const bagIcon = (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+         stroke="#111" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path d="M16 10a4 4 0 01-8 0"/>
+    </svg>
+  );
+
   return (
     <header className="ts-header sticky top-0 z-40 bg-white">
-      {/* Announcement bar */}
       {ab?.enabled && ab.items?.length > 0 && (
         <div className="ts-ann" style={{ background: ab.bg_color, color: ab.text_color }}>
           <div className="ts-ann-track">
@@ -63,21 +98,16 @@ export function TheShoesHeader() {
         </div>
       )}
 
-      {/* Main bar */}
-      <div className="ts-main flex items-center border-b border-[#f0f0f0] bg-white">
-        {/* left */}
-        <div className="flex flex-1 items-center gap-2">
-          <button
-            aria-label="Abrir menu"
-            onClick={() => setNavOpen(true)}
-            className="grid h-11 w-11 place-items-center text-[#333] md:hidden"
-          >
-            <Menu className="h-[22px] w-[22px]" />
+      <div className="ts-main border-b border-[#f0f0f0]">
+        {/* LEFT */}
+        <div className="ts-main-left">
+          <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn">
+            {hamburger}
           </button>
         </div>
 
-        {/* center logo */}
-        <Link to="/loja/$slug" params={{ slug: store.slug }} className="flex shrink-0 items-center justify-center">
+        {/* CENTER logo */}
+        <Link to="/loja/$slug" params={{ slug: store.slug }} className="ts-main-center">
           {store.logo_url ? (
             <img src={store.logo_url} alt={store.name} className="ts-logo object-contain" />
           ) : (
@@ -85,60 +115,30 @@ export function TheShoesHeader() {
           )}
         </Link>
 
-        {/* right icons */}
-        <div className="flex flex-1 items-center justify-end gap-3 md:gap-4">
-          <button aria-label="Notificações" className="hidden h-11 w-11 place-items-center text-[#333] md:grid">
-            <Bell className="h-[22px] w-[22px]" strokeWidth={1.6} />
+        {/* RIGHT icons */}
+        <div className="ts-main-right">
+          <button aria-label="Notificações" className="ts-icon-btn ts-desktop-only">{bellIcon}</button>
+          <Link to="/loja/$slug/wishlist" params={{ slug: store.slug }} aria-label="Conta"
+                className="ts-icon-btn ts-desktop-only">{userIcon}</Link>
+          <button aria-label="Buscar" onClick={() => setSearchOpen((v) => !v)} className="ts-icon-btn">
+            {searchIcon}
           </button>
-          <button
-            aria-label="Buscar"
-            onClick={() => setSearchOpen((v) => !v)}
-            className="grid h-11 w-11 place-items-center text-[#333]"
-          >
-            <Search className="h-[22px] w-[22px]" strokeWidth={1.6} />
-          </button>
-          <Link
-            to="/loja/$slug/wishlist"
-            params={{ slug: store.slug }}
-            aria-label="Conta"
-            className="hidden h-11 w-11 place-items-center text-[#333] md:grid"
-          >
-            <User className="h-[22px] w-[22px]" strokeWidth={1.6} />
-          </Link>
-          <button
-            onClick={openCart}
-            aria-label="Carrinho"
-            className="relative grid h-11 w-11 place-items-center text-[#333]"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <path d="M16 10a4 4 0 01-8 0"/>
-            </svg>
-            {cartCount > 0 && (
-              <span
-                className="absolute -right-[2px] -top-[2px] grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold text-white"
-                style={{ background: ACCENT }}
-              >
-                {cartCount}
-              </span>
-            )}
+          <button onClick={openCart} aria-label="Carrinho" className="ts-icon-btn ts-cart-btn">
+            {bagIcon}
+            {cartCount > 0 && <span className="ts-cart-badge">{cartCount}</span>}
           </button>
         </div>
       </div>
 
-      {/* search bar */}
       {searchOpen && (
         <form onSubmit={submitSearch} className="border-b border-[#f0f0f0] bg-white px-4 py-3 md:px-10">
           <div className="relative mx-auto max-w-3xl">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999]" />
             <input
               autoFocus
               value={term}
               onChange={(e) => setTerm(e.target.value)}
               placeholder="Buscar produtos..."
-              className="h-11 w-full rounded-full border border-[#e5e5e5] bg-white pl-10 pr-10 text-sm outline-none focus:border-[#111]"
+              className="h-11 w-full rounded-full border border-[#e5e5e5] bg-white px-4 pr-10 text-sm outline-none focus:border-[#111]"
             />
             <button type="button" onClick={() => { setSearchOpen(false); setTerm(""); }}
               className="absolute right-2 top-1/2 -translate-y-1/2 grid h-7 w-7 place-items-center rounded-full text-[#666] hover:bg-[#f5f5f5]">
@@ -169,44 +169,21 @@ export function TheShoesHeader() {
         </form>
       )}
 
-      {/* desktop nav */}
-      <nav className="ts-nav hidden border-b border-[#f0f0f0] bg-white md:block">
-        <div className="mx-auto flex h-11 max-w-7xl items-center justify-center gap-8 px-10">
-          <Link
-            to="/loja/$slug" params={{ slug: store.slug }}
-            activeOptions={{ exact: true }}
-            className="text-[13px] font-medium text-[#333] transition-colors hover:text-[#111]"
-            activeProps={{ className: "text-[#111] font-semibold" }}
-          >
-            Início
-          </Link>
-          {roots.map((c) => (
-            <Link key={c.id}
-              to="/loja/$slug/categoria/$categorySlug"
-              params={{ slug: store.slug, categorySlug: c.slug }}
-              className="text-[13px] font-medium text-[#333] transition-colors hover:text-[#111]"
-              activeProps={{ className: "text-[#111] font-semibold" }}
-            >
-              {c.name}
-            </Link>
-          ))}
-        </div>
-      </nav>
-
-      {/* mobile drawer */}
+      {/* Navigation drawer (desktop + mobile) */}
       {navOpen && (
         <>
-          <div className="fixed inset-0 z-[60] bg-black/40 md:hidden" onClick={() => setNavOpen(false)} />
-          <aside className="fixed inset-y-0 left-0 z-[60] flex w-[300px] flex-col bg-white shadow-xl md:hidden" style={{ padding: 24 }}>
-            <div className="mb-4 flex items-center">
+          <div className="fixed inset-0 z-[200] bg-black/40" onClick={() => setNavOpen(false)} />
+          <aside className="ts-drawer">
+            <div className="mb-8 flex items-center">
               <button onClick={() => setNavOpen(false)} aria-label="Fechar"
-                className="grid h-8 w-8 place-items-center rounded-full border border-[#e0e0e0] text-[#333]">
-                <X className="h-4 w-4" />
+                className="grid h-9 w-9 place-items-center rounded-full border-[1.5px] border-[#e0e0e0] text-[#333]"
+                style={{ fontSize: 18 }}>
+                ×
               </button>
             </div>
             <div className="overflow-y-auto">
               <Link to="/loja/$slug" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="block border-b border-[#f5f5f5] py-4 text-[15px] font-medium text-[#111]">
+                className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Início
               </Link>
               {roots.map((c) => (
@@ -214,12 +191,12 @@ export function TheShoesHeader() {
                   to="/loja/$slug/categoria/$categorySlug"
                   params={{ slug: store.slug, categorySlug: c.slug }}
                   onClick={() => setNavOpen(false)}
-                  className="flex items-center justify-between border-b border-[#f5f5f5] py-4 text-[15px] font-medium text-[#111]">
+                  className="flex items-center justify-between border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                   <span>{c.name}</span>
-                  <span className="text-[#aaa]">›</span>
+                  <span className="text-[16px] text-[#aaa]">›</span>
                 </Link>
               ))}
-              <div className="mt-6">
+              <div className="mt-4">
                 <TheShoesVipBanner renderTrigger={(open) => (
                   <button
                     type="button"
@@ -238,11 +215,40 @@ export function TheShoesHeader() {
 
       <style>{`
         .ts-header, .ts-header * { font-family: 'DM Sans', 'Helvetica Neue', -apple-system, sans-serif; }
-        .ts-main { height: 64px; padding: 0 16px; }
-        .ts-logo { height: 44px; width: auto; max-width: 160px; }
+        .ts-main {
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          height: 56px;
+          padding: 0 16px;
+          background: #fff;
+        }
+        .ts-main-left { justify-self: start; display: flex; align-items: center; }
+        .ts-main-center { justify-self: center; display: flex; align-items: center; }
+        .ts-main-right { justify-self: end; display: flex; align-items: center; gap: 12px; }
+        .ts-logo { height: 40px; width: auto; max-width: 160px; }
+        .ts-icon-btn {
+          background: transparent; border: none; cursor: pointer;
+          color: #111; padding: 4px;
+          min-width: 44px; min-height: 44px;
+          display: inline-flex; align-items: center; justify-content: center;
+          transition: color 0.15s;
+        }
+        .ts-icon-btn:hover { color: #555; }
+        .ts-cart-btn { position: relative; }
+        .ts-cart-badge {
+          position: absolute; top: 2px; right: 2px;
+          background: #c0392b; color: #fff;
+          font-size: 10px; font-weight: 700;
+          width: 18px; height: 18px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center; line-height: 1;
+        }
+        .ts-desktop-only { display: none; }
         @media (min-width: 768px) {
-          .ts-main { height: 76px; padding: 0 40px; }
-          .ts-logo { height: 56px; max-width: 200px; }
+          .ts-main { height: 70px; padding: 0 40px; }
+          .ts-logo { height: 52px; max-width: 180px; }
+          .ts-main-right { gap: 20px; }
+          .ts-desktop-only { display: inline-flex; }
         }
         .ts-ann { height: 32px; display: flex; align-items: center; overflow: hidden;
           font-size: 12px; font-weight: 500; letter-spacing: 0.02em; }
@@ -250,6 +256,18 @@ export function TheShoesHeader() {
           animation: tsAnnScroll 30s linear infinite; }
         .ts-ann-track > span { padding: 0 20px; }
         @keyframes tsAnnScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .ts-drawer {
+          position: fixed; top: 0; left: 0; bottom: 0;
+          width: 320px; max-width: 90vw;
+          background: #fff; z-index: 201;
+          padding: 24px; overflow-y: auto;
+          animation: tsDrawerIn 0.3s ease forwards;
+        }
+        @keyframes tsDrawerIn {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
+        }
       `}</style>
     </header>
   );
