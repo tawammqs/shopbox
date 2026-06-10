@@ -120,6 +120,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         cep: form.cep,
         address: form.address,
         city_state: form.city_state,
+        paymentMethod: isTheShoes ? form.paymentMethod : undefined,
       };
 
       if (buyNow) {
