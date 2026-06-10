@@ -85,6 +85,7 @@ function StorefrontLayout() {
         {isTheShoes ? <TheShoesFooter /> : <StorefrontFooter />}
         {isTheShoes ? <TheShoesCartDrawer /> : <CartDrawer />}
         {isTheShoes && <TheShoesCouponTab />}
+        {isTheShoes && <TheShoesGlobalStyles />}
         <WelcomePopup />
         <MarketingScripts pixelId={store.facebook_pixel_id} gaId={store.google_analytics_id} />
       </div>
