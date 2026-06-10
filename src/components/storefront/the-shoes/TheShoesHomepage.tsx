@@ -9,6 +9,7 @@ import { useStorefront } from "../StoreContext";
 import { fetchActiveBanners, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { fetchTheShoesSettings, type TheShoesSettings } from "@/lib/the-shoes-theme";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
+import { getInstallment } from "@/lib/installments";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { trackAddToCart } from "@/lib/tracking";
