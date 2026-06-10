@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft, ChevronRight, Plus, Minus, ShoppingBag, Heart, Share2,
   FileText, Ruler, ShieldCheck, Truck, CreditCard, Star, ThumbsUp, CheckCircle2, X,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
@@ -17,6 +18,10 @@ import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
 import { CheckoutFormDialog } from "@/components/storefront/CheckoutFormDialog";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function TheShoesProductPage({ product }: { product: any }) {
