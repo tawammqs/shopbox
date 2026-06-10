@@ -43,14 +43,6 @@ export function TheShoesCartDrawer() {
   const total = Math.max(0, subtotal - (coupon?.discount ?? 0));
   const cartCount = items.reduce((a, b) => a + b.quantity, 0);
 
-  const settingsQ = useQuery({
-    queryKey: ["the-shoes-settings", store.id],
-    queryFn: () => fetchTheShoesSettings(store.id),
-    staleTime: 30_000,
-  });
-  const upsellThreshold = settingsQ.data?.cart_upsell_threshold ?? 0;
-  const upsellMessage = settingsQ.data?.cart_upsell_message ?? "frete grátis";
-
   const bestSellersQ = useQuery({
     queryKey: ["ts-bestsellers", store.id],
     queryFn: () => fetchBestSellersForStore(store.id, 8),
@@ -66,9 +58,9 @@ export function TheShoesCartDrawer() {
     return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
-  const pct = upsellThreshold > 0 ? Math.min(100, (subtotal / upsellThreshold) * 100) : 0;
-  const remaining = Math.max(0, upsellThreshold - subtotal);
-  const reachedUpsell = upsellThreshold > 0 && subtotal >= upsellThreshold;
+  const pct = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const reachedUpsell = subtotal >= FREE_SHIPPING_THRESHOLD;
 
   const addCrossSell = (p: ProductCardData) => {
     if (p.colors.length > 0) {
