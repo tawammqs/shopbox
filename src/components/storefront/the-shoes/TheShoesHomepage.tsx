@@ -282,43 +282,107 @@ function PromoBannerSection({ promo }: { promo: TheShoesSettings["promo_banner"]
   );
 }
 
-/* -------------- Icons / Benefits — swipeable carousel -------------- */
+/* -------------- Icons / Benefits -------------- */
+const ICON_SVGS: Record<string, JSX.Element> = {
+  truck: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="15" height="13" rx="1"/>
+      <path d="M16 8h4l3 5v4h-7V8z"/>
+      <circle cx="5.5" cy="18.5" r="2.5"/>
+      <circle cx="18.5" cy="18.5" r="2.5"/>
+    </svg>
+  ),
+  exchange: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="1 4 1 10 7 10"/>
+      <polyline points="23 20 23 14 17 14"/>
+      <path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/>
+    </svg>
+  ),
+  lock: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0110 0v4"/>
+    </svg>
+  ),
+  chat: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  ),
+};
+function pickIcon(raw: string): JSX.Element {
+  const v = (raw || "").toLowerCase();
+  if (v.includes("🚚") || v.includes("truck") || v.includes("frete")) return ICON_SVGS.truck;
+  if (v.includes("🔄") || v.includes("troca") || v.includes("exchange")) return ICON_SVGS.exchange;
+  if (v.includes("🔒") || v.includes("segur") || v.includes("lock")) return ICON_SVGS.lock;
+  if (v.includes("💬") || v.includes("suporte") || v.includes("chat") || v.includes("whats")) return ICON_SVGS.chat;
+  return ICON_SVGS.truck;
+}
+
 function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "center", loop: true, containScroll: false });
-  const [selected, setSelected] = useState(0);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    const onSel = () => setSelected(emblaApi.selectedScrollSnap());
-    emblaApi.on("select", onSel); onSel();
-    return () => { emblaApi.off("select", onSel); };
-  }, [emblaApi]);
-
   if (!items?.length) return null;
   return (
     <section className="ts-icons-section bg-white">
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="ts-icons-track">
-          {items.map((it, i) => (
-            <div key={i} className="ts-icons-item">
-              <div className="flex flex-col items-center px-5 text-center">
-                <div className="grid h-[72px] w-[72px] place-items-center rounded-full text-[28px]"
-                  style={{ background: "#dfdac8" }}>
-                  <span>{it.icon}</span>
-                </div>
-                <div className="mt-4 mb-1 text-[14px] font-bold text-[#111]">{it.title}</div>
-                <div className="text-[13px] font-normal text-[#666]">{it.subtitle}</div>
-              </div>
+      <div className="ts-icons-grid">
+        {items.map((it, i) => (
+          <div key={i} className="flex flex-col items-center px-3 text-center">
+            <div className="grid h-[72px] w-[72px] place-items-center rounded-full"
+              style={{ background: "#dfdac8" }}>
+              {pickIcon(it.icon)}
             </div>
-          ))}
+            <div className="mt-4 mb-1 text-[14px] font-bold text-[#111]">{it.title}</div>
+            <div className="text-[13px] font-normal text-[#666]">{it.subtitle}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* -------------- Video Testimonials -------------- */
+function VideoTestimonialsSection({ storeId, storeSlug }: { storeId: string; storeSlug: string }) {
+  const q = useQuery({
+    queryKey: ["ts-video-testimonials", storeId],
+    queryFn: () => fetchStoreVideoTestimonials(storeId, 8),
+    staleTime: 60_000,
+  });
+  const videos = q.data ?? [];
+  if (videos.length === 0) return null;
+  return (
+    <section className="ts-section">
+      <div className="ts-section-head">
+        <div className="min-w-0">
+          <h2 className="ts-section-title">Veja nossos clientes usando</h2>
+          <Link to="/loja/$slug" params={{ slug: storeSlug }}
+            className="mt-2 inline-flex items-center gap-1 text-[13px] font-medium text-[#aaa] hover:text-[#111]">
+            ver mais
+            <span className="grid h-5 w-5 place-items-center rounded-full border border-[#ddd] text-[10px]">›</span>
+          </Link>
         </div>
       </div>
-      <div className="mt-6 flex justify-center gap-[6px]">
-        {items.map((_, i) => (
-          <button key={i} aria-label={`Ir para ${i + 1}`} onClick={() => emblaApi?.scrollTo(i)}
-            className="h-[8px] rounded-full transition-all"
-            style={{ width: selected === i ? 24 : 8, background: selected === i ? "#111" : "#ddd" }} />
-        ))}
+      <div className="flex gap-3 overflow-x-auto pb-2 md:gap-4" style={{ scrollbarWidth: "thin" }}>
+        {videos.map((v: any) => {
+          const product = v.products;
+          const thumb = product?.product_images?.[0]?.url ?? "";
+          return (
+            <Link key={v.id}
+              to="/loja/$slug/produto/$productSlug"
+              params={{ slug: storeSlug, productSlug: product?.slug ?? "" }}
+              className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[12px] bg-[#f5f5f5] md:w-[200px]">
+              {thumb && <img src={thumb} alt="" className="h-full w-full object-cover" loading="lazy" />}
+              <div className="absolute inset-0 grid place-items-center">
+                <div className="grid h-11 w-11 place-items-center rounded-full bg-black/50 text-white">
+                  <span className="ml-[2px] text-[14px]">▶</span>
+                </div>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 px-3 py-3 text-[12px] font-semibold text-white"
+                style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}>
+                Ver produto →
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
