@@ -26,10 +26,14 @@ function buildCustomerBlock(customer?: CustomerInfo | null): string[] {
   return ["", "👤 *Meus dados:*", ...lines];
 }
 
-function buildPaymentBlock(paymentMethod?: string | null): string[] {
+function buildPaymentBlock(paymentMethod?: string | null, total?: number): string[] {
   if (!paymentMethod) return [];
   const label = paymentMethod === "pix" ? "PIX" : "Cartão de crédito (até 3x sem juros)";
-  return ["", `💳 *Forma de pagamento:* ${label}`];
+  const lines = ["", `💳 *Forma de pagamento:* ${label}`];
+  if (paymentMethod === "cartao" && typeof total === "number" && total >= 9) {
+    lines.push(`💳 Parcelamento: 3x de ${formatBRL(total / 3)} sem juros`);
+  }
+  return lines;
 }
 
 export function buildCheckoutMessage(
@@ -56,7 +60,7 @@ export function buildCheckoutMessage(
     out.push(`Cupom ${coupon.code}: -${formatBRL(coupon.discount)}`);
   }
   out.push(`💰 *Total: ${formatBRL(total)}*`);
-  out.push(...buildPaymentBlock(customer?.paymentMethod));
+  out.push(...buildPaymentBlock(customer?.paymentMethod, total));
   out.push(...buildCustomerBlock(customer));
   out.push("", "Aguardo o retorno para confirmar pagamento e entrega! 🙏");
   return out.join("\n");
@@ -100,7 +104,7 @@ export function buildBuyNowMessage(opts: {
     `Valor: ${formatBRL(opts.unitPrice * opts.quantity)}`,
     "",
     `Link: ${opts.productUrl}`,
-    ...buildPaymentBlock(opts.customer?.paymentMethod),
+    ...buildPaymentBlock(opts.customer?.paymentMethod, opts.unitPrice * opts.quantity),
     ...buildCustomerBlock(opts.customer),
   ].filter(Boolean) as string[];
   return lines.join("\n");

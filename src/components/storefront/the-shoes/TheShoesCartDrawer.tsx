@@ -148,6 +148,17 @@ export function TheShoesCartDrawer() {
                         </div>
                         <div className="text-right">
                           <div className="text-[15px] font-bold text-[#111]">{formatBRL(i.unitPrice * i.quantity)}</div>
+                          {i.unitPrice * i.quantity >= 9 && (
+                            <span style={{
+                              fontFamily: 'DM Sans, sans-serif',
+                              fontSize: '11px',
+                              color: '#aaa',
+                              display: 'block',
+                              marginTop: '2px',
+                            }}>
+                              3x de {formatBRL((i.unitPrice * i.quantity) / 3)} sem juros
+                            </span>
+                          )}
                           <button onClick={() => removeItem(i.productId, i.colorId, i.sizeId)}
                             className="mt-1 text-[12px] text-[#aaa] underline hover:text-[#c0392b]">
                             Remover

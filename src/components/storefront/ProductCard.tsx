@@ -8,6 +8,7 @@ import { useCart } from "@/stores/cart";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
+import { getInstallment } from "@/lib/installments";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
@@ -133,6 +134,23 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <span className="text-base font-bold text-foreground">{formatBRL(price)}</span>
           {pct > 0 && <span className="text-xs text-muted-foreground line-through">{formatBRL(p.price)}</span>}
         </div>
+        {store.slug === "the-shoes" && (() => {
+          const inst = getInstallment(p.price, p.promo_price);
+          if (!inst.show) return null;
+          return (
+            <span style={{
+              display: 'block',
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: '11px',
+              fontWeight: 400,
+              color: '#aaa',
+              marginTop: '2px',
+              lineHeight: 1.3,
+            }}>
+              3x de {inst.formatted} sem juros
+            </span>
+          );
+        })()}
 
         {p.colors.length > 0 && (
           <div className="flex items-center gap-1 pt-1">

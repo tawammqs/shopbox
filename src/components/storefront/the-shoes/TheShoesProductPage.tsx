@@ -205,6 +205,18 @@ export function TheShoesProductPage({ product }: { product: any }) {
             {pct > 0 && (
               <p className="mt-1 text-sm text-[#111]">Você economiza {formatBRL(Number(product.price) - price)}</p>
             )}
+            {price >= 9 && (
+              <span style={{
+                display: 'block',
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: '13px',
+                fontWeight: 400,
+                color: '#888',
+                marginTop: '4px',
+              }}>
+                ou 3x de {formatBRL(price / 3)} sem juros
+              </span>
+            )}
           </div>
 
           {colors.length > 0 && (
