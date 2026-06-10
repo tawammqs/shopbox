@@ -447,3 +447,118 @@ function ListEditor<T>({
     </div>
   );
 }
+
+function VideoSectionEditor({
+  storeId,
+  videos,
+  onChange,
+}: {
+  storeId: string;
+  videos: VideoEntry[];
+  onChange: (v: VideoEntry[]) => void;
+}) {
+  const [products, setProducts] = useState<Array<{ id: string; title: string }>>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingProducts(true);
+    supabase
+      .from("products")
+      .select("id, title")
+      .eq("store_id", storeId)
+      .order("title", { ascending: true })
+      .then(({ data }) => {
+        if (cancelled) return;
+        setProducts(data ?? []);
+        setLoadingProducts(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [storeId]);
+
+  const setAt = (i: number, next: VideoEntry) => {
+    const copy = [...videos];
+    copy[i] = next;
+    onChange(copy);
+  };
+  const remove = (i: number) => onChange(videos.filter((_, idx) => idx !== i));
+  const add = () => onChange([...videos, { video_url: "", product_id: "" }]);
+  const move = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= videos.length) return;
+    const copy = [...videos];
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+    onChange(copy);
+  };
+
+  if (videos.length === 0) {
+    return (
+      <div className="space-y-3">
+        <div className="rounded-xl border border-dashed border-border bg-background p-6 text-center text-sm text-muted-foreground">
+          Nenhum vídeo configurado. Clique em "Adicionar vídeo" para começar.
+        </div>
+        <Button type="button" variant="outline" size="sm" onClick={add}>
+          <Plus className="mr-2 h-4 w-4" /> Adicionar vídeo
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {videos.map((v, i) => (
+        <div key={i} className="space-y-3 rounded-xl border border-border bg-background p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground">Vídeo {i + 1}</span>
+            <div className="flex items-center gap-1">
+              <Button type="button" size="sm" variant="ghost" onClick={() => move(i, -1)} disabled={i === 0}>
+                <ArrowUp className="h-4 w-4" />
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => move(i, 1)} disabled={i === videos.length - 1}>
+                <ArrowDown className="h-4 w-4" />
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => remove(i)}>
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label className="mb-2 block">Vídeo</Label>
+            <VideoSourcePicker
+              storeId={storeId}
+              videoUrl={v.video_url || null}
+              videoType={null}
+              onChange={({ url }) => setAt(i, { ...v, video_url: url ?? "" })}
+            />
+          </div>
+
+          <div>
+            <Label className="mb-1 block">Produto vinculado</Label>
+            {loadingProducts ? (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" /> Carregando produtos…
+              </div>
+            ) : (
+              <select
+                value={v.product_id}
+                onChange={(e) => setAt(i, { ...v, product_id: e.target.value })}
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="">— Selecione um produto —</option>
+                {products.map((p) => (
+                  <option key={p.id} value={p.id}>{p.title}</option>
+                ))}
+              </select>
+            )}
+          </div>
+        </div>
+      ))}
+      <Button type="button" variant="outline" size="sm" onClick={add}>
+        <Plus className="mr-2 h-4 w-4" /> Adicionar vídeo
+      </Button>
+    </div>
+  );
+}
