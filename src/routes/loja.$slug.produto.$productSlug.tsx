@@ -51,6 +51,10 @@ function ProductPage() {
     );
   }
 
+  if (store.slug === "the-shoes") {
+    return <TheShoesProductPage product={data} />;
+  }
+
   return <ProductInner product={data} />;
 }
 
