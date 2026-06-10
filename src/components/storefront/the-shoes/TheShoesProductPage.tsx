@@ -325,33 +325,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
         </section>
       )}
 
-      {/* Accordion */}
-      <section className="mt-8 max-w-3xl">
-        <div className="border-t border-[#e5e5e5]">
-          {accItems.map((it) => {
-            const Icon = it.icon;
-            const open = openAcc === it.id;
-            return (
-              <div key={it.id} className="border-b border-[#e5e5e5]">
-                <button
-                  onClick={() => setOpenAcc(open ? null : it.id)}
-                  className="flex w-full items-center justify-between px-3 py-4 text-left"
-                >
-                  <span className="flex items-center gap-3 text-[13px] font-bold tracking-wide text-[#111]">
-                    <Icon className="h-4 w-4" /> {it.label}
-                  </span>
-                  <span className="text-xl font-light text-[#111]">{open ? "−" : "+"}</span>
-                </button>
-                {open && (
-                  <div className="px-3 pb-5 text-[14px] leading-relaxed text-[#555]">
-                    <p className="whitespace-pre-line">{it.body}</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      {/* (Accordion moved into info column above) */}
 
       {/* Video carousel (full) */}
       {videos.length > 0 && (
