@@ -59,7 +59,8 @@ export function TheShoesHomepage() {
       <ProductCarouselSection
         storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag}
       />
-      <div className="ts-section-narrow"><TheShoesVipBanner /></div>
+      <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
+
       <MarqueeBar cfg={s.marquee1} />
       <PromoBannerSection promo={s.promo_banner} />
       <ProductCarouselSection
