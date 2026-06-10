@@ -13,6 +13,7 @@ export type IconItem = { icon: string; title: string; subtitle: string };
 export type Testimonial = { name: string; text: string; rating: number; image_url: string };
 export type FaqItem = { question: string; answer: string };
 export type FooterLink = { label: string; url: string };
+export type InstaImage = { image_url: string; link: string };
 
 export type TheShoesSettings = {
   announcement_bar: AnnouncementBar;
