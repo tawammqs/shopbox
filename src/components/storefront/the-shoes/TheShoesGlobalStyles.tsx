@@ -30,6 +30,15 @@ const CSS = `
   background: #ffffff;
 }
 
+/* Cart drawer font enforcement */
+[data-store-slug="the-shoes"] .ts-cart,
+[data-store-slug="the-shoes"] .ts-cart *,
+[data-store-slug="the-shoes"] .cart-drawer,
+[data-store-slug="the-shoes"] [class*="cart-drawer"],
+[data-store-slug="the-shoes"] [class*="cart-slide"] {
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif !important;
+}
+
 /* ===== Product cards (target common storefront card classes) ===== */
 [data-store-slug="the-shoes"] .product-card,
 [data-store-slug="the-shoes"] [class*="product-card"],

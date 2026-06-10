@@ -322,6 +322,18 @@ const ICON_SVGS: Record<string, ReactNode> = {
     </svg>
   ),
 };
+
+function LockIcon({ size = 52 }: { size?: number } = {}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="#111" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"
+      style={{ display: "block", margin: "0 auto 16px" }}>
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
+      <circle cx="12" cy="16" r="1" fill="#111" />
+    </svg>
+  );
+}
 function pickIcon(raw: string): ReactNode {
   const v = (raw || "").toLowerCase();
   if (v.includes("🚚") || v.includes("truck") || v.includes("frete")) return ICON_SVGS.truck;
@@ -362,35 +374,42 @@ function VideoTestimonialsSection({ storeId, storeSlug }: { storeId: string; sto
   if (videos.length === 0) return null;
   return (
     <section className="ts-section">
-      <div className="ts-section-head">
-        <div className="min-w-0">
-          <h2 className="ts-section-title">Veja nossos clientes usando</h2>
-          <Link to="/loja/$slug" params={{ slug: storeSlug }}
-            className="mt-2 inline-flex items-center gap-1 text-[13px] font-medium text-[#aaa] hover:text-[#111]">
-            ver mais
-            <span className="grid h-5 w-5 place-items-center rounded-full border border-[#ddd] text-[10px]">›</span>
-          </Link>
-        </div>
-      </div>
+      <h2 className="mb-8 text-center text-[26px] font-extrabold text-[#111]" style={{ letterSpacing: "-0.5px" }}>
+        Veja mais detalhes em vídeo
+      </h2>
       <div className="flex gap-3 overflow-x-auto pb-2 md:gap-4" style={{ scrollbarWidth: "thin" }}>
         {videos.map((v: any) => {
           const product = v.products;
           const thumb = product?.product_images?.[0]?.url ?? "";
+          const price = product ? Number(product.promo_price ?? product.price ?? 0) : 0;
+          const original = product?.promo_price != null ? Number(product.price) : null;
           return (
             <Link key={v.id}
               to="/loja/$slug/produto/$productSlug"
               params={{ slug: storeSlug, productSlug: product?.slug ?? "" }}
-              className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[12px] bg-[#f5f5f5] md:w-[200px]">
+              className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[16px] bg-[#f5f5f5] md:w-[200px]">
               {thumb && <img src={thumb} alt="" className="h-full w-full object-cover" loading="lazy" />}
               <div className="absolute inset-0 grid place-items-center">
                 <div className="grid h-11 w-11 place-items-center rounded-full bg-black/50 text-white">
                   <span className="ml-[2px] text-[14px]">▶</span>
                 </div>
               </div>
-              <div className="absolute inset-x-0 bottom-0 px-3 py-3 text-[12px] font-semibold text-white"
-                style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}>
-                Ver produto →
-              </div>
+              {product && (
+                <div className="absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-[10px] bg-white px-3 py-2">
+                  {thumb && <img src={thumb} alt="" className="h-11 w-11 shrink-0 rounded-md object-cover" />}
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-2 text-[12px] font-semibold leading-tight text-[#111]">
+                      {product.title}
+                    </p>
+                    <div className="mt-1 flex items-baseline gap-1">
+                      <span className="text-[13px] font-bold text-[#111]">{formatBRL(price)}</span>
+                      {original != null && (
+                        <span className="text-[11px] text-[#aaa] line-through">{formatBRL(original)}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </Link>
           );
         })}
@@ -554,9 +573,9 @@ function AchadinhosInline({ storeId, tag }: { storeId: string; tag: string }) {
       <div className="ts-achadinhos-overlay" />
       <div className="ts-achadinhos-content">
         <div className="ts-achadinhos-card">
-          <span style={{ fontSize: 44, display: "block", marginBottom: 14 }}>🔒</span>
+          <LockIcon />
           <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>
-            Achadinhos da The Shoes
+            Ofertas Secretas
           </h2>
           <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 22 }}>
             Digite seu WhatsApp e tenha acesso às ofertas mais incríveis da The Shoes. Exclusivo para clientes VIPs 😉

@@ -14,6 +14,18 @@ import { cn } from "@/lib/utils";
 
 const ACCENT = "#c0392b";
 
+function TruckIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="13" height="13" rx="1" />
+      <path d="M14 8h4l3 5v3h-7V8z" />
+      <circle cx="5.5" cy="18.5" r="2" />
+      <circle cx="18.5" cy="18.5" r="2" />
+    </svg>
+  );
+}
+
 export function TheShoesCartDrawer() {
   const { store } = useStorefront();
   const isOpen = useCart((s) => s.isOpen);
@@ -197,8 +209,10 @@ export function TheShoesCartDrawer() {
               )}
 
               {/* Shipping info note */}
-              <div className="mt-4 flex items-center gap-2 rounded-lg bg-[#f8f8f8] px-4 py-3">
-                <span className="text-base">🚚</span>
+              <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#f8f8f8] px-4 py-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full" style={{ background: "#dfdac8" }}>
+                  <TruckIcon size={20} />
+                </span>
                 <p className="text-[12px] text-[#666]">
                   O frete será combinado pelo WhatsApp após a finalização do pedido.
                 </p>
@@ -210,8 +224,10 @@ export function TheShoesCartDrawer() {
               {upsellThreshold > 0 && (
                 <div className="mb-4 rounded-[10px] bg-[#f8f8f8] p-4">
                   <div className="relative mb-2 h-[6px] rounded-full bg-[#e0e0e0]">
-                    <div className="absolute -top-5 -translate-x-1/2 text-[20px] transition-all duration-500"
-                      style={{ left: `${Math.min(pct, 95)}%` }}>🚚</div>
+                    <div className="absolute -top-[18px] grid h-9 w-9 -translate-x-1/2 place-items-center rounded-full transition-all duration-500"
+                      style={{ left: `${Math.min(pct, 95)}%`, background: "#dfdac8" }}>
+                      <TruckIcon size={20} />
+                    </div>
                     <div className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${pct}%`, background: "#25D366" }} />
                   </div>

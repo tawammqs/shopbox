@@ -13,6 +13,29 @@ function formatWhatsapp(raw: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
+function LockSmall() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+      stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
+      <circle cx="12" cy="16" r="1" fill="white" />
+    </svg>
+  );
+}
+
+function LockBig() {
+  return (
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="none"
+      stroke="#111" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"
+      style={{ display: "block", margin: "0 auto 16px" }}>
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
+      <circle cx="12" cy="16" r="1" fill="#111" />
+    </svg>
+  );
+}
+
 export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: () => void) => React.ReactNode } = {}) {
   const { store } = useStorefront();
   const [open, setOpen] = useState(false);
@@ -78,9 +101,9 @@ export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: ()
           className="my-6 flex w-full cursor-pointer items-center justify-center gap-3 border-0 text-white"
           style={{ background: "#25D366", padding: "20px 24px" }}
         >
-          <span style={{ fontSize: 20 }}>🔒</span>
+          <LockSmall />
           <span style={{ fontSize: 15, fontWeight: 600 }}>
-            Achadinhos da The Shoes — Clique para desbloquear as ofertas VIP
+            Ofertas Secretas — Clique para desbloquear as ofertas VIP
           </span>
         </button>
       )}
@@ -129,9 +152,9 @@ export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: ()
             >
               ×
             </button>
-            <span style={{ fontSize: 48, marginBottom: 16, display: "block" }}>🔒</span>
+            <LockBig />
             <h2 style={{ fontWeight: 800, fontSize: 22, color: "#1a1a1a", marginBottom: 12 }}>
-              Achadinhos da The Shoes
+              Ofertas Secretas
             </h2>
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 24 }}>
               Digite seu WhatsApp e tenha acesso às ofertas mais incríveis da The Shoes. Exclusivo para clientes VIPs 😉
