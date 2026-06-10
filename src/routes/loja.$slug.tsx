@@ -79,7 +79,7 @@ function StorefrontLayout() {
         <main>
           <Outlet />
         </main>
-        <StorefrontFooter />
+        {isTheShoes ? <TheShoesFooter /> : <StorefrontFooter />}
         <CartDrawer />
         <WelcomePopup />
         <MarketingScripts pixelId={store.facebook_pixel_id} gaId={store.google_analytics_id} />
