@@ -344,19 +344,41 @@ function pickIcon(raw: string): ReactNode {
 }
 
 function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
   if (!items?.length) return null;
+
+  const onScroll = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const idx = Math.round(el.scrollLeft / (el.clientWidth * 0.6));
+    setActive(Math.max(0, Math.min(items.length - 1, idx)));
+  };
+  const goTo = (i: number) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const item = el.children[i] as HTMLElement | undefined;
+    item?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  };
+
   return (
     <section className="ts-icons-section bg-white">
-      <div className="ts-icons-carousel">
+      <div className="ts-icons-carousel" ref={scrollerRef} onScroll={onScroll}>
         {items.map((it, i) => (
           <div key={i} className="ts-icons-item">
-            <div className="grid h-[72px] w-[72px] place-items-center rounded-full"
+            <div className="ts-icons-circle grid place-items-center rounded-full"
               style={{ background: "#dfdac8" }}>
               {pickIcon(it.icon)}
             </div>
             <div className="mt-4 mb-1 text-[14px] font-bold text-[#111]">{it.title}</div>
             <div className="text-[13px] font-normal text-[#666]">{it.subtitle}</div>
           </div>
+        ))}
+      </div>
+      <div className="ts-icons-dots md:hidden">
+        {items.map((_, i) => (
+          <button key={i} aria-label={`Ir para ${i + 1}`} onClick={() => goTo(i)}
+            className="ts-icons-dot" data-active={active === i ? "true" : "false"} />
         ))}
       </div>
     </section>
@@ -707,8 +729,21 @@ function TheShoesStyles() {
         display: flex; flex-direction: column; align-items: center; text-align: center;
         padding: 0 8px;
       }
+      .ts-icons-circle { width: 56px; height: 56px; }
+      .ts-icons-circle svg { width: 22px; height: 22px; }
+      .ts-icons-dots {
+        display: flex; justify-content: center; gap: 8px; margin-top: 16px;
+      }
+      .ts-icons-dot {
+        width: 7px; height: 7px; border-radius: 9999px;
+        background: #d4d4d4; border: 0; padding: 0; cursor: pointer;
+        transition: background 0.2s, transform 0.2s;
+      }
+      .ts-icons-dot[data-active="true"] { background: #111; transform: scale(1.15); }
       @media (min-width: 768px) {
         .ts-icons-item { flex: 0 0 25%; }
+        .ts-icons-circle { width: 72px; height: 72px; }
+        .ts-icons-circle svg { width: 28px; height: 28px; }
       }
 
       /* Testimonials — strict overflow */
