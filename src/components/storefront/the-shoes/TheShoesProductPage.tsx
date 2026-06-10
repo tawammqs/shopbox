@@ -253,7 +253,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
               </button>
             </div>
             <button onClick={addToCart}
-              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#111] text-sm font-semibold text-white hover:opacity-90">
+              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#dfdac8] text-sm font-semibold text-[#111] hover:opacity-90">
               <ShoppingBag className="h-4 w-4" /> Adicionar ao carrinho
             </button>
           </div>
@@ -272,6 +272,34 @@ export function TheShoesProductPage({ product }: { product: any }) {
               className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[#e0e0e0] py-2 text-sm hover:bg-[#f5f5f5]">
               <Share2 className="h-4 w-4" /> Compartilhar
             </button>
+          </div>
+
+          {/* Accordion (desktop appears here under buttons) */}
+          <div className="pt-2">
+            <div className="border-t border-[#e5e5e5]">
+              {accItems.map((it) => {
+                const Icon = it.icon;
+                const open = openAcc === it.id;
+                return (
+                  <div key={it.id} className="border-b border-[#e5e5e5]">
+                    <button
+                      onClick={() => setOpenAcc(open ? null : it.id)}
+                      className="flex w-full items-center justify-between px-1 py-4 text-left"
+                    >
+                      <span className="flex items-center gap-3 text-[13px] font-bold tracking-wide text-[#111]">
+                        <Icon className="h-4 w-4" /> {it.label}
+                      </span>
+                      <span className="text-xl font-light text-[#111]">{open ? "−" : "+"}</span>
+                    </button>
+                    {open && (
+                      <div className="px-1 pb-5 text-[14px] leading-relaxed text-[#555]">
+                        <p className="whitespace-pre-line">{it.body}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
