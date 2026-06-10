@@ -116,6 +116,10 @@ export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
     coupon_code: "PRIMEIRA05",
     whatsapp_group_url: "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r",
   },
+  video_section: {
+    title: "Veja mais detalhes em vídeo",
+    videos: [],
+  },
 };
 
 export function mergeSettings(raw: unknown): TheShoesSettings {
