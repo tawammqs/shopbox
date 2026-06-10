@@ -184,7 +184,7 @@ export function TheShoesCartDrawer() {
                           <div className="min-w-0 flex-1">
                             <p className="line-clamp-2 text-[12px] font-semibold leading-tight text-[#111]">{p.title}</p>
                             <div className="mt-1 flex items-baseline gap-1">
-                              <span className="text-[12px] font-bold text-[#c0392b]">{formatBRL(price)}</span>
+                              <span className="text-[12px] font-bold text-[#111]">{formatBRL(price)}</span>
                               {dpct > 0 && (
                                 <span className="text-[10px] text-[#aaa] line-through">{formatBRL(p.price)}</span>
                               )}
