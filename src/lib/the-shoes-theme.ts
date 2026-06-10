@@ -15,6 +15,15 @@ export type FaqItem = { question: string; answer: string };
 export type FooterLink = { label: string; url: string };
 export type InstaImage = { image_url: string; link: string };
 
+export type CouponPopup = {
+  enabled: boolean;
+  tab_text: string;
+  tab_bg_color: string;
+  description: string;
+  coupon_code: string;
+  whatsapp_group_url: string;
+};
+
 export type TheShoesSettings = {
   announcement_bar: AnnouncementBar;
   section1_title: string;
@@ -41,6 +50,7 @@ export type TheShoesSettings = {
   cart_upsell_message: string;
   cart_upsell_threshold: number;
   whatsapp_button: string;
+  coupon_popup: CouponPopup;
 };
 
 export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
