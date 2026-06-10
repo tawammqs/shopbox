@@ -61,6 +61,7 @@ export type TheShoesSettings = {
   cart_upsell_threshold: number;
   whatsapp_button: string;
   coupon_popup: CouponPopup;
+  video_section: VideoSection;
 };
 
 export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
