@@ -6,7 +6,7 @@ import { useCart } from "@/stores/cart";
 import { useStorefront } from "../StoreContext";
 import { formatBRL, effectivePrice, discountPct } from "@/lib/format";
 import { fetchBestSellersForStore, type ProductCardData } from "@/lib/storefront";
-import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
+
 import { CheckoutFormDialog } from "../CheckoutFormDialog";
 import { trackAddToCart, trackInitiateCheckout } from "@/lib/tracking";
 import { toast } from "sonner";
