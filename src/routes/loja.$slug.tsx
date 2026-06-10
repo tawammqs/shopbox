@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { fetchStoreBySlug, fetchCategories } from "@/lib/storefront";
+import { fetchStoreBySlug, fetchCategories, fetchActiveThemeSlug } from "@/lib/storefront";
 import { StoreProvider } from "@/components/storefront/StoreContext";
 import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
 import { StorefrontNav, MobileNavDrawer } from "@/components/storefront/StorefrontNav";
