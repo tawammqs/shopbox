@@ -141,6 +141,9 @@ export function CartDrawer() {
         ) : (
           <>
             <div className="flex-1 overflow-y-auto px-5 py-4">
+              {isTheShoes && upsellThreshold > 0 && (
+                <TheShoesUpsell subtotal={subtotal} threshold={upsellThreshold} message={upsellMessage} />
+              )}
               <ul className="space-y-4">
                 {items.map((i) => (
                   <li key={`${i.productId}-${i.colorId}-${i.sizeId}`} className="flex gap-3">
