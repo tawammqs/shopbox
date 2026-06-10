@@ -1459,6 +1459,38 @@ export type Database = {
         }
         Relationships: []
       }
+      the_shoes_theme_settings: {
+        Row: {
+          created_at: string
+          id: string
+          settings: Json
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          settings?: Json
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          settings?: Json
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "the_shoes_theme_settings_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       theme_partners: {
         Row: {
           active: boolean
