@@ -26,6 +26,7 @@ export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
 
 function ProductPage() {
   const { store } = useStorefront();
+  const isMio = useIsMioTheme();
   const { productSlug } = Route.useParams();
 
   const { data, isLoading } = useQuery({
