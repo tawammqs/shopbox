@@ -78,9 +78,9 @@ export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: ()
           className="my-6 flex w-full cursor-pointer items-center justify-center gap-3 border-0 text-white"
           style={{ background: "#25D366", padding: "20px 24px" }}
         >
-          <span style={{ fontSize: 20 }}>🔒</span>
+          <LockSmall />
           <span style={{ fontSize: 15, fontWeight: 600 }}>
-            Achadinhos da The Shoes — Clique para desbloquear as ofertas VIP
+            Ofertas Secretas — Clique para desbloquear as ofertas VIP
           </span>
         </button>
       )}
