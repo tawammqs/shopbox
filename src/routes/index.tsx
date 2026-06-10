@@ -465,6 +465,7 @@ function LandingPage() {
           <div className="nav-links">
             <a href="#sobre">Funcionalidades</a>
             <a href="#como-funciona">Como funciona</a>
+            <Link to="/temas">Temas</Link>
             <a href="#precos">Preços</a>
             <a href="#faq">FAQ</a>
           </div>
