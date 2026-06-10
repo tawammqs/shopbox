@@ -49,10 +49,28 @@ export function TheShoesProductPage({ product }: { product: any }) {
   const [activeTab, setActiveTab] = useState<"avaliacoes" | "perguntas">("avaliacoes");
   const [sortBy, setSortBy] = useState<"relevant" | "recent" | "rating">("relevant");
   const [videoModalIdx, setVideoModalIdx] = useState<number | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [questionOpen, setQuestionOpen] = useState(false);
+  const qc = useQueryClient();
 
   useEffect(() => {
     if (product?.id) supabase.rpc("increment_product_view", { _product_id: product.id }).then(() => {});
   }, [product?.id]);
+
+  const questionsQ = useQuery({
+    queryKey: ["product-questions", product.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_questions")
+        .select("id, customer_name, question, answer, answered_at, created_at")
+        .eq("product_id", product.id)
+        .eq("status", "answered")
+        .order("answered_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const questions = questionsQ.data ?? [];
 
   const price = effectivePrice(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
   const pct = discountPct(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
