@@ -135,7 +135,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <span className="text-base font-bold text-foreground">{formatBRL(price)}</span>
           {pct > 0 && <span className="text-xs text-muted-foreground line-through">{formatBRL(p.price)}</span>}
         </div>
-        {store.slug === "the-shoes" && (() => {
+        {isMio && (() => {
           const inst = getInstallment(p.price, p.promo_price);
           if (!inst.show) return null;
           return (
