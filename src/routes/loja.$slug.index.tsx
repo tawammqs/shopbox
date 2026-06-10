@@ -23,7 +23,8 @@ const TAGS = [
 
 function HomePage() {
   const { store } = useStorefront();
-  if (store.slug === "the-shoes") return <TheShoesHomepage />;
+  const isMio = useIsMioTheme();
+  if (isMio) return <TheShoesHomepage />;
   return <DefaultHomePage storeId={store.id} />;
 }
 
