@@ -368,15 +368,15 @@ export function TheShoesCouponTab() {
           display: none;
           position: fixed; left: 20px; bottom: 24px;
           width: 56px; height: 56px; border-radius: 50%;
-          background: #111111; border: none;
+          background: #f8f7f2; border: 1px solid rgba(0,0,0,0.08);
           align-items: center; justify-content: center;
           z-index: 999; cursor: pointer;
-          box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.18);
           animation: tsGiftPulse 1s ease-in-out infinite;
         }
         .ts-coupon-gift-ring {
           position: absolute; inset: 0; border-radius: 50%;
-          background: #111111; opacity: 0.6;
+          background: #f8f7f2; opacity: 0.6;
           animation: tsGiftRing 1.6s ease-out infinite;
           z-index: -1;
         }
