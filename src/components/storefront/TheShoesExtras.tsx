@@ -129,9 +129,9 @@ export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: ()
             >
               ×
             </button>
-            <span style={{ fontSize: 48, marginBottom: 16, display: "block" }}>🔒</span>
+            <LockBig />
             <h2 style={{ fontWeight: 800, fontSize: 22, color: "#1a1a1a", marginBottom: 12 }}>
-              Achadinhos da The Shoes
+              Ofertas Secretas
             </h2>
             <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 24 }}>
               Digite seu WhatsApp e tenha acesso às ofertas mais incríveis da The Shoes. Exclusivo para clientes VIPs 😉
