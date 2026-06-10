@@ -100,6 +100,7 @@ export function buildBuyNowMessage(opts: {
     `Valor: ${formatBRL(opts.unitPrice * opts.quantity)}`,
     "",
     `Link: ${opts.productUrl}`,
+    ...buildPaymentBlock(opts.customer?.paymentMethod),
     ...buildCustomerBlock(opts.customer),
   ].filter(Boolean) as string[];
   return lines.join("\n");
