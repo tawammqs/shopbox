@@ -12,10 +12,10 @@ export const Route = createFileRoute("/hooks/cart-recovery")({
       POST: async ({ request }) => {
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.replace("Bearer ", "").trim();
-        const expected = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+        const expected = process.env.CRON_SECRET;
         const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-        if (!token || !expected || token !== expected) {
+        if (!expected || !token || token !== expected) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },

@@ -47,8 +47,18 @@ function SettingsPage() {
       if (!store) return;
       const payload: any = { ...form, trust_badges: badges, seo_meta: { title: form.seo_title, description: form.seo_desc }, ...overrides };
       delete payload.seo_title; delete payload.seo_desc;
+      // meta_conversion_token is stored in a separate private table (owner-only RLS).
+      const metaToken: string = (payload.meta_conversion_token ?? "").trim();
+      delete payload.meta_conversion_token;
       const { error } = await supabase.from("stores").update(payload).eq("id", store.id);
       if (error) throw error;
+      const { error: secretErr } = await (supabase as any)
+        .from("store_private_secrets")
+        .upsert(
+          { store_id: store.id, meta_conversion_token: metaToken || null, updated_at: new Date().toISOString() },
+          { onConflict: "store_id" },
+        );
+      if (secretErr) throw secretErr;
     },
     onSuccess: () => { toast.success("Configurações salvas"); qc.invalidateQueries({ queryKey: ["my-store-full"] }); },
     onError: (e: any) => toast.error(e.message),

@@ -28,13 +28,26 @@ export const sendMetaCapiEvent = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     try {
+      // Only fire CAPI for active storefronts so attackers can't target deleted/disabled stores.
       const { data: store } = await supabaseAdmin
         .from("stores")
-        .select("facebook_pixel_id, meta_conversion_token")
+        .select("id, facebook_pixel_id, active")
         .eq("id", data.store_id)
+        .eq("active", true)
         .maybeSingle();
 
-      if (!store?.facebook_pixel_id || !store?.meta_conversion_token) {
+      if (!store?.facebook_pixel_id) {
+        return { success: false, reason: "CAPI not configured" };
+      }
+
+      const { data: secret } = await (supabaseAdmin as any)
+        .from("store_private_secrets")
+        .select("meta_conversion_token")
+        .eq("store_id", store.id)
+        .maybeSingle();
+
+      const accessToken = (secret as any)?.meta_conversion_token;
+      if (!accessToken) {
         return { success: false, reason: "CAPI not configured" };
       }
 
@@ -66,7 +79,7 @@ export const sendMetaCapiEvent = createServerFn({ method: "POST" })
                 },
               },
             ],
-            access_token: store.meta_conversion_token,
+            access_token: accessToken,
           }),
         },
       );
