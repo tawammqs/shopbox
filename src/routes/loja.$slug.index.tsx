@@ -39,7 +39,7 @@ function DefaultHomePage({ storeId }: { storeId: string }) {
       {banners.data && <BannerCarousel banners={banners.data} />}
       {TAGS.map((t, i) => (
         <Fragment key={t.tag}>
-          <TagRow storeId={store.id} tag={t.tag} label={t.label} />
+          <TagRow storeId={storeId} tag={t.tag} label={t.label} />
           {i === 0 && <TheShoesVipBanner />}
         </Fragment>
       ))}
