@@ -8,6 +8,7 @@ import { HomeVideoSection } from "@/components/storefront/HomeVideoSection";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { Fragment } from "react";
 import { TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
+import { TheShoesHomepage } from "@/components/storefront/the-shoes/TheShoesHomepage";
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: HomePage,
