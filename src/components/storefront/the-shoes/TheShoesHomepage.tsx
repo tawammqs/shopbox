@@ -283,7 +283,7 @@ function PromoBannerSection({ promo }: { promo: TheShoesSettings["promo_banner"]
 }
 
 /* -------------- Icons / Benefits -------------- */
-const ICON_SVGS: Record<string, JSX.Element> = {
+const ICON_SVGS: Record<string, React.ReactNode> = {
   truck: (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="1" y="3" width="15" height="13" rx="1"/>
@@ -311,7 +311,7 @@ const ICON_SVGS: Record<string, JSX.Element> = {
     </svg>
   ),
 };
-function pickIcon(raw: string): JSX.Element {
+function pickIcon(raw: string): React.ReactNode {
   const v = (raw || "").toLowerCase();
   if (v.includes("🚚") || v.includes("truck") || v.includes("frete")) return ICON_SVGS.truck;
   if (v.includes("🔄") || v.includes("troca") || v.includes("exchange")) return ICON_SVGS.exchange;
