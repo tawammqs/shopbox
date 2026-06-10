@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { X, ShoppingBag, Trash2, Tag, Truck } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { useCart, type AppliedCoupon } from "@/stores/cart";
@@ -6,6 +7,7 @@ import { useStorefront } from "./StoreContext";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
+import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { CheckoutFormDialog } from "./CheckoutFormDialog";
 import { trackInitiateCheckout } from "@/lib/tracking";
 import { toast } from "sonner";
@@ -29,6 +31,16 @@ export function CartDrawer() {
   const [cep, setCep] = useState("");
   const [shippingMsg, setShippingMsg] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  const isTheShoes = store.slug === "the-shoes";
+  const tsSettingsQ = useQuery({
+    queryKey: ["the-shoes-settings", store.id],
+    queryFn: () => fetchTheShoesSettings(store.id),
+    enabled: isTheShoes,
+    staleTime: 30_000,
+  });
+  const upsellThreshold = isTheShoes ? tsSettingsQ.data?.cart_upsell_threshold ?? 0 : 0;
+  const upsellMessage = isTheShoes ? tsSettingsQ.data?.cart_upsell_message ?? "" : "";
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
@@ -129,6 +141,9 @@ export function CartDrawer() {
         ) : (
           <>
             <div className="flex-1 overflow-y-auto px-5 py-4">
+              {isTheShoes && upsellThreshold > 0 && (
+                <TheShoesUpsell subtotal={subtotal} threshold={upsellThreshold} message={upsellMessage} />
+              )}
               <ul className="space-y-4">
                 {items.map((i) => (
                   <li key={`${i.productId}-${i.colorId}-${i.sizeId}`} className="flex gap-3">
@@ -265,5 +280,26 @@ export function CartDrawer() {
         total={total}
       />
     </>
+  );
+}
+
+function TheShoesUpsell({ subtotal, threshold, message }: { subtotal: number; threshold: number; message: string }) {
+  const remaining = Math.max(0, threshold - subtotal);
+  const pct = Math.min(100, (subtotal / threshold) * 100);
+  const achieved = remaining === 0;
+  return (
+    <div className="mb-4 rounded-lg border border-[#25D366]/30 bg-[#25D366]/5 p-3">
+      <p className="text-xs font-medium text-[#111]">
+        {achieved ? "🎉 Você ganhou frete grátis!" : (
+          <>Faltam <strong>{formatBRL(remaining)}</strong> para {message || "frete grátis"}</>
+        )}
+      </p>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#25D366]/15">
+        <div
+          className="h-full rounded-full bg-[#25D366] transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
   );
 }
