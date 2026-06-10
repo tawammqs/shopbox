@@ -23,6 +23,11 @@ const TAGS = [
 
 function HomePage() {
   const { store } = useStorefront();
+
+  if (store.slug === "the-shoes") {
+    return <TheShoesHomepage />;
+  }
+
   const banners = useQuery({
     queryKey: ["banners", store.id],
     queryFn: () => fetchActiveBanners(store.id),

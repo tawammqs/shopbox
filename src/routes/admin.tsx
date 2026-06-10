@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard, Package, FolderTree, Image, Tag, Users, ShoppingBag,
   Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Loader2,
-  Lock, Video,
+  Lock, Video, Paintbrush,
 } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
@@ -36,6 +36,7 @@ const NAV = [
   { to: "/admin/descontos", label: "Descontos", icon: Tag },
   { to: "/admin/clientes", label: "Clientes", icon: Users },
   { to: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
+  { to: "/admin/personalizar-loja", label: "Personalizar Loja", icon: Paintbrush },
   { to: "/admin/configuracoes", label: "Configurações", icon: Settings },
   { to: "/admin/plano", label: "Plano & Cobrança", icon: CreditCard },
 ] as const;
