@@ -712,15 +712,60 @@ function TheShoesStyles() {
       }
 
       /* FAQ */
-      .ts-faq-section { background: #ffffff; padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
-      @media (min-width: 1024px) { .ts-faq-section { padding: 64px 80px; } }
-      .ts-faq-box {
-        background: #dfdac8; border-radius: 16px;
-        padding: 36px 24px; max-width: 800px; margin: 0 auto;
-      }
-      @media (min-width: 768px) { .ts-faq-box { padding: 48px 40px; } }
+      .ts-faq-section { background: #ffffff; padding: 48px 20px; }
+      @media (min-width: 768px) { .ts-faq-section { padding: 64px 40px; } }
+      .ts-faq-wrap { max-width: 860px; margin: 0 auto; }
+      .ts-faq-eyebrow { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 8px; }
+      .ts-faq-title { font-size: 28px; font-weight: 900; color: #111; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.1; }
+      @media (min-width: 768px) { .ts-faq-title { font-size: 40px; } }
+      .ts-faq-box { background: #dfdac8; border-radius: 16px; padding: 28px 20px; width: 100%; }
+      @media (min-width: 768px) { .ts-faq-box { padding: 40px 40px 32px; } }
       .ts-faq-item { border-bottom: 1px solid rgba(0,0,0,0.12); padding: 20px 0; }
       .ts-faq-item:last-child { border-bottom: 0; }
+      .ts-faq-q { font-size: 15px; font-weight: 600; color: #111; flex: 1; padding-right: 16px; }
+      .ts-faq-icon {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(0,0,0,0.08);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; color: #111; flex-shrink: 0;
+      }
+      .ts-faq-a { font-size: 14px; color: #555; line-height: 1.8; padding-top: 12px; animation: tsFade 0.2s ease; }
+      .ts-faq-divider { border-top: 1px solid rgba(0,0,0,0.1); margin: 24px 0; }
+      .ts-faq-help { font-size: 13px; color: #555; line-height: 1.6; text-align: center; margin-bottom: 16px; }
+      .ts-faq-cta {
+        background: #25D366; color: #fff; border: none; border-radius: 9999px;
+        padding: 14px 40px; font-size: 15px; font-weight: 600; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 10px;
+      }
+      @media (max-width: 767px) { .ts-faq-cta { width: 100%; justify-content: center; } }
+      @keyframes tsFade { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes tsShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+      /* Achadinhos inline */
+      .ts-achadinhos { position: relative; overflow: hidden; min-height: 320px; }
+      @media (min-width: 768px) { .ts-achadinhos { min-height: 400px; } }
+      .ts-achadinhos-bg {
+        position: absolute; inset: 0;
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;
+        filter: blur(3px); transform: scale(1.05); opacity: 0.6;
+      }
+      @media (min-width: 768px) {
+        .ts-achadinhos-bg { grid-template-columns: repeat(4, 1fr); }
+      }
+      .ts-achadinhos-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
+      .ts-achadinhos-content {
+        position: relative; z-index: 10;
+        display: flex; align-items: center; justify-content: center;
+        min-height: 320px; padding: 48px 20px;
+      }
+      @media (min-width: 768px) { .ts-achadinhos-content { min-height: 400px; } }
+      .ts-achadinhos-card {
+        background: #fff; border-radius: 16px; padding: 28px 20px;
+        max-width: 420px; width: 100%; text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      }
+      @media (min-width: 768px) { .ts-achadinhos-card { padding: 40px 32px; } }
+
 
       /* Banner numbered indicators */
       .ts-banner-indicators {
