@@ -123,16 +123,16 @@ function CategoriesPage() {
           <SortableContext items={roots.map(r => r.id)} strategy={verticalListSortingStrategy}>
             {roots.map(c => (
               <SortableCatRow key={c.id} cat={c}
-                onEdit={(x) => { setEditing(x); setOpen(true); }}
-                onDelete={(id) => { if (confirm("Excluir categoria?")) remove.mutate(id); }}
+                onEdit={(x: Cat) => { setEditing(x); setOpen(true); }}
+                onDelete={(id: string) => { if (confirm("Excluir categoria?")) remove.mutate(id); }}
               >
                 <ChildrenList
                   parent={c}
                   childrenList={childrenOf(c.id)}
                   sensors={sensors}
                   onDragEnd={handleDragEnd}
-                  onEdit={(x) => { setEditing(x); setOpen(true); }}
-                  onDelete={(id) => { if (confirm("Excluir categoria?")) remove.mutate(id); }}
+                  onEdit={(x: Cat) => { setEditing(x); setOpen(true); }}
+                  onDelete={(id: string) => { if (confirm("Excluir categoria?")) remove.mutate(id); }}
                 />
               </SortableCatRow>
             ))}
