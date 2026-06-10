@@ -26,6 +26,12 @@ function buildCustomerBlock(customer?: CustomerInfo | null): string[] {
   return ["", "👤 *Meus dados:*", ...lines];
 }
 
+function buildPaymentBlock(paymentMethod?: string | null): string[] {
+  if (!paymentMethod) return [];
+  const label = paymentMethod === "pix" ? "PIX" : "Cartão de crédito (até 3x sem juros)";
+  return ["", `💳 *Forma de pagamento:* ${label}`];
+}
+
 export function buildCheckoutMessage(
   items: CartItem[],
   subtotal: number,
