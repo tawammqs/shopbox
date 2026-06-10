@@ -93,17 +93,24 @@ export function useMyStore() {
           custom_domain, trust_badges, shipping_rates, seo_meta, welcome_popup,
           notify_stock_enabled, active, plan_id, subscription_status,
           trial_ends_at, current_period_end,
-          facebook_pixel_id, meta_conversion_token, google_analytics_id,
+          facebook_pixel_id, google_analytics_id,
           plan:plans!stores_plan_id_fkey(id, slug, name, max_products, price_cents, features)
         `)
         .eq("owner_user_id", user!.id)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
+      // meta_conversion_token now lives in the private secrets table (owner-only RLS).
+      const { data: secret } = await (supabase as any)
+        .from("store_private_secrets")
+        .select("meta_conversion_token")
+        .eq("store_id", (data as any).id)
+        .maybeSingle();
       return {
-        ...data,
-        trust_badges: Array.isArray(data.trust_badges) ? (data.trust_badges as string[]) : [],
-        plan: data.plan as any,
+        ...(data as any),
+        meta_conversion_token: (secret as any)?.meta_conversion_token ?? null,
+        trust_badges: Array.isArray((data as any).trust_badges) ? ((data as any).trust_badges as string[]) : [],
+        plan: (data as any).plan,
       };
     },
   });
