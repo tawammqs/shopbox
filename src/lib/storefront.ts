@@ -54,6 +54,21 @@ export async function fetchCategories(storeId: string) {
   return data ?? [];
 }
 
+export async function fetchActiveThemeSlug(storeId: string): Promise<string | null> {
+  const { data: settings } = await supabase
+    .from("store_theme_settings")
+    .select("active_theme_id")
+    .eq("store_id", storeId)
+    .maybeSingle();
+  if (!settings?.active_theme_id) return null;
+  const { data: theme } = await supabase
+    .from("themes")
+    .select("slug")
+    .eq("id", settings.active_theme_id)
+    .maybeSingle();
+  return theme?.slug ?? null;
+}
+
 export async function fetchActiveBanners(storeId: string) {
   const { data, error } = await supabase
     .from("banners")
