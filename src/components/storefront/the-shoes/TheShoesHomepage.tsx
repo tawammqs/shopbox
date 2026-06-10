@@ -386,31 +386,45 @@ function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
 }
 
 /* -------------- Video Testimonials -------------- */
-function VideoTestimonialsSection({ storeId, storeSlug }: { storeId: string; storeSlug: string }) {
+function VideoTestimonialsSection({ storeSlug, section }: { storeSlug: string; section: TheShoesSettings["video_section"] }) {
+  const videos = section?.videos ?? [];
+  const productIds = videos.map((v) => v.product_id).filter(Boolean);
   const q = useQuery({
-    queryKey: ["ts-video-testimonials", storeId],
-    queryFn: () => fetchStoreVideoTestimonials(storeId, 8),
+    queryKey: ["ts-video-section-products", productIds.sort().join(",")],
+    enabled: productIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, slug, title, price, promo_price, product_images(url, position)")
+        .in("id", productIds);
+      if (error) throw error;
+      return data ?? [];
+    },
     staleTime: 60_000,
   });
-  const videos = q.data ?? [];
+
   if (videos.length === 0) return null;
+  const productsById = new Map<string, any>((q.data ?? []).map((p: any) => [p.id, p]));
+
   return (
     <section className="ts-section">
       <h2 className="mb-8 text-center text-[26px] font-extrabold text-[#111]" style={{ letterSpacing: "-0.5px" }}>
-        Veja mais detalhes em vídeo
+        {section.title || "Veja mais detalhes em vídeo"}
       </h2>
       <div className="flex gap-3 overflow-x-auto pb-2 md:gap-4" style={{ scrollbarWidth: "thin" }}>
-        {videos.map((v: any) => {
-          const product = v.products;
-          const thumb = product?.product_images?.[0]?.url ?? "";
+        {videos.map((v, idx) => {
+          const product = productsById.get(v.product_id);
+          const images = (product?.product_images ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+          const thumb = images[0]?.url ?? "";
           const price = product ? Number(product.promo_price ?? product.price ?? 0) : 0;
           const original = product?.promo_price != null ? Number(product.price) : null;
-          return (
-            <Link key={v.id}
-              to="/loja/$slug/produto/$productSlug"
-              params={{ slug: storeSlug, productSlug: product?.slug ?? "" }}
-              className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[16px] bg-[#f5f5f5] md:w-[200px]">
-              {thumb && <img src={thumb} alt="" className="h-full w-full object-cover" loading="lazy" />}
+          const inner = (
+            <div className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[16px] bg-[#f5f5f5] md:w-[200px]">
+              {v.video_url ? (
+                <video src={v.video_url} muted loop playsInline preload="metadata" className="h-full w-full object-cover" />
+              ) : thumb ? (
+                <img src={thumb} alt="" className="h-full w-full object-cover" loading="lazy" />
+              ) : null}
               <div className="absolute inset-0 grid place-items-center">
                 <div className="grid h-11 w-11 place-items-center rounded-full bg-black/50 text-white">
                   <span className="ml-[2px] text-[14px]">▶</span>
@@ -432,13 +446,21 @@ function VideoTestimonialsSection({ storeId, storeSlug }: { storeId: string; sto
                   </div>
                 </div>
               )}
+            </div>
+          );
+          return product?.slug ? (
+            <Link key={idx} to="/loja/$slug/produto/$productSlug" params={{ slug: storeSlug, productSlug: product.slug }}>
+              {inner}
             </Link>
+          ) : (
+            <div key={idx}>{inner}</div>
           );
         })}
       </div>
     </section>
   );
 }
+
 
 /* -------------- Testimonials -------------- */
 function TestimonialsSection({ title, items }: { title: string; items: TheShoesSettings["testimonials"] }) {
