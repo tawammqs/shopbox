@@ -345,7 +345,7 @@ export async function fetchStoreVideoTestimonials(storeId: string, limit = 8) {
   const { data, error } = await supabase
     .from("product_video_testimonials")
     .select(`id, video_url, kind, customer_name, quote, position,
-             products!inner(id, slug, title, store_id, product_images(url, position))`)
+             products!inner(id, slug, title, price, promo_price, store_id, product_images(url, position))`)
     .eq("products.store_id", storeId)
     .not("video_url", "is", null)
     .order("position", { ascending: true })
