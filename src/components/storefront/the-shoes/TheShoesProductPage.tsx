@@ -431,8 +431,38 @@ export function TheShoesProductPage({ product }: { product: any }) {
             )}
           </>
         ) : (
-          <div className="rounded-lg border border-dashed border-[#e0e0e0] py-12 text-center text-sm text-[#888]">
-            Ainda não há perguntas. Em breve você poderá enviar suas dúvidas por aqui.
+          <div>
+            <div className="mb-6 flex justify-center">
+              <button
+                onClick={() => setQuestionOpen(true)}
+                className="rounded-md bg-[#111] px-4 py-2 text-[13px] font-semibold text-white hover:opacity-90"
+              >
+                Faça uma pergunta
+              </button>
+            </div>
+            {questions.length > 0 ? (
+              <div className="mx-auto max-w-3xl space-y-4">
+                {questions.map((q: any) => (
+                  <article key={q.id} className="rounded-lg border border-[#eee] bg-white p-4">
+                    <div className="flex items-start gap-2">
+                      <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#888]" />
+                      <div className="flex-1">
+                        <p className="text-[14px] text-[#111]">{q.question}</p>
+                        <p className="mt-1 text-[12px] text-[#999]">{q.customer_name} • {daysAgo(q.created_at)}</p>
+                      </div>
+                    </div>
+                    {q.answer && (
+                      <div className="mt-3 rounded-md bg-[#f5f5f0] p-3">
+                        <p className="text-[12px] font-bold uppercase tracking-wide text-[#111]">Resposta da loja</p>
+                        <p className="mt-1 whitespace-pre-line text-[14px] text-[#111]">{q.answer}</p>
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-sm text-[#888]">Nenhuma pergunta respondida ainda. Seja o primeiro a perguntar!</p>
+            )}
           </div>
         )}
       </section>
