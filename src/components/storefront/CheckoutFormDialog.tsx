@@ -78,6 +78,10 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
       setErrors(errs);
       return;
     }
+    if (isTheShoes && !form.paymentMethod) {
+      setErrors({ ...errors, paymentMethod: "Selecione uma forma de pagamento" });
+      return;
+    }
     setErrors({});
     setBusy(true);
     try {
