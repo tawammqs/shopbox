@@ -132,7 +132,7 @@ export function TheShoesCouponTab() {
         className="ts-coupon-gift"
       >
         <span className="ts-coupon-gift-ring" />
-        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
           <rect x="3" y="8" width="18" height="4" rx="1" />
           <path d="M12 8v13" />
           <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
@@ -368,15 +368,15 @@ export function TheShoesCouponTab() {
           display: none;
           position: fixed; left: 20px; bottom: 24px;
           width: 56px; height: 56px; border-radius: 50%;
-          background: #111111; border: none;
+          background: #f8f7f2; border: 1px solid rgba(0,0,0,0.08);
           align-items: center; justify-content: center;
           z-index: 999; cursor: pointer;
-          box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.18);
           animation: tsGiftPulse 1s ease-in-out infinite;
         }
         .ts-coupon-gift-ring {
           position: absolute; inset: 0; border-radius: 50%;
-          background: #111111; opacity: 0.6;
+          background: #f8f7f2; opacity: 0.6;
           animation: tsGiftRing 1.6s ease-out infinite;
           z-index: -1;
         }

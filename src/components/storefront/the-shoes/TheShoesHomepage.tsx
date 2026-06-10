@@ -59,7 +59,6 @@ export function TheShoesHomepage() {
       <ProductCarouselSection
         storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag}
       />
-      <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
 
       <MarqueeBar cfg={s.marquee1} />
       <PromoBannerSection promo={s.promo_banner} />
@@ -69,6 +68,7 @@ export function TheShoesHomepage() {
       />
       <IconsBar items={s.icons_bar} />
       <MarqueeBar cfg={s.marquee2} />
+      <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
       <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
       <VideoTestimonialsSection storeId={store.id} storeSlug={store.slug} />
       <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
@@ -347,9 +347,9 @@ function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
   if (!items?.length) return null;
   return (
     <section className="ts-icons-section bg-white">
-      <div className="ts-icons-grid">
+      <div className="ts-icons-carousel">
         {items.map((it, i) => (
-          <div key={i} className="flex flex-col items-center px-3 text-center">
+          <div key={i} className="ts-icons-item">
             <div className="grid h-[72px] w-[72px] place-items-center rounded-full"
               style={{ background: "#dfdac8" }}>
               {pickIcon(it.icon)}
@@ -694,8 +694,22 @@ function TheShoesStyles() {
 
       .ts-icons-section { padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
       @media (min-width: 1024px) { .ts-icons-section { padding: 64px 80px; } }
-      .ts-icons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-      @media (min-width: 768px) { .ts-icons-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+      .ts-icons-carousel {
+        display: flex; gap: 16px; overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none; -ms-overflow-style: none;
+        padding-bottom: 4px;
+      }
+      .ts-icons-carousel::-webkit-scrollbar { display: none; }
+      .ts-icons-item {
+        flex: 0 0 60%; max-width: 240px;
+        scroll-snap-align: center;
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+        padding: 0 8px;
+      }
+      @media (min-width: 768px) {
+        .ts-icons-item { flex: 0 0 25%; }
+      }
 
       /* Testimonials — strict overflow */
       .ts-testimonials { overflow: hidden !important; padding-bottom: 48px !important; }
@@ -719,11 +733,11 @@ function TheShoesStyles() {
       /* FAQ */
       .ts-faq-section { background: #ffffff; padding: 48px 20px; }
       @media (min-width: 768px) { .ts-faq-section { padding: 64px 40px; } }
-      .ts-faq-wrap { max-width: 860px; margin: 0 auto; }
-      .ts-faq-eyebrow { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 8px; }
-      .ts-faq-title { font-size: 28px; font-weight: 900; color: #111; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.1; }
+      .ts-faq-wrap { max-width: 860px; margin: 0 auto; text-align: center; }
+      .ts-faq-eyebrow { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 8px; text-align: center; }
+      .ts-faq-title { font-size: 28px; font-weight: 900; color: #111; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.1; text-align: center; }
       @media (min-width: 768px) { .ts-faq-title { font-size: 40px; } }
-      .ts-faq-box { background: #dfdac8; border-radius: 16px; padding: 28px 20px; width: 100%; }
+      .ts-faq-box { background: #dfdac8; border-radius: 16px; padding: 28px 20px; width: 100%; text-align: left; }
       @media (min-width: 768px) { .ts-faq-box { padding: 40px 40px 32px; } }
       .ts-faq-item { border-bottom: 1px solid rgba(0,0,0,0.12); padding: 20px 0; }
       .ts-faq-item:last-child { border-bottom: 0; }
@@ -736,7 +750,11 @@ function TheShoesStyles() {
       }
       .ts-faq-a { font-size: 14px; color: #555; line-height: 1.8; padding-top: 12px; animation: tsFade 0.2s ease; }
       .ts-faq-divider { border-top: 1px solid rgba(0,0,0,0.1); margin: 24px 0; }
-      .ts-faq-help { font-size: 13px; color: #555; line-height: 1.6; text-align: center; margin-bottom: 16px; }
+      .ts-faq-help {
+        font-size: 13px; color: #555; line-height: 1.6; text-align: center; margin: 0 auto 16px;
+        max-width: 320px; text-wrap: balance;
+      }
+      @media (min-width: 768px) { .ts-faq-help { max-width: none; } }
       .ts-faq-cta {
         background: #25D366; color: #fff; border: none; border-radius: 9999px;
         padding: 14px 40px; font-size: 15px; font-weight: 600; cursor: pointer;
