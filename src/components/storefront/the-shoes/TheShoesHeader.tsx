@@ -9,7 +9,7 @@ import { effectivePrice, formatBRL } from "@/lib/format";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
 
-const ACCENT = "#111111";
+const ACCENT = "#c0392b";
 
 export function TheShoesHeader() {
   const { store, categories } = useStorefront();
