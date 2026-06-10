@@ -363,6 +363,35 @@ export function TheShoesCouponTab() {
           transition: filter 0.2s;
         }
         .ts-coupon-tab:hover { filter: brightness(1.4); }
+
+        .ts-coupon-gift {
+          display: none;
+          position: fixed; left: 20px; bottom: 24px;
+          width: 56px; height: 56px; border-radius: 50%;
+          background: #111111; border: none;
+          align-items: center; justify-content: center;
+          z-index: 999; cursor: pointer;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+          animation: tsGiftPulse 1s ease-in-out infinite;
+        }
+        .ts-coupon-gift-ring {
+          position: absolute; inset: 0; border-radius: 50%;
+          background: #111111; opacity: 0.6;
+          animation: tsGiftRing 1.6s ease-out infinite;
+          z-index: -1;
+        }
+        @media (max-width: 767px) {
+          .ts-coupon-tab { display: none; }
+          .ts-coupon-gift { display: flex; }
+        }
+        @keyframes tsGiftPulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.06); }
+        }
+        @keyframes tsGiftRing {
+          0% { transform: scale(1); opacity: 0.6; }
+          100% { transform: scale(1.7); opacity: 0; }
+        }
         @keyframes tsCouponIn {
           from { opacity: 0; transform: scale(0.95); }
           to { opacity: 1; transform: scale(1); }
