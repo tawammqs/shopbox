@@ -155,6 +155,102 @@ function PersonalizarPage() {
           onChange={(v) => update("marquee2", { ...s.marquee2, text: v })} />
       </Card>
 
+      {/* Icons bar */}
+      <Card title="Barra de ícones (benefícios)">
+        <ListEditor
+          items={s.icons_bar}
+          onChange={(v) => update("icons_bar", v)}
+          empty={{ icon: "✨", title: "", subtitle: "" }}
+          render={(it, set) => (
+            <>
+              <TextField label="Ícone (emoji)" value={it.icon} onChange={(v) => set({ ...it, icon: v })} />
+              <TextField label="Título" value={it.title} onChange={(v) => set({ ...it, title: v })} />
+              <TextField label="Subtítulo" value={it.subtitle} onChange={(v) => set({ ...it, subtitle: v })} />
+            </>
+          )}
+        />
+      </Card>
+
+      {/* Testimonials */}
+      <Card title="Depoimentos">
+        <TextField label="Título da seção" value={s.testimonials_title}
+          onChange={(v) => update("testimonials_title", v)} />
+        <ListEditor
+          items={s.testimonials}
+          onChange={(v) => update("testimonials", v)}
+          empty={{ name: "", text: "", rating: 5, image_url: "" }}
+          render={(it, set) => (
+            <>
+              <TextField label="Nome" value={it.name} onChange={(v) => set({ ...it, name: v })} />
+              <div>
+                <Label className="mb-1 block">Depoimento</Label>
+                <Textarea value={it.text} onChange={(e) => set({ ...it, text: e.target.value })} rows={3} />
+              </div>
+              <div>
+                <Label className="mb-1 block">Nota (1–5)</Label>
+                <Input type="number" min={1} max={5} value={it.rating}
+                  onChange={(e) => set({ ...it, rating: Number(e.target.value) || 5 })} />
+              </div>
+              <div>
+                <Label className="mb-2 block">Imagem (opcional)</Label>
+                <ImageUpload bucket="banners" storeId={store.id}
+                  value={it.image_url || null}
+                  onChange={(url) => set({ ...it, image_url: url ?? "" })}
+                  aspect="aspect-square" />
+              </div>
+            </>
+          )}
+        />
+      </Card>
+
+      {/* FAQ */}
+      <Card title="Dúvidas frequentes (FAQ)">
+        <TextField label="Título" value={s.faq_title} onChange={(v) => update("faq_title", v)} />
+        <TextField label="WhatsApp para dúvidas (com DDI)" value={s.faq_whatsapp}
+          onChange={(v) => update("faq_whatsapp", v)} />
+        <ListEditor
+          items={s.faq_items}
+          onChange={(v) => update("faq_items", v)}
+          empty={{ question: "", answer: "" }}
+          render={(it, set) => (
+            <>
+              <TextField label="Pergunta" value={it.question} onChange={(v) => set({ ...it, question: v })} />
+              <div>
+                <Label className="mb-1 block">Resposta</Label>
+                <Textarea value={it.answer} onChange={(e) => set({ ...it, answer: e.target.value })} rows={3} />
+              </div>
+            </>
+          )}
+        />
+      </Card>
+
+      {/* Instagram */}
+      <Card title="Instagram">
+        <TextField label="@usuário" value={s.instagram_handle}
+          onChange={(v) => update("instagram_handle", v)} />
+      </Card>
+
+      {/* Footer */}
+      <Card title="Rodapé">
+        <div>
+          <Label className="mb-1 block">Sobre a loja</Label>
+          <Textarea value={s.footer_about} onChange={(e) => update("footer_about", e.target.value)} rows={4} />
+        </div>
+        <ListEditor
+          items={s.footer_links}
+          onChange={(v) => update("footer_links", v)}
+          empty={{ label: "", url: "" }}
+          render={(it, set) => (
+            <>
+              <TextField label="Texto" value={it.label} onChange={(v) => set({ ...it, label: v })} />
+              <TextField label="URL" value={it.url} onChange={(v) => set({ ...it, url: v })} />
+            </>
+          )}
+        />
+      </Card>
+
+
+
       {/* Whatsapp / cart upsell */}
       <Card title="WhatsApp & Carrinho">
         <TextField label="WhatsApp (com DDI, só números)" value={s.whatsapp_button}
