@@ -347,9 +347,9 @@ function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
   if (!items?.length) return null;
   return (
     <section className="ts-icons-section bg-white">
-      <div className="ts-icons-grid">
+      <div className="ts-icons-carousel">
         {items.map((it, i) => (
-          <div key={i} className="flex flex-col items-center px-3 text-center">
+          <div key={i} className="ts-icons-item">
             <div className="grid h-[72px] w-[72px] place-items-center rounded-full"
               style={{ background: "#dfdac8" }}>
               {pickIcon(it.icon)}
