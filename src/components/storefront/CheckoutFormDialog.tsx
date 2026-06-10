@@ -21,7 +21,10 @@ const schema = z.object({
   cep: z.string().trim().max(12).optional().or(z.literal("")),
   address: z.string().trim().max(255).optional().or(z.literal("")),
   city_state: z.string().trim().max(120).optional().or(z.literal("")),
+  paymentMethod: z.string().min(1, "Selecione uma forma de pagamento").optional(),
 });
+
+type FormData = z.infer<typeof schema>;
 
 type Props = {
   open: boolean;
