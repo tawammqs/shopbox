@@ -32,24 +32,22 @@ export function TheShoesHomepage() {
   return (
     <div className="ts-root">
       {ab?.enabled && <AnnouncementBar bar={ab} />}
-      <div style={{ paddingTop: ab?.enabled ? 36 : 0 }}>
-        <HeroCarousel banners={bannersQ.data ?? []} />
-        <ProductCarouselSection
-          storeId={store.id}
-          title={s.section1_title}
-          link={s.section1_subtitle}
-          tag={s.section1_tag}
-        />
-        <MarqueeBar cfg={s.marquee1} />
-        <PromoBannerSection promo={s.promo_banner} />
-        <ProductCarouselSection
-          storeId={store.id}
-          title={s.section2_title}
-          link={s.section2_subtitle}
-          tag={s.section2_tag}
-          description={s.section2_description}
-        />
-      </div>
+      <HeroCarousel banners={bannersQ.data ?? []} />
+      <ProductCarouselSection
+        storeId={store.id}
+        title={s.section1_title}
+        link={s.section1_subtitle}
+        tag={s.section1_tag}
+      />
+      <MarqueeBar cfg={s.marquee1} />
+      <PromoBannerSection promo={s.promo_banner} />
+      <ProductCarouselSection
+        storeId={store.id}
+        title={s.section2_title}
+        link={s.section2_subtitle}
+        tag={s.section2_tag}
+        description={s.section2_description}
+      />
       <TheShoesStyles />
     </div>
   );
@@ -248,8 +246,8 @@ function TheShoesStyles() {
   return (
     <style>{`
       .ts-announcement {
-        position: fixed; top: 0; left: 0; right: 0; height: 36px;
-        z-index: 200; overflow: hidden; display: flex; align-items: center;
+        width: 100%; height: 36px;
+        overflow: hidden; display: flex; align-items: center;
         font-size: 12px; font-weight: 500;
       }
       .ts-marquee-bar {
@@ -270,8 +268,6 @@ function TheShoesStyles() {
         0% { transform: translateX(0); }
         100% { transform: translateX(-50%); }
       }
-      /* Push fixed header/nav down when announcement bar is present */
-      [data-store-slug="the-shoes"] .ts-root { }
     `}</style>
   );
 }
