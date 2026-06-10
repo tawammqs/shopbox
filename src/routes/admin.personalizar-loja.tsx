@@ -326,3 +326,38 @@ function StringList({ label, values, onChange }: { label: string; values: string
     </div>
   );
 }
+
+function ListEditor<T>({
+  items, onChange, empty, render,
+}: {
+  items: T[];
+  onChange: (v: T[]) => void;
+  empty: T;
+  render: (item: T, set: (next: T) => void) => React.ReactNode;
+}) {
+  const setAt = (i: number, next: T) => {
+    const copy = [...items];
+    copy[i] = next;
+    onChange(copy);
+  };
+  const remove = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+  const add = () => onChange([...items, structuredClone(empty)]);
+  return (
+    <div className="space-y-3">
+      {items.map((it, i) => (
+        <div key={i} className="space-y-3 rounded-xl border border-border bg-background p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground">Item {i + 1}</span>
+            <Button type="button" size="sm" variant="ghost" onClick={() => remove(i)}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+          {render(it, (n) => setAt(i, n))}
+        </div>
+      ))}
+      <Button type="button" variant="outline" size="sm" onClick={add}>
+        <Plus className="mr-2 h-4 w-4" /> Adicionar
+      </Button>
+    </div>
+  );
+}
