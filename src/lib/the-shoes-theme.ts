@@ -24,6 +24,16 @@ export type CouponPopup = {
   whatsapp_group_url: string;
 };
 
+export type VideoEntry = {
+  video_url: string;
+  product_id: string;
+};
+
+export type VideoSection = {
+  title: string;
+  videos: VideoEntry[];
+};
+
 export type TheShoesSettings = {
   announcement_bar: AnnouncementBar;
   section1_title: string;
