@@ -30,6 +30,7 @@ export function TheShoesHeader() {
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const [openCatId, setOpenCatId] = useState<string | null>(null);
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
