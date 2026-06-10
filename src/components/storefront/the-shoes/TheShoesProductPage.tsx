@@ -392,7 +392,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
 
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <button
-                onClick={() => toast.info("Em breve: deixe sua avaliação")}
+                onClick={() => setReviewOpen(true)}
                 className="rounded-md bg-[#111] px-4 py-2 text-[13px] font-semibold text-white hover:opacity-90"
               >
                 Faça uma avaliação
