@@ -217,6 +217,23 @@ function TsProductCard({ p }: { p: ProductCardData }) {
             <span className="text-[16px] font-semibold text-[#111]">{formatBRL(price)}</span>
           )}
         </div>
+        {(() => {
+          const inst = getInstallment(p.price, p.promo_price);
+          if (!inst.show) return null;
+          return (
+            <span style={{
+              display: 'block',
+              fontFamily: 'DM Sans, sans-serif',
+              fontSize: '11px',
+              fontWeight: 400,
+              color: '#aaa',
+              marginTop: '2px',
+              lineHeight: 1.3,
+            }}>
+              3x de {inst.formatted} sem juros
+            </span>
+          );
+        })()}
       </div>
     </Link>
   );
