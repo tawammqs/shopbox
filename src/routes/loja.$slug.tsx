@@ -81,7 +81,7 @@ function StorefrontLayout() {
           <Outlet />
         </main>
         {isTheShoes ? <TheShoesFooter /> : <StorefrontFooter />}
-        <CartDrawer />
+        {isTheShoes ? <TheShoesCartDrawer /> : <CartDrawer />}
         <WelcomePopup />
         <MarketingScripts pixelId={store.facebook_pixel_id} gaId={store.google_analytics_id} />
       </div>
