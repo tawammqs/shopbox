@@ -1,109 +1,101 @@
 
-# Plano de implementação
+# The Shoes — refinements (slug `the-shoes` only)
 
-São 3 frentes independentes. Posso fazer todas, mas recomendo aprovar/ajustar cada bloco antes — principalmente o **Impersonate**, que é sensível.
-
----
-
-## Bloco 1 — Superadmin: busca + acesso à conta do lojista
-
-### 1.1 Busca aprimorada em `/superadmin/clientes`
-A página já tem busca por e-mail/nome/slug. Vou adicionar:
-- Busca também por **WhatsApp** (normalizando dígitos) e por **ID da loja/usuário**.
-- Cada linha passa a mostrar de forma copiável: **e-mail de login**, **WhatsApp** e **ID**.
-- Botão "Copiar e-mail" e "Copiar WhatsApp" em cada cliente.
-
-Isso já resolve "achar o login da LZ Multimarcas" sem depender de impersonate.
-
-### 1.2 Enviar link de redefinição de senha (a partir do superadmin)
-Botão **"Enviar link de redefinição"** em cada cliente. Internamente chama uma server function protegida (só para `platform_admin`) que usa o admin client para gerar um link de recovery (`supabase.auth.admin.generateLink({ type: 'recovery' })`) e:
-- Opção A (padrão): dispara o e-mail de recovery do Supabase para o lojista.
-- Opção B: retorna o link e copia para a área de transferência (caso o e-mail dela esteja errado).
-
-### 1.3 Impersonate (entrar como lojista) — **precisa decidir o modelo**
-
-Existem 2 caminhos viáveis. **Eu recomendo o A.** Me diz qual prefere:
-
-**Opção A — Magic link de admin (mais simples e seguro)**
-- Server function `superadmin_impersonate(store_id)` protegida por `has_role('platform_admin')`.
-- Gera um magic link com `supabase.auth.admin.generateLink({ type: 'magiclink', email: <email_do_lojista> })`.
-- Abre em **aba anônima** (instrução para o admin) para não desconectar sua sessão de superadmin.
-- Registra em uma tabela nova `impersonation_log` (admin_user_id, target_user_id, store_id, reason, created_at).
-- Vantagem: zero gambiarra com tokens; o Supabase emite uma sessão real e expira normalmente.
-- Desvantagem: você fica logado *como* o lojista naquela aba até deslogar.
-
-**Opção B — Banner "Você está visualizando como X" sem trocar de sessão**
-- Mantém você logado como superadmin, mas adiciona um parâmetro `?impersonate=<store_id>` que, junto com `has_role('platform_admin')`, faz as queries do `/admin/*` agirem sobre aquela loja (RLS já libera para platform_admin).
-- Vantagem: não desloga você, banner sempre visível, fácil de sair.
-- Desvantagem: precisa adaptar os hooks `useMyStore` e várias queries do painel admin para aceitar o store_id "fingido". Mais trabalho, mais chance de bug.
-
-**Permissões em ambos os casos:** apenas `user_roles.role = 'platform_admin'`. Toda ação fica em `impersonation_log`.
+All changes are scoped to the-shoes storefront. No other store, no admin, no checkout logic changes.
 
 ---
 
-## Bloco 2 — Recuperação de senha completa (lojistas)
+## 1. Mobile coupon tab → pulsing gift icon
 
-Hoje existe `/recuperar-senha` e `/reset-password`. Vou:
+File: `src/components/storefront/the-shoes/TheShoesCouponTab.tsx`
 
-1. **Permitir recuperação por e-mail OU WhatsApp** em `/recuperar-senha`:
-   - Mesmo padrão do login: se for WhatsApp, usa `email_for_whatsapp(_whatsapp)` para resolver o e-mail e dispara `resetPasswordForEmail`.
-   - Mensagem genérica de sucesso (não revela se o cadastro existe — boa prática anti-enumeração).
-
-2. **Validar o formulário de nova senha em `/reset-password`**:
-   - Mínimo 8 caracteres, com letra e número.
-   - Confirmar senha.
-   - Mensagens de erro claras em PT-BR.
-
-3. **Personalizar o template de e-mail de recovery** com a marca ShopBox (logo, cores, copy em português, CTA "Redefinir senha"). Para isso vou configurar os templates de auth do Lovable Cloud — emails saem do seu domínio em vez do remetente padrão.
-   - **Pré-requisito:** ter um domínio de e-mail configurado. Se ainda não tiver, eu te mostro o diálogo de setup antes.
-
-4. **WhatsApp como canal de reset (opcional, me confirma)**: enviar o link de redefinição via WhatsApp também exige um provedor (uazapi, Z-API, etc.). Hoje o projeto não tem isso integrado. Posso:
-   - (a) Deixar só por e-mail por enquanto, OU
-   - (b) Adicionar um campo de "WhatsApp API token" e implementar o envio. Me diz qual.
+- Desktop (≥768px): keep the existing vertical "5% NA PRIMEIRA COMPRA" left-side tab.
+- Mobile (<768px): replace the tab with a floating circular button anchored bottom-left (above WhatsApp button if present, otherwise bottom: 24px, left: 24px).
+  - 56×56 circle, bg `#111`, white gift icon (lucide `Gift`, 26px).
+  - Continuous pulse animation: outer ring scale 1→1.6 opacity 0.6→0, 1.6s infinite (same vibe as WhatsApp float).
+  - Inner icon: subtle scale 1→1.05 pulse 1s infinite.
+  - onClick opens the same coupon modal (STATE 1 or STATE 2 depending on saved coupon).
+- Keep modal unchanged.
 
 ---
 
-## Bloco 3 — Ajustes finais mobile no formulário de produto
+## 2. Ofertas Secretas grid background color
 
-Tudo isso é só CSS/UX, sem mexer em lógica de dados:
+File: `src/components/storefront/the-shoes/TheShoesHomepage.tsx` (and `TheShoesExtras.tsx` if duplicated)
 
-1. **Teste real iPhone Safari**: vou usar o browser tool em viewport 390×844 para abrir `/admin/produtos/<id>`, focar cada input e confirmar:
-   - Nenhum corte horizontal (sem scroll lateral).
-   - `font-size: 16px` em todos os inputs (já está, vou validar) → sem zoom no focus.
-   - Botões com `touch-action: manipulation` para evitar delay/zoom de duplo-toque.
-
-2. **CategoryTreePicker — ações sempre visíveis no touch**:
-   - Já adicionei `@media (hover: none)` na última iteração; vou auditar e garantir que **editar / excluir / reordenar** apareçam sempre, com alvos de 36px+.
-   - Adicionar feedback de "pressionado" (`:active`) já que não há `:hover`.
-
-3. **Estado vazio de categorias**:
-   - Quando `categories.length === 0`, mostrar card com texto "Nenhuma categoria criada ainda" e botão "+ Criar primeira categoria" (já existe a função, só falta o empty state).
-
-4. **Seletor múltiplo de categorias em mobile**:
-   - Hoje o `CategoryTreePicker` mostra a árvore inline.
-   - No mobile (`max-width: 767px`) vou trocar por:
-     - Um campo "trigger" com chips das categorias selecionadas + "+ Adicionar categoria".
-     - Ao tocar, abre um **Sheet** (drawer de baixo) com a árvore rolável, busca no topo, e botão "Concluir" fixo embaixo.
-     - Desktop continua com a árvore inline (sem regressão).
+- In the inline "Ofertas Secretas" card, change the 4-up product/grid background from current pattern/color to solid `#f3f3f3`.
+- Card container stays `#dfdac8`; only the inner grid tile background becomes `#f3f3f3`.
 
 ---
 
-## Arquitetura técnica resumida
+## 3. Cart drawer fixes
 
-- **Server functions novas** em `src/lib/superadmin.functions.ts`:
-  - `searchClients(query)` — busca unificada (email, whatsapp, store name/slug, ids).
-  - `sendPasswordResetForUser(user_id)` — admin-only, dispara recovery.
-  - `impersonateStore(store_id, reason)` — admin-only, gera magic link (se Opção A).
-- **Tabela nova** `impersonation_log` (RLS: só `platform_admin` lê).
-- **Migrações**: criar tabela + ampliar `email_for_whatsapp` se necessário.
-- **Componentes novos**:
-  - `src/components/admin/MobileCategoryPicker.tsx` (Sheet com árvore).
-  - Botões de copiar em `/superadmin/clientes`.
+File: `src/components/storefront/the-shoes/TheShoesCartDrawer.tsx`
 
-## O que eu **preciso** de você antes de começar
+- Suggested products ("você também pode gostar") section: change red accents (price, badges, buttons) to `#111` / black. Keep layout.
+- Free-shipping progress bar:
+  - Threshold: `R$ 599,99`.
+  - Compute subtotal from `useCart` items (`sum(unitPrice * quantity)`).
+  - Progress = `min(subtotal / 599.99, 1) * 100%`.
+  - While `subtotal < 599.99`: show "Faltam **R$ X,XX** para o frete grátis" with truck icon moving along progress.
+  - When `subtotal ≥ 599.99`: show "🎉 Você ganhou FRETE GRÁTIS!" and full bar.
+  - Bar fill color `#111`, track `#eee`.
 
-1. **Impersonate: Opção A (magic link, abre em anônima) ou Opção B (banner + RLS)?**
-2. **Reset por WhatsApp: por e-mail apenas, ou integrar um provedor agora?**
-3. **Templates de e-mail brandados:** posso configurar agora (vai precisar de um domínio próprio)?
-4. **Posso fazer os 3 blocos no mesmo turno**, ou prefere começar só pelo Bloco 1?
+---
 
+## 4. Product page redesign (the-shoes only)
+
+File: `src/routes/loja.$slug.produto.$productSlug.tsx`
+
+Currently this route renders one generic layout for all stores. Refactor: when `store.slug === 'the-shoes'`, render a new dedicated component `TheShoesProductPage` (new file `src/components/storefront/the-shoes/TheShoesProductPage.tsx`). Other stores keep current layout untouched.
+
+### Typography & design
+- DM Sans throughout (already injected via `TheShoesGlobalStyles`).
+- Headings 800/900, letter-spacing -0.5px, color `#111`. Matches existing the-shoes design system.
+
+### Layout (desktop 2-col, mobile stack)
+1. Breadcrumb (13px #aaa).
+2. Gallery (left) + Info column (right): title, price block, color swatches, size pills, qty + Add to cart (#111 button) + Buy on WhatsApp (#25D366).
+3. **Info accordion** (matches attached image-14): below info or full-width below gallery on mobile.
+   - Items, each with small lucide icon + uppercase label + `+` toggle:
+     - DESCRIÇÃO (uses `product.description`)
+     - GUIA DE TAMANHOS (static placeholder text editable later)
+     - GARANTIA E DEVOLUÇÃO (static text)
+     - CONDIÇÕES DE ENVIO (static text)
+     - MÉTODOS DE PAGAMENTO (static text)
+   - Styling: 1px solid #e5e5e5 dividers, 48px row height, DM Sans 14px 700.
+4. **"Descubra cada detalhe em vídeo"** circular-thumb carousel (above accordion, matching image-14 top):
+   - Title DM Sans 18px 800 #111, mb 16.
+   - Horizontal scroll row of 64px circular video thumbnails (cover image of each `product_video_testimonials`).
+   - Click opens a full-screen vertical video modal (9:16) with prev/next.
+5. **Product video carousel** (NEW separate section): below info section, full-width.
+   - Title "Veja em vídeo" DM Sans 22px 800.
+   - Horizontal carousel of product videos (from `product_video_testimonials`, kind=youtube|upload) — 9:16 cards, snap scroll, arrow buttons on desktop.
+   - Reuse existing data; no new admin/schema work.
+6. **Related products** row (existing `ProductRow` with the-shoes card styling).
+7. **Reviews + Questions tabs section** (matches attached image-15):
+   - Tabs: "Avaliações" | "Perguntas" (Perguntas is empty-state for now).
+   - Header block: big rating number (e.g. `4.9`) DM Sans 48px 800, gold stars, `baseado em N avaliações`.
+   - Title "Avaliações do produto" 40px 900 centered.
+   - Left dark pill button "Faça uma avaliação" (opens existing review submit flow if available, otherwise no-op placeholder).
+   - Right "Mais relevantes ▾" sort dropdown (sort by rating desc / date desc — client-side only).
+   - 3-column responsive grid of review cards (1 col mobile, 2 col tablet, 3 col desktop):
+     - Gold stars row, text 14px #111, customer name + "X dias" #999 12px.
+     - "👍 Recomendo este produto" pill `#eef6ff` text `#1d6bd6`.
+     - "✅ Compra verificada" pill `#eafaf0` text `#1aa055`.
+     - Optional customer photo thumbnail (uses existing review data; skip if absent).
+
+### Other stores
+- The current `ProductInner` component remains the default fallback. Only `the-shoes` gets the new component. No data model changes.
+
+---
+
+## Files touched
+
+- edit `src/components/storefront/the-shoes/TheShoesCouponTab.tsx`
+- edit `src/components/storefront/the-shoes/TheShoesHomepage.tsx`
+- edit `src/components/storefront/the-shoes/TheShoesCartDrawer.tsx`
+- edit `src/routes/loja.$slug.produto.$productSlug.tsx` (slug branch only)
+- new `src/components/storefront/the-shoes/TheShoesProductPage.tsx`
+
+No DB migrations, no admin changes, no other store affected.
