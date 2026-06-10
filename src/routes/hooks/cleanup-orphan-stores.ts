@@ -9,9 +9,9 @@ export const Route = createFileRoute("/hooks/cleanup-orphan-stores")({
       POST: async ({ request }) => {
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.replace("Bearer ", "").trim();
-        const expected = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+        const expected = process.env.CRON_SECRET;
 
-        if (!token || !expected || token !== expected) {
+        if (!expected || !token || token !== expected) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },

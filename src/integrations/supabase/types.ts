@@ -309,35 +309,6 @@ export type Database = {
           },
         ]
       }
-      customer_wishlist: {
-        Row: {
-          created_at: string
-          id: string
-          product_id: string
-          visitor_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          product_id: string
-          visitor_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          product_id?: string
-          visitor_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "customer_wishlist_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       customers: {
         Row: {
           address: string | null
@@ -1317,6 +1288,32 @@ export type Database = {
           },
         ]
       }
+      store_private_secrets: {
+        Row: {
+          meta_conversion_token: string | null
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          meta_conversion_token?: string | null
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          meta_conversion_token?: string | null
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_private_secrets_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_theme_settings: {
         Row: {
           active_theme_id: string | null
@@ -1370,7 +1367,6 @@ export type Database = {
           id: string
           instagram: string | null
           logo_url: string | null
-          meta_conversion_token: string | null
           name: string
           notify_stock_enabled: boolean
           owner_user_id: string
@@ -1405,7 +1401,6 @@ export type Database = {
           id?: string
           instagram?: string | null
           logo_url?: string | null
-          meta_conversion_token?: string | null
           name: string
           notify_stock_enabled?: boolean
           owner_user_id: string
@@ -1440,7 +1435,6 @@ export type Database = {
           id?: string
           instagram?: string | null
           logo_url?: string | null
-          meta_conversion_token?: string | null
           name?: string
           notify_stock_enabled?: boolean
           owner_user_id?: string
