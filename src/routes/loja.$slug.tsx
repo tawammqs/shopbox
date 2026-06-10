@@ -10,6 +10,7 @@ import { WelcomePopup } from "@/components/storefront/WelcomePopup";
 import { MarketingScripts } from "@/components/storefront/MarketingScripts";
 import { TheShoesHeader } from "@/components/storefront/the-shoes/TheShoesHeader";
 import { TheShoesFooter } from "@/components/storefront/the-shoes/TheShoesFooter";
+import { TheShoesCartDrawer } from "@/components/storefront/the-shoes/TheShoesCartDrawer";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/loja/$slug")({
