@@ -13,6 +13,7 @@ export type IconItem = { icon: string; title: string; subtitle: string };
 export type Testimonial = { name: string; text: string; rating: number; image_url: string };
 export type FaqItem = { question: string; answer: string };
 export type FooterLink = { label: string; url: string };
+export type InstaImage = { image_url: string; link: string };
 
 export type TheShoesSettings = {
   announcement_bar: AnnouncementBar;
@@ -33,8 +34,10 @@ export type TheShoesSettings = {
   faq_whatsapp: string;
   faq_items: FaqItem[];
   instagram_handle: string;
+  instagram_images: InstaImage[];
   footer_about: string;
   footer_links: FooterLink[];
+  footer_marquee_text: string;
   cart_upsell_message: string;
   cart_upsell_threshold: number;
   whatsapp_button: string;
@@ -77,8 +80,10 @@ export const DEFAULT_THE_SHOES_SETTINGS: TheShoesSettings = {
   faq_whatsapp: "5511999999999",
   faq_items: [],
   instagram_handle: "@theshoes",
-  footer_about: "",
+  instagram_images: [],
+  footer_about: "A loja com os tênis mais desejados na internet.",
   footer_links: [],
+  footer_marquee_text: "The Shoes · Os tênis mais desejados · ",
   cart_upsell_message: "Frete grátis nas compras acima de R$199!",
   cart_upsell_threshold: 199,
   whatsapp_button: "5511999999999",

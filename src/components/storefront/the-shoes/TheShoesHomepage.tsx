@@ -16,6 +16,15 @@ import { cn } from "@/lib/utils";
 
 const ACCENT = "#111111";
 
+function WhatsAppLogo({ size = 20, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" className={className} aria-hidden>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.561 4.14 1.535 5.874L.057 23.998l6.306-1.654A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.894a9.877 9.877 0 01-5.034-1.378l-.361-.214-3.741.981.998-3.648-.235-.374A9.861 9.861 0 012.106 12C2.106 6.58 6.58 2.106 12 2.106c5.421 0 9.894 4.474 9.894 9.894 0 5.421-4.473 9.894-9.894 9.894z"/>
+    </svg>
+  );
+}
+
 export function TheShoesHomepage() {
   const { store } = useStorefront();
 
@@ -49,22 +58,23 @@ export function TheShoesHomepage() {
       <MarqueeBar cfg={s.marquee2} />
       <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
       <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
-      <InstagramSection handle={s.instagram_handle} />
+      <InstagramSection handle={s.instagram_handle} images={s.instagram_images} />
       {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
       <TheShoesStyles />
     </div>
   );
 }
 
-/* -------------- Hero Carousel -------------- */
+/* -------------- Hero Carousel with numbered progress indicators -------------- */
 function HeroCarousel({ banners }: { banners: any[] }) {
   const autoplay = useRef(Autoplay({ delay: 5000, stopOnMouseEnter: true, stopOnInteraction: false }));
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [autoplay.current]);
   const [selected, setSelected] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
 
   useEffect(() => {
     if (!emblaApi) return;
-    const onSel = () => setSelected(emblaApi.selectedScrollSnap());
+    const onSel = () => { setSelected(emblaApi.selectedScrollSnap()); setAnimKey((k) => k + 1); };
     emblaApi.on("select", onSel); onSel();
     return () => { emblaApi.off("select", onSel); };
   }, [emblaApi]);
@@ -89,24 +99,30 @@ function HeroCarousel({ banners }: { banners: any[] }) {
       {banners.length > 1 && (
         <>
           <button aria-label="Anterior" onClick={() => emblaApi?.scrollPrev()}
-            className="absolute left-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-[#333] text-lg hover:bg-white">
+            className="absolute left-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-[#333] hover:bg-white">
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button aria-label="Próximo" onClick={() => emblaApi?.scrollNext()}
-            className="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-[#333] text-lg hover:bg-white">
+            className="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-[#333] hover:bg-white">
             <ChevronRight className="h-5 w-5" />
           </button>
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-[6px]">
-            {banners.map((_, i) => (
-              <button key={i} aria-label={`Banner ${i + 1}`} onClick={() => emblaApi?.scrollTo(i)}
-                className="rounded-full bg-white transition-all"
-                style={{
-                  width: selected === i ? 10 : 8,
-                  height: selected === i ? 10 : 8,
-                  opacity: selected === i ? 1 : 0.5,
-                  transform: selected === i ? "scale(1.2)" : "scale(1)",
-                }} />
-            ))}
+          <div className="ts-banner-indicators">
+            {banners.map((_, i) => {
+              const state = i === selected ? "active" : i < selected ? "past" : "future";
+              return (
+                <button key={i} aria-label={`Banner ${i + 1}`}
+                  onClick={() => { emblaApi?.scrollTo(i); setAnimKey((k) => k + 1); }}
+                  className="ts-banner-ind">
+                  <span className={cn("ts-banner-ind-num", state === "active" && "active")}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="ts-banner-ind-bar">
+                    <span key={state === "active" ? animKey : `s-${state}`}
+                      className={cn("ts-banner-ind-fill", state)} />
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </>
       )}
@@ -114,7 +130,7 @@ function HeroCarousel({ banners }: { banners: any[] }) {
   );
 }
 
-/* -------------- Product card (Mio-style) -------------- */
+/* -------------- Product card -------------- */
 function TsProductCard({ p }: { p: ProductCardData }) {
   const { store } = useStorefront();
   const addItem = useCart((s) => s.addItem);
@@ -240,7 +256,7 @@ function ProductCarouselSection({
   );
 }
 
-/* -------------- Marquee Bar -------------- */
+/* -------------- Marquee Bar (large) -------------- */
 function MarqueeBar({ cfg }: { cfg: TheShoesSettings["marquee1"] }) {
   if (!cfg?.text) return null;
   return (
@@ -263,31 +279,51 @@ function PromoBannerSection({ promo }: { promo: TheShoesSettings["promo_banner"]
   );
 }
 
-/* -------------- Icons / Benefits Bar -------------- */
+/* -------------- Icons / Benefits — swipeable carousel -------------- */
 function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "center", loop: true, containScroll: false });
+  const [selected, setSelected] = useState(0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSel = () => setSelected(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSel); onSel();
+    return () => { emblaApi.off("select", onSel); };
+  }, [emblaApi]);
+
   if (!items?.length) return null;
   return (
     <section className="ts-icons-section bg-white">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
-        {items.map((it, i) => (
-          <div key={i} className="flex flex-col items-center text-center">
-            <div className="grid h-[72px] w-[72px] place-items-center rounded-full text-white text-[28px]"
-              style={{ background: ACCENT }}>
-              <span>{it.icon}</span>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="ts-icons-track">
+          {items.map((it, i) => (
+            <div key={i} className="ts-icons-item">
+              <div className="flex flex-col items-center px-5 text-center">
+                <div className="grid h-[72px] w-[72px] place-items-center rounded-full text-[28px]"
+                  style={{ background: "#dfdac8" }}>
+                  <span>{it.icon}</span>
+                </div>
+                <div className="mt-4 mb-1 text-[14px] font-bold text-[#111]">{it.title}</div>
+                <div className="text-[13px] font-normal text-[#666]">{it.subtitle}</div>
+              </div>
             </div>
-            <div className="mt-4 text-[14px] font-bold text-[#111]">{it.title}</div>
-            <div className="mt-1 text-[13px] text-[#666]">{it.subtitle}</div>
-          </div>
+          ))}
+        </div>
+      </div>
+      <div className="mt-6 flex justify-center gap-[6px]">
+        {items.map((_, i) => (
+          <button key={i} aria-label={`Ir para ${i + 1}`} onClick={() => emblaApi?.scrollTo(i)}
+            className="h-[8px] rounded-full transition-all"
+            style={{ width: selected === i ? 24 : 8, background: selected === i ? "#111" : "#ddd" }} />
         ))}
       </div>
     </section>
   );
 }
 
-/* -------------- Testimonials (pill rows) -------------- */
+/* -------------- Testimonials -------------- */
 function TestimonialsSection({ title, items }: { title: string; items: TheShoesSettings["testimonials"] }) {
   if (!items?.length) return null;
-  // Highlight last word with accent color
   const parts = title.trim().split(" ");
   const last = parts.pop() ?? "";
   const head = parts.join(" ");
@@ -297,14 +333,12 @@ function TestimonialsSection({ title, items }: { title: string; items: TheShoesS
   const row2 = items.slice(half).length ? items.slice(half) : items;
 
   return (
-    <section className="ts-section">
+    <section className="ts-section ts-testimonials">
       <h2 className="mb-10 text-center text-[28px] font-extrabold leading-tight text-[#111]" style={{ letterSpacing: "-0.5px" }}>
         {head} <span style={{ color: ACCENT }}>{last}</span>
       </h2>
-      <div className="space-y-4 overflow-hidden">
-        <PillRow items={row1} direction="left" />
-        <PillRow items={row2} direction="right" />
-      </div>
+      <PillRow items={row1} direction="left" />
+      <PillRow items={row2} direction="right" />
     </section>
   );
 }
@@ -339,38 +373,40 @@ function PillRow({ items, direction }: { items: TheShoesSettings["testimonials"]
   );
 }
 
-/* -------------- FAQ -------------- */
+/* -------------- FAQ (cream box) -------------- */
 function FaqSection({ title, items, whatsapp }: { title: string; items: TheShoesSettings["faq_items"]; whatsapp: string }) {
   const [open, setOpen] = useState<number | null>(null);
   if (!items?.length) return null;
   return (
-    <section className="ts-faq">
-      <h2 className="mb-10 text-[32px] font-extrabold text-[#111]" style={{ letterSpacing: "-0.5px" }}>{title}</h2>
-      <div>
-        {items.map((it, i) => {
-          const isOpen = open === i;
-          return (
-            <div key={i} className="border-b border-[#f0f0f0]">
-              <button onClick={() => setOpen(isOpen ? null : i)}
-                className="flex w-full items-center justify-between gap-4 py-5 text-left">
-                <span className="text-[15px] font-semibold text-[#111]">{it.question}</span>
-                {isOpen
-                  ? <Minus className="h-[22px] w-[22px] shrink-0" style={{ color: ACCENT }} />
-                  : <Plus className="h-[22px] w-[22px] shrink-0" style={{ color: ACCENT }} />}
-              </button>
-              {isOpen && (
-                <div className="pb-5 text-[14px] text-[#666]" style={{ lineHeight: 1.8 }}>{it.answer}</div>
-              )}
-            </div>
-          );
-        })}
+    <section className="ts-faq-section">
+      <div className="ts-faq-box">
+        <h2 className="mb-8 text-[28px] md:text-[32px] font-extrabold text-[#111]" style={{ letterSpacing: "-0.5px" }}>{title}</h2>
+        <div>
+          {items.map((it, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={i} className="ts-faq-item">
+                <button onClick={() => setOpen(isOpen ? null : i)}
+                  className="flex w-full items-center justify-between gap-4 text-left">
+                  <span className="text-[15px] font-semibold text-[#111]">{it.question}</span>
+                  {isOpen
+                    ? <Minus className="h-[22px] w-[22px] shrink-0 text-[#111]" />
+                    : <Plus className="h-[22px] w-[22px] shrink-0 text-[#111]" />}
+                </button>
+                {isOpen && (
+                  <div className="pt-4 text-[14px] text-[#555]" style={{ lineHeight: 1.8 }}>{it.answer}</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
       {whatsapp && (
-        <div className="mt-10 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"
             className="inline-flex items-center gap-[10px] rounded-full bg-[#25D366] px-9 py-[14px] text-[15px] font-semibold text-white hover:opacity-90">
-            <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current"><path d="M20.5 3.5A11 11 0 0 0 3.6 17.3L2 22l4.8-1.5A11 11 0 1 0 20.5 3.5Zm-8.4 17a9 9 0 0 1-4.6-1.3l-.3-.2-2.8.9.9-2.7-.2-.3a9 9 0 1 1 7 3.6Zm5-6.8c-.3-.1-1.6-.8-1.9-.9-.2-.1-.4-.1-.6.2s-.7.9-.9 1c-.2.2-.3.2-.6.1a7.4 7.4 0 0 1-3.7-3.2c-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-1 2.3c0 1.3 1 2.6 1.1 2.8.2.3 2 3 4.7 4.2 1.6.7 2.3.8 3.1.7.5-.1 1.6-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3Z"/></svg>
-            Falar no WhatsApp
+            <WhatsAppLogo size={20} />
+            Chamar no WhatsApp
           </a>
         </div>
       )}
@@ -378,17 +414,29 @@ function FaqSection({ title, items, whatsapp }: { title: string; items: TheShoes
   );
 }
 
-/* -------------- Instagram -------------- */
-function InstagramSection({ handle }: { handle: string }) {
-  if (!handle) return null;
+/* -------------- Instagram (manual uploads) -------------- */
+function InstagramSection({ handle, images }: { handle: string; images: TheShoesSettings["instagram_images"] }) {
+  if (!handle && (!images || images.length === 0)) return null;
   const clean = handle.replace(/^@/, "");
   return (
     <section className="ts-icons-section bg-white text-center">
-      <h2 className="mb-8 text-[22px] font-bold text-[#111]">Siga-nos no Instagram</h2>
-      <a href={`https://instagram.com/${clean}`} target="_blank" rel="noreferrer"
-        className="mt-5 inline-block text-[14px] font-semibold underline" style={{ color: ACCENT }}>
-        @{clean}
-      </a>
+      <h2 className="mb-8 text-[22px] font-bold text-[#111]">Siga a The Shoes no Instagram! 💖</h2>
+      {images && images.length > 0 && (
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          {images.slice(0, 12).map((img, i) => (
+            <a key={i} href={img.link || `https://instagram.com/${clean}`} target="_blank" rel="noreferrer"
+              className="block aspect-square overflow-hidden rounded-[10px] bg-[#f5f5f5] transition-transform hover:scale-[1.03]">
+              {img.image_url && <img src={img.image_url} alt="" className="h-full w-full object-cover" loading="lazy" />}
+            </a>
+          ))}
+        </div>
+      )}
+      {handle && (
+        <a href={`https://instagram.com/${clean}`} target="_blank" rel="noreferrer"
+          className="mt-5 inline-block text-[14px] font-semibold underline text-[#111]">
+          @{clean}
+        </a>
+      )}
     </section>
   );
 }
@@ -397,10 +445,12 @@ function InstagramSection({ handle }: { handle: string }) {
 function FloatingWhatsApp({ number }: { number: string }) {
   return (
     <a href={`https://wa.me/${number}`} target="_blank" rel="noreferrer" aria-label="WhatsApp"
-      className="ts-fab fixed bottom-6 right-6 z-50 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white transition-transform hover:scale-105">
-      <svg viewBox="0 0 24 24" className="h-7 w-7 fill-current">
-        <path d="M20.5 3.5A11 11 0 0 0 3.6 17.3L2 22l4.8-1.5A11 11 0 1 0 20.5 3.5Zm-3.4 11.7c-.3-.1-1.6-.8-1.9-.9-.2-.1-.4-.1-.6.2s-.7.9-.9 1c-.2.2-.3.2-.6.1a7.4 7.4 0 0 1-3.7-3.2c-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5l-.9-2c-.2-.5-.4-.5-.6-.5h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-1 2.3c0 1.3 1 2.6 1.1 2.8.2.3 2 3 4.7 4.2 1.6.7 2.3.8 3.1.7.5-.1 1.6-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3Z"/>
-      </svg>
+      className="ts-fab" style={{
+        position: "fixed", bottom: 24, right: 24, width: 56, height: 56, borderRadius: "50%",
+        backgroundColor: "#25D366", display: "flex", alignItems: "center", justifyContent: "center",
+        boxShadow: "0 4px 20px rgba(37,211,102,0.4)", zIndex: 9999, color: "#fff",
+      }}>
+      <WhatsAppLogo size={32} />
     </a>
   );
 }
@@ -409,8 +459,8 @@ function FloatingWhatsApp({ number }: { number: string }) {
 function TheShoesStyles() {
   return (
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-      .ts-root, .ts-root * { font-family: 'Inter', system-ui, sans-serif; }
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900&display=swap');
+      .ts-root, .ts-root * { font-family: 'DM Sans', 'Helvetica Neue', -apple-system, sans-serif; }
 
       .ts-section { padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
       .ts-section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 16px; }
@@ -430,25 +480,33 @@ function TheShoesStyles() {
       .ts-circle-btn:hover { border-color: #111; color: #111; }
 
       .ts-carousel { display: flex; gap: 12px; }
-      .ts-carousel-item { flex: 0 0 calc(50% - 6px); min-width: 0; scroll-snap-align: start; }
+      .ts-carousel-item { flex: 0 0 calc(50% - 6px); min-width: 0; }
       @media (min-width: 768px) {
         .ts-carousel { gap: 16px; }
         .ts-carousel-item { flex: 0 0 calc(25% - 12px); }
       }
 
-      .ts-marquee { height: 48px; display: flex; align-items: center; overflow: hidden;
-        font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
-      .ts-marquee-track { display: inline-flex; white-space: nowrap; animation: tsScroll 20s linear infinite; }
+      /* Large marquees (marquee1 + marquee2) */
+      .ts-marquee {
+        height: 72px; display: flex; align-items: center; overflow: hidden;
+        font-size: 28px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.02em; line-height: 1;
+      }
+      .ts-marquee-track { display: inline-flex; white-space: nowrap; animation: tsScroll 25s linear infinite; }
       .ts-marquee-track > span { padding: 0 16px; }
       @keyframes tsScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
       .ts-icons-section { padding: 48px 20px; }
       @media (min-width: 768px) { .ts-icons-section { padding: 48px 40px; } }
+      .ts-icons-track { display: flex; }
+      .ts-icons-item { flex: 0 0 100%; min-width: 0; }
+      @media (min-width: 640px) { .ts-icons-item { flex: 0 0 50%; } }
+      @media (min-width: 900px) { .ts-icons-item { flex: 0 0 33.333%; } }
+      @media (min-width: 1100px) { .ts-icons-item { flex: 0 0 25%; } }
 
-      .ts-faq { max-width: 720px; margin: 0 auto; padding: 48px 20px; }
-      @media (min-width: 768px) { .ts-faq { padding: 64px 40px; } }
-
-      .ts-pill-row { overflow: hidden; }
+      /* Testimonials */
+      .ts-testimonials { overflow: hidden; padding-bottom: 48px; }
+      .ts-pill-row { overflow: hidden; width: 100%; margin-bottom: 16px; }
       .ts-pill-track { display: inline-flex; gap: 12px; animation: tsPillL 35s linear infinite; }
       .ts-pill-track-rev { animation: tsPillR 35s linear infinite; }
       @keyframes tsPillL { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -459,10 +517,56 @@ function TheShoesStyles() {
         padding: 12px 20px 12px 12px; white-space: nowrap; flex-shrink: 0;
       }
 
-      .ts-fab { box-shadow: 0 4px 20px rgba(37,211,102,0.4); animation: tsPulse 2s infinite; }
-      @keyframes tsPulse {
-        0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4); }
-        50% { box-shadow: 0 4px 30px rgba(37,211,102,0.7); }
+      /* FAQ */
+      .ts-faq-section { background: #ffffff; padding: 48px 20px; }
+      @media (min-width: 768px) { .ts-faq-section { padding: 64px 40px; } }
+      .ts-faq-box {
+        background: #dfdac8; border-radius: 16px;
+        padding: 36px 24px; max-width: 800px; margin: 0 auto;
+      }
+      @media (min-width: 768px) { .ts-faq-box { padding: 48px 40px; } }
+      .ts-faq-item { border-bottom: 1px solid rgba(0,0,0,0.12); padding: 20px 0; }
+      .ts-faq-item:last-child { border-bottom: 0; }
+
+      /* Banner numbered indicators */
+      .ts-banner-indicators {
+        position: absolute; bottom: 12px; right: 12px;
+        display: flex; gap: 8px; align-items: center;
+      }
+      @media (min-width: 768px) {
+        .ts-banner-indicators { bottom: 20px; right: 20px; gap: 10px; }
+      }
+      .ts-banner-ind {
+        background: transparent; border: 0; padding: 0;
+        display: flex; flex-direction: column; align-items: center; gap: 4px;
+        width: 36px; cursor: pointer;
+      }
+      @media (min-width: 768px) { .ts-banner-ind { width: 48px; } }
+      .ts-banner-ind-num {
+        font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.5);
+        font-family: 'DM Sans', sans-serif;
+      }
+      @media (min-width: 768px) { .ts-banner-ind-num { font-size: 12px; } }
+      .ts-banner-ind-num.active { color: #fff; }
+      .ts-banner-ind-bar {
+        display: block; width: 100%; height: 2px;
+        background: rgba(255,255,255,0.3); border-radius: 9999px; overflow: hidden;
+      }
+      @media (min-width: 768px) { .ts-banner-ind-bar { height: 3px; } }
+      .ts-banner-ind-fill {
+        display: block; height: 100%; background: #fff; border-radius: 9999px; width: 0;
+      }
+      .ts-banner-ind-fill.active { animation: tsBannerProgress 5s linear forwards; }
+      .ts-banner-ind-fill.past { width: 100%; opacity: 0.5; }
+      .ts-banner-ind-fill.future { width: 0; }
+      @keyframes tsBannerProgress { from { width: 0%; } to { width: 100%; } }
+
+      /* Floating WhatsApp pulse */
+      .ts-fab { animation: tsWhatsappPulse 2s infinite; }
+      @keyframes tsWhatsappPulse {
+        0% { box-shadow: 0 0 0 0 rgba(37,211,102,0.6); }
+        70% { box-shadow: 0 0 0 18px rgba(37,211,102,0); }
+        100% { box-shadow: 0 0 0 0 rgba(37,211,102,0); }
       }
     `}</style>
   );

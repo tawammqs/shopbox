@@ -548,6 +548,35 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_leads: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_leads_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_status_history: {
         Row: {
           changed_at: string
