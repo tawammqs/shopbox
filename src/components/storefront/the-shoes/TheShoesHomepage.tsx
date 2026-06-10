@@ -561,9 +561,9 @@ function AchadinhosInline({ storeId, tag }: { storeId: string; tag: string }) {
       <div className="ts-achadinhos-overlay" />
       <div className="ts-achadinhos-content">
         <div className="ts-achadinhos-card">
-          <span style={{ fontSize: 44, display: "block", marginBottom: 14 }}>🔒</span>
+          <LockIcon />
           <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>
-            Achadinhos da The Shoes
+            Ofertas Secretas
           </h2>
           <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 22 }}>
             Digite seu WhatsApp e tenha acesso às ofertas mais incríveis da The Shoes. Exclusivo para clientes VIPs 😉
