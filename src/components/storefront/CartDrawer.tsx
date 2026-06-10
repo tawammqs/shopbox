@@ -282,3 +282,24 @@ export function CartDrawer() {
     </>
   );
 }
+
+function TheShoesUpsell({ subtotal, threshold, message }: { subtotal: number; threshold: number; message: string }) {
+  const remaining = Math.max(0, threshold - subtotal);
+  const pct = Math.min(100, (subtotal / threshold) * 100);
+  const achieved = remaining === 0;
+  return (
+    <div className="mb-4 rounded-lg border border-[#25D366]/30 bg-[#25D366]/5 p-3">
+      <p className="text-xs font-medium text-[#111]">
+        {achieved ? "🎉 Você ganhou frete grátis!" : (
+          <>Faltam <strong>{formatBRL(remaining)}</strong> para {message || "frete grátis"}</>
+        )}
+      </p>
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#25D366]/15">
+        <div
+          className="h-full rounded-full bg-[#25D366] transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
