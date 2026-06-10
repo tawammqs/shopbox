@@ -49,7 +49,7 @@ export const Route = createFileRoute("/loja/$slug")({
 });
 
 function StorefrontLayout() {
-  const { store, categories } = Route.useLoaderData();
+  const { store, categories, activeThemeSlug } = Route.useLoaderData();
   const [navOpen, setNavOpen] = useState(false);
 
   if (!store) {
@@ -64,10 +64,10 @@ function StorefrontLayout() {
     );
   }
 
-  const isTheShoes = store.slug === "the-shoes";
+  const isTheShoes = activeThemeSlug === "mio-style" || store.slug === "the-shoes";
 
   return (
-    <StoreProvider value={{ store, categories }}>
+    <StoreProvider value={{ store, categories, activeThemeSlug }}>
       <div
         className="storefront-root min-h-screen bg-background"
         data-store-slug={store.slug}
