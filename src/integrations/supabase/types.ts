@@ -171,6 +171,50 @@ export type Database = {
           },
         ]
       }
+      coupon_leads: {
+        Row: {
+          birthday: string | null
+          coupon_code: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          source: string
+          store_id: string
+          whatsapp: string
+        }
+        Insert: {
+          birthday?: string | null
+          coupon_code?: string
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          source?: string
+          store_id: string
+          whatsapp: string
+        }
+        Update: {
+          birthday?: string | null
+          coupon_code?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          source?: string
+          store_id?: string
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_leads_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupon_uses: {
         Row: {
           coupon_id: string

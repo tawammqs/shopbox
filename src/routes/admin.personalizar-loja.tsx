@@ -292,6 +292,45 @@ function PersonalizarPage() {
         </div>
       </Card>
 
+      {/* Cupom de boas-vindas (floating tab) */}
+      <Card title="Cupom de Boas-vindas">
+        <div className="flex items-center justify-between gap-3">
+          <Label>Mostrar aba flutuante de cupom</Label>
+          <Switch
+            checked={s.coupon_popup.enabled}
+            onCheckedChange={(v) => update("coupon_popup", { ...s.coupon_popup, enabled: v })}
+          />
+        </div>
+        <TextField label="Texto da aba"
+          value={s.coupon_popup.tab_text}
+          onChange={(v) => update("coupon_popup", { ...s.coupon_popup, tab_text: v })} />
+        <div>
+          <Label className="mb-1 block">Descrição no popup</Label>
+          <Textarea
+            value={s.coupon_popup.description}
+            onChange={(e) => update("coupon_popup", { ...s.coupon_popup, description: e.target.value })}
+            rows={3}
+          />
+        </div>
+        <TextField label="Código do cupom"
+          value={s.coupon_popup.coupon_code}
+          onChange={(v) => update("coupon_popup", { ...s.coupon_popup, coupon_code: v })} />
+        <TextField label="Link do grupo VIP no WhatsApp"
+          value={s.coupon_popup.whatsapp_group_url}
+          onChange={(v) => update("coupon_popup", { ...s.coupon_popup, whatsapp_group_url: v })} />
+        <div>
+          <Label className="mb-1 block">Cor de fundo da aba</Label>
+          <Input
+            type="color"
+            value={s.coupon_popup.tab_bg_color}
+            onChange={(e) => update("coupon_popup", { ...s.coupon_popup, tab_bg_color: e.target.value })}
+            className="h-10 w-24 p-1"
+          />
+        </div>
+      </Card>
+
+
+
       <div className="sticky bottom-4 flex justify-end">
         <Button onClick={save} disabled={saving} size="lg" className="shadow-lg">
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
