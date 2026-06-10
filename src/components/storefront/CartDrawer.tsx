@@ -32,7 +32,7 @@ export function CartDrawer() {
   const [shippingMsg, setShippingMsg] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
-  const isTheShoes = store.slug === "the-shoes";
+  const isTheShoes = useIsMioTheme();
   const tsSettingsQ = useQuery({
     queryKey: ["the-shoes-settings", store.id],
     queryFn: () => fetchTheShoesSettings(store.id),
