@@ -160,7 +160,7 @@ function TsProductCard({ p }: { p: ProductCardData }) {
   return (
     <Link to="/loja/$slug/produto/$productSlug" params={{ slug: store.slug, productSlug: p.slug }}
       className="group block" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f7f7f7]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[12px] bg-[#f7f7f7]">
         {img1 && (
           <img src={img1} alt={p.title} loading="lazy"
             className={cn("h-full w-full object-cover transition-opacity duration-500", hover && img2 !== img1 && "opacity-0")} />
