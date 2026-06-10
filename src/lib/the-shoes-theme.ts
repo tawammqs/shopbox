@@ -34,8 +34,10 @@ export type TheShoesSettings = {
   faq_whatsapp: string;
   faq_items: FaqItem[];
   instagram_handle: string;
+  instagram_images: InstaImage[];
   footer_about: string;
   footer_links: FooterLink[];
+  footer_marquee_text: string;
   cart_upsell_message: string;
   cart_upsell_threshold: number;
   whatsapp_button: string;
