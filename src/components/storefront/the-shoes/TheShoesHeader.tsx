@@ -110,10 +110,15 @@ export function TheShoesHeader() {
             aria-label="Carrinho"
             className="relative grid h-11 w-11 place-items-center text-[#333]"
           >
-            <ShoppingBag className="h-[22px] w-[22px]" strokeWidth={1.6} />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
             {cartCount > 0 && (
               <span
-                className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold text-white"
+                className="absolute -right-[2px] -top-[2px] grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold text-white"
                 style={{ background: ACCENT }}
               >
                 {cartCount}
