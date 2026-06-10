@@ -9,6 +9,7 @@ export type CustomerInfo = {
   cep?: string;
   address?: string;
   city_state?: string;
+  paymentMethod?: string;
 };
 
 function buildCustomerBlock(customer?: CustomerInfo | null): string[] {
