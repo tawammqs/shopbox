@@ -32,6 +32,16 @@ export function CartDrawer() {
   const [shippingMsg, setShippingMsg] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
+  const isTheShoes = store.slug === "the-shoes";
+  const tsSettingsQ = useQuery({
+    queryKey: ["the-shoes-settings", store.id],
+    queryFn: () => fetchTheShoesSettings(store.id),
+    enabled: isTheShoes,
+    staleTime: 30_000,
+  });
+  const upsellThreshold = isTheShoes ? tsSettingsQ.data?.cart_upsell_threshold ?? 0 : 0;
+  const upsellMessage = isTheShoes ? tsSettingsQ.data?.cart_upsell_message ?? "" : "";
+
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
