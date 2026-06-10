@@ -513,10 +513,133 @@ export function TheShoesProductPage({ product }: { product: any }) {
         }}
       />
 
+      <ReviewDialog
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        productId={product.id}
+      />
+      <QuestionDialog
+        open={questionOpen}
+        onOpenChange={setQuestionOpen}
+        productId={product.id}
+        onSubmitted={() => qc.invalidateQueries({ queryKey: ["product-questions", product.id] })}
+      />
+
       <style>{`
         .ts-product, .ts-product * { font-family: 'DM Sans', 'Helvetica Neue', -apple-system, sans-serif; }
       `}</style>
     </div>
+  );
+}
+
+function ReviewDialog({ open, onOpenChange, productId }: { open: boolean; onOpenChange: (v: boolean) => void; productId: string }) {
+  const [name, setName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [rating, setRating] = useState(5);
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    if (name.trim().length < 2) return toast.error("Informe seu nome");
+    if (rating < 1 || rating > 5) return toast.error("Selecione uma nota");
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("product_reviews").insert({
+        product_id: productId,
+        customer_name: name.trim(),
+        customer_whatsapp: whatsapp.trim() || null,
+        rating,
+        text: text.trim() || null,
+        status: "pending" as const,
+      });
+      if (error) throw error;
+      toast.success("Avaliação enviada! Aguardando moderação.");
+      onOpenChange(false);
+      setName(""); setWhatsapp(""); setRating(5); setText("");
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao enviar");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Avaliar produto</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <label className="text-sm font-medium">Sua nota</label>
+            <div className="mt-1 flex gap-1">
+              {[1,2,3,4,5].map((n) => (
+                <button key={n} onClick={() => setRating(n)} type="button">
+                  <Star className={cn("h-7 w-7", n <= rating ? "fill-amber-400 text-amber-400" : "text-[#e0e0e0]")} />
+                </button>
+              ))}
+            </div>
+          </div>
+          <Input placeholder="Seu nome" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input placeholder="WhatsApp (opcional)" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+          <Textarea placeholder="Conte sua experiência com o produto" value={text} onChange={(e) => setText(e.target.value)} rows={4} />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={busy} className="bg-[#111] text-white hover:opacity-90">
+            {busy ? "Enviando..." : "Enviar avaliação"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function QuestionDialog({ open, onOpenChange, productId, onSubmitted }: { open: boolean; onOpenChange: (v: boolean) => void; productId: string; onSubmitted: () => void }) {
+  const [name, setName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [question, setQuestion] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    if (name.trim().length < 2) return toast.error("Informe seu nome");
+    if (question.trim().length < 3) return toast.error("Escreva sua pergunta");
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("product_questions").insert({
+        product_id: productId,
+        customer_name: name.trim(),
+        customer_whatsapp: whatsapp.trim() || null,
+        question: question.trim(),
+        status: "pending" as const,
+      });
+      if (error) throw error;
+      toast.success("Pergunta enviada! A loja responderá em breve.");
+      onOpenChange(false);
+      setName(""); setWhatsapp(""); setQuestion("");
+      onSubmitted();
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao enviar");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Faça uma pergunta</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <Input placeholder="Seu nome" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input placeholder="WhatsApp (opcional)" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+          <Textarea placeholder="Escreva sua pergunta sobre o produto" value={question} onChange={(e) => setQuestion(e.target.value)} rows={4} />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={busy} className="bg-[#111] text-white hover:opacity-90">
+            {busy ? "Enviando..." : "Enviar pergunta"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
