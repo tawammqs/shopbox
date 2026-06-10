@@ -21,7 +21,10 @@ const schema = z.object({
   cep: z.string().trim().max(12).optional().or(z.literal("")),
   address: z.string().trim().max(255).optional().or(z.literal("")),
   city_state: z.string().trim().max(120).optional().or(z.literal("")),
+  paymentMethod: z.string().min(1, "Selecione uma forma de pagamento").optional(),
 });
+
+type FormData = z.infer<typeof schema>;
 
 type Props = {
   open: boolean;
@@ -46,15 +49,17 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
   const { store } = useStorefront();
   const clearCart = useCart((s) => s.clear);
 
+  const isTheShoes = store.slug === "the-shoes";
+
   const [form, setForm] = useState({
-    name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "",
+    name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "", paymentMethod: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
 
   if (!open) return null;
 
-  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const updateMasked = (k: keyof typeof form, mask: (v: string) => string) =>
@@ -71,6 +76,10 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         if (k && !errs[k]) errs[k] = i.message;
       });
       setErrors(errs);
+      return;
+    }
+    if (isTheShoes && !form.paymentMethod) {
+      setErrors({ ...errors, paymentMethod: "Selecione uma forma de pagamento" });
       return;
     }
     setErrors({});
@@ -115,6 +124,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         cep: form.cep,
         address: form.address,
         city_state: form.city_state,
+        paymentMethod: isTheShoes ? form.paymentMethod : undefined,
       };
 
       if (buyNow) {
@@ -209,6 +219,49 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
           <Field label="Cidade / Estado" error={errors.city_state}>
             <Input value={form.city_state} onChange={update("city_state")} placeholder="São Paulo / SP" />
           </Field>
+
+          {isTheShoes && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: '13px',
+                fontWeight: 600,
+                color: '#333',
+                marginBottom: '6px'
+              }}>
+                Forma de pagamento *
+              </label>
+              <select
+                value={form.paymentMethod}
+                onChange={update("paymentMethod")}
+                required
+                style={{
+                  width: '100%',
+                  height: '52px',
+                  border: errors.paymentMethod ? '1px solid #ef4444' : '1px solid #e0e0e0',
+                  borderRadius: '8px',
+                  padding: '0 16px',
+                  fontFamily: 'DM Sans, sans-serif',
+                  fontSize: '15px',
+                  color: form.paymentMethod ? '#111' : '#aaa',
+                  background: '#fff',
+                  cursor: 'pointer',
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 16px center'
+                }}
+              >
+                <option value="" disabled>Selecione a forma de pagamento</option>
+                <option value="pix">PIX</option>
+                <option value="cartao">Cartão de crédito — até 3x sem juros</option>
+              </select>
+              {errors.paymentMethod && (
+                <p className="text-xs text-destructive">{errors.paymentMethod}</p>
+              )}
+            </div>
+          )}
 
           <Button
             type="submit"
