@@ -451,46 +451,156 @@ function PillRow({ items, direction }: { items: TheShoesSettings["testimonials"]
   );
 }
 
-/* -------------- FAQ (cream box) -------------- */
+/* -------------- FAQ (cream box, Mio Capelli style) -------------- */
 function FaqSection({ title, items, whatsapp }: { title: string; items: TheShoesSettings["faq_items"]; whatsapp: string }) {
   const [open, setOpen] = useState<number | null>(null);
   if (!items?.length) return null;
   return (
     <section className="ts-faq-section">
-      <div className="ts-faq-box">
-        <h2 className="mb-8 text-[28px] md:text-[32px] font-extrabold text-[#111]" style={{ letterSpacing: "-0.5px" }}>{title}</h2>
-        <div>
-          {items.map((it, i) => {
-            const isOpen = open === i;
-            return (
-              <div key={i} className="ts-faq-item">
-                <button onClick={() => setOpen(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 text-left">
-                  <span className="text-[15px] font-semibold text-[#111]">{it.question}</span>
-                  {isOpen
-                    ? <Minus className="h-[22px] w-[22px] shrink-0 text-[#111]" />
-                    : <Plus className="h-[22px] w-[22px] shrink-0 text-[#111]" />}
-                </button>
-                {isOpen && (
-                  <div className="pt-4 text-[14px] text-[#555]" style={{ lineHeight: 1.8 }}>{it.answer}</div>
-                )}
-              </div>
-            );
-          })}
+      <div className="ts-faq-wrap">
+        <p className="ts-faq-eyebrow">Ainda na dúvida?</p>
+        <h2 className="ts-faq-title">{title || "The Shoes responde"}</h2>
+        <div className="ts-faq-box">
+          <div>
+            {items.map((it, i) => {
+              const isOpen = open === i;
+              return (
+                <div key={i} className="ts-faq-item">
+                  <button onClick={() => setOpen(isOpen ? null : i)}
+                    className="flex w-full items-center justify-between gap-4 text-left">
+                    <span className="ts-faq-q">{it.question}</span>
+                    <span className="ts-faq-icon">{isOpen ? "∧" : "∨"}</span>
+                  </button>
+                  {isOpen && (
+                    <div className="ts-faq-a">{it.answer}</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="ts-faq-divider" />
+          <p className="ts-faq-help">
+            Não encontrou a resposta para a sua pergunta?<br />
+            Fale com o nosso time de atendimento.
+          </p>
+          {whatsapp && (
+            <div className="flex justify-center">
+              <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="ts-faq-cta">
+                <WhatsAppLogo size={20} />
+                Chamar no WhatsApp
+              </a>
+            </div>
+          )}
         </div>
       </div>
-      {whatsapp && (
-        <div className="mt-8 flex justify-center">
-          <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer"
-            className="inline-flex items-center gap-[10px] rounded-full bg-[#25D366] px-9 py-[14px] text-[15px] font-semibold text-white hover:opacity-90">
-            <WhatsAppLogo size={20} />
-            Chamar no WhatsApp
-          </a>
-        </div>
-      )}
     </section>
   );
 }
+
+/* -------------- Achadinhos inline (always-visible card, blurred grid bg) -------------- */
+function AchadinhosInline({ storeId, tag }: { storeId: string; tag: string }) {
+  const { store } = useStorefront();
+  const q = useQuery({
+    queryKey: ["ts-achadinhos-bg", storeId, tag],
+    queryFn: () => fetchProductsByTag(storeId, tag, 8),
+    staleTime: 60_000,
+  });
+  const products = q.data ?? [];
+  const [value, setValue] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [shake, setShake] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const onSubmit = async () => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 11) {
+      setInvalid(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await supabase.from("vip_group_leads" as any).insert({
+        store_id: store.id, whatsapp: digits, source: "achadinhos_inline",
+      });
+      window.open(VIP_GROUP_URL, "_blank", "noopener,noreferrer");
+      setSuccess(true);
+      setValue("");
+    } catch {
+      toast.error("Não foi possível concluir. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <section className="ts-achadinhos">
+      <div className="ts-achadinhos-bg">
+        {products.slice(0, 8).map((p) => {
+          const img = p.images?.[0]?.url ?? "";
+          return (
+            <div key={p.id} style={{
+              backgroundImage: img ? `url(${img})` : undefined,
+              backgroundColor: "#f0f0f0",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              aspectRatio: "4/5",
+            }} />
+          );
+        })}
+      </div>
+      <div className="ts-achadinhos-overlay" />
+      <div className="ts-achadinhos-content">
+        <div className="ts-achadinhos-card">
+          <span style={{ fontSize: 44, display: "block", marginBottom: 14 }}>🔒</span>
+          <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>
+            Achadinhos da The Shoes
+          </h2>
+          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 22 }}>
+            Digite seu WhatsApp e tenha acesso às ofertas mais incríveis da The Shoes. Exclusivo para clientes VIPs 😉
+          </p>
+          <input
+            type="tel"
+            inputMode="numeric"
+            value={value}
+            onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
+            placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD + XXXXX-XXXX)"}
+            disabled={success}
+            style={{
+              width: "100%", height: 52,
+              border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
+              borderRadius: 10, padding: "0 16px", fontSize: 16,
+              fontFamily: "DM Sans, sans-serif", textAlign: "center",
+              color: "#111", marginBottom: 12, outline: "none",
+              boxSizing: "border-box",
+            }}
+          />
+          {success ? (
+            <p style={{ color: "#25D366", fontSize: 15, fontWeight: 600, padding: "16px 0" }}>
+              ✓ Redirecionando para o grupo VIP! 🎉
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={submitting}
+              style={{
+                width: "100%", height: 52, background: "#25D366", color: "#fff",
+                border: "none", borderRadius: 10, fontSize: 16, fontWeight: 700,
+                cursor: "pointer", opacity: submitting ? 0.7 : 1,
+                animation: shake ? "tsShake 0.4s ease" : undefined,
+              }}>
+              {submitting ? "Enviando..." : "Desbloquear e ver ofertas"}
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 /* -------------- Instagram (manual uploads) -------------- */
 function InstagramSection({ handle, images }: { handle: string; images: TheShoesSettings["instagram_images"] }) {
