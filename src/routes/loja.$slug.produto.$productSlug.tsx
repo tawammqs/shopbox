@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, ShoppingBag, Share2, Star } from "lucide-react";
 import { toast } from "sonner";
-import { useStorefront } from "@/components/storefront/StoreContext";
+import { useStorefront, useIsMioTheme } from "@/components/storefront/StoreContext";
 import { fetchProductFull, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { supabase } from "@/integrations/supabase/client";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
 
 function ProductPage() {
   const { store } = useStorefront();
+  const isMio = useIsMioTheme();
   const { productSlug } = Route.useParams();
 
   const { data, isLoading } = useQuery({
@@ -52,7 +53,7 @@ function ProductPage() {
     );
   }
 
-  if (store.slug === "the-shoes") {
+  if (isMio) {
     return <TheShoesProductPage product={data} />;
   }
 

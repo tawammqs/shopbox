@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useStorefront } from "./StoreContext";
+import { useStorefront, useIsMioTheme } from "./StoreContext";
 import { supabase } from "@/integrations/supabase/client";
 
 const VIP_GROUP_URL = "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r";
@@ -38,6 +38,7 @@ function LockBig() {
 
 export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: () => void) => React.ReactNode } = {}) {
   const { store } = useStorefront();
+  const isMio = useIsMioTheme();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -53,7 +54,7 @@ export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: ()
     };
   }, [open]);
 
-  if (store.slug !== "the-shoes") return null;
+  if (!isMio) return null;
 
   const close = () => {
     setOpen(false);

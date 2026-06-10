@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCart, type CartItem, type AppliedCoupon } from "@/stores/cart";
-import { useStorefront } from "./StoreContext";
+import { useStorefront, useIsMioTheme } from "./StoreContext";
 import { openWhatsAppCheckout, buildBuyNowMessage, buildWhatsAppUrl, type CustomerInfo } from "@/lib/whatsapp";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";
@@ -49,7 +49,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
   const { store } = useStorefront();
   const clearCart = useCart((s) => s.clear);
 
-  const isTheShoes = store.slug === "the-shoes";
+  const isTheShoes = useIsMioTheme();
 
   const [form, setForm] = useState({
     name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "", paymentMethod: "",

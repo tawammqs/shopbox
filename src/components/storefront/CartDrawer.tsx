@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { X, ShoppingBag, Trash2, Tag, Truck } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { useCart, type AppliedCoupon } from "@/stores/cart";
-import { useStorefront } from "./StoreContext";
+import { useStorefront, useIsMioTheme } from "./StoreContext";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
@@ -32,7 +32,7 @@ export function CartDrawer() {
   const [shippingMsg, setShippingMsg] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
-  const isTheShoes = store.slug === "the-shoes";
+  const isTheShoes = useIsMioTheme();
   const tsSettingsQ = useQuery({
     queryKey: ["the-shoes-settings", store.id],
     queryFn: () => fetchTheShoesSettings(store.id),

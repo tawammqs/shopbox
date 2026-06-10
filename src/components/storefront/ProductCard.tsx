@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useStorefront } from "./StoreContext";
+import { useStorefront, useIsMioTheme } from "./StoreContext";
 import { useWishlist } from "@/stores/wishlist";
 import { useCart } from "@/stores/cart";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { store } = useStorefront();
+  const isMio = useIsMioTheme();
   const wished = useWishlist((s) => s.has(p.id));
   const toggleWish = useWishlist((s) => s.toggle);
   const addItem = useCart((s) => s.addItem);
@@ -134,7 +135,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <span className="text-base font-bold text-foreground">{formatBRL(price)}</span>
           {pct > 0 && <span className="text-xs text-muted-foreground line-through">{formatBRL(p.price)}</span>}
         </div>
-        {store.slug === "the-shoes" && (() => {
+        {isMio && (() => {
           const inst = getInstallment(p.price, p.promo_price);
           if (!inst.show) return null;
           return (

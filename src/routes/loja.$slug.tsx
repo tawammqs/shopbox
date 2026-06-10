@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { fetchStoreBySlug, fetchCategories } from "@/lib/storefront";
+import { fetchStoreBySlug, fetchCategories, fetchActiveThemeSlug } from "@/lib/storefront";
 import { StoreProvider } from "@/components/storefront/StoreContext";
 import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
 import { StorefrontNav, MobileNavDrawer } from "@/components/storefront/StorefrontNav";
@@ -18,9 +18,12 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
     const store = await fetchStoreBySlug(params.slug);
-    if (!store) return { store: null, categories: [] };
-    const categories = await fetchCategories(store.id);
-    return { store, categories };
+    if (!store) return { store: null, categories: [], activeThemeSlug: null };
+    const [categories, activeThemeSlug] = await Promise.all([
+      fetchCategories(store.id),
+      fetchActiveThemeSlug(store.id),
+    ]);
+    return { store, categories, activeThemeSlug };
   },
   head: ({ loaderData }) => ({
     meta: loaderData?.store
@@ -46,7 +49,7 @@ export const Route = createFileRoute("/loja/$slug")({
 });
 
 function StorefrontLayout() {
-  const { store, categories } = Route.useLoaderData();
+  const { store, categories, activeThemeSlug } = Route.useLoaderData();
   const [navOpen, setNavOpen] = useState(false);
 
   if (!store) {
@@ -61,13 +64,14 @@ function StorefrontLayout() {
     );
   }
 
-  const isTheShoes = store.slug === "the-shoes";
+  const isTheShoes = activeThemeSlug === "mio-style" || store.slug === "the-shoes";
 
   return (
-    <StoreProvider value={{ store, categories }}>
+    <StoreProvider value={{ store, categories, activeThemeSlug }}>
       <div
         className="storefront-root min-h-screen bg-background"
         data-store-slug={store.slug}
+        data-theme={isTheShoes ? "mio" : undefined}
         style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
         {isTheShoes ? (
