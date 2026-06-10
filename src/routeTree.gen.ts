@@ -23,8 +23,10 @@ import { Route as FuncionalidadesRouteImport } from './routes/funcionalidades'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TemasIndexRouteImport } from './routes/temas.index'
 import { Route as SuperadminIndexRouteImport } from './routes/superadmin.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as TemasSlugRouteImport } from './routes/temas.$slug'
 import { Route as SuperadminMetricasRouteImport } from './routes/superadmin.metricas'
 import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
 import { Route as SuperadminClientesRouteImport } from './routes/superadmin.clientes'
@@ -33,6 +35,7 @@ import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cle
 import { Route as HooksCartRecoveryRouteImport } from './routes/hooks/cart-recovery'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AdminTemasRouteImport } from './routes/admin.temas'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
 import { Route as AdminPersonalizarLojaRouteImport } from './routes/admin.personalizar-loja'
 import { Route as AdminPerguntasRouteImport } from './routes/admin.perguntas'
@@ -130,6 +133,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemasIndexRoute = TemasIndexRouteImport.update({
+  id: '/temas/',
+  path: '/temas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuperadminIndexRoute = SuperadminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -139,6 +147,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const TemasSlugRoute = TemasSlugRouteImport.update({
+  id: '/temas/$slug',
+  path: '/temas/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SuperadminMetricasRoute = SuperadminMetricasRouteImport.update({
   id: '/metricas',
@@ -180,6 +193,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTemasRoute = AdminTemasRouteImport.update({
+  id: '/temas',
+  path: '/temas',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminPlanoRoute = AdminPlanoRouteImport.update({
   id: '/plano',
@@ -344,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
+  '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -352,8 +371,10 @@ export interface FileRoutesByFullPath {
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
+  '/temas/$slug': typeof TemasSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
+  '/temas/': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
@@ -394,6 +415,7 @@ export interface FileRoutesByTo {
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
+  '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -401,8 +423,10 @@ export interface FileRoutesByTo {
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
+  '/temas/$slug': typeof TemasSlugRoute
   '/admin': typeof AdminIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
+  '/temas': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
@@ -446,6 +470,7 @@ export interface FileRoutesById {
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
+  '/admin/temas': typeof AdminTemasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -454,8 +479,10 @@ export interface FileRoutesById {
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
+  '/temas/$slug': typeof TemasSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
+  '/temas/': typeof TemasIndexRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
@@ -500,6 +527,7 @@ export interface FileRouteTypes {
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
+    | '/admin/temas'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -508,8 +536,10 @@ export interface FileRouteTypes {
     | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/metricas'
+    | '/temas/$slug'
     | '/admin/'
     | '/superadmin/'
+    | '/temas/'
     | '/admin/produtos/$id'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
@@ -550,6 +580,7 @@ export interface FileRouteTypes {
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
+    | '/admin/temas'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -557,8 +588,10 @@ export interface FileRouteTypes {
     | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/metricas'
+    | '/temas/$slug'
     | '/admin'
     | '/superadmin'
+    | '/temas'
     | '/admin/produtos/$id'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
@@ -601,6 +634,7 @@ export interface FileRouteTypes {
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
+    | '/admin/temas'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -609,8 +643,10 @@ export interface FileRouteTypes {
     | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/metricas'
+    | '/temas/$slug'
     | '/admin/'
     | '/superadmin/'
+    | '/temas/'
     | '/admin/produtos/$id'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
@@ -648,6 +684,8 @@ export interface RootRouteChildren {
   HooksCartRecoveryRoute: typeof HooksCartRecoveryRoute
   HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
+  TemasSlugRoute: typeof TemasSlugRoute
+  TemasIndexRoute: typeof TemasIndexRoute
   FeedSlugMetaDotxmlRoute: typeof FeedSlugMetaDotxmlRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -758,6 +796,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/temas/': {
+      id: '/temas/'
+      path: '/temas'
+      fullPath: '/temas/'
+      preLoaderRoute: typeof TemasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/superadmin/': {
       id: '/superadmin/'
       path: '/'
@@ -771,6 +816,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/temas/$slug': {
+      id: '/temas/$slug'
+      path: '/temas/$slug'
+      fullPath: '/temas/$slug'
+      preLoaderRoute: typeof TemasSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/superadmin/metricas': {
       id: '/superadmin/metricas'
@@ -827,6 +879,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/checkout/return'
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/temas': {
+      id: '/admin/temas'
+      path: '/temas'
+      fullPath: '/admin/temas'
+      preLoaderRoute: typeof AdminTemasRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/plano': {
       id: '/admin/plano'
@@ -1025,6 +1084,7 @@ interface AdminRouteChildren {
   AdminPerguntasRoute: typeof AdminPerguntasRoute
   AdminPersonalizarLojaRoute: typeof AdminPersonalizarLojaRoute
   AdminPlanoRoute: typeof AdminPlanoRoute
+  AdminTemasRoute: typeof AdminTemasRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
   AdminProdutosIndexRoute: typeof AdminProdutosIndexRoute
@@ -1042,6 +1102,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPerguntasRoute: AdminPerguntasRoute,
   AdminPersonalizarLojaRoute: AdminPersonalizarLojaRoute,
   AdminPlanoRoute: AdminPlanoRoute,
+  AdminTemasRoute: AdminTemasRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
   AdminProdutosIndexRoute: AdminProdutosIndexRoute,
@@ -1107,6 +1168,8 @@ const rootRouteChildren: RootRouteChildren = {
   HooksCartRecoveryRoute: HooksCartRecoveryRoute,
   HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
+  TemasSlugRoute: TemasSlugRoute,
+  TemasIndexRoute: TemasIndexRoute,
   FeedSlugMetaDotxmlRoute: FeedSlugMetaDotxmlRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
