@@ -59,7 +59,6 @@ export function TheShoesHomepage() {
       <ProductCarouselSection
         storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag}
       />
-      <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
 
       <MarqueeBar cfg={s.marquee1} />
       <PromoBannerSection promo={s.promo_banner} />
@@ -69,6 +68,7 @@ export function TheShoesHomepage() {
       />
       <IconsBar items={s.icons_bar} />
       <MarqueeBar cfg={s.marquee2} />
+      <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
       <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
       <VideoTestimonialsSection storeId={store.id} storeSlug={store.slug} />
       <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
