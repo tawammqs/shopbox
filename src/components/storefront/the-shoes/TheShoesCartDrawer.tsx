@@ -197,8 +197,10 @@ export function TheShoesCartDrawer() {
               )}
 
               {/* Shipping info note */}
-              <div className="mt-4 flex items-center gap-2 rounded-lg bg-[#f8f8f8] px-4 py-3">
-                <span className="text-base">🚚</span>
+              <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#f8f8f8] px-4 py-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full" style={{ background: "#dfdac8" }}>
+                  <TruckIcon size={20} />
+                </span>
                 <p className="text-[12px] text-[#666]">
                   O frete será combinado pelo WhatsApp após a finalização do pedido.
                 </p>
