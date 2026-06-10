@@ -322,6 +322,18 @@ const ICON_SVGS: Record<string, ReactNode> = {
     </svg>
   ),
 };
+
+function LockIcon({ size = 52 }: { size?: number } = {}) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="#111" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"
+      style={{ display: "block", margin: "0 auto 16px" }}>
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
+      <circle cx="12" cy="16" r="1" fill="#111" />
+    </svg>
+  );
+}
 function pickIcon(raw: string): ReactNode {
   const v = (raw || "").toLowerCase();
   if (v.includes("🚚") || v.includes("truck") || v.includes("frete")) return ICON_SVGS.truck;
