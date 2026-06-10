@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft, ChevronRight, Plus, Minus, ShoppingBag, Heart, Share2,
   FileText, Ruler, ShieldCheck, Truck, CreditCard, Star, ThumbsUp, CheckCircle2, X,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
@@ -17,6 +18,10 @@ import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
 import { CheckoutFormDialog } from "@/components/storefront/CheckoutFormDialog";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function TheShoesProductPage({ product }: { product: any }) {
@@ -44,10 +49,28 @@ export function TheShoesProductPage({ product }: { product: any }) {
   const [activeTab, setActiveTab] = useState<"avaliacoes" | "perguntas">("avaliacoes");
   const [sortBy, setSortBy] = useState<"relevant" | "recent" | "rating">("relevant");
   const [videoModalIdx, setVideoModalIdx] = useState<number | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [questionOpen, setQuestionOpen] = useState(false);
+  const qc = useQueryClient();
 
   useEffect(() => {
     if (product?.id) supabase.rpc("increment_product_view", { _product_id: product.id }).then(() => {});
   }, [product?.id]);
+
+  const questionsQ = useQuery({
+    queryKey: ["product-questions", product.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_questions")
+        .select("id, customer_name, question, answer, answered_at, created_at")
+        .eq("product_id", product.id)
+        .eq("status", "answered")
+        .order("answered_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const questions = questionsQ.data ?? [];
 
   const price = effectivePrice(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
   const pct = discountPct(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
@@ -230,7 +253,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
               </button>
             </div>
             <button onClick={addToCart}
-              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#111] text-sm font-semibold text-white hover:opacity-90">
+              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-lg bg-[#dfdac8] text-sm font-semibold text-[#111] hover:opacity-90">
               <ShoppingBag className="h-4 w-4" /> Adicionar ao carrinho
             </button>
           </div>
@@ -249,6 +272,34 @@ export function TheShoesProductPage({ product }: { product: any }) {
               className="flex flex-1 items-center justify-center gap-2 rounded-md border border-[#e0e0e0] py-2 text-sm hover:bg-[#f5f5f5]">
               <Share2 className="h-4 w-4" /> Compartilhar
             </button>
+          </div>
+
+          {/* Accordion (desktop appears here under buttons) */}
+          <div className="pt-2">
+            <div className="border-t border-[#e5e5e5]">
+              {accItems.map((it) => {
+                const Icon = it.icon;
+                const open = openAcc === it.id;
+                return (
+                  <div key={it.id} className="border-b border-[#e5e5e5]">
+                    <button
+                      onClick={() => setOpenAcc(open ? null : it.id)}
+                      className="flex w-full items-center justify-between px-1 py-4 text-left"
+                    >
+                      <span className="flex items-center gap-3 text-[13px] font-bold tracking-wide text-[#111]">
+                        <Icon className="h-4 w-4" /> {it.label}
+                      </span>
+                      <span className="text-xl font-light text-[#111]">{open ? "−" : "+"}</span>
+                    </button>
+                    {open && (
+                      <div className="px-1 pb-5 text-[14px] leading-relaxed text-[#555]">
+                        <p className="whitespace-pre-line">{it.body}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -274,33 +325,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
         </section>
       )}
 
-      {/* Accordion */}
-      <section className="mt-8 max-w-3xl">
-        <div className="border-t border-[#e5e5e5]">
-          {accItems.map((it) => {
-            const Icon = it.icon;
-            const open = openAcc === it.id;
-            return (
-              <div key={it.id} className="border-b border-[#e5e5e5]">
-                <button
-                  onClick={() => setOpenAcc(open ? null : it.id)}
-                  className="flex w-full items-center justify-between px-3 py-4 text-left"
-                >
-                  <span className="flex items-center gap-3 text-[13px] font-bold tracking-wide text-[#111]">
-                    <Icon className="h-4 w-4" /> {it.label}
-                  </span>
-                  <span className="text-xl font-light text-[#111]">{open ? "−" : "+"}</span>
-                </button>
-                {open && (
-                  <div className="px-3 pb-5 text-[14px] leading-relaxed text-[#555]">
-                    <p className="whitespace-pre-line">{it.body}</p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      {/* (Accordion moved into info column above) */}
 
       {/* Video carousel (full) */}
       {videos.length > 0 && (
@@ -367,7 +392,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
 
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
               <button
-                onClick={() => toast.info("Em breve: deixe sua avaliação")}
+                onClick={() => setReviewOpen(true)}
                 className="rounded-md bg-[#111] px-4 py-2 text-[13px] font-semibold text-white hover:opacity-90"
               >
                 Faça uma avaliação
@@ -406,8 +431,38 @@ export function TheShoesProductPage({ product }: { product: any }) {
             )}
           </>
         ) : (
-          <div className="rounded-lg border border-dashed border-[#e0e0e0] py-12 text-center text-sm text-[#888]">
-            Ainda não há perguntas. Em breve você poderá enviar suas dúvidas por aqui.
+          <div>
+            <div className="mb-6 flex justify-center">
+              <button
+                onClick={() => setQuestionOpen(true)}
+                className="rounded-md bg-[#111] px-4 py-2 text-[13px] font-semibold text-white hover:opacity-90"
+              >
+                Faça uma pergunta
+              </button>
+            </div>
+            {questions.length > 0 ? (
+              <div className="mx-auto max-w-3xl space-y-4">
+                {questions.map((q: any) => (
+                  <article key={q.id} className="rounded-lg border border-[#eee] bg-white p-4">
+                    <div className="flex items-start gap-2">
+                      <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#888]" />
+                      <div className="flex-1">
+                        <p className="text-[14px] text-[#111]">{q.question}</p>
+                        <p className="mt-1 text-[12px] text-[#999]">{q.customer_name} • {daysAgo(q.created_at)}</p>
+                      </div>
+                    </div>
+                    {q.answer && (
+                      <div className="mt-3 rounded-md bg-[#f5f5f0] p-3">
+                        <p className="text-[12px] font-bold uppercase tracking-wide text-[#111]">Resposta da loja</p>
+                        <p className="mt-1 whitespace-pre-line text-[14px] text-[#111]">{q.answer}</p>
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-sm text-[#888]">Nenhuma pergunta respondida ainda. Seja o primeiro a perguntar!</p>
+            )}
           </div>
         )}
       </section>
@@ -458,10 +513,133 @@ export function TheShoesProductPage({ product }: { product: any }) {
         }}
       />
 
+      <ReviewDialog
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        productId={product.id}
+      />
+      <QuestionDialog
+        open={questionOpen}
+        onOpenChange={setQuestionOpen}
+        productId={product.id}
+        onSubmitted={() => qc.invalidateQueries({ queryKey: ["product-questions", product.id] })}
+      />
+
       <style>{`
         .ts-product, .ts-product * { font-family: 'DM Sans', 'Helvetica Neue', -apple-system, sans-serif; }
       `}</style>
     </div>
+  );
+}
+
+function ReviewDialog({ open, onOpenChange, productId }: { open: boolean; onOpenChange: (v: boolean) => void; productId: string }) {
+  const [name, setName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [rating, setRating] = useState(5);
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    if (name.trim().length < 2) return toast.error("Informe seu nome");
+    if (rating < 1 || rating > 5) return toast.error("Selecione uma nota");
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("product_reviews").insert({
+        product_id: productId,
+        customer_name: name.trim(),
+        customer_whatsapp: whatsapp.trim() || null,
+        rating,
+        text: text.trim() || null,
+        status: "pending" as const,
+      });
+      if (error) throw error;
+      toast.success("Avaliação enviada! Aguardando moderação.");
+      onOpenChange(false);
+      setName(""); setWhatsapp(""); setRating(5); setText("");
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao enviar");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Avaliar produto</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <label className="text-sm font-medium">Sua nota</label>
+            <div className="mt-1 flex gap-1">
+              {[1,2,3,4,5].map((n) => (
+                <button key={n} onClick={() => setRating(n)} type="button">
+                  <Star className={cn("h-7 w-7", n <= rating ? "fill-amber-400 text-amber-400" : "text-[#e0e0e0]")} />
+                </button>
+              ))}
+            </div>
+          </div>
+          <Input placeholder="Seu nome" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input placeholder="WhatsApp (opcional)" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+          <Textarea placeholder="Conte sua experiência com o produto" value={text} onChange={(e) => setText(e.target.value)} rows={4} />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={busy} className="bg-[#111] text-white hover:opacity-90">
+            {busy ? "Enviando..." : "Enviar avaliação"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function QuestionDialog({ open, onOpenChange, productId, onSubmitted }: { open: boolean; onOpenChange: (v: boolean) => void; productId: string; onSubmitted: () => void }) {
+  const [name, setName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [question, setQuestion] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit() {
+    if (name.trim().length < 2) return toast.error("Informe seu nome");
+    if (question.trim().length < 3) return toast.error("Escreva sua pergunta");
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("product_questions").insert({
+        product_id: productId,
+        customer_name: name.trim(),
+        customer_whatsapp: whatsapp.trim() || null,
+        question: question.trim(),
+        status: "pending" as const,
+      });
+      if (error) throw error;
+      toast.success("Pergunta enviada! A loja responderá em breve.");
+      onOpenChange(false);
+      setName(""); setWhatsapp(""); setQuestion("");
+      onSubmitted();
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao enviar");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Faça uma pergunta</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <Input placeholder="Seu nome" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input placeholder="WhatsApp (opcional)" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+          <Textarea placeholder="Escreva sua pergunta sobre o produto" value={question} onChange={(e) => setQuestion(e.target.value)} rows={4} />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button onClick={submit} disabled={busy} className="bg-[#111] text-white hover:opacity-90">
+            {busy ? "Enviando..." : "Enviar pergunta"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

@@ -858,6 +858,53 @@ export type Database = {
           },
         ]
       }
+      product_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          created_at: string
+          customer_name: string
+          customer_whatsapp: string | null
+          id: string
+          product_id: string
+          question: string
+          status: Database["public"]["Enums"]["question_status"]
+          updated_at: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          created_at?: string
+          customer_name: string
+          customer_whatsapp?: string | null
+          id?: string
+          product_id: string
+          question: string
+          status?: Database["public"]["Enums"]["question_status"]
+          updated_at?: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          created_at?: string
+          customer_name?: string
+          customer_whatsapp?: string | null
+          id?: string
+          product_id?: string
+          question?: string
+          status?: Database["public"]["Enums"]["question_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_questions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_reviews: {
         Row: {
           created_at: string
@@ -1910,6 +1957,7 @@ export type Database = {
         | "cancelado"
       product_tag: "destaques" | "lancamentos" | "ofertas" | "principal"
       promo_scope: "all" | "category" | "subcategory" | "tag" | "products"
+      question_status: "pending" | "answered" | "hidden"
       review_status: "pending" | "approved" | "rejected"
       subscription_status:
         | "trialing"
@@ -2060,6 +2108,7 @@ export const Constants = {
       ],
       product_tag: ["destaques", "lancamentos", "ofertas", "principal"],
       promo_scope: ["all", "category", "subcategory", "tag", "products"],
+      question_status: ["pending", "answered", "hidden"],
       review_status: ["pending", "approved", "rejected"],
       subscription_status: [
         "trialing",
