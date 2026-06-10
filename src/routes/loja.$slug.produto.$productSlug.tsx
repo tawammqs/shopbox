@@ -53,7 +53,7 @@ function ProductPage() {
     );
   }
 
-  if (store.slug === "the-shoes") {
+  if (isMio) {
     return <TheShoesProductPage product={data} />;
   }
 
