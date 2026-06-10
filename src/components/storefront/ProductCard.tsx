@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { store } = useStorefront();
+  const isMio = useIsMioTheme();
   const wished = useWishlist((s) => s.has(p.id));
   const toggleWish = useWishlist((s) => s.toggle);
   const addItem = useCart((s) => s.addItem);
