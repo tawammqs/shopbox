@@ -214,25 +214,23 @@ export function TheShoesCartDrawer() {
 
             <footer className="border-t border-[#f0f0f0] bg-white px-5 py-4">
               {/* Progress bar */}
-              {upsellThreshold > 0 && (
-                <div className="mb-4 rounded-[10px] bg-[#f8f8f8] p-4">
-                  <div className="relative mb-2 h-[6px] rounded-full bg-[#e0e0e0]">
-                    <div className="absolute -top-[18px] grid h-9 w-9 -translate-x-1/2 place-items-center rounded-full transition-all duration-500"
-                      style={{ left: `${Math.min(pct, 95)}%`, background: "#dfdac8" }}>
-                      <TruckIcon size={20} />
-                    </div>
-                    <div className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${pct}%`, background: "#25D366" }} />
+              <div className="mb-4 rounded-[10px] bg-[#f8f8f8] p-4">
+                <div className="relative mb-2 h-[6px] rounded-full bg-[#eeeeee]">
+                  <div className="absolute -top-[18px] grid h-9 w-9 -translate-x-1/2 place-items-center rounded-full transition-all duration-500"
+                    style={{ left: `${Math.min(pct, 95)}%`, background: "#111" }}>
+                    <TruckIcon size={20} />
                   </div>
-                  <p className="text-center text-[12px] text-[#555]">
-                    {reachedUpsell ? (
-                      <>🎉 <strong>{upsellMessage}</strong> desbloqueado!</>
-                    ) : (
-                      <>Gaste <strong>{formatBRL(remaining)}</strong> a mais para <strong>{upsellMessage}</strong></>
-                    )}
-                  </p>
+                  <div className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${pct}%`, background: "#111" }} />
                 </div>
-              )}
+                <p className="text-center text-[12px] text-[#555]">
+                  {reachedUpsell ? (
+                    <>🎉 Você ganhou <strong>FRETE GRÁTIS</strong>!</>
+                  ) : (
+                    <>Faltam <strong>{formatBRL(remaining)}</strong> para o <strong>frete grátis</strong></>
+                  )}
+                </p>
+              </div>
 
               <div className="mb-3 flex items-center justify-between py-2">
                 <span className="text-[15px] font-semibold text-[#111]">Total</span>
