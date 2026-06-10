@@ -59,7 +59,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
 
   if (!open) return null;
 
-  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const updateMasked = (k: keyof typeof form, mask: (v: string) => string) =>
