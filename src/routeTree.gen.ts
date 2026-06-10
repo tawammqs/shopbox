@@ -35,6 +35,7 @@ import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
 import { Route as AdminPersonalizarLojaRouteImport } from './routes/admin.personalizar-loja'
+import { Route as AdminPerguntasRouteImport } from './routes/admin.perguntas'
 import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
 import { Route as AdminHomeVideoRouteImport } from './routes/admin.home-video'
 import { Route as AdminDescontosRouteImport } from './routes/admin.descontos'
@@ -190,6 +191,11 @@ const AdminPersonalizarLojaRoute = AdminPersonalizarLojaRouteImport.update({
   path: '/personalizar-loja',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPerguntasRoute = AdminPerguntasRouteImport.update({
+  id: '/perguntas',
+  path: '/perguntas',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPedidosRoute = AdminPedidosRouteImport.update({
   id: '/pedidos',
   path: '/pedidos',
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/admin/descontos': typeof AdminDescontosRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
+  '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -384,6 +391,7 @@ export interface FileRoutesByTo {
   '/admin/descontos': typeof AdminDescontosRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
+  '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -435,6 +443,7 @@ export interface FileRoutesById {
   '/admin/descontos': typeof AdminDescontosRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
+  '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -488,6 +497,7 @@ export interface FileRouteTypes {
     | '/admin/descontos'
     | '/admin/home-video'
     | '/admin/pedidos'
+    | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
     | '/checkout/return'
@@ -537,6 +547,7 @@ export interface FileRouteTypes {
     | '/admin/descontos'
     | '/admin/home-video'
     | '/admin/pedidos'
+    | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
     | '/checkout/return'
@@ -587,6 +598,7 @@ export interface FileRouteTypes {
     | '/admin/descontos'
     | '/admin/home-video'
     | '/admin/pedidos'
+    | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
     | '/checkout/return'
@@ -830,6 +842,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPersonalizarLojaRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/perguntas': {
+      id: '/admin/perguntas'
+      path: '/perguntas'
+      fullPath: '/admin/perguntas'
+      preLoaderRoute: typeof AdminPerguntasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/pedidos': {
       id: '/admin/pedidos'
       path: '/pedidos'
@@ -1003,6 +1022,7 @@ interface AdminRouteChildren {
   AdminDescontosRoute: typeof AdminDescontosRoute
   AdminHomeVideoRoute: typeof AdminHomeVideoRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
+  AdminPerguntasRoute: typeof AdminPerguntasRoute
   AdminPersonalizarLojaRoute: typeof AdminPersonalizarLojaRoute
   AdminPlanoRoute: typeof AdminPlanoRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1019,6 +1039,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDescontosRoute: AdminDescontosRoute,
   AdminHomeVideoRoute: AdminHomeVideoRoute,
   AdminPedidosRoute: AdminPedidosRoute,
+  AdminPerguntasRoute: AdminPerguntasRoute,
   AdminPersonalizarLojaRoute: AdminPersonalizarLojaRoute,
   AdminPlanoRoute: AdminPlanoRoute,
   AdminIndexRoute: AdminIndexRoute,
