@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Plus, Minus, Heart } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
