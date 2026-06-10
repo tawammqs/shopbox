@@ -530,10 +530,12 @@ function TheShoesStyles() {
       .ts-root, .ts-root * { font-family: 'DM Sans', 'Helvetica Neue', -apple-system, sans-serif; }
 
       .ts-section { padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
+      .ts-section-narrow { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
       .ts-section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 16px; }
       .ts-section-title { font-size: 22px; font-weight: 800; color: #111; letter-spacing: -0.5px; line-height: 1.15; }
-      @media (min-width: 768px) {
-        .ts-section { padding: 64px 40px; }
+      @media (min-width: 1024px) {
+        .ts-section { padding: 64px 80px; }
+        .ts-section-narrow { padding: 0 80px; }
         .ts-section-title { font-size: 26px; }
         .ts-section-head { margin-bottom: 28px; }
       }
@@ -548,45 +550,49 @@ function TheShoesStyles() {
 
       .ts-carousel { display: flex; gap: 12px; }
       .ts-carousel-item { flex: 0 0 calc(50% - 6px); min-width: 0; }
-      @media (min-width: 768px) {
+      @media (min-width: 1024px) {
         .ts-carousel { gap: 16px; }
         .ts-carousel-item { flex: 0 0 calc(25% - 12px); }
       }
 
-      /* Large marquees (marquee1 + marquee2) */
+      /* Large marquees — NO uppercase, render text as typed */
       .ts-marquee {
         height: 72px; display: flex; align-items: center; overflow: hidden;
-        font-size: 28px; font-weight: 700; text-transform: uppercase;
+        font-size: 28px; font-weight: 700;
+        text-transform: none;
         letter-spacing: 0.02em; line-height: 1;
       }
       .ts-marquee-track { display: inline-flex; white-space: nowrap; animation: tsScroll 25s linear infinite; }
       .ts-marquee-track > span { padding: 0 16px; }
       @keyframes tsScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-      .ts-icons-section { padding: 48px 20px; }
-      @media (min-width: 768px) { .ts-icons-section { padding: 48px 40px; } }
-      .ts-icons-track { display: flex; }
-      .ts-icons-item { flex: 0 0 100%; min-width: 0; }
-      @media (min-width: 640px) { .ts-icons-item { flex: 0 0 50%; } }
-      @media (min-width: 900px) { .ts-icons-item { flex: 0 0 33.333%; } }
-      @media (min-width: 1100px) { .ts-icons-item { flex: 0 0 25%; } }
+      .ts-icons-section { padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
+      @media (min-width: 1024px) { .ts-icons-section { padding: 64px 80px; } }
+      .ts-icons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+      @media (min-width: 768px) { .ts-icons-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
 
-      /* Testimonials */
-      .ts-testimonials { overflow: hidden; padding-bottom: 48px; }
-      .ts-pill-row { overflow: hidden; width: 100%; margin-bottom: 16px; }
+      /* Testimonials — strict overflow */
+      .ts-testimonials { overflow: hidden !important; padding-bottom: 48px !important; }
+      .ts-pill-row { overflow: hidden !important; width: 100% !important; margin-bottom: 16px !important; }
       .ts-pill-track { display: inline-flex; gap: 12px; animation: tsPillL 35s linear infinite; }
       .ts-pill-track-rev { animation: tsPillR 35s linear infinite; }
       @keyframes tsPillL { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
       @keyframes tsPillR { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
       .ts-pill {
-        display: inline-flex; align-items: center; gap: 10px;
-        background: #fff; border: 1px solid #ebebeb; border-radius: 9999px;
-        padding: 12px 20px 12px 12px; white-space: nowrap; flex-shrink: 0;
+        display: inline-flex !important; align-items: center !important; gap: 10px;
+        background: #fff !important; border: 1px solid #ebebeb !important; border-radius: 9999px !important;
+        padding: 10px 20px 10px 10px !important;
+        white-space: nowrap !important; overflow: hidden !important; max-width: 380px !important;
+        flex-shrink: 0;
+      }
+      .ts-pill p {
+        white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+        max-width: 240px !important; font-size: 13px !important; color: #333 !important;
       }
 
       /* FAQ */
-      .ts-faq-section { background: #ffffff; padding: 48px 20px; }
-      @media (min-width: 768px) { .ts-faq-section { padding: 64px 40px; } }
+      .ts-faq-section { background: #ffffff; padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
+      @media (min-width: 1024px) { .ts-faq-section { padding: 64px 80px; } }
       .ts-faq-box {
         background: #dfdac8; border-radius: 16px;
         padding: 36px 24px; max-width: 800px; margin: 0 auto;
