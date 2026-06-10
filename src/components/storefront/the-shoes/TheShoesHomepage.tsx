@@ -6,13 +6,14 @@ import { ChevronLeft, ChevronRight, Plus, Minus, Heart } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useStorefront } from "../StoreContext";
-import { fetchActiveBanners, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
+import { fetchActiveBanners, fetchProductsByTag, fetchStoreVideoTestimonials, type ProductCardData } from "@/lib/storefront";
 import { fetchTheShoesSettings, type TheShoesSettings } from "@/lib/the-shoes-theme";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { trackAddToCart } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
+import { TheShoesVipBanner } from "../TheShoesExtras";
 
 const ACCENT = "#111111";
 
