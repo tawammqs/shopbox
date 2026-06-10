@@ -12,6 +12,7 @@ import { TheShoesHeader } from "@/components/storefront/the-shoes/TheShoesHeader
 import { TheShoesFooter } from "@/components/storefront/the-shoes/TheShoesFooter";
 import { TheShoesCartDrawer } from "@/components/storefront/the-shoes/TheShoesCartDrawer";
 import { TheShoesCouponTab } from "@/components/storefront/the-shoes/TheShoesCouponTab";
+import { TheShoesGlobalStyles } from "@/components/storefront/the-shoes/TheShoesGlobalStyles";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/loja/$slug")({
@@ -84,6 +85,7 @@ function StorefrontLayout() {
         {isTheShoes ? <TheShoesFooter /> : <StorefrontFooter />}
         {isTheShoes ? <TheShoesCartDrawer /> : <CartDrawer />}
         {isTheShoes && <TheShoesCouponTab />}
+        {isTheShoes && <TheShoesGlobalStyles />}
         <WelcomePopup />
         <MarketingScripts pixelId={store.facebook_pixel_id} gaId={store.google_analytics_id} />
       </div>
