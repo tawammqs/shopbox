@@ -23,14 +23,14 @@ const TAGS = [
 
 function HomePage() {
   const { store } = useStorefront();
+  if (store.slug === "the-shoes") return <TheShoesHomepage />;
+  return <DefaultHomePage storeId={store.id} />;
+}
 
-  if (store.slug === "the-shoes") {
-    return <TheShoesHomepage />;
-  }
-
+function DefaultHomePage({ storeId }: { storeId: string }) {
   const banners = useQuery({
-    queryKey: ["banners", store.id],
-    queryFn: () => fetchActiveBanners(store.id),
+    queryKey: ["banners", storeId],
+    queryFn: () => fetchActiveBanners(storeId),
     staleTime: 60_000,
   });
 
