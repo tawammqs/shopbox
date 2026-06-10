@@ -694,8 +694,22 @@ function TheShoesStyles() {
 
       .ts-icons-section { padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
       @media (min-width: 1024px) { .ts-icons-section { padding: 64px 80px; } }
-      .ts-icons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-      @media (min-width: 768px) { .ts-icons-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+      .ts-icons-carousel {
+        display: flex; gap: 16px; overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none; -ms-overflow-style: none;
+        padding-bottom: 4px;
+      }
+      .ts-icons-carousel::-webkit-scrollbar { display: none; }
+      .ts-icons-item {
+        flex: 0 0 60%; max-width: 240px;
+        scroll-snap-align: center;
+        display: flex; flex-direction: column; align-items: center; text-align: center;
+        padding: 0 8px;
+      }
+      @media (min-width: 768px) {
+        .ts-icons-item { flex: 0 0 25%; }
+      }
 
       /* Testimonials — strict overflow */
       .ts-testimonials { overflow: hidden !important; padding-bottom: 48px !important; }
