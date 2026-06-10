@@ -171,7 +171,8 @@ export function TheShoesCartDrawer() {
                       return (
                         <div key={p.id}
                           className="flex w-[260px] shrink-0 items-center gap-3 rounded-[10px] p-3"
-                          style={{ background: "#fce4ec" }}>
+                          style={{ background: "#f3f3f3" }}>
+
                           <div className="h-[56px] w-[56px] shrink-0 overflow-hidden rounded-md bg-white">
                             {img && <img src={img} alt="" className="h-full w-full object-cover" />}
                           </div>
