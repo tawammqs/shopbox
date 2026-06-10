@@ -733,11 +733,11 @@ function TheShoesStyles() {
       /* FAQ */
       .ts-faq-section { background: #ffffff; padding: 48px 20px; }
       @media (min-width: 768px) { .ts-faq-section { padding: 64px 40px; } }
-      .ts-faq-wrap { max-width: 860px; margin: 0 auto; }
-      .ts-faq-eyebrow { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 8px; }
-      .ts-faq-title { font-size: 28px; font-weight: 900; color: #111; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.1; }
+      .ts-faq-wrap { max-width: 860px; margin: 0 auto; text-align: center; }
+      .ts-faq-eyebrow { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 8px; text-align: center; }
+      .ts-faq-title { font-size: 28px; font-weight: 900; color: #111; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.1; text-align: center; }
       @media (min-width: 768px) { .ts-faq-title { font-size: 40px; } }
-      .ts-faq-box { background: #dfdac8; border-radius: 16px; padding: 28px 20px; width: 100%; }
+      .ts-faq-box { background: #dfdac8; border-radius: 16px; padding: 28px 20px; width: 100%; text-align: left; }
       @media (min-width: 768px) { .ts-faq-box { padding: 40px 40px 32px; } }
       .ts-faq-item { border-bottom: 1px solid rgba(0,0,0,0.12); padding: 20px 0; }
       .ts-faq-item:last-child { border-bottom: 0; }
@@ -750,7 +750,11 @@ function TheShoesStyles() {
       }
       .ts-faq-a { font-size: 14px; color: #555; line-height: 1.8; padding-top: 12px; animation: tsFade 0.2s ease; }
       .ts-faq-divider { border-top: 1px solid rgba(0,0,0,0.1); margin: 24px 0; }
-      .ts-faq-help { font-size: 13px; color: #555; line-height: 1.6; text-align: center; margin-bottom: 16px; }
+      .ts-faq-help {
+        font-size: 13px; color: #555; line-height: 1.6; text-align: center; margin: 0 auto 16px;
+        max-width: 320px; text-wrap: balance;
+      }
+      @media (min-width: 768px) { .ts-faq-help { max-width: none; } }
       .ts-faq-cta {
         background: #25D366; color: #fff; border: none; border-radius: 9999px;
         padding: 14px 40px; font-size: 15px; font-weight: 600; cursor: pointer;
