@@ -1,18 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Plus, Minus, Heart } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useStorefront } from "../StoreContext";
-import { fetchActiveBanners, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
+import { fetchActiveBanners, fetchProductsByTag, fetchStoreVideoTestimonials, type ProductCardData } from "@/lib/storefront";
 import { fetchTheShoesSettings, type TheShoesSettings } from "@/lib/the-shoes-theme";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { trackAddToCart } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
+import { TheShoesVipBanner } from "../TheShoesExtras";
 
 const ACCENT = "#111111";
 
@@ -48,6 +49,7 @@ export function TheShoesHomepage() {
       <ProductCarouselSection
         storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag}
       />
+      <div className="ts-section-narrow"><TheShoesVipBanner /></div>
       <MarqueeBar cfg={s.marquee1} />
       <PromoBannerSection promo={s.promo_banner} />
       <ProductCarouselSection
@@ -57,6 +59,7 @@ export function TheShoesHomepage() {
       <IconsBar items={s.icons_bar} />
       <MarqueeBar cfg={s.marquee2} />
       <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
+      <VideoTestimonialsSection storeId={store.id} storeSlug={store.slug} />
       <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
       <InstagramSection handle={s.instagram_handle} images={s.instagram_images} />
       {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
@@ -157,7 +160,7 @@ function TsProductCard({ p }: { p: ProductCardData }) {
   return (
     <Link to="/loja/$slug/produto/$productSlug" params={{ slug: store.slug, productSlug: p.slug }}
       className="group block" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f7f7f7]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[12px] bg-[#f7f7f7]">
         {img1 && (
           <img src={img1} alt={p.title} loading="lazy"
             className={cn("h-full w-full object-cover transition-opacity duration-500", hover && img2 !== img1 && "opacity-0")} />
@@ -279,43 +282,107 @@ function PromoBannerSection({ promo }: { promo: TheShoesSettings["promo_banner"]
   );
 }
 
-/* -------------- Icons / Benefits — swipeable carousel -------------- */
+/* -------------- Icons / Benefits -------------- */
+const ICON_SVGS: Record<string, ReactNode> = {
+  truck: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="15" height="13" rx="1"/>
+      <path d="M16 8h4l3 5v4h-7V8z"/>
+      <circle cx="5.5" cy="18.5" r="2.5"/>
+      <circle cx="18.5" cy="18.5" r="2.5"/>
+    </svg>
+  ),
+  exchange: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="1 4 1 10 7 10"/>
+      <polyline points="23 20 23 14 17 14"/>
+      <path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/>
+    </svg>
+  ),
+  lock: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0110 0v4"/>
+    </svg>
+  ),
+  chat: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  ),
+};
+function pickIcon(raw: string): ReactNode {
+  const v = (raw || "").toLowerCase();
+  if (v.includes("🚚") || v.includes("truck") || v.includes("frete")) return ICON_SVGS.truck;
+  if (v.includes("🔄") || v.includes("troca") || v.includes("exchange")) return ICON_SVGS.exchange;
+  if (v.includes("🔒") || v.includes("segur") || v.includes("lock")) return ICON_SVGS.lock;
+  if (v.includes("💬") || v.includes("suporte") || v.includes("chat") || v.includes("whats")) return ICON_SVGS.chat;
+  return ICON_SVGS.truck;
+}
+
 function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "center", loop: true, containScroll: false });
-  const [selected, setSelected] = useState(0);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    const onSel = () => setSelected(emblaApi.selectedScrollSnap());
-    emblaApi.on("select", onSel); onSel();
-    return () => { emblaApi.off("select", onSel); };
-  }, [emblaApi]);
-
   if (!items?.length) return null;
   return (
     <section className="ts-icons-section bg-white">
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="ts-icons-track">
-          {items.map((it, i) => (
-            <div key={i} className="ts-icons-item">
-              <div className="flex flex-col items-center px-5 text-center">
-                <div className="grid h-[72px] w-[72px] place-items-center rounded-full text-[28px]"
-                  style={{ background: "#dfdac8" }}>
-                  <span>{it.icon}</span>
-                </div>
-                <div className="mt-4 mb-1 text-[14px] font-bold text-[#111]">{it.title}</div>
-                <div className="text-[13px] font-normal text-[#666]">{it.subtitle}</div>
-              </div>
+      <div className="ts-icons-grid">
+        {items.map((it, i) => (
+          <div key={i} className="flex flex-col items-center px-3 text-center">
+            <div className="grid h-[72px] w-[72px] place-items-center rounded-full"
+              style={{ background: "#dfdac8" }}>
+              {pickIcon(it.icon)}
             </div>
-          ))}
+            <div className="mt-4 mb-1 text-[14px] font-bold text-[#111]">{it.title}</div>
+            <div className="text-[13px] font-normal text-[#666]">{it.subtitle}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* -------------- Video Testimonials -------------- */
+function VideoTestimonialsSection({ storeId, storeSlug }: { storeId: string; storeSlug: string }) {
+  const q = useQuery({
+    queryKey: ["ts-video-testimonials", storeId],
+    queryFn: () => fetchStoreVideoTestimonials(storeId, 8),
+    staleTime: 60_000,
+  });
+  const videos = q.data ?? [];
+  if (videos.length === 0) return null;
+  return (
+    <section className="ts-section">
+      <div className="ts-section-head">
+        <div className="min-w-0">
+          <h2 className="ts-section-title">Veja nossos clientes usando</h2>
+          <Link to="/loja/$slug" params={{ slug: storeSlug }}
+            className="mt-2 inline-flex items-center gap-1 text-[13px] font-medium text-[#aaa] hover:text-[#111]">
+            ver mais
+            <span className="grid h-5 w-5 place-items-center rounded-full border border-[#ddd] text-[10px]">›</span>
+          </Link>
         </div>
       </div>
-      <div className="mt-6 flex justify-center gap-[6px]">
-        {items.map((_, i) => (
-          <button key={i} aria-label={`Ir para ${i + 1}`} onClick={() => emblaApi?.scrollTo(i)}
-            className="h-[8px] rounded-full transition-all"
-            style={{ width: selected === i ? 24 : 8, background: selected === i ? "#111" : "#ddd" }} />
-        ))}
+      <div className="flex gap-3 overflow-x-auto pb-2 md:gap-4" style={{ scrollbarWidth: "thin" }}>
+        {videos.map((v: any) => {
+          const product = v.products;
+          const thumb = product?.product_images?.[0]?.url ?? "";
+          return (
+            <Link key={v.id}
+              to="/loja/$slug/produto/$productSlug"
+              params={{ slug: storeSlug, productSlug: product?.slug ?? "" }}
+              className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[12px] bg-[#f5f5f5] md:w-[200px]">
+              {thumb && <img src={thumb} alt="" className="h-full w-full object-cover" loading="lazy" />}
+              <div className="absolute inset-0 grid place-items-center">
+                <div className="grid h-11 w-11 place-items-center rounded-full bg-black/50 text-white">
+                  <span className="ml-[2px] text-[14px]">▶</span>
+                </div>
+              </div>
+              <div className="absolute inset-x-0 bottom-0 px-3 py-3 text-[12px] font-semibold text-white"
+                style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}>
+                Ver produto →
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
@@ -463,10 +530,12 @@ function TheShoesStyles() {
       .ts-root, .ts-root * { font-family: 'DM Sans', 'Helvetica Neue', -apple-system, sans-serif; }
 
       .ts-section { padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
+      .ts-section-narrow { max-width: 1280px; margin: 0 auto; padding: 0 20px; }
       .ts-section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; gap: 16px; }
       .ts-section-title { font-size: 22px; font-weight: 800; color: #111; letter-spacing: -0.5px; line-height: 1.15; }
-      @media (min-width: 768px) {
-        .ts-section { padding: 64px 40px; }
+      @media (min-width: 1024px) {
+        .ts-section { padding: 64px 80px; }
+        .ts-section-narrow { padding: 0 80px; }
         .ts-section-title { font-size: 26px; }
         .ts-section-head { margin-bottom: 28px; }
       }
@@ -481,45 +550,49 @@ function TheShoesStyles() {
 
       .ts-carousel { display: flex; gap: 12px; }
       .ts-carousel-item { flex: 0 0 calc(50% - 6px); min-width: 0; }
-      @media (min-width: 768px) {
+      @media (min-width: 1024px) {
         .ts-carousel { gap: 16px; }
         .ts-carousel-item { flex: 0 0 calc(25% - 12px); }
       }
 
-      /* Large marquees (marquee1 + marquee2) */
+      /* Large marquees — NO uppercase, render text as typed */
       .ts-marquee {
         height: 72px; display: flex; align-items: center; overflow: hidden;
-        font-size: 28px; font-weight: 700; text-transform: uppercase;
+        font-size: 28px; font-weight: 700;
+        text-transform: none;
         letter-spacing: 0.02em; line-height: 1;
       }
       .ts-marquee-track { display: inline-flex; white-space: nowrap; animation: tsScroll 25s linear infinite; }
       .ts-marquee-track > span { padding: 0 16px; }
       @keyframes tsScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-      .ts-icons-section { padding: 48px 20px; }
-      @media (min-width: 768px) { .ts-icons-section { padding: 48px 40px; } }
-      .ts-icons-track { display: flex; }
-      .ts-icons-item { flex: 0 0 100%; min-width: 0; }
-      @media (min-width: 640px) { .ts-icons-item { flex: 0 0 50%; } }
-      @media (min-width: 900px) { .ts-icons-item { flex: 0 0 33.333%; } }
-      @media (min-width: 1100px) { .ts-icons-item { flex: 0 0 25%; } }
+      .ts-icons-section { padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
+      @media (min-width: 1024px) { .ts-icons-section { padding: 64px 80px; } }
+      .ts-icons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+      @media (min-width: 768px) { .ts-icons-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
 
-      /* Testimonials */
-      .ts-testimonials { overflow: hidden; padding-bottom: 48px; }
-      .ts-pill-row { overflow: hidden; width: 100%; margin-bottom: 16px; }
+      /* Testimonials — strict overflow */
+      .ts-testimonials { overflow: hidden !important; padding-bottom: 48px !important; }
+      .ts-pill-row { overflow: hidden !important; width: 100% !important; margin-bottom: 16px !important; }
       .ts-pill-track { display: inline-flex; gap: 12px; animation: tsPillL 35s linear infinite; }
       .ts-pill-track-rev { animation: tsPillR 35s linear infinite; }
       @keyframes tsPillL { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
       @keyframes tsPillR { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
       .ts-pill {
-        display: inline-flex; align-items: center; gap: 10px;
-        background: #fff; border: 1px solid #ebebeb; border-radius: 9999px;
-        padding: 12px 20px 12px 12px; white-space: nowrap; flex-shrink: 0;
+        display: inline-flex !important; align-items: center !important; gap: 10px;
+        background: #fff !important; border: 1px solid #ebebeb !important; border-radius: 9999px !important;
+        padding: 10px 20px 10px 10px !important;
+        white-space: nowrap !important; overflow: hidden !important; max-width: 380px !important;
+        flex-shrink: 0;
+      }
+      .ts-pill p {
+        white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+        max-width: 240px !important; font-size: 13px !important; color: #333 !important;
       }
 
       /* FAQ */
-      .ts-faq-section { background: #ffffff; padding: 48px 20px; }
-      @media (min-width: 768px) { .ts-faq-section { padding: 64px 40px; } }
+      .ts-faq-section { background: #ffffff; padding: 48px 20px; max-width: 1280px; margin: 0 auto; }
+      @media (min-width: 1024px) { .ts-faq-section { padding: 64px 80px; } }
       .ts-faq-box {
         background: #dfdac8; border-radius: 16px;
         padding: 36px 24px; max-width: 800px; margin: 0 auto;

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Bell, Menu, Search, User, X } from "lucide-react";
+import { TheShoesVipBanner } from "../TheShoesExtras";
 import { useStorefront } from "../StoreContext";
 import { useCart } from "@/stores/cart";
 import { searchProductsLive } from "@/lib/storefront";
@@ -8,7 +9,7 @@ import { effectivePrice, formatBRL } from "@/lib/format";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
 
-const ACCENT = "#111111";
+const ACCENT = "#c0392b";
 
 export function TheShoesHeader() {
   const { store, categories } = useStorefront();
@@ -109,10 +110,15 @@ export function TheShoesHeader() {
             aria-label="Carrinho"
             className="relative grid h-11 w-11 place-items-center text-[#333]"
           >
-            <ShoppingBag className="h-[22px] w-[22px]" strokeWidth={1.6} />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
             {cartCount > 0 && (
               <span
-                className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold text-white"
+                className="absolute -right-[2px] -top-[2px] grid h-[18px] min-w-[18px] place-items-center rounded-full px-1 text-[10px] font-bold text-white"
                 style={{ background: ACCENT }}
               >
                 {cartCount}
@@ -190,19 +196,17 @@ export function TheShoesHeader() {
       {/* mobile drawer */}
       {navOpen && (
         <>
-          <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setNavOpen(false)} />
-          <aside className="fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col bg-white shadow-xl md:hidden">
-            <div className="flex h-[60px] items-center justify-between border-b border-[#f0f0f0] px-4">
-              {store.logo_url
-                ? <img src={store.logo_url} alt={store.name} className="h-7 w-auto object-contain" />
-                : <span className="font-bold text-[#111]">{store.name}</span>}
-              <button onClick={() => setNavOpen(false)} aria-label="Fechar" className="grid h-9 w-9 place-items-center">
-                <X className="h-5 w-5" />
+          <div className="fixed inset-0 z-[60] bg-black/40 md:hidden" onClick={() => setNavOpen(false)} />
+          <aside className="fixed inset-y-0 left-0 z-[60] flex w-[300px] flex-col bg-white shadow-xl md:hidden" style={{ padding: 24 }}>
+            <div className="mb-4 flex items-center">
+              <button onClick={() => setNavOpen(false)} aria-label="Fechar"
+                className="grid h-8 w-8 place-items-center rounded-full border border-[#e0e0e0] text-[#333]">
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="overflow-y-auto py-2">
+            <div className="overflow-y-auto">
               <Link to="/loja/$slug" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="block border-b border-[#f5f5f5] px-6 py-4 text-[15px] font-medium text-[#333]">
+                className="block border-b border-[#f5f5f5] py-4 text-[15px] font-medium text-[#111]">
                 Início
               </Link>
               {roots.map((c) => (
@@ -210,10 +214,23 @@ export function TheShoesHeader() {
                   to="/loja/$slug/categoria/$categorySlug"
                   params={{ slug: store.slug, categorySlug: c.slug }}
                   onClick={() => setNavOpen(false)}
-                  className="block border-b border-[#f5f5f5] px-6 py-4 text-[15px] font-medium text-[#333]">
-                  {c.name}
+                  className="flex items-center justify-between border-b border-[#f5f5f5] py-4 text-[15px] font-medium text-[#111]">
+                  <span>{c.name}</span>
+                  <span className="text-[#aaa]">›</span>
                 </Link>
               ))}
+              <div className="mt-6">
+                <TheShoesVipBanner renderTrigger={(open) => (
+                  <button
+                    type="button"
+                    onClick={() => { setNavOpen(false); open(); }}
+                    className="inline-block rounded-full px-5 py-2 text-[15px] font-bold text-[#111]"
+                    style={{ background: "#d9f523" }}
+                  >
+                    Ofertas Secretas
+                  </button>
+                )} />
+              </div>
             </div>
           </aside>
         </>

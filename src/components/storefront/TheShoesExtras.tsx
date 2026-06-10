@@ -13,7 +13,7 @@ function formatWhatsapp(raw: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
-export function TheShoesVipBanner() {
+export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: () => void) => React.ReactNode } = {}) {
   const { store } = useStorefront();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -71,17 +71,19 @@ export function TheShoesVipBanner() {
         @keyframes shopbox-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
       `}</style>
 
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="my-6 flex w-full cursor-pointer items-center justify-center gap-3 border-0 text-white"
-        style={{ background: "#25D366", padding: "20px 24px" }}
-      >
-        <span style={{ fontSize: 20 }}>🔒</span>
-        <span style={{ fontSize: 15, fontWeight: 600 }}>
-          Achadinhos da The Shoes — Clique para desbloquear as ofertas VIP
-        </span>
-      </button>
+      {renderTrigger ? renderTrigger(() => setOpen(true)) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="my-6 flex w-full cursor-pointer items-center justify-center gap-3 border-0 text-white"
+          style={{ background: "#25D366", padding: "20px 24px" }}
+        >
+          <span style={{ fontSize: 20 }}>🔒</span>
+          <span style={{ fontSize: 15, fontWeight: 600 }}>
+            Achadinhos da The Shoes — Clique para desbloquear as ofertas VIP
+          </span>
+        </button>
+      )}
 
       {open && (
         <div

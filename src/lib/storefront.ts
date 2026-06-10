@@ -324,6 +324,36 @@ export async function fetchProductFull(storeId: string, slug: string) {
   return data;
 }
 
+export async function fetchBestSellersForStore(storeId: string, limit = 8) {
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `id, slug, title, brand, price, promo_price, tags,
+       product_images(url, position),
+       product_colors(id, name, hex),
+       product_stock(quantity)`,
+    )
+    .eq("store_id", storeId)
+    .eq("active", true)
+    .order("view_count", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []).map(normalizeProductCard);
+}
+
+export async function fetchStoreVideoTestimonials(storeId: string, limit = 8) {
+  const { data, error } = await supabase
+    .from("product_video_testimonials")
+    .select(`id, video_url, kind, customer_name, quote, position,
+             products!inner(id, slug, title, store_id, product_images(url, position))`)
+    .eq("products.store_id", storeId)
+    .not("video_url", "is", null)
+    .order("position", { ascending: true })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []) as any[];
+}
+
 export async function fetchActiveCoupon(storeId: string, code: string) {
   const { data, error } = await supabase
     .from("coupons")
