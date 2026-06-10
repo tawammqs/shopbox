@@ -56,6 +56,7 @@ export function buildCheckoutMessage(
     out.push(`Cupom ${coupon.code}: -${formatBRL(coupon.discount)}`);
   }
   out.push(`💰 *Total: ${formatBRL(total)}*`);
+  out.push(...buildPaymentBlock(customer?.paymentMethod));
   out.push(...buildCustomerBlock(customer));
   out.push("", "Aguardo o retorno para confirmar pagamento e entrega! 🙏");
   return out.join("\n");
