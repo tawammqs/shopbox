@@ -1,22 +1,9 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useStorefront } from "./StoreContext";
 import { supabase } from "@/integrations/supabase/client";
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
 const VIP_GROUP_URL = "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r";
-
-function gradientForCategory(name: string): string {
-  const n = name.trim().toLowerCase();
-  if (n.includes("menina")) return "linear-gradient(135deg, #fce7f3, #f9a8d4)";
-  if (n.includes("menino")) return "linear-gradient(135deg, #dbeafe, #93c5fd)";
-  if (n.includes("bebê") || n.includes("bebe")) return "linear-gradient(135deg, #d1fae5, #a7f3d0)";
-  if (n.includes("outlet")) return "linear-gradient(135deg, #fef3c7, #fcd34d)";
-  if (n.includes("lança") || n.includes("lanca")) return "linear-gradient(135deg, #e0e7ff, #c7d2fe)";
-  if (n.includes("oferta")) return "linear-gradient(135deg, #fde8ff, #f5d0fe)";
-  return "linear-gradient(135deg, #f3f4f6, #e5e7eb)";
-}
 
 function formatWhatsapp(raw: string): string {
   const digits = raw.replace(/\D/g, "").slice(0, 11);
@@ -26,60 +13,36 @@ function formatWhatsapp(raw: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
-export function TheShoesCategoryGrid() {
-  const { store, categories } = useStorefront();
-  if (store.slug !== "the-shoes") return null;
-
-  const tops = categories.filter((c) => !c.parent_id);
-  if (tops.length === 0) return null;
-
-  return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-6">
-      <h2 className="mb-4 text-[22px] font-extrabold tracking-tight text-[#1a1a1a]">
-        Compre por categoria
-      </h2>
-      <div className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:overflow-visible md:pb-0">
-        {tops.map((c) => {
-          const bg = c.image_url
-            ? `url(${c.image_url}) center/cover no-repeat`
-            : gradientForCategory(c.name);
-          return (
-            <Link
-              key={c.id}
-              to="/loja/$slug/categoria/$categorySlug"
-              params={{ slug: store.slug, categorySlug: c.slug }}
-              className="group relative block h-[130px] min-w-[130px] flex-shrink-0 overflow-hidden rounded-xl shadow-sm transition-transform duration-200 hover:scale-[1.03] md:h-[180px] md:min-w-0"
-              style={{ background: bg }}
-            >
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.55))" }}
-              />
-              <span
-                className="absolute bottom-3 left-3 text-[15px] font-bold text-white"
-                style={{ textShadow: "0 1px 3px rgba(0,0,0,0.4)" }}
-              >
-                {c.name}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 export function TheShoesVipBanner() {
   const { store } = useStorefront();
+  const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   if (store.slug !== "the-shoes") return null;
+
+  const close = () => {
+    setOpen(false);
+    setInvalid(false);
+  };
 
   const onSubmit = async () => {
     const digits = value.replace(/\D/g, "");
-    if (digits.length < 10) {
-      toast.error("Digite um WhatsApp válido");
+    if (digits.length < 10 || digits.length > 11) {
+      setInvalid(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
       return;
     }
     setSubmitting(true);
@@ -87,13 +50,14 @@ export function TheShoesVipBanner() {
       const { error } = await supabase.from("vip_group_leads" as any).insert({
         store_id: store.id,
         whatsapp: digits,
-        source: "achadinhos_banner",
+        source: "achadinhos_modal",
       });
       if (error) throw error;
-      toast.success("Redirecionando para o grupo! 🎉");
+      toast.success("Redirecionando para o grupo VIP! 🎉");
       window.open(VIP_GROUP_URL, "_blank", "noopener,noreferrer");
       setValue("");
-    } catch (e: any) {
+      close();
+    } catch {
       toast.error("Não foi possível concluir. Tente novamente.");
     } finally {
       setSubmitting(false);
@@ -101,70 +65,121 @@ export function TheShoesVipBanner() {
   };
 
   return (
-    <section
-      className="my-6 flex flex-wrap items-center justify-between gap-6 px-6 py-8 md:px-20 md:py-10"
-      style={{ background: "#25D366" }}
-    >
-      <div className="w-full text-center md:flex-1 md:text-left">
-        <span
-          className="inline-block rounded text-[11px] font-bold uppercase text-white"
+    <>
+      <style>{`
+        @keyframes shopbox-modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes shopbox-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+      `}</style>
+
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="my-6 flex w-full cursor-pointer items-center justify-center gap-3 border-0 text-white"
+        style={{ background: "#25D366", padding: "20px 24px" }}
+      >
+        <span style={{ fontSize: 20 }}>🔒</span>
+        <span style={{ fontSize: 15, fontWeight: 600 }}>
+          Achadinhos da The Shoes — Clique para desbloquear as ofertas VIP
+        </span>
+      </button>
+
+      {open && (
+        <div
+          onClick={close}
           style={{
-            background: "rgba(255,255,255,0.2)",
-            padding: "3px 10px",
-            letterSpacing: "0.08em",
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
           }}
         >
-          EXCLUSIVO
-        </span>
-        <h2
-          className="mt-3 text-[22px] font-black leading-[1.1] text-white md:text-[28px]"
-          style={{ letterSpacing: "-0.5px" }}
-        >
-          Achadinhos da The Shoes 🔥
-        </h2>
-        <p
-          className="mt-2 text-[15px] leading-[1.6]"
-          style={{ color: "rgba(255,255,255,0.85)" }}
-        >
-          Entre para o nosso grupo VIP e receba ofertas exclusivas, lançamentos em primeira mão e preços especiais.
-        </p>
-      </div>
-
-      <div
-        className="w-full min-w-[300px] rounded-xl md:w-auto md:flex-1 md:max-w-md"
-        style={{ background: "rgba(255,255,255,0.15)", padding: "20px 24px" }}
-      >
-        <label
-          className="mb-[10px] block text-[13px] font-semibold"
-          style={{ color: "rgba(255,255,255,0.9)" }}
-        >
-          Digite seu WhatsApp para entrar:
-        </label>
-        <input
-          type="tel"
-          inputMode="numeric"
-          value={value}
-          onChange={(e) => setValue(formatWhatsapp(e.target.value))}
-          placeholder="(00) 00000-0000"
-          className="block h-12 w-full rounded-lg border-0 px-4 text-[15px] text-[#1a1a1a] outline-none"
-        />
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={submitting}
-          className="mt-[10px] flex h-12 w-full items-center justify-center gap-2 rounded-lg border-0 text-[15px] font-bold disabled:opacity-70"
-          style={{ background: "#fff", color: "#25D366" }}
-        >
-          <WhatsAppIcon className="h-[18px] w-[18px]" />
-          {submitting ? "Enviando..." : "Entrar no grupo VIP"}
-        </button>
-        <p
-          className="mt-2 text-center text-[11px]"
-          style={{ color: "rgba(255,255,255,0.65)" }}
-        >
-          Seus dados são protegidos. Não enviamos spam.
-        </p>
-      </div>
-    </section>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: "40px 32px",
+              maxWidth: 420,
+              width: "100%",
+              textAlign: "center",
+              position: "relative",
+              animation: "shopbox-modalIn 0.2s ease forwards",
+            }}
+          >
+            <button
+              type="button"
+              aria-label="Fechar"
+              onClick={close}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                background: "none",
+                border: "none",
+                fontSize: 20,
+                color: "#aaa",
+                cursor: "pointer",
+              }}
+            >
+              ×
+            </button>
+            <span style={{ fontSize: 48, marginBottom: 16, display: "block" }}>🔒</span>
+            <h2 style={{ fontWeight: 800, fontSize: 22, color: "#1a1a1a", marginBottom: 12 }}>
+              Achadinhos da The Shoes
+            </h2>
+            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 24 }}>
+              Digite seu WhatsApp e tenha acesso às ofertas mais incríveis da The Shoes. Exclusivo para clientes VIPs 😉
+            </p>
+            <input
+              type="tel"
+              inputMode="numeric"
+              value={value}
+              onChange={(e) => {
+                setValue(formatWhatsapp(e.target.value));
+                if (invalid) setInvalid(false);
+              }}
+              placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD + XXXXX-XXXX)"}
+              style={{
+                width: "100%",
+                height: 52,
+                border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
+                borderRadius: 10,
+                padding: "0 16px",
+                fontSize: 16,
+                color: "#1a1a1a",
+                textAlign: "center",
+                marginBottom: 12,
+                outline: "none",
+                animation: shake ? "shopbox-shake 0.4s ease" : undefined,
+                boxSizing: "border-box",
+              }}
+            />
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={submitting}
+              style={{
+                width: "100%",
+                height: 52,
+                background: "#25D366",
+                color: "#fff",
+                border: "none",
+                borderRadius: 10,
+                fontSize: 16,
+                fontWeight: 700,
+                cursor: "pointer",
+                opacity: submitting ? 0.7 : 1,
+              }}
+            >
+              {submitting ? "Enviando..." : "Desbloquear e ver ofertas"}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
