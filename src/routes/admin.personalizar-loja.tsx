@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { VideoUpload } from "@/components/admin/VideoUpload";
+import { VideoSourcePicker } from "@/components/admin/VideoSourcePicker";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
