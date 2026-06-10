@@ -49,7 +49,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
   const { store } = useStorefront();
   const clearCart = useCart((s) => s.clear);
 
-  const isTheShoes = store.slug === "the-shoes";
+  const isTheShoes = useIsMioTheme();
 
   const [form, setForm] = useState({
     name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "", paymentMethod: "",
