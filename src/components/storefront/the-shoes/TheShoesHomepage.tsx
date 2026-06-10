@@ -49,6 +49,7 @@ export function TheShoesHomepage() {
       <ProductCarouselSection
         storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag}
       />
+      <div className="ts-section-narrow"><TheShoesVipBanner /></div>
       <MarqueeBar cfg={s.marquee1} />
       <PromoBannerSection promo={s.promo_banner} />
       <ProductCarouselSection
@@ -58,6 +59,7 @@ export function TheShoesHomepage() {
       <IconsBar items={s.icons_bar} />
       <MarqueeBar cfg={s.marquee2} />
       <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
+      <VideoTestimonialsSection storeId={store.id} storeSlug={store.slug} />
       <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
       <InstagramSection handle={s.instagram_handle} images={s.instagram_images} />
       {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
