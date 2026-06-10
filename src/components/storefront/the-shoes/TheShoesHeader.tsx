@@ -220,12 +220,12 @@ export function TheShoesHeader() {
       )}
 
       <style>{`
-        .ts-header, .ts-header * { font-family: 'Inter', system-ui, sans-serif; }
-        .ts-main { height: 60px; padding: 0 16px; }
-        .ts-logo { height: 32px; width: auto; max-width: 180px; }
+        .ts-header, .ts-header * { font-family: 'DM Sans', 'Helvetica Neue', -apple-system, sans-serif; }
+        .ts-main { height: 64px; padding: 0 16px; }
+        .ts-logo { height: 44px; width: auto; max-width: 160px; }
         @media (min-width: 768px) {
-          .ts-main { height: 70px; padding: 0 40px; }
-          .ts-logo { height: 40px; }
+          .ts-main { height: 76px; padding: 0 40px; }
+          .ts-logo { height: 56px; max-width: 200px; }
         }
         .ts-ann { height: 32px; display: flex; align-items: center; overflow: hidden;
           font-size: 12px; font-weight: 500; letter-spacing: 0.02em; }
