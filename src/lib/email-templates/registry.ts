@@ -11,6 +11,8 @@ export interface TemplateEntry {
 
 import { template as welcomeTemplate } from './welcome'
 import { template as cartRecoveryTemplate } from './cart-recovery'
+import { template as newOrderStoreTemplate } from './new-order-store'
+import { template as orderConfirmationCustomerTemplate } from './order-confirmation-customer'
 
 /**
  * Template registry — maps template names to their React Email components.
@@ -19,4 +21,6 @@ import { template as cartRecoveryTemplate } from './cart-recovery'
 export const TEMPLATES: Record<string, TemplateEntry> = {
   welcome: welcomeTemplate,
   'cart-recovery': cartRecoveryTemplate,
+  'new-order-store': newOrderStoreTemplate,
+  'order-confirmation-customer': orderConfirmationCustomerTemplate,
 }
