@@ -205,7 +205,7 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os status</SelectItem>
-              {(Object.keys(STATUS_META) as OrderStatus[]).map((s) => (
+              {SELECTABLE_STATUSES.map((s) => (
                 <SelectItem key={s} value={s}>{STATUS_META[s].label}</SelectItem>
               ))}
             </SelectContent>
@@ -283,7 +283,7 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {(Object.keys(STATUS_META) as OrderStatus[]).map((s) => (
+                            {SELECTABLE_STATUSES.map((s) => (
                               <SelectItem key={s} value={s}>{STATUS_META[s].label}</SelectItem>
                             ))}
                           </SelectContent>
