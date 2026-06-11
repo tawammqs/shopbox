@@ -1,10 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Palette, ClipboardList, CreditCard,
   Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
+import { resolveDomainSlug } from "@/lib/custom-domain.functions";
+
+const SHOPBOX_HOSTS = ["shopboxapp.com.br", "www.shopboxapp.com.br", "shopbox.lovable.app", "localhost"];
+function isShopBoxHost(h: string) {
+  if (!h) return true;
+  if (h.endsWith(".lovable.app")) return true;
+  if (h.endsWith(".lovable.dev")) return true;
+  if (h === "localhost" || h.startsWith("127.")) return true;
+  return SHOPBOX_HOSTS.includes(h);
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
