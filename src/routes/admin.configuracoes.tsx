@@ -1,307 +1,93 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Save, Copy, Check, ChevronDown } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useMyStore } from "@/hooks/useMyStore";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ImageUpload } from "@/components/admin/ImageUpload";
-import { PlanGate } from "@/components/admin/PlanGate";
-import { toast } from "sonner";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
+import { ArrowLeft, CreditCard, Phone, MessageCircle, Users, Globe } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/configuracoes")({
-  component: SettingsPage,
+  head: () => ({ meta: [{ title: "Configurações — ShopBox" }] }),
+  component: SettingsLayout,
 });
 
-function SettingsPage() {
-  const { data: store } = useMyStore();
-  const qc = useQueryClient();
-  const planSlug = store?.plan?.slug as any;
+type Group = { label: string; items: { to: string; label: string; icon: typeof CreditCard }[] };
 
-  const [form, setForm] = useState<any>({});
-  const [badges, setBadges] = useState<string[]>([]);
+const GROUPS: Group[] = [
+  {
+    label: "PAGAMENTOS",
+    items: [{ to: "/admin/configuracoes/pagamentos", label: "Pagamentos", icon: CreditCard }],
+  },
+  {
+    label: "COMUNICAÇÃO",
+    items: [
+      { to: "/admin/configuracoes/contato", label: "Informação de contato", icon: Phone },
+      { to: "/admin/configuracoes/whatsapp", label: "Botão de WhatsApp", icon: MessageCircle },
+    ],
+  },
+  {
+    label: "OUTROS",
+    items: [
+      { to: "/admin/configuracoes/usuarios", label: "Usuários", icon: Users },
+      { to: "/admin/configuracoes/dominios", label: "Domínios", icon: Globe },
+    ],
+  },
+];
 
-  useEffect(() => {
-    if (store) {
-      setForm({
-        name: store.name, tagline: store.tagline ?? "", logo_url: store.logo_url, favicon_url: store.favicon_url,
-        accent_color: store.accent_color, whatsapp: store.whatsapp, whatsapp_greeting: store.whatsapp_greeting ?? "",
-        instagram: store.instagram ?? "", facebook: store.facebook ?? "", tiktok: store.tiktok ?? "", youtube: store.youtube ?? "",
-        custom_domain: store.custom_domain ?? "",
-        seo_title: (store.seo_meta as any)?.title ?? "", seo_desc: (store.seo_meta as any)?.description ?? "",
-        facebook_pixel_id: store.facebook_pixel_id ?? "",
-        meta_conversion_token: store.meta_conversion_token ?? "",
-        google_analytics_id: store.google_analytics_id ?? "",
-      });
-      setBadges(store.trust_badges ?? []);
-    }
-  }, [store?.id]);
-
-  const save = useMutation({
-    mutationFn: async (overrides: any = {}) => {
-      if (!store) return;
-      const payload: any = { ...form, trust_badges: badges, seo_meta: { title: form.seo_title, description: form.seo_desc }, ...overrides };
-      delete payload.seo_title; delete payload.seo_desc;
-      // meta_conversion_token is stored in a separate private table (owner-only RLS).
-      const metaToken: string = (payload.meta_conversion_token ?? "").trim();
-      delete payload.meta_conversion_token;
-      const { error } = await supabase.from("stores").update(payload).eq("id", store.id);
-      if (error) throw error;
-      const { error: secretErr } = await (supabase as any)
-        .from("store_private_secrets")
-        .upsert(
-          { store_id: store.id, meta_conversion_token: metaToken || null, updated_at: new Date().toISOString() },
-          { onConflict: "store_id" },
-        );
-      if (secretErr) throw secretErr;
-    },
-    onSuccess: () => { toast.success("Configurações salvas"); qc.invalidateQueries({ queryKey: ["my-store-full"] }); },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  if (!store) return null;
-  const set = (k: string, v: any) => setForm({ ...form, [k]: v });
-
+function SettingsLayout() {
+  const loc = useLocation();
   return (
-    <div className="max-w-3xl space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-bold">Configurações</h1>
-        <p className="text-sm text-muted-foreground">Personalize sua loja</p>
-      </div>
-
-      <Tabs defaultValue="general">
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="general">Geral</TabsTrigger>
-          <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
-          <TabsTrigger value="social">Redes</TabsTrigger>
-          <TabsTrigger value="badges">Selos</TabsTrigger>
-          <TabsTrigger value="domain">Domínio</TabsTrigger>
-          <TabsTrigger value="seo">SEO</TabsTrigger>
-          <TabsTrigger value="integracoes" id="integracoes">Integrações</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="general" className="space-y-4">
-          <div><Label>Nome da loja</Label><Input value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} /></div>
-          <div><Label>Slogan</Label><Input value={form.tagline ?? ""} onChange={(e) => set("tagline", e.target.value)} /></div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div><Label>Logo</Label><div className="mt-1 max-w-[200px]"><ImageUpload bucket="logo" storeId={store.id} value={form.logo_url} onChange={(v) => set("logo_url", v)} /></div></div>
-            <div><Label>Favicon</Label><div className="mt-1 max-w-[80px]"><ImageUpload bucket="logo" storeId={store.id} value={form.favicon_url} onChange={(v) => set("favicon_url", v)} /></div></div>
-          </div>
-          <div><Label>Cor de destaque</Label><Input type="color" value={form.accent_color ?? "#1a6b4a"} onChange={(e) => set("accent_color", e.target.value)} className="h-10 w-24" /></div>
-        </TabsContent>
-
-        <TabsContent value="whatsapp" className="space-y-4">
-          <div><Label>WhatsApp (com DDI)</Label><Input value={form.whatsapp ?? ""} onChange={(e) => set("whatsapp", e.target.value)} placeholder="5511999998888" /></div>
-          <div><Label>Saudação inicial</Label><Textarea rows={2} value={form.whatsapp_greeting ?? ""} onChange={(e) => set("whatsapp_greeting", e.target.value)} placeholder="Olá! Vi sua loja e tenho interesse em…" /></div>
-        </TabsContent>
-
-        <TabsContent value="social" className="space-y-3">
-          {(["instagram", "facebook", "tiktok", "youtube"] as const).map((k) => (
-            <div key={k}><Label className="capitalize">{k}</Label><Input value={form[k] ?? ""} onChange={(e) => set(k, e.target.value)} placeholder="https://…" /></div>
-          ))}
-        </TabsContent>
-
-        <TabsContent value="badges" className="space-y-3">
-          <p className="text-sm text-muted-foreground">Até 4 selos exibidos no rodapé e na página do produto.</p>
-          {[0, 1, 2, 3].map((i) => (
-            <Input key={i} value={badges[i] ?? ""} placeholder={`Selo ${i + 1}`} onChange={(e) => {
-              const next = [...badges]; next[i] = e.target.value;
-              setBadges(next.filter(Boolean));
-            }} />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="domain">
-          <PlanGate plan={planSlug} feature="custom_domain">
-            <div className="space-y-3">
-              <Label>Domínio personalizado</Label>
-              <Input value={form.custom_domain ?? ""} onChange={(e) => set("custom_domain", e.target.value)} placeholder="loja.minhamarca.com.br" />
-              <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-                <p className="font-semibold mb-1">DNS:</p>
-                <p>Tipo A · Nome @ · Valor 185.158.133.1</p>
-                <p>Tipo CNAME · Nome www · Valor seu-dominio.com</p>
+    <div className="mx-auto flex max-w-7xl gap-6">
+      <aside className="hidden w-60 shrink-0 md:block">
+        <Link to="/admin" className="mb-4 inline-flex items-center gap-1.5 text-sm text-[#6b7280] hover:text-[#111827]">
+          <ArrowLeft className="h-4 w-4" /> Voltar
+        </Link>
+        <nav className="space-y-4 rounded-xl border border-gray-200 bg-white p-3">
+          {GROUPS.map((g) => (
+            <div key={g.label}>
+              <div className="px-2 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#9ca3af]">{g.label}</div>
+              <div className="space-y-0.5">
+                {g.items.map((it) => {
+                  const active = loc.pathname === it.to;
+                  const Icon = it.icon;
+                  return (
+                    <Link
+                      key={it.to}
+                      to={it.to}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+                        active
+                          ? "bg-[#25d366]/10 text-[#15803d]"
+                          : "text-[#374151] hover:bg-gray-50",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" /> {it.label}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
-          </PlanGate>
-        </TabsContent>
+          ))}
+        </nav>
+      </aside>
 
-        <TabsContent value="seo" className="space-y-3">
-          <div><Label>Meta título padrão</Label><Input value={form.seo_title ?? ""} onChange={(e) => set("seo_title", e.target.value)} /></div>
-          <div><Label>Meta descrição padrão</Label><Textarea rows={3} value={form.seo_desc ?? ""} onChange={(e) => set("seo_desc", e.target.value)} /></div>
-        </TabsContent>
-
-        <TabsContent value="integracoes" className="space-y-6">
-          <div className="rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
-            <p>
-              Conecte seu Pixel do Facebook, API de Conversões da Meta, Google Analytics e
-              sincronize seus produtos com o Catálogo do Meta para anúncios e remarketing.
-            </p>
-          </div>
-
-          {/* Facebook Pixel */}
-          <PlanGate plan={planSlug} feature="meta_pixel">
-            <div className="space-y-2">
-              <Label>ID do Pixel do Facebook</Label>
-              <Input
-                value={form.facebook_pixel_id ?? ""}
-                onChange={(e) => set("facebook_pixel_id", e.target.value.trim())}
-                placeholder="Ex: 1234567890123456"
-                inputMode="numeric"
-                maxLength={32}
-              />
-              <p className="text-xs text-muted-foreground">
-                Cole aqui o ID do seu Pixel. Encontre em: Meta Business → Gerenciador de Eventos → seu Pixel → Configurações.
-              </p>
-            </div>
-          </PlanGate>
-
-          {/* Conversion API token */}
-          <PlanGate plan={planSlug} feature="meta_capi">
-            <div className="space-y-2">
-              <Label>Token da API de Conversões (opcional)</Label>
-              <Input
-                type="password"
-                value={form.meta_conversion_token ?? ""}
-                onChange={(e) => set("meta_conversion_token", e.target.value.trim())}
-                placeholder="Token de acesso..."
-                autoComplete="off"
-                maxLength={512}
-              />
-              <p className="text-xs text-muted-foreground">
-                Melhora a precisão do rastreamento mesmo com bloqueadores. Opcional, mas recomendado.
-              </p>
-            </div>
-          </PlanGate>
-
-          {/* Product feed */}
-          <PlanGate plan={planSlug} feature="meta_feed">
-            <FeedUrlField slug={store.slug} storeId={store.id} />
-          </PlanGate>
-
-          {/* GA4 */}
-          <div className="space-y-2 border-t border-border pt-6">
-            <Label>ID do Google Analytics 4</Label>
-            <Input
-              value={form.google_analytics_id ?? ""}
-              onChange={(e) => set("google_analytics_id", e.target.value.trim())}
-              placeholder="Ex: G-XXXXXXXXXX"
-              maxLength={32}
-            />
-            <p className="text-xs text-muted-foreground">
-              Injeta o GA4 na sua loja e dispara os principais eventos automaticamente.
-            </p>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      <Button onClick={() => save.mutate({})} disabled={save.isPending}>
-        <Save className="mr-2 h-4 w-4" /> {save.isPending ? "Salvando…" : "Salvar configurações"}
-      </Button>
-    </div>
-  );
-}
-
-function FeedUrlField({ slug, storeId }: { slug: string; storeId: string }) {
-  const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  // Production stable URL pattern requested by the team
-  const url = `https://${slug}.shopboxapp.com.br/feed/meta.xml`;
-
-  const productCount = useQuery({
-    queryKey: ["feed-active-product-count", storeId],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from("products")
-        .select("*", { count: "exact", head: true })
-        .eq("store_id", storeId)
-        .eq("active", true);
-      return count ?? 0;
-    },
-  });
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-    } catch {
-      const el = document.createElement("textarea");
-      el.value = url;
-      el.style.cssText = "position:fixed;opacity:0";
-      document.body.appendChild(el);
-      el.select();
-      try {
-        document.execCommand("copy");
-      } catch {}
-      document.body.removeChild(el);
-    }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
-
-  return (
-    <div className="space-y-2">
-      <Label>Feed de Produtos para Meta</Label>
-      <div className="flex items-stretch gap-2">
-        <input
-          readOnly
-          value={url}
-          onFocus={(e) => e.currentTarget.select()}
-          className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg border border-[#e8e8e0] bg-white px-3.5 py-3 font-mono text-[13px] text-[#374151] outline-none"
-          style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
-        />
-        <button
-          type="button"
-          onClick={copy}
-          title="Copiar URL"
-          aria-label="Copiar URL do feed"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border transition-all duration-200"
-          style={
-            copied
-              ? { background: "#f0fdf4", borderColor: "#bbf7d0" }
-              : { background: "#ffffff", borderColor: "#e8e8e0" }
-          }
-        >
-          {copied ? (
-            <Check className="h-4 w-4 text-emerald-600" />
-          ) : (
-            <Copy className="h-4 w-4 text-[#374151]" />
-          )}
-        </button>
+      <div className="min-w-0 flex-1">
+        {/* Mobile nav */}
+        <div className="mb-4 -mx-4 flex gap-2 overflow-x-auto px-4 md:hidden">
+          {GROUPS.flatMap((g) => g.items).map((it) => {
+            const active = loc.pathname === it.to;
+            return (
+              <Link
+                key={it.to}
+                to={it.to}
+                className={cn(
+                  "shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium",
+                  active ? "border-[#25d366] bg-[#25d366]/10 text-[#15803d]" : "border-gray-200 bg-white text-[#374151]",
+                )}
+              >
+                {it.label}
+              </Link>
+            );
+          })}
+        </div>
+        <Outlet />
       </div>
-      <p className="text-[12px] text-[#888]">
-        Última sincronização:{" "}
-        {productCount.isLoading
-          ? "carregando…"
-          : `${productCount.data ?? 0} produtos ativos`}
-      </p>
-      <p className="text-[12px] text-[#aaa]">Atualizado automaticamente a cada hora</p>
-
-      <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger asChild>
-          <button
-            type="button"
-            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
-          >
-            Como configurar no Meta
-            <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
-          </button>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <ol className="mt-2 list-decimal space-y-1 rounded-lg bg-muted/40 p-3 pl-7 text-xs text-muted-foreground">
-            <li>Acesse business.facebook.com</li>
-            <li>Vá em Catálogos → Criar catálogo → E-commerce</li>
-            <li>Escolha "Feed de dados programado"</li>
-            <li>Cole a URL acima</li>
-            <li>Defina frequência: "A cada hora"</li>
-            <li>Clique em Salvar — seus produtos serão importados!</li>
-          </ol>
-        </CollapsibleContent>
-      </Collapsible>
     </div>
   );
 }

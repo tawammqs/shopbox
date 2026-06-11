@@ -53,6 +53,7 @@ import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
 import { Route as AdminEstatisticasIndexRouteImport } from './routes/admin.estatisticas.index'
+import { Route as AdminConfiguracoesIndexRouteImport } from './routes/admin.configuracoes.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
@@ -72,6 +73,11 @@ import { Route as AdminEstatisticasProdutosRouteImport } from './routes/admin.es
 import { Route as AdminDescontosPromocoesRouteImport } from './routes/admin.descontos.promocoes'
 import { Route as AdminDescontosFreteGratisRouteImport } from './routes/admin.descontos.frete-gratis'
 import { Route as AdminDescontosCuponsRouteImport } from './routes/admin.descontos.cupons'
+import { Route as AdminConfiguracoesWhatsappRouteImport } from './routes/admin.configuracoes.whatsapp'
+import { Route as AdminConfiguracoesUsuariosRouteImport } from './routes/admin.configuracoes.usuarios'
+import { Route as AdminConfiguracoesPagamentosRouteImport } from './routes/admin.configuracoes.pagamentos'
+import { Route as AdminConfiguracoesDominiosRouteImport } from './routes/admin.configuracoes.dominios'
+import { Route as AdminConfiguracoesContatoRouteImport } from './routes/admin.configuracoes.contato'
 import { Route as AdminClientesCupomPrimeiraCompraRouteImport } from './routes/admin.clientes.cupom-primeira-compra'
 import { Route as AdminClientesAvaliacoesRouteImport } from './routes/admin.clientes.avaliacoes'
 import { Route as LovableEmailTransactionalSendInternalRouteImport } from './routes/lovable/email/transactional/send-internal'
@@ -305,6 +311,11 @@ const AdminEstatisticasIndexRoute = AdminEstatisticasIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminEstatisticasRoute,
 } as any)
+const AdminConfiguracoesIndexRoute = AdminConfiguracoesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminConfiguracoesRoute,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -405,6 +416,36 @@ const AdminDescontosCuponsRoute = AdminDescontosCuponsRouteImport.update({
   path: '/cupons',
   getParentRoute: () => AdminDescontosRoute,
 } as any)
+const AdminConfiguracoesWhatsappRoute =
+  AdminConfiguracoesWhatsappRouteImport.update({
+    id: '/whatsapp',
+    path: '/whatsapp',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
+const AdminConfiguracoesUsuariosRoute =
+  AdminConfiguracoesUsuariosRouteImport.update({
+    id: '/usuarios',
+    path: '/usuarios',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
+const AdminConfiguracoesPagamentosRoute =
+  AdminConfiguracoesPagamentosRouteImport.update({
+    id: '/pagamentos',
+    path: '/pagamentos',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
+const AdminConfiguracoesDominiosRoute =
+  AdminConfiguracoesDominiosRouteImport.update({
+    id: '/dominios',
+    path: '/dominios',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
+const AdminConfiguracoesContatoRoute =
+  AdminConfiguracoesContatoRouteImport.update({
+    id: '/contato',
+    path: '/contato',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
 const AdminClientesCupomPrimeiraCompraRoute =
   AdminClientesCupomPrimeiraCompraRouteImport.update({
     id: '/cupom-primeira-compra',
@@ -486,7 +527,7 @@ export interface FileRoutesByFullPath {
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRouteWithChildren
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRouteWithChildren
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
@@ -512,6 +553,11 @@ export interface FileRoutesByFullPath {
   '/temas/': typeof TemasIndexRoute
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
+  '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
+  '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
+  '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
   '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
@@ -531,6 +577,7 @@ export interface FileRoutesByFullPath {
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
@@ -560,7 +607,6 @@ export interface FileRoutesByTo {
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRouteWithChildren
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
@@ -584,6 +630,11 @@ export interface FileRoutesByTo {
   '/temas': typeof TemasIndexRoute
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
+  '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
+  '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
+  '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
   '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
@@ -603,6 +654,7 @@ export interface FileRoutesByTo {
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas': typeof AdminEstatisticasIndexRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
@@ -635,7 +687,7 @@ export interface FileRoutesById {
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRouteWithChildren
-  '/admin/configuracoes': typeof AdminConfiguracoesRoute
+  '/admin/configuracoes': typeof AdminConfiguracoesRouteWithChildren
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/descontos': typeof AdminDescontosRouteWithChildren
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
@@ -661,6 +713,11 @@ export interface FileRoutesById {
   '/temas/': typeof TemasIndexRoute
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
+  '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
+  '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
+  '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
   '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
@@ -680,6 +737,7 @@ export interface FileRoutesById {
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
@@ -739,6 +797,11 @@ export interface FileRouteTypes {
     | '/temas/'
     | '/admin/clientes/avaliacoes'
     | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/configuracoes/contato'
+    | '/admin/configuracoes/dominios'
+    | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/usuarios'
+    | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
     | '/admin/descontos/promocoes'
@@ -758,6 +821,7 @@ export interface FileRouteTypes {
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
+    | '/admin/configuracoes/'
     | '/admin/estatisticas/'
     | '/admin/produtos/'
     | '/loja/$slug/'
@@ -787,7 +851,6 @@ export interface FileRouteTypes {
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/clientes'
-    | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
     | '/admin/financeiro'
@@ -811,6 +874,11 @@ export interface FileRouteTypes {
     | '/temas'
     | '/admin/clientes/avaliacoes'
     | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/configuracoes/contato'
+    | '/admin/configuracoes/dominios'
+    | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/usuarios'
+    | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
     | '/admin/descontos/promocoes'
@@ -830,6 +898,7 @@ export interface FileRouteTypes {
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
+    | '/admin/configuracoes'
     | '/admin/estatisticas'
     | '/admin/produtos'
     | '/loja/$slug'
@@ -887,6 +956,11 @@ export interface FileRouteTypes {
     | '/temas/'
     | '/admin/clientes/avaliacoes'
     | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/configuracoes/contato'
+    | '/admin/configuracoes/dominios'
+    | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/usuarios'
+    | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
     | '/admin/descontos/promocoes'
@@ -906,6 +980,7 @@ export interface FileRouteTypes {
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
+    | '/admin/configuracoes/'
     | '/admin/estatisticas/'
     | '/admin/produtos/'
     | '/loja/$slug/'
@@ -1262,6 +1337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEstatisticasIndexRouteImport
       parentRoute: typeof AdminEstatisticasRoute
     }
+    '/admin/configuracoes/': {
+      id: '/admin/configuracoes/'
+      path: '/'
+      fullPath: '/admin/configuracoes/'
+      preLoaderRoute: typeof AdminConfiguracoesIndexRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -1395,6 +1477,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDescontosCuponsRouteImport
       parentRoute: typeof AdminDescontosRoute
     }
+    '/admin/configuracoes/whatsapp': {
+      id: '/admin/configuracoes/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/admin/configuracoes/whatsapp'
+      preLoaderRoute: typeof AdminConfiguracoesWhatsappRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
+    '/admin/configuracoes/usuarios': {
+      id: '/admin/configuracoes/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/configuracoes/usuarios'
+      preLoaderRoute: typeof AdminConfiguracoesUsuariosRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
+    '/admin/configuracoes/pagamentos': {
+      id: '/admin/configuracoes/pagamentos'
+      path: '/pagamentos'
+      fullPath: '/admin/configuracoes/pagamentos'
+      preLoaderRoute: typeof AdminConfiguracoesPagamentosRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
+    '/admin/configuracoes/dominios': {
+      id: '/admin/configuracoes/dominios'
+      path: '/dominios'
+      fullPath: '/admin/configuracoes/dominios'
+      preLoaderRoute: typeof AdminConfiguracoesDominiosRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
+    '/admin/configuracoes/contato': {
+      id: '/admin/configuracoes/contato'
+      path: '/contato'
+      fullPath: '/admin/configuracoes/contato'
+      preLoaderRoute: typeof AdminConfiguracoesContatoRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
     '/admin/clientes/cupom-primeira-compra': {
       id: '/admin/clientes/cupom-primeira-compra'
       path: '/cupom-primeira-compra'
@@ -1489,6 +1606,27 @@ const AdminClientesRouteWithChildren = AdminClientesRoute._addFileChildren(
   AdminClientesRouteChildren,
 )
 
+interface AdminConfiguracoesRouteChildren {
+  AdminConfiguracoesContatoRoute: typeof AdminConfiguracoesContatoRoute
+  AdminConfiguracoesDominiosRoute: typeof AdminConfiguracoesDominiosRoute
+  AdminConfiguracoesPagamentosRoute: typeof AdminConfiguracoesPagamentosRoute
+  AdminConfiguracoesUsuariosRoute: typeof AdminConfiguracoesUsuariosRoute
+  AdminConfiguracoesWhatsappRoute: typeof AdminConfiguracoesWhatsappRoute
+  AdminConfiguracoesIndexRoute: typeof AdminConfiguracoesIndexRoute
+}
+
+const AdminConfiguracoesRouteChildren: AdminConfiguracoesRouteChildren = {
+  AdminConfiguracoesContatoRoute: AdminConfiguracoesContatoRoute,
+  AdminConfiguracoesDominiosRoute: AdminConfiguracoesDominiosRoute,
+  AdminConfiguracoesPagamentosRoute: AdminConfiguracoesPagamentosRoute,
+  AdminConfiguracoesUsuariosRoute: AdminConfiguracoesUsuariosRoute,
+  AdminConfiguracoesWhatsappRoute: AdminConfiguracoesWhatsappRoute,
+  AdminConfiguracoesIndexRoute: AdminConfiguracoesIndexRoute,
+}
+
+const AdminConfiguracoesRouteWithChildren =
+  AdminConfiguracoesRoute._addFileChildren(AdminConfiguracoesRouteChildren)
+
 interface AdminDescontosRouteChildren {
   AdminDescontosCuponsRoute: typeof AdminDescontosCuponsRoute
   AdminDescontosFreteGratisRoute: typeof AdminDescontosFreteGratisRoute
@@ -1540,7 +1678,7 @@ interface AdminRouteChildren {
   AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminClientesRoute: typeof AdminClientesRouteWithChildren
-  AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
+  AdminConfiguracoesRoute: typeof AdminConfiguracoesRouteWithChildren
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminDescontosRoute: typeof AdminDescontosRouteWithChildren
   AdminEstatisticasRoute: typeof AdminEstatisticasRouteWithChildren
@@ -1568,7 +1706,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBannersRoute: AdminBannersRoute,
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminClientesRoute: AdminClientesRouteWithChildren,
-  AdminConfiguracoesRoute: AdminConfiguracoesRoute,
+  AdminConfiguracoesRoute: AdminConfiguracoesRouteWithChildren,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminDescontosRoute: AdminDescontosRouteWithChildren,
   AdminEstatisticasRoute: AdminEstatisticasRouteWithChildren,
