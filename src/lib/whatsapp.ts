@@ -28,7 +28,13 @@ function buildCustomerBlock(customer?: CustomerInfo | null): string[] {
 
 function buildPaymentBlock(paymentMethod?: string | null, total?: number): string[] {
   if (!paymentMethod) return [];
-  const label = paymentMethod === "pix" ? "PIX" : "Cartão de crédito (até 3x sem juros)";
+  const labels: Record<string, string> = {
+    pix: "PIX",
+    cartao: "Cartão de crédito",
+    dinheiro: "Dinheiro na entrega",
+    retirada: "Pagamento na retirada",
+  };
+  const label = labels[paymentMethod] ?? paymentMethod;
   const lines = ["", `💳 *Forma de pagamento:* ${label}`];
   if (paymentMethod === "cartao" && typeof total === "number" && total >= 9) {
     lines.push(`💳 Parcelamento: 3x de ${formatBRL(total / 3)} sem juros`);
