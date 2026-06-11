@@ -1040,20 +1040,30 @@ export type Database = {
         Row: {
           active: boolean
           brand: string | null
+          brand_name: string | null
           category_id: string | null
+          cost_price: number | null
           created_at: string
           description: string | null
+          featured_sections: string[] | null
+          free_shipping: boolean | null
           id: string
+          is_visible: boolean | null
           low_stock_threshold: number
           meta_description: string | null
           meta_title: string | null
           price: number
+          product_type: string | null
           promo_ends_at: string | null
           promo_price: number | null
           promo_starts_at: string | null
+          seo_description: string | null
+          seo_title: string | null
           size_guide_url: string | null
           sku: string | null
           slug: string
+          stock_mode: string | null
+          stock_quantity: number | null
           store_id: string
           subcategory_id: string | null
           tags: Database["public"]["Enums"]["product_tag"][]
@@ -1067,20 +1077,30 @@ export type Database = {
         Insert: {
           active?: boolean
           brand?: string | null
+          brand_name?: string | null
           category_id?: string | null
+          cost_price?: number | null
           created_at?: string
           description?: string | null
+          featured_sections?: string[] | null
+          free_shipping?: boolean | null
           id?: string
+          is_visible?: boolean | null
           low_stock_threshold?: number
           meta_description?: string | null
           meta_title?: string | null
           price?: number
+          product_type?: string | null
           promo_ends_at?: string | null
           promo_price?: number | null
           promo_starts_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           size_guide_url?: string | null
           sku?: string | null
           slug: string
+          stock_mode?: string | null
+          stock_quantity?: number | null
           store_id: string
           subcategory_id?: string | null
           tags?: Database["public"]["Enums"]["product_tag"][]
@@ -1094,20 +1114,30 @@ export type Database = {
         Update: {
           active?: boolean
           brand?: string | null
+          brand_name?: string | null
           category_id?: string | null
+          cost_price?: number | null
           created_at?: string
           description?: string | null
+          featured_sections?: string[] | null
+          free_shipping?: boolean | null
           id?: string
+          is_visible?: boolean | null
           low_stock_threshold?: number
           meta_description?: string | null
           meta_title?: string | null
           price?: number
+          product_type?: string | null
           promo_ends_at?: string | null
           promo_price?: number | null
           promo_starts_at?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           size_guide_url?: string | null
           sku?: string | null
           slug?: string
+          stock_mode?: string | null
+          stock_quantity?: number | null
           store_id?: string
           subcategory_id?: string | null
           tags?: Database["public"]["Enums"]["product_tag"][]
