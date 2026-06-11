@@ -16,7 +16,7 @@ const ACCENT = "#25d366";
 
 function EstatisticasOverview() {
   const { data: store } = useMyStore();
-  const [range, setRange] = useState<"7" | "30" | "90">("7");
+  const [range, setRange] = useState<"today" | "7" | "30" | "90">("7");
   const [comparison, setComparison] = useState<"none" | "previous">("none");
   const [data, setData] = useState<{
     orders: number;
@@ -30,8 +30,17 @@ function EstatisticasOverview() {
   useEffect(() => {
     if (!store?.id) return;
     (async () => {
-      const days = parseInt(range, 10);
-      const since = new Date(Date.now() - days * 86400000).toISOString();
+      let since: string;
+      let days: number;
+      if (range === "today") {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        since = d.toISOString();
+        days = 1;
+      } else {
+        days = parseInt(range, 10);
+        since = new Date(Date.now() - days * 86400000).toISOString();
+      }
       const [ordersRes, visitsRes] = await Promise.all([
         supabase
           .from("orders")
@@ -98,6 +107,7 @@ function EstatisticasOverview() {
               onChange={(e) => setRange(e.target.value as any)}
               className="bg-transparent text-sm outline-none"
             >
+              <option value="today">Hoje</option>
               <option value="7">Últimos 7 dias</option>
               <option value="30">Últimos 30 dias</option>
               <option value="90">Últimos 90 dias</option>
