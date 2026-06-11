@@ -35,11 +35,11 @@ type OrderRow = {
 };
 
 const STATUS_META: Record<OrderStatus, { label: string; className: string }> = {
-  aguardando: { label: "Aguardando", className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-200" },
-  confirmado: { label: "Confirmado", className: "bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200" },
-  enviado:    { label: "Enviado",    className: "bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200" },
-  entregue:   { label: "Entregue",   className: "bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-200" },
-  cancelado:  { label: "Cancelado",  className: "bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-200" },
+  aguardando: { label: "Pendente",   className: "bg-[#f3f4f6] text-[#374151]" },
+  confirmado: { label: "Recebido",   className: "bg-[#d1fae5] text-[#065f46]" },
+  enviado:    { label: "Recebido",   className: "bg-[#d1fae5] text-[#065f46]" },
+  entregue:   { label: "Recebido",   className: "bg-[#d1fae5] text-[#065f46]" },
+  cancelado:  { label: "Cancelado",  className: "bg-[#fee2e2] text-[#991b1b]" },
 };
 
 const PAGE_SIZE = 20;
@@ -52,12 +52,20 @@ function PedidosPage() {
   const planSlug = (store?.plan?.slug ?? null) as any;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold">Pedidos</h1>
-        <p className="text-sm text-muted-foreground">
-          Todos os pedidos da sua loja em um só lugar. Filtre por status e período.
-        </p>
+    <div className="mx-auto max-w-7xl space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Vendas</h1>
+          <p className="mt-1 text-sm text-[#6b7280]">Todos os pedidos da sua loja em um só lugar.</p>
+        </div>
+        <div className="flex gap-2">
+          <button className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium hover:bg-gray-50">
+            ↓ Exportar lista
+          </button>
+          <button className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-[#25d366] px-4 text-sm font-semibold text-white hover:bg-[#1fb959]">
+            + Criar um pedido
+          </button>
+        </div>
       </div>
 
       <PlanGate plan={planSlug} feature="customers">
@@ -66,6 +74,7 @@ function PedidosPage() {
     </div>
   );
 }
+
 
 function PedidosContent({ storeId, storeName }: { storeId: string; storeName: string }) {
   const [orders, setOrders] = useState<OrderRow[]>([]);

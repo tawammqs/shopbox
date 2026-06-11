@@ -102,16 +102,22 @@ function CategoriesPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-5xl space-y-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-bold">Categorias</h1>
-          <p className="text-sm text-muted-foreground">Arraste para reordenar</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Categorias</h1>
+          <p className="mt-1 text-sm text-[#6b7280]">
+            Para organizar seus produtos, crie categorias e subcategorias que aparecerão no menu da loja.
+          </p>
         </div>
-        <Button onClick={() => { setEditing(null); setOpen(true); }}>
-          <Plus className="mr-1.5 h-4 w-4" /> Nova categoria
-        </Button>
+        <button
+          onClick={() => { setEditing(null); setOpen(true); }}
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-[#25d366] px-4 text-sm font-semibold text-white hover:bg-[#1fb959]"
+        >
+          <Plus className="h-4 w-4" /> Criar categoria
+        </button>
       </div>
+
 
       <div className="rounded-2xl border border-border bg-card p-2">
         {cats.isLoading && <p className="p-4 text-sm text-muted-foreground">Carregando…</p>}

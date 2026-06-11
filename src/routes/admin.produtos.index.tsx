@@ -272,22 +272,35 @@ function ProductsListPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="mx-auto max-w-7xl space-y-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-bold">Produtos</h1>
-          <p className="text-sm text-muted-foreground">{productCount} de {maxProducts}</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Produtos</h1>
+          <p className="mt-1 text-sm text-[#6b7280]">{productCount} produtos · limite {maxProducts}</p>
         </div>
-        {limitReached ? (
-          <Button disabled title="Limite atingido. Faça upgrade.">
-            <Plus className="mr-1.5 h-4 w-4" /> Limite atingido
-          </Button>
-        ) : (
-          <Button asChild>
-            <Link to="/admin/produtos/$id" params={{ id: "novo" }}><Plus className="mr-1.5 h-4 w-4" /> Novo produto</Link>
-          </Button>
-        )}
+        <div className="flex gap-2">
+          <button className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium hover:bg-gray-50">
+            ≡ Organizar
+          </button>
+          <button className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium hover:bg-gray-50">
+            ↑↓ Exportar e Importar
+          </button>
+          {limitReached ? (
+            <Button disabled title="Limite atingido. Faça upgrade.">
+              <Plus className="mr-1.5 h-4 w-4" /> Limite atingido
+            </Button>
+          ) : (
+            <Link
+              to="/admin/produtos/$id"
+              params={{ id: "novo" }}
+              className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-[#25d366] px-4 text-sm font-semibold text-white hover:bg-[#1fb959]"
+            >
+              <Plus className="h-4 w-4" /> Adicionar produto
+            </Link>
+          )}
+        </div>
       </div>
+
 
       {/* Stats — vindos do antigo Dashboard */}
       <div className="grid gap-3 sm:grid-cols-3">
