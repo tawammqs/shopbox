@@ -60,6 +60,7 @@ import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
 import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
 import { Route as AdminLojaMenusRouteImport } from './routes/admin.loja.menus'
 import { Route as AdminLojaLayoutRouteImport } from './routes/admin.loja.layout'
@@ -339,6 +340,11 @@ const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   path: '/produtos/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLojaRedesSociaisRoute = AdminLojaRedesSociaisRouteImport.update({
+  id: '/loja/redes-sociais',
+  path: '/loja/redes-sociais',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLojaPaginasRoute = AdminLojaPaginasRouteImport.update({
   id: '/loja/paginas',
   path: '/loja/paginas',
@@ -511,6 +517,7 @@ export interface FileRoutesByFullPath {
   '/admin/loja/layout': typeof AdminLojaLayoutRoute
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
+  '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -581,6 +588,7 @@ export interface FileRoutesByTo {
   '/admin/loja/layout': typeof AdminLojaLayoutRoute
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
+  '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -656,6 +664,7 @@ export interface FileRoutesById {
   '/admin/loja/layout': typeof AdminLojaLayoutRoute
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
+  '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -732,6 +741,7 @@ export interface FileRouteTypes {
     | '/admin/loja/layout'
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
+    | '/admin/loja/redes-sociais'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -802,6 +812,7 @@ export interface FileRouteTypes {
     | '/admin/loja/layout'
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
+    | '/admin/loja/redes-sociais'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -876,6 +887,7 @@ export interface FileRouteTypes {
     | '/admin/loja/layout'
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
+    | '/admin/loja/redes-sociais'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -1287,6 +1299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/loja/redes-sociais': {
+      id: '/admin/loja/redes-sociais'
+      path: '/loja/redes-sociais'
+      fullPath: '/admin/loja/redes-sociais'
+      preLoaderRoute: typeof AdminLojaRedesSociaisRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/loja/paginas': {
       id: '/admin/loja/paginas'
       path: '/loja/paginas'
@@ -1507,6 +1526,7 @@ interface AdminRouteChildren {
   AdminLojaLayoutRoute: typeof AdminLojaLayoutRoute
   AdminLojaMenusRoute: typeof AdminLojaMenusRoute
   AdminLojaPaginasRoute: typeof AdminLojaPaginasRoute
+  AdminLojaRedesSociaisRoute: typeof AdminLojaRedesSociaisRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
   AdminProdutosCategoriasRoute: typeof AdminProdutosCategoriasRoute
   AdminProdutosTabelaPrecosRoute: typeof AdminProdutosTabelaPrecosRoute
@@ -1534,6 +1554,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLojaLayoutRoute: AdminLojaLayoutRoute,
   AdminLojaMenusRoute: AdminLojaMenusRoute,
   AdminLojaPaginasRoute: AdminLojaPaginasRoute,
+  AdminLojaRedesSociaisRoute: AdminLojaRedesSociaisRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
   AdminProdutosCategoriasRoute: AdminProdutosCategoriasRoute,
   AdminProdutosTabelaPrecosRoute: AdminProdutosTabelaPrecosRoute,
