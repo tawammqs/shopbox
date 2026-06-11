@@ -246,20 +246,15 @@ function Sidebar({
           <button
             type="button"
             onClick={onToggle}
-            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md hover:bg-gray-100"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#25d366] text-white text-[15px] font-bold hover:opacity-90"
             aria-label="Expandir menu"
           >
-            <img
-              src={shopboxLogo}
-              alt="ShopBox"
-              className="h-7 w-auto max-w-none object-cover"
-              style={{ objectPosition: "0 50%", width: "32px" }}
-            />
+            S
           </button>
         ) : (
           <>
             <Link to="/admin" className="flex items-center">
-              <img src={shopboxLogo} alt="ShopBox" className="h-8 w-auto object-contain" />
+              <img src={shopboxLogo} alt="ShopBox" className="h-7 w-auto object-contain" />
             </Link>
             <button
               type="button"
