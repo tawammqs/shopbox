@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { signOut } from "@/hooks/useAuth";
 import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
+import { useMyStore } from "@/hooks/useMyStore";
+import { isPremiumStore } from "@/lib/access";
 import { cn } from "@/lib/utils";
 
 type SubItem = { label: string; to: string; premium?: boolean; external?: boolean };
@@ -51,7 +53,7 @@ const SECTIONS: NavSection[] = [
         icon: Users,
         children: [
           { label: "Lista de clientes", to: "/admin/clientes" },
-          { label: "Cupom Primeira Compra", to: "/admin/clientes/cupom-primeira-compra", premium: true },
+          { label: "Leads", to: "/admin/clientes/leads" },
           { label: "Perguntas e Avaliações", to: "/admin/clientes/avaliacoes", premium: true },
         ],
       },
@@ -116,7 +118,7 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/pedidos": "Vendas",
   "/admin/financeiro": "Financeiro",
   "/admin/clientes": "Clientes",
-  "/admin/clientes/cupom-primeira-compra": "Cupom Primeira Compra",
+  "/admin/clientes/leads": "Leads",
   "/admin/clientes/avaliacoes": "Perguntas e Avaliações",
   "/admin/perguntas": "Perguntas e Avaliações",
   "/admin/produtos": "Produtos",
@@ -236,6 +238,8 @@ function Sidebar({
   mobile?: boolean;
 }) {
   const pendingOrders = usePendingOrdersCount(storeId);
+  const { data: store } = useMyStore();
+  const isPremium = isPremiumStore(store);
 
   return (
     <>
@@ -252,7 +256,7 @@ function Sidebar({
         ) : (
           <>
             <Link to="/admin" className="flex items-center">
-              <img src="/LOGO_SHOPBOX.png" alt="ShopBox" className="h-14 w-auto object-contain" style={{ maxWidth: 200, display: "block" }} />
+              <img src="/LOGO_SHOPBOX.png" alt="ShopBox" className="h-7 w-auto object-contain" style={{ maxWidth: 140, display: "block" }} />
             </Link>
             <button
               type="button"
@@ -282,6 +286,7 @@ function Sidebar({
                   collapsed={collapsed}
                   currentPath={currentPath}
                   pendingOrders={pendingOrders}
+                  isPremium={isPremium}
                 />
               ))}
             </div>
@@ -291,7 +296,7 @@ function Sidebar({
 
       <div className="border-t border-[#e5e7eb] p-2 space-y-0.5">
         {FOOTER_ITEMS.map((item) => (
-          <NavRow key={item.label} item={item} collapsed={collapsed} currentPath={currentPath} pendingOrders={0} />
+          <NavRow key={item.label} item={item} collapsed={collapsed} currentPath={currentPath} pendingOrders={0} isPremium={isPremium} />
         ))}
       </div>
     </>
@@ -299,13 +304,14 @@ function Sidebar({
 }
 
 function NavRow({
-  item, collapsed, currentPath, pendingOrders, hasSubmenuIndicator,
+  item, collapsed, currentPath, pendingOrders, hasSubmenuIndicator, isPremium,
 }: {
   item: NavItem;
   collapsed: boolean;
   currentPath: string;
   pendingOrders: number;
   hasSubmenuIndicator?: boolean;
+  isPremium?: boolean;
 }) {
   const hasChildren = !!item.children?.length;
   const childActive = hasChildren && item.children!.some((c) => currentPath === c.to || currentPath.startsWith(c.to + "/"));
@@ -386,7 +392,7 @@ function NavRow({
                 )}
               >
                 <span className="flex-1 truncate">{child.label}</span>
-                {child.premium && (
+                {child.premium && !isPremium && (
                   <>
                     <Lock className="h-3.5 w-3.5 text-gray-400" />
                     <span className="rounded bg-[#f0fdf4] px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[#25d366]">

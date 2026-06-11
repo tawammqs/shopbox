@@ -78,7 +78,7 @@ import { Route as AdminConfiguracoesUsuariosRouteImport } from './routes/admin.c
 import { Route as AdminConfiguracoesPagamentosRouteImport } from './routes/admin.configuracoes.pagamentos'
 import { Route as AdminConfiguracoesDominiosRouteImport } from './routes/admin.configuracoes.dominios'
 import { Route as AdminConfiguracoesContatoRouteImport } from './routes/admin.configuracoes.contato'
-import { Route as AdminClientesCupomPrimeiraCompraRouteImport } from './routes/admin.clientes.cupom-primeira-compra'
+import { Route as AdminClientesLeadsRouteImport } from './routes/admin.clientes.leads'
 import { Route as AdminClientesAvaliacoesRouteImport } from './routes/admin.clientes.avaliacoes'
 import { Route as LovableEmailTransactionalSendInternalRouteImport } from './routes/lovable/email/transactional/send-internal'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -447,12 +447,11 @@ const AdminConfiguracoesContatoRoute =
     path: '/contato',
     getParentRoute: () => AdminConfiguracoesRoute,
   } as any)
-const AdminClientesCupomPrimeiraCompraRoute =
-  AdminClientesCupomPrimeiraCompraRouteImport.update({
-    id: '/cupom-primeira-compra',
-    path: '/cupom-primeira-compra',
-    getParentRoute: () => AdminClientesRoute,
-  } as any)
+const AdminClientesLeadsRoute = AdminClientesLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AdminClientesRoute,
+} as any)
 const AdminClientesAvaliacoesRoute = AdminClientesAvaliacoesRouteImport.update({
   id: '/avaliacoes',
   path: '/avaliacoes',
@@ -558,7 +557,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
-  '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/clientes/leads': typeof AdminClientesLeadsRoute
   '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
@@ -636,7 +635,7 @@ export interface FileRoutesByTo {
   '/superadmin': typeof SuperadminIndexRoute
   '/temas': typeof TemasIndexRoute
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
-  '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/clientes/leads': typeof AdminClientesLeadsRoute
   '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
@@ -720,7 +719,7 @@ export interface FileRoutesById {
   '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
-  '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/clientes/leads': typeof AdminClientesLeadsRoute
   '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
@@ -805,7 +804,7 @@ export interface FileRouteTypes {
     | '/superadmin/'
     | '/temas/'
     | '/admin/clientes/avaliacoes'
-    | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/clientes/leads'
     | '/admin/configuracoes/contato'
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/pagamentos'
@@ -883,7 +882,7 @@ export interface FileRouteTypes {
     | '/superadmin'
     | '/temas'
     | '/admin/clientes/avaliacoes'
-    | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/clientes/leads'
     | '/admin/configuracoes/contato'
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/pagamentos'
@@ -966,7 +965,7 @@ export interface FileRouteTypes {
     | '/superadmin/'
     | '/temas/'
     | '/admin/clientes/avaliacoes'
-    | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/clientes/leads'
     | '/admin/configuracoes/contato'
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/pagamentos'
@@ -1524,11 +1523,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConfiguracoesContatoRouteImport
       parentRoute: typeof AdminConfiguracoesRoute
     }
-    '/admin/clientes/cupom-primeira-compra': {
-      id: '/admin/clientes/cupom-primeira-compra'
-      path: '/cupom-primeira-compra'
-      fullPath: '/admin/clientes/cupom-primeira-compra'
-      preLoaderRoute: typeof AdminClientesCupomPrimeiraCompraRouteImport
+    '/admin/clientes/leads': {
+      id: '/admin/clientes/leads'
+      path: '/leads'
+      fullPath: '/admin/clientes/leads'
+      preLoaderRoute: typeof AdminClientesLeadsRouteImport
       parentRoute: typeof AdminClientesRoute
     }
     '/admin/clientes/avaliacoes': {
@@ -1613,12 +1612,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminClientesRouteChildren {
   AdminClientesAvaliacoesRoute: typeof AdminClientesAvaliacoesRoute
-  AdminClientesCupomPrimeiraCompraRoute: typeof AdminClientesCupomPrimeiraCompraRoute
+  AdminClientesLeadsRoute: typeof AdminClientesLeadsRoute
 }
 
 const AdminClientesRouteChildren: AdminClientesRouteChildren = {
   AdminClientesAvaliacoesRoute: AdminClientesAvaliacoesRoute,
-  AdminClientesCupomPrimeiraCompraRoute: AdminClientesCupomPrimeiraCompraRoute,
+  AdminClientesLeadsRoute: AdminClientesLeadsRoute,
 }
 
 const AdminClientesRouteWithChildren = AdminClientesRoute._addFileChildren(
