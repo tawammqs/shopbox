@@ -76,6 +76,7 @@ function StorefrontLayout() {
         data-theme={isTheShoes ? "mio" : undefined}
         style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
+        {!isTheShoes && <StorefrontCustomizer storeId={store.id} />}
         {isTheShoes ? (
           <TheShoesHeader />
         ) : (
