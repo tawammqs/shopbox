@@ -1,10 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Palette, ClipboardList, CreditCard,
   Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
+import { resolveDomainSlug } from "@/lib/custom-domain.functions";
+
+const SHOPBOX_HOSTS = ["shopboxapp.com.br", "www.shopboxapp.com.br", "shopbox.lovable.app", "localhost"];
+function isShopBoxHost(h: string) {
+  if (!h) return true;
+  if (h.endsWith(".lovable.app")) return true;
+  if (h.endsWith(".lovable.dev")) return true;
+  if (h === "localhost" || h.startsWith("127.")) return true;
+  return SHOPBOX_HOSTS.includes(h);
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -447,6 +457,19 @@ const PLANS = [
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAnnual, setIsAnnual] = useState(false);
+  const navigate = useNavigate();
+
+  // Custom-domain routing: if the visitor is on a non-ShopBox hostname, look up
+  // the store mapped to that hostname and forward to its storefront.
+  useEffect(() => {
+    const host = window.location.hostname.toLowerCase();
+    if (isShopBoxHost(host)) return;
+    let cancelled = false;
+    resolveDomainSlug({ data: { hostname: host } })
+      .then((r) => { if (!cancelled && r?.slug) navigate({ to: "/loja/$slug", params: { slug: r.slug }, replace: true }); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [navigate]);
 
   useEffect(() => {
     const onScroll = () => {};

@@ -1,0 +1,224 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const CF_BASE = "https://api.cloudflare.com/client/v4";
+const FALLBACK_ORIGIN = "shopboxapp.com.br";
+
+function cfHeaders() {
+  const token = process.env.CLOUDFLARE_API_TOKEN;
+  if (!token) throw new Response("Cloudflare API token não configurado", { status: 500 });
+  return { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+}
+
+function zoneId() {
+  const id = process.env.CLOUDFLARE_ZONE_ID;
+  if (!id) throw new Response("Cloudflare Zone ID não configurado", { status: 500 });
+  return id;
+}
+
+async function assertOwnsStore(supabase: any, userId: string, storeId: string) {
+  const { data } = await supabase
+    .from("stores")
+    .select("id")
+    .eq("id", storeId)
+    .eq("owner_user_id", userId)
+    .maybeSingle();
+  if (!data) throw new Response("Loja não encontrada", { status: 403 });
+}
+
+function mapDomainStatus(cf?: string) {
+  if (cf === "active") return "active";
+  if (cf === "pending" || cf === "pending_validation" || cf === "pending_deployment") return "pending";
+  return "error";
+}
+function mapSslStatus(cf?: string) {
+  if (cf === "active") return "active";
+  if (cf?.startsWith("pending") || cf === "initializing") return "pending";
+  return "error";
+}
+
+// =================== ADD ===================
+export const addCustomDomain = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { domain: string; storeId: string }) =>
+    z.object({
+      domain: z
+        .string()
+        .trim()
+        .toLowerCase()
+        .regex(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i, "Domínio inválido"),
+      storeId: z.string().uuid(),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertOwnsStore(supabase, userId, data.storeId);
+
+    if (data.domain.endsWith("shopboxapp.com.br")) {
+      throw new Response("Use o endereço padrão shopboxapp.com.br para subdomínios da ShopBox.", { status: 400 });
+    }
+
+    const cfRes = await fetch(`${CF_BASE}/zones/${zoneId()}/custom_hostnames`, {
+      method: "POST",
+      headers: cfHeaders(),
+      body: JSON.stringify({
+        hostname: data.domain,
+        ssl: {
+          method: "http",
+          type: "dv",
+          settings: { min_tls_version: "1.2", http2: "on" },
+        },
+      }),
+    });
+    const cfData: any = await cfRes.json();
+
+    if (!cfData.success) {
+      const alreadyExists = cfData.errors?.some((e: any) => e.code === 1406);
+      if (!alreadyExists) {
+        const msg = cfData.errors?.[0]?.message || "Erro ao registrar domínio no Cloudflare.";
+        throw new Response(msg, { status: 400 });
+      }
+    }
+
+    const result = cfData.result;
+    const hostnameId: string | undefined = result?.id;
+    const ov = result?.ownership_verification;
+    const sslStatus = mapSslStatus(result?.ssl?.status);
+    const domainStatus = mapDomainStatus(result?.status);
+
+    const existing = await supabase
+      .from("store_domains")
+      .select("id")
+      .eq("store_id", data.storeId)
+      .eq("domain", data.domain)
+      .maybeSingle();
+
+    const row = {
+      store_id: data.storeId,
+      domain: data.domain,
+      cloudflare_hostname_id: hostnameId ?? null,
+      ownership_verification_name: ov?.name ?? null,
+      ownership_verification_value: ov?.value ?? null,
+      status: domainStatus,
+      ssl_status: sslStatus,
+    };
+
+    if (existing.data) {
+      await supabase.from("store_domains").update(row).eq("id", existing.data.id);
+    } else {
+      await supabase.from("store_domains").insert(row);
+    }
+
+    return {
+      success: true,
+      hostname_id: hostnameId,
+      instructions: {
+        cname: {
+          type: "CNAME",
+          name: data.domain,
+          value: FALLBACK_ORIGIN,
+          description: "Aponte seu domínio para a ShopBox",
+        },
+        ownership: ov
+          ? {
+              type: ov.type ?? "TXT",
+              name: ov.name,
+              value: ov.value,
+              description: "Registro de verificação de propriedade",
+            }
+          : null,
+      },
+    };
+  });
+
+// =================== CHECK ===================
+export const checkDomainStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { storeDomainId: string }) =>
+    z.object({ storeDomainId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+
+    const { data: domain } = await supabase
+      .from("store_domains")
+      .select("id, store_id, cloudflare_hostname_id")
+      .eq("id", data.storeDomainId)
+      .maybeSingle();
+    if (!domain) throw new Response("Domínio não encontrado", { status: 404 });
+    await assertOwnsStore(supabase, userId, domain.store_id);
+    if (!domain.cloudflare_hostname_id) {
+      throw new Response("Domínio sem registro no Cloudflare", { status: 400 });
+    }
+
+    const cfRes = await fetch(
+      `${CF_BASE}/zones/${zoneId()}/custom_hostnames/${domain.cloudflare_hostname_id}`,
+      { headers: cfHeaders() },
+    );
+    const cfData: any = await cfRes.json();
+    const result = cfData.result;
+
+    const domainStatus = mapDomainStatus(result?.status);
+    const sslStatus = mapSslStatus(result?.ssl?.status);
+
+    await supabase
+      .from("store_domains")
+      .update({ status: domainStatus, ssl_status: sslStatus })
+      .eq("id", domain.id);
+
+    return {
+      domain_status: domainStatus,
+      ssl_status: sslStatus,
+      cf_status: result?.status ?? null,
+      cf_ssl_status: result?.ssl?.status ?? null,
+    };
+  });
+
+// =================== REMOVE ===================
+export const removeCustomDomain = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { storeDomainId: string }) =>
+    z.object({ storeDomainId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+
+    const { data: domain } = await supabase
+      .from("store_domains")
+      .select("id, store_id, cloudflare_hostname_id")
+      .eq("id", data.storeDomainId)
+      .maybeSingle();
+    if (!domain) throw new Response("Domínio não encontrado", { status: 404 });
+    await assertOwnsStore(supabase, userId, domain.store_id);
+
+    if (domain.cloudflare_hostname_id) {
+      await fetch(
+        `${CF_BASE}/zones/${zoneId()}/custom_hostnames/${domain.cloudflare_hostname_id}`,
+        { method: "DELETE", headers: cfHeaders() },
+      ).catch(() => null);
+    }
+
+    await supabase.from("store_domains").delete().eq("id", domain.id);
+    return { success: true };
+  });
+
+// =================== RESOLVE (public) ===================
+// Resolves a hostname to a store slug (for custom-domain storefront routing).
+// Uses RLS-anonymous read of store_domains where status='active'.
+export const resolveDomainSlug = createServerFn({ method: "POST" })
+  .inputValidator((input: { hostname: string }) =>
+    z.object({ hostname: z.string().trim().toLowerCase().min(3).max(253) }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rec } = await supabaseAdmin
+      .from("store_domains")
+      .select("store_id, stores:store_id(slug, active)")
+      .eq("domain", data.hostname)
+      .eq("status", "active")
+      .maybeSingle();
+    const stores: any = (rec as any)?.stores;
+    if (!rec || !stores?.active) return { slug: null as string | null };
+    return { slug: stores.slug as string };
+  });

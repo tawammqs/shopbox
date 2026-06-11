@@ -1367,33 +1367,42 @@ export type Database = {
       }
       store_domains: {
         Row: {
+          cloudflare_hostname_id: string | null
           created_at: string
           domain: string
           id: string
           is_default: boolean
           is_primary: boolean
+          ownership_verification_name: string | null
+          ownership_verification_value: string | null
           ssl_status: string
           status: string
           store_id: string
           updated_at: string
         }
         Insert: {
+          cloudflare_hostname_id?: string | null
           created_at?: string
           domain: string
           id?: string
           is_default?: boolean
           is_primary?: boolean
+          ownership_verification_name?: string | null
+          ownership_verification_value?: string | null
           ssl_status?: string
           status?: string
           store_id: string
           updated_at?: string
         }
         Update: {
+          cloudflare_hostname_id?: string | null
           created_at?: string
           domain?: string
           id?: string
           is_default?: boolean
           is_primary?: boolean
+          ownership_verification_name?: string | null
+          ownership_verification_value?: string | null
           ssl_status?: string
           status?: string
           store_id?: string
