@@ -1,66 +1,33 @@
-import { createFileRoute, Outlet, Link, useNavigate, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-// Note: post-checkout activation is handled by Realtime in useMyStore.
-import {
-  LayoutDashboard, Package, FolderTree, Image, Tag, Users, ShoppingBag,
-  Settings, CreditCard, LogOut, ExternalLink, Store as StoreIcon, Menu, Loader2,
-  Lock, Video, Paintbrush, MessageSquare,
-} from "lucide-react";
+import { LogOut, Store as StoreIcon, Loader2, Lock } from "lucide-react";
 import { useAuth, signOut } from "@/hooks/useAuth";
 import { useMyStore } from "@/hooks/useMyStore";
-import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
-import { planLabel, hasStoreAccess } from "@/lib/plans";
-
-import { cn } from "@/lib/utils";
+import { hasStoreAccess } from "@/lib/plans";
+import { Link } from "@tanstack/react-router";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { toast } from "sonner";
-import shopboxLogo from "@/assets/shopbox-logo.png";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Painel — ShopBox" }] }),
   component: AdminLayout,
 });
 
-const NAV = [
-  { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/admin/produtos", label: "Produtos", icon: Package },
-  { to: "/admin/categorias", label: "Categorias", icon: FolderTree },
-  { to: "/admin/banners", label: "Banners", icon: Image },
-  { to: "/admin/home-video", label: "Vídeo da home", icon: Video },
-  { to: "/admin/descontos", label: "Descontos", icon: Tag },
-  { to: "/admin/clientes", label: "Clientes", icon: Users },
-  { to: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
-  { to: "/admin/perguntas", label: "Perguntas & Avaliações", icon: MessageSquare },
-  { to: "/admin/temas", label: "Temas", icon: Paintbrush },
-  { to: "/admin/personalizar-loja", label: "Personalizar Loja", icon: Paintbrush },
-  { to: "/admin/configuracoes", label: "Configurações", icon: Settings },
-  { to: "/admin/plano", label: "Plano & Cobrança", icon: CreditCard },
-] as const;
-
 function AdminLayout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { data: store, isLoading: storeLoading, error: storeError, refetch } = useMyStore();
-  const location = useLocation();
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
   }, [user, loading, navigate]);
 
-  // Redirect /admin → /admin/dashboard
-  useEffect(() => {
-    if (location.pathname === "/admin" || location.pathname === "/admin/") {
-      navigate({ to: "/admin/dashboard", replace: true });
-    }
-  }, [location.pathname, navigate]);
-
-  // Post-checkout flag drives the "Ativando sua loja…" screen below.
   const isPostCheckout =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).get("checkout") === "success";
@@ -82,9 +49,7 @@ function AdminLayout() {
             {storeError.message ?? "Erro inesperado"}
           </p>
           <div className="mt-6 space-y-2">
-            <Button onClick={() => refetch()} className="w-full" size="lg">
-              Tentar novamente
-            </Button>
+            <Button onClick={() => refetch()} className="w-full" size="lg">Tentar novamente</Button>
             <Button variant="ghost" onClick={() => signOut()} className="w-full">
               <LogOut className="mr-2 h-4 w-4" /> Sair
             </Button>
@@ -98,7 +63,6 @@ function AdminLayout() {
     return <CreateStoreFallback userId={user.id} email={user.email ?? ""} />;
   }
 
-  // Subscription gate — block access if status is incomplete/canceled/unpaid/inactive
   if (!hasStoreAccess(store)) {
     return (
       <SubscriptionGate
@@ -109,107 +73,14 @@ function AdminLayout() {
     );
   }
 
-  const planSlug = store.plan?.slug ?? null;
-
-
   return (
-    <div className="admin-layout flex min-h-screen w-full max-w-full overflow-x-hidden bg-muted/20">
-      {/* Desktop sidebar */}
-      <aside className="admin-sidebar hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
-        <SidebarContent storeId={store.id} storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
-      </aside>
-
-      {/* Main */}
-      <div className="admin-main-content flex min-w-0 flex-1 flex-col overflow-x-hidden">
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-2 border-b border-border bg-card/95 px-4 backdrop-blur md:px-6">
-          <div className="flex items-center gap-2 md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-72 p-0">
-                <SidebarContent storeId={store.id} storeName={store.name} storeSlug={store.slug} planLabel={planLabel(planSlug as any)} />
-              </SheetContent>
-            </Sheet>
-            <img src={shopboxLogo} alt="shopbox" className="h-6 w-auto" />
-          </div>
-          <div className="hidden flex-1 md:block" />
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="admin-hide-mobile" asChild>
-              <a href={`/loja/${store.slug}`} target="_blank" rel="noopener">
-                <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Ver loja
-              </a>
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => signOut()}>
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </header>
-
-        <PaymentTestModeBanner />
-
-        <main className="admin-page-content flex-1 min-w-0 max-w-full overflow-x-hidden p-4 md:p-8">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <AdminShell storeId={store.id} storeName={store.name} storeSlug={store.slug}>
+      <PaymentTestModeBanner />
+      <Outlet />
+    </AdminShell>
   );
 }
 
-function SidebarContent({ storeId, storeName, storeSlug, planLabel: pl }: { storeId: string; storeName: string; storeSlug: string; planLabel: string }) {
-  const pendingOrders = usePendingOrdersCount(storeId);
-  return (
-    <>
-      <div className="border-b border-border p-5">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-            <StoreIcon className="h-4 w-4" />
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold">{storeName}</p>
-            <p className="truncate text-xs text-muted-foreground">/{storeSlug}</p>
-          </div>
-        </Link>
-      </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {NAV.map((item) => {
-          const showBadge = item.to === "/admin/pedidos" && pendingOrders > 0;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
-              activeProps={{ className: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm bg-accent/10 text-accent font-medium" }}
-            >
-              <item.icon className="h-4 w-4" />
-              <span className="flex-1">{item.label}</span>
-              {showBadge && (
-                <span
-                  aria-label={`${pendingOrders} pedidos aguardando`}
-                  className={cn(
-                    "min-w-[1.5rem] rounded-full bg-destructive px-1.5 py-0.5 text-center text-[11px] font-bold leading-none text-destructive-foreground",
-                    "shadow-sm",
-                  )}
-                >
-                  {pendingOrders > 99 ? "99+" : pendingOrders}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-      <div className="border-t border-border p-3">
-        <div className="rounded-lg bg-muted/50 p-3">
-          <p className="text-xs text-muted-foreground">Seu plano</p>
-          <p className="text-sm font-semibold">{pl}</p>
-          <Button asChild size="sm" variant="outline" className="mt-2 w-full">
-            <Link to="/admin/plano">Gerenciar plano</Link>
-          </Button>
-        </div>
-      </div>
-    </>
-  );
-}
 
 function slugify(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
