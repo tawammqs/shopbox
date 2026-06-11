@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Home, BarChart2, ShoppingCart, DollarSign, Users, Package, Tag,
   Store as StoreIcon, Settings, ChevronDown, ChevronRight, Lock, Search,
-  HelpCircle, Menu, X, LogOut, ExternalLink, Instagram, Facebook,
-  ShoppingBag,
+  HelpCircle, Menu, X, LogOut, ExternalLink, Instagram,
+  CreditCard,
 } from "lucide-react";
 import { signOut } from "@/hooks/useAuth";
 import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
@@ -97,13 +97,14 @@ const SECTIONS: NavSection[] = [
         ],
       },
       { label: "Instagram e Facebook", to: "https://business.facebook.com/", icon: Instagram, external: true },
-      { label: "Google Shopping", to: "https://merchants.google.com/", icon: ShoppingBag, external: true },
-      { label: "TikTok", to: "https://seller.tiktok.com/", icon: Facebook, external: true },
     ],
   },
 ];
 
-const FOOTER_ITEM: NavItem = { label: "Configurações", to: "/admin/configuracoes", icon: Settings };
+const FOOTER_ITEMS: NavItem[] = [
+  { label: "Planos e Cobrança", to: "/admin/plano", icon: CreditCard },
+  { label: "Configurações", to: "/admin/configuracoes", icon: Settings },
+];
 
 // Map pathnames → page title for header
 const TITLE_MAP: Record<string, string> = {
@@ -241,19 +242,42 @@ function Sidebar({
   return (
     <>
       <div className={cn("flex h-14 items-center border-b border-[#e5e7eb]", collapsed ? "justify-center px-2" : "justify-between px-4")}>
-        {!collapsed && (
-          <Link to="/admin" className="flex items-center">
-            <img src={shopboxLogo} alt="ShopBox" className="h-7 w-auto" />
+        {collapsed ? (
+          <Link to="/admin" className="flex items-center justify-center" aria-label="ShopBox">
+            <span className="block h-7 w-7 overflow-hidden">
+              <img
+                src={shopboxLogo}
+                alt="ShopBox"
+                className="h-7 w-auto max-w-none object-cover object-left"
+                style={{ objectPosition: "0 50%" }}
+              />
+            </span>
           </Link>
+        ) : (
+          <>
+            <Link to="/admin" className="flex items-center">
+              <img src={shopboxLogo} alt="ShopBox" className="h-8 w-auto object-contain" />
+            </Link>
+            <button
+              type="button"
+              onClick={onToggle}
+              className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
+              aria-label="Recolher menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          </>
         )}
-        <button
-          type="button"
-          onClick={onToggle}
-          className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
-          aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
-        >
-          {mobile ? <X className="h-5 w-5" /> : collapsed ? <Menu className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {collapsed && (
+          <button
+            type="button"
+            onClick={onToggle}
+            className="sr-only"
+            aria-label="Expandir menu"
+          >
+            {mobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 overflow-y-auto px-2 py-3">
@@ -279,8 +303,10 @@ function Sidebar({
         ))}
       </nav>
 
-      <div className="border-t border-[#e5e7eb] p-2">
-        <NavRow item={FOOTER_ITEM} collapsed={collapsed} currentPath={currentPath} pendingOrders={0} hasSubmenuIndicator />
+      <div className="border-t border-[#e5e7eb] p-2 space-y-0.5">
+        {FOOTER_ITEMS.map((item) => (
+          <NavRow key={item.label} item={item} collapsed={collapsed} currentPath={currentPath} pendingOrders={0} />
+        ))}
       </div>
     </>
   );
