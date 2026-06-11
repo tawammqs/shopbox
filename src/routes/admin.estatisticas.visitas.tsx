@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMyStore } from "@/hooks/useMyStore";
+import { isPremiumStore } from "@/lib/access";
 import { PremiumLock } from "@/components/admin/PremiumLock";
 
 export const Route = createFileRoute("/admin/estatisticas/visitas")({
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/admin/estatisticas/visitas")({
 
 function Page() {
   const { data: store } = useMyStore();
-  const isPremium = store?.plan?.slug === "premium";
+  const isPremium = isPremiumStore(store);
   const content = (
     <div className="space-y-6">
       <header><h1 className="text-2xl font-bold tracking-tight text-[#111827]">Estatísticas — Visitas</h1></header>
