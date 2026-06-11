@@ -81,60 +81,6 @@ function AdminLayout() {
   );
 }
 
-function _UnusedSidebarContent({ storeId, storeName, storeSlug, planLabel: pl }: { storeId: string; storeName: string; storeSlug: string; planLabel: string }) {
-  const pendingOrders = usePendingOrdersCount(storeId);
-  return (
-    <>
-      <div className="border-b border-border p-5">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-            <StoreIcon className="h-4 w-4" />
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold">{storeName}</p>
-            <p className="truncate text-xs text-muted-foreground">/{storeSlug}</p>
-          </div>
-        </Link>
-      </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {NAV.map((item) => {
-          const showBadge = item.to === "/admin/pedidos" && pendingOrders > 0;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
-              activeProps={{ className: "flex items-center gap-3 rounded-lg px-3 py-2 text-sm bg-accent/10 text-accent font-medium" }}
-            >
-              <item.icon className="h-4 w-4" />
-              <span className="flex-1">{item.label}</span>
-              {showBadge && (
-                <span
-                  aria-label={`${pendingOrders} pedidos aguardando`}
-                  className={cn(
-                    "min-w-[1.5rem] rounded-full bg-destructive px-1.5 py-0.5 text-center text-[11px] font-bold leading-none text-destructive-foreground",
-                    "shadow-sm",
-                  )}
-                >
-                  {pendingOrders > 99 ? "99+" : pendingOrders}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-      <div className="border-t border-border p-3">
-        <div className="rounded-lg bg-muted/50 p-3">
-          <p className="text-xs text-muted-foreground">Seu plano</p>
-          <p className="text-sm font-semibold">{pl}</p>
-          <Button asChild size="sm" variant="outline" className="mt-2 w-full">
-            <Link to="/admin/plano">Gerenciar plano</Link>
-          </Button>
-        </div>
-      </div>
-    </>
-  );
-}
 
 function slugify(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
