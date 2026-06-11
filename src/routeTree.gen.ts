@@ -35,12 +35,15 @@ import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cle
 import { Route as HooksCartRecoveryRouteImport } from './routes/hooks/cart-recovery'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AdminVendasRouteImport } from './routes/admin.vendas'
 import { Route as AdminTemasRouteImport } from './routes/admin.temas'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
 import { Route as AdminPersonalizarLojaRouteImport } from './routes/admin.personalizar-loja'
 import { Route as AdminPerguntasRouteImport } from './routes/admin.perguntas'
 import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
 import { Route as AdminHomeVideoRouteImport } from './routes/admin.home-video'
+import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
+import { Route as AdminEstatisticasRouteImport } from './routes/admin.estatisticas'
 import { Route as AdminDescontosRouteImport } from './routes/admin.descontos'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
@@ -49,11 +52,22 @@ import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
+import { Route as AdminEstatisticasIndexRouteImport } from './routes/admin.estatisticas.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
+import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
+import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as AdminEstatisticasVisitasRouteImport } from './routes/admin.estatisticas.visitas'
+import { Route as AdminEstatisticasVendasRouteImport } from './routes/admin.estatisticas.vendas'
+import { Route as AdminEstatisticasTempoRealRouteImport } from './routes/admin.estatisticas.tempo-real'
+import { Route as AdminEstatisticasProdutosRouteImport } from './routes/admin.estatisticas.produtos'
+import { Route as AdminDescontosFreteGratisRouteImport } from './routes/admin.descontos.frete-gratis'
+import { Route as AdminDescontosCuponsRouteImport } from './routes/admin.descontos.cupons'
+import { Route as AdminClientesCupomPrimeiraCompraRouteImport } from './routes/admin.clientes.cupom-primeira-compra'
+import { Route as AdminClientesAvaliacoesRouteImport } from './routes/admin.clientes.avaliacoes'
 import { Route as LovableEmailTransactionalSendInternalRouteImport } from './routes/lovable/email/transactional/send-internal'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -194,6 +208,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminVendasRoute = AdminVendasRouteImport.update({
+  id: '/vendas',
+  path: '/vendas',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminTemasRoute = AdminTemasRouteImport.update({
   id: '/temas',
   path: '/temas',
@@ -222,6 +241,16 @@ const AdminPedidosRoute = AdminPedidosRouteImport.update({
 const AdminHomeVideoRoute = AdminHomeVideoRouteImport.update({
   id: '/home-video',
   path: '/home-video',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFinanceiroRoute = AdminFinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEstatisticasRoute = AdminEstatisticasRouteImport.update({
+  id: '/estatisticas',
+  path: '/estatisticas',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminDescontosRoute = AdminDescontosRouteImport.update({
@@ -264,6 +293,11 @@ const AdminProdutosIndexRoute = AdminProdutosIndexRouteImport.update({
   path: '/produtos/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminEstatisticasIndexRoute = AdminEstatisticasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminEstatisticasRoute,
+} as any)
 const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   id: '/lovable/email/suppression',
   path: '/lovable/email/suppression',
@@ -284,10 +318,66 @@ const FeedSlugMetaDotxmlRoute = FeedSlugMetaDotxmlRouteImport.update({
   path: '/feed/$slug/meta.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProdutosTabelaPrecosRoute =
+  AdminProdutosTabelaPrecosRouteImport.update({
+    id: '/produtos/tabela-precos',
+    path: '/produtos/tabela-precos',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminProdutosCategoriasRoute = AdminProdutosCategoriasRouteImport.update({
+  id: '/produtos/categorias',
+  path: '/produtos/categorias',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   id: '/produtos/$id',
   path: '/produtos/$id',
   getParentRoute: () => AdminRoute,
+} as any)
+const AdminEstatisticasVisitasRoute =
+  AdminEstatisticasVisitasRouteImport.update({
+    id: '/visitas',
+    path: '/visitas',
+    getParentRoute: () => AdminEstatisticasRoute,
+  } as any)
+const AdminEstatisticasVendasRoute = AdminEstatisticasVendasRouteImport.update({
+  id: '/vendas',
+  path: '/vendas',
+  getParentRoute: () => AdminEstatisticasRoute,
+} as any)
+const AdminEstatisticasTempoRealRoute =
+  AdminEstatisticasTempoRealRouteImport.update({
+    id: '/tempo-real',
+    path: '/tempo-real',
+    getParentRoute: () => AdminEstatisticasRoute,
+  } as any)
+const AdminEstatisticasProdutosRoute =
+  AdminEstatisticasProdutosRouteImport.update({
+    id: '/produtos',
+    path: '/produtos',
+    getParentRoute: () => AdminEstatisticasRoute,
+  } as any)
+const AdminDescontosFreteGratisRoute =
+  AdminDescontosFreteGratisRouteImport.update({
+    id: '/frete-gratis',
+    path: '/frete-gratis',
+    getParentRoute: () => AdminDescontosRoute,
+  } as any)
+const AdminDescontosCuponsRoute = AdminDescontosCuponsRouteImport.update({
+  id: '/cupons',
+  path: '/cupons',
+  getParentRoute: () => AdminDescontosRoute,
+} as any)
+const AdminClientesCupomPrimeiraCompraRoute =
+  AdminClientesCupomPrimeiraCompraRouteImport.update({
+    id: '/cupom-primeira-compra',
+    path: '/cupom-primeira-compra',
+    getParentRoute: () => AdminClientesRoute,
+  } as any)
+const AdminClientesAvaliacoesRoute = AdminClientesAvaliacoesRouteImport.update({
+  id: '/avaliacoes',
+  path: '/avaliacoes',
+  getParentRoute: () => AdminClientesRoute,
 } as any)
 const LovableEmailTransactionalSendInternalRoute =
   LovableEmailTransactionalSendInternalRouteImport.update({
@@ -353,16 +443,19 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
-  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/clientes': typeof AdminClientesRouteWithChildren
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/descontos': typeof AdminDescontosRouteWithChildren
+  '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRoute
+  '/admin/vendas': typeof AdminVendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -375,11 +468,22 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
+  '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
+  '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
+  '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
+  '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
+  '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
+  '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
+  '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
@@ -406,16 +510,18 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
-  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/clientes': typeof AdminClientesRouteWithChildren
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/descontos': typeof AdminDescontosRouteWithChildren
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRoute
+  '/admin/vendas': typeof AdminVendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -427,11 +533,22 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
   '/temas': typeof TemasIndexRoute
+  '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
+  '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
+  '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
+  '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
+  '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
+  '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
+  '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/estatisticas': typeof AdminEstatisticasIndexRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
@@ -461,16 +578,19 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
-  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/clientes': typeof AdminClientesRouteWithChildren
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/descontos': typeof AdminDescontosRoute
+  '/admin/descontos': typeof AdminDescontosRouteWithChildren
+  '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
+  '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRoute
+  '/admin/vendas': typeof AdminVendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -483,11 +603,22 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
+  '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
+  '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
+  '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
+  '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
+  '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
+  '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
+  '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
+  '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
+  '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
@@ -522,12 +653,15 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/estatisticas'
+    | '/admin/financeiro'
     | '/admin/home-video'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
     | '/admin/temas'
+    | '/admin/vendas'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -540,11 +674,22 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/superadmin/'
     | '/temas/'
+    | '/admin/clientes/avaliacoes'
+    | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/descontos/cupons'
+    | '/admin/descontos/frete-gratis'
+    | '/admin/estatisticas/produtos'
+    | '/admin/estatisticas/tempo-real'
+    | '/admin/estatisticas/vendas'
+    | '/admin/estatisticas/visitas'
     | '/admin/produtos/$id'
+    | '/admin/produtos/categorias'
+    | '/admin/produtos/tabela-precos'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
+    | '/admin/estatisticas/'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/loja/$slug/categoria/$categorySlug'
@@ -575,12 +720,14 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/financeiro'
     | '/admin/home-video'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
     | '/admin/temas'
+    | '/admin/vendas'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -592,11 +739,22 @@ export interface FileRouteTypes {
     | '/admin'
     | '/superadmin'
     | '/temas'
+    | '/admin/clientes/avaliacoes'
+    | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/descontos/cupons'
+    | '/admin/descontos/frete-gratis'
+    | '/admin/estatisticas/produtos'
+    | '/admin/estatisticas/tempo-real'
+    | '/admin/estatisticas/vendas'
+    | '/admin/estatisticas/visitas'
     | '/admin/produtos/$id'
+    | '/admin/produtos/categorias'
+    | '/admin/produtos/tabela-precos'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
+    | '/admin/estatisticas'
     | '/admin/produtos'
     | '/loja/$slug'
     | '/loja/$slug/categoria/$categorySlug'
@@ -629,12 +787,15 @@ export interface FileRouteTypes {
     | '/admin/configuracoes'
     | '/admin/dashboard'
     | '/admin/descontos'
+    | '/admin/estatisticas'
+    | '/admin/financeiro'
     | '/admin/home-video'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
     | '/admin/plano'
     | '/admin/temas'
+    | '/admin/vendas'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -647,11 +808,22 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/superadmin/'
     | '/temas/'
+    | '/admin/clientes/avaliacoes'
+    | '/admin/clientes/cupom-primeira-compra'
+    | '/admin/descontos/cupons'
+    | '/admin/descontos/frete-gratis'
+    | '/admin/estatisticas/produtos'
+    | '/admin/estatisticas/tempo-real'
+    | '/admin/estatisticas/vendas'
+    | '/admin/estatisticas/visitas'
     | '/admin/produtos/$id'
+    | '/admin/produtos/categorias'
+    | '/admin/produtos/tabela-precos'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
+    | '/admin/estatisticas/'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/loja/$slug/categoria/$categorySlug'
@@ -880,6 +1052,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/vendas': {
+      id: '/admin/vendas'
+      path: '/vendas'
+      fullPath: '/admin/vendas'
+      preLoaderRoute: typeof AdminVendasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/temas': {
       id: '/admin/temas'
       path: '/temas'
@@ -920,6 +1099,20 @@ declare module '@tanstack/react-router' {
       path: '/home-video'
       fullPath: '/admin/home-video'
       preLoaderRoute: typeof AdminHomeVideoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/financeiro': {
+      id: '/admin/financeiro'
+      path: '/financeiro'
+      fullPath: '/admin/financeiro'
+      preLoaderRoute: typeof AdminFinanceiroRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/estatisticas': {
+      id: '/admin/estatisticas'
+      path: '/estatisticas'
+      fullPath: '/admin/estatisticas'
+      preLoaderRoute: typeof AdminEstatisticasRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/descontos': {
@@ -978,6 +1171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/estatisticas/': {
+      id: '/admin/estatisticas/'
+      path: '/'
+      fullPath: '/admin/estatisticas/'
+      preLoaderRoute: typeof AdminEstatisticasIndexRouteImport
+      parentRoute: typeof AdminEstatisticasRoute
+    }
     '/lovable/email/suppression': {
       id: '/lovable/email/suppression'
       path: '/lovable/email/suppression'
@@ -1006,12 +1206,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeedSlugMetaDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/produtos/tabela-precos': {
+      id: '/admin/produtos/tabela-precos'
+      path: '/produtos/tabela-precos'
+      fullPath: '/admin/produtos/tabela-precos'
+      preLoaderRoute: typeof AdminProdutosTabelaPrecosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/produtos/categorias': {
+      id: '/admin/produtos/categorias'
+      path: '/produtos/categorias'
+      fullPath: '/admin/produtos/categorias'
+      preLoaderRoute: typeof AdminProdutosCategoriasRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/produtos/$id': {
       id: '/admin/produtos/$id'
       path: '/produtos/$id'
       fullPath: '/admin/produtos/$id'
       preLoaderRoute: typeof AdminProdutosIdRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/estatisticas/visitas': {
+      id: '/admin/estatisticas/visitas'
+      path: '/visitas'
+      fullPath: '/admin/estatisticas/visitas'
+      preLoaderRoute: typeof AdminEstatisticasVisitasRouteImport
+      parentRoute: typeof AdminEstatisticasRoute
+    }
+    '/admin/estatisticas/vendas': {
+      id: '/admin/estatisticas/vendas'
+      path: '/vendas'
+      fullPath: '/admin/estatisticas/vendas'
+      preLoaderRoute: typeof AdminEstatisticasVendasRouteImport
+      parentRoute: typeof AdminEstatisticasRoute
+    }
+    '/admin/estatisticas/tempo-real': {
+      id: '/admin/estatisticas/tempo-real'
+      path: '/tempo-real'
+      fullPath: '/admin/estatisticas/tempo-real'
+      preLoaderRoute: typeof AdminEstatisticasTempoRealRouteImport
+      parentRoute: typeof AdminEstatisticasRoute
+    }
+    '/admin/estatisticas/produtos': {
+      id: '/admin/estatisticas/produtos'
+      path: '/produtos'
+      fullPath: '/admin/estatisticas/produtos'
+      preLoaderRoute: typeof AdminEstatisticasProdutosRouteImport
+      parentRoute: typeof AdminEstatisticasRoute
+    }
+    '/admin/descontos/frete-gratis': {
+      id: '/admin/descontos/frete-gratis'
+      path: '/frete-gratis'
+      fullPath: '/admin/descontos/frete-gratis'
+      preLoaderRoute: typeof AdminDescontosFreteGratisRouteImport
+      parentRoute: typeof AdminDescontosRoute
+    }
+    '/admin/descontos/cupons': {
+      id: '/admin/descontos/cupons'
+      path: '/cupons'
+      fullPath: '/admin/descontos/cupons'
+      preLoaderRoute: typeof AdminDescontosCuponsRouteImport
+      parentRoute: typeof AdminDescontosRoute
+    }
+    '/admin/clientes/cupom-primeira-compra': {
+      id: '/admin/clientes/cupom-primeira-compra'
+      path: '/cupom-primeira-compra'
+      fullPath: '/admin/clientes/cupom-primeira-compra'
+      preLoaderRoute: typeof AdminClientesCupomPrimeiraCompraRouteImport
+      parentRoute: typeof AdminClientesRoute
+    }
+    '/admin/clientes/avaliacoes': {
+      id: '/admin/clientes/avaliacoes'
+      path: '/avaliacoes'
+      fullPath: '/admin/clientes/avaliacoes'
+      preLoaderRoute: typeof AdminClientesAvaliacoesRouteImport
+      parentRoute: typeof AdminClientesRoute
     }
     '/lovable/email/transactional/send-internal': {
       id: '/lovable/email/transactional/send-internal'
@@ -1072,39 +1342,96 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminClientesRouteChildren {
+  AdminClientesAvaliacoesRoute: typeof AdminClientesAvaliacoesRoute
+  AdminClientesCupomPrimeiraCompraRoute: typeof AdminClientesCupomPrimeiraCompraRoute
+}
+
+const AdminClientesRouteChildren: AdminClientesRouteChildren = {
+  AdminClientesAvaliacoesRoute: AdminClientesAvaliacoesRoute,
+  AdminClientesCupomPrimeiraCompraRoute: AdminClientesCupomPrimeiraCompraRoute,
+}
+
+const AdminClientesRouteWithChildren = AdminClientesRoute._addFileChildren(
+  AdminClientesRouteChildren,
+)
+
+interface AdminDescontosRouteChildren {
+  AdminDescontosCuponsRoute: typeof AdminDescontosCuponsRoute
+  AdminDescontosFreteGratisRoute: typeof AdminDescontosFreteGratisRoute
+}
+
+const AdminDescontosRouteChildren: AdminDescontosRouteChildren = {
+  AdminDescontosCuponsRoute: AdminDescontosCuponsRoute,
+  AdminDescontosFreteGratisRoute: AdminDescontosFreteGratisRoute,
+}
+
+const AdminDescontosRouteWithChildren = AdminDescontosRoute._addFileChildren(
+  AdminDescontosRouteChildren,
+)
+
+interface AdminEstatisticasRouteChildren {
+  AdminEstatisticasProdutosRoute: typeof AdminEstatisticasProdutosRoute
+  AdminEstatisticasTempoRealRoute: typeof AdminEstatisticasTempoRealRoute
+  AdminEstatisticasVendasRoute: typeof AdminEstatisticasVendasRoute
+  AdminEstatisticasVisitasRoute: typeof AdminEstatisticasVisitasRoute
+  AdminEstatisticasIndexRoute: typeof AdminEstatisticasIndexRoute
+}
+
+const AdminEstatisticasRouteChildren: AdminEstatisticasRouteChildren = {
+  AdminEstatisticasProdutosRoute: AdminEstatisticasProdutosRoute,
+  AdminEstatisticasTempoRealRoute: AdminEstatisticasTempoRealRoute,
+  AdminEstatisticasVendasRoute: AdminEstatisticasVendasRoute,
+  AdminEstatisticasVisitasRoute: AdminEstatisticasVisitasRoute,
+  AdminEstatisticasIndexRoute: AdminEstatisticasIndexRoute,
+}
+
+const AdminEstatisticasRouteWithChildren =
+  AdminEstatisticasRoute._addFileChildren(AdminEstatisticasRouteChildren)
+
 interface AdminRouteChildren {
   AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
-  AdminClientesRoute: typeof AdminClientesRoute
+  AdminClientesRoute: typeof AdminClientesRouteWithChildren
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminDescontosRoute: typeof AdminDescontosRoute
+  AdminDescontosRoute: typeof AdminDescontosRouteWithChildren
+  AdminEstatisticasRoute: typeof AdminEstatisticasRouteWithChildren
+  AdminFinanceiroRoute: typeof AdminFinanceiroRoute
   AdminHomeVideoRoute: typeof AdminHomeVideoRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminPerguntasRoute: typeof AdminPerguntasRoute
   AdminPersonalizarLojaRoute: typeof AdminPersonalizarLojaRoute
   AdminPlanoRoute: typeof AdminPlanoRoute
   AdminTemasRoute: typeof AdminTemasRoute
+  AdminVendasRoute: typeof AdminVendasRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
+  AdminProdutosCategoriasRoute: typeof AdminProdutosCategoriasRoute
+  AdminProdutosTabelaPrecosRoute: typeof AdminProdutosTabelaPrecosRoute
   AdminProdutosIndexRoute: typeof AdminProdutosIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBannersRoute: AdminBannersRoute,
   AdminCategoriasRoute: AdminCategoriasRoute,
-  AdminClientesRoute: AdminClientesRoute,
+  AdminClientesRoute: AdminClientesRouteWithChildren,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminDashboardRoute: AdminDashboardRoute,
-  AdminDescontosRoute: AdminDescontosRoute,
+  AdminDescontosRoute: AdminDescontosRouteWithChildren,
+  AdminEstatisticasRoute: AdminEstatisticasRouteWithChildren,
+  AdminFinanceiroRoute: AdminFinanceiroRoute,
   AdminHomeVideoRoute: AdminHomeVideoRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminPerguntasRoute: AdminPerguntasRoute,
   AdminPersonalizarLojaRoute: AdminPersonalizarLojaRoute,
   AdminPlanoRoute: AdminPlanoRoute,
   AdminTemasRoute: AdminTemasRoute,
+  AdminVendasRoute: AdminVendasRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
+  AdminProdutosCategoriasRoute: AdminProdutosCategoriasRoute,
+  AdminProdutosTabelaPrecosRoute: AdminProdutosTabelaPrecosRoute,
   AdminProdutosIndexRoute: AdminProdutosIndexRoute,
 }
 
