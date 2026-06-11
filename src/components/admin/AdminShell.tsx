@@ -95,7 +95,6 @@ const SECTIONS: NavSection[] = [
           { label: "Links de redes sociais", to: "/admin/loja/redes-sociais" },
         ],
       },
-      { label: "Instagram e Facebook", to: "https://business.facebook.com/", icon: Instagram, external: true },
     ],
   },
 ];
@@ -253,7 +252,7 @@ function Sidebar({
         ) : (
           <>
             <Link to="/admin" className="flex items-center">
-              <img src={shopboxLogo} alt="ShopBox" className="h-7 w-auto object-contain" />
+              <img src="/LOGO_SHOPBOX.png" alt="ShopBox" className="h-10 w-auto object-contain" style={{ maxWidth: 160, display: "block" }} />
             </Link>
             <button
               type="button"

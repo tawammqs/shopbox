@@ -67,12 +67,13 @@ function ThemesMarketplacePage() {
         }}
       >
         <div className="mx-auto max-w-6xl">
-          <Link
-            to="/"
-            className="mb-8 inline-flex items-center text-sm text-white/60 hover:text-white"
+          <button
+            type="button"
+            onClick={() => { if (window.history.length > 1) window.history.back(); else window.location.href = "/admin/temas"; }}
+            className="mb-8 inline-flex items-center gap-2 text-sm text-white/60 hover:text-white"
           >
-            ← ShopBox
-          </Link>
+            ← Voltar
+          </button>
           <h1
             style={{
               fontFamily: "'DM Sans', Inter, sans-serif",
