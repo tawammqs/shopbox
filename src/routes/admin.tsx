@@ -23,6 +23,8 @@ function AdminLayout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { data: store, isLoading: storeLoading, error: storeError, refetch } = useMyStore();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isFullscreenEditor = pathname.startsWith("/admin/loja/layout/editar");
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
