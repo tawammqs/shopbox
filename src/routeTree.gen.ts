@@ -82,6 +82,7 @@ import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/em
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LojaSlugProdutoProductSlugRouteImport } from './routes/loja.$slug.produto.$productSlug'
 import { Route as LojaSlugCategoriaCategorySlugRouteImport } from './routes/loja.$slug.categoria.$categorySlug'
+import { Route as AdminLojaLayoutEditarRouteImport } from './routes/admin.loja.layout.editar'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -461,6 +462,11 @@ const LojaSlugCategoriaCategorySlugRoute =
     path: '/categoria/$categorySlug',
     getParentRoute: () => LojaSlugRoute,
   } as any)
+const AdminLojaLayoutEditarRoute = AdminLojaLayoutEditarRouteImport.update({
+  id: '/editar',
+  path: '/editar',
+  getParentRoute: () => AdminLojaLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -514,7 +520,7 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
-  '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRouteWithChildren
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
@@ -528,6 +534,7 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
+  '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -585,7 +592,7 @@ export interface FileRoutesByTo {
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
-  '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRouteWithChildren
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
@@ -599,6 +606,7 @@ export interface FileRoutesByTo {
   '/admin/estatisticas': typeof AdminEstatisticasIndexRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
+  '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -661,7 +669,7 @@ export interface FileRoutesById {
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
-  '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRouteWithChildren
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
@@ -675,6 +683,7 @@ export interface FileRoutesById {
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
+  '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -752,6 +761,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/'
     | '/admin/produtos/'
     | '/loja/$slug/'
+    | '/admin/loja/layout/editar'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/produto/$productSlug'
     | '/lovable/email/auth/preview'
@@ -823,6 +833,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas'
     | '/admin/produtos'
     | '/loja/$slug'
+    | '/admin/loja/layout/editar'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/produto/$productSlug'
     | '/lovable/email/auth/preview'
@@ -898,6 +909,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/'
     | '/admin/produtos/'
     | '/loja/$slug/'
+    | '/admin/loja/layout/editar'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/produto/$productSlug'
     | '/lovable/email/auth/preview'
@@ -1453,6 +1465,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojaSlugCategoriaCategorySlugRouteImport
       parentRoute: typeof LojaSlugRoute
     }
+    '/admin/loja/layout/editar': {
+      id: '/admin/loja/layout/editar'
+      path: '/editar'
+      fullPath: '/admin/loja/layout/editar'
+      preLoaderRoute: typeof AdminLojaLayoutEditarRouteImport
+      parentRoute: typeof AdminLojaLayoutRoute
+    }
   }
 }
 
@@ -1505,6 +1524,18 @@ const AdminEstatisticasRouteChildren: AdminEstatisticasRouteChildren = {
 const AdminEstatisticasRouteWithChildren =
   AdminEstatisticasRoute._addFileChildren(AdminEstatisticasRouteChildren)
 
+interface AdminLojaLayoutRouteChildren {
+  AdminLojaLayoutEditarRoute: typeof AdminLojaLayoutEditarRoute
+}
+
+const AdminLojaLayoutRouteChildren: AdminLojaLayoutRouteChildren = {
+  AdminLojaLayoutEditarRoute: AdminLojaLayoutEditarRoute,
+}
+
+const AdminLojaLayoutRouteWithChildren = AdminLojaLayoutRoute._addFileChildren(
+  AdminLojaLayoutRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
@@ -1523,7 +1554,7 @@ interface AdminRouteChildren {
   AdminVendasRoute: typeof AdminVendasRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminLojaFiltrosRoute: typeof AdminLojaFiltrosRoute
-  AdminLojaLayoutRoute: typeof AdminLojaLayoutRoute
+  AdminLojaLayoutRoute: typeof AdminLojaLayoutRouteWithChildren
   AdminLojaMenusRoute: typeof AdminLojaMenusRoute
   AdminLojaPaginasRoute: typeof AdminLojaPaginasRoute
   AdminLojaRedesSociaisRoute: typeof AdminLojaRedesSociaisRoute
@@ -1551,7 +1582,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminVendasRoute: AdminVendasRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminLojaFiltrosRoute: AdminLojaFiltrosRoute,
-  AdminLojaLayoutRoute: AdminLojaLayoutRoute,
+  AdminLojaLayoutRoute: AdminLojaLayoutRouteWithChildren,
   AdminLojaMenusRoute: AdminLojaMenusRoute,
   AdminLojaPaginasRoute: AdminLojaPaginasRoute,
   AdminLojaRedesSociaisRoute: AdminLojaRedesSociaisRoute,
