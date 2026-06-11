@@ -252,7 +252,7 @@ function Sidebar({
         ) : (
           <>
             <Link to="/admin" className="flex items-center">
-              <img src="/LOGO_SHOPBOX.png" alt="ShopBox" className="h-10 w-auto object-contain" style={{ maxWidth: 160, display: "block" }} />
+              <img src="/LOGO_SHOPBOX.png" alt="ShopBox" className="h-14 w-auto object-contain" style={{ maxWidth: 200, display: "block" }} />
             </Link>
             <button
               type="button"
