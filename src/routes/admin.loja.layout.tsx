@@ -25,7 +25,7 @@ function Page() {
                   <p className="text-base font-semibold text-[#111827]">Tema Atual</p>
                   <span className="rounded-full border border-[#25d366] bg-[#f0fdf4] px-2 py-0.5 text-[11px] font-medium text-[#25d366]">Layout atual</span>
                 </div>
-                <Link to="/admin/personalizar-loja" className="mt-3 inline-block h-10 rounded-lg bg-[#25d366] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1fb959]">
+                <Link to="/admin/loja/layout/editar" className="mt-3 inline-block h-10 rounded-lg bg-[#25d366] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1fb959]">
                   Editar layout atual
                 </Link>
               </div>

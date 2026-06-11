@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, Store as StoreIcon, Loader2, Lock } from "lucide-react";
@@ -23,6 +23,8 @@ function AdminLayout() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { data: store, isLoading: storeLoading, error: storeError, refetch } = useMyStore();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isFullscreenEditor = pathname.startsWith("/admin/loja/layout/editar");
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -71,6 +73,10 @@ function AdminLayout() {
         onRefresh={() => refetch()}
       />
     );
+  }
+
+  if (isFullscreenEditor) {
+    return <Outlet />;
   }
 
   return (
