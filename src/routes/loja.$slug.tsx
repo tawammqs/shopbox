@@ -1,6 +1,15 @@
 import { createFileRoute, Outlet, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { fetchStoreBySlug, fetchCategories, fetchActiveThemeSlug } from "@/lib/storefront";
+import {
+  fetchStoreBySlug,
+  fetchCategories,
+  fetchActiveThemeSlug,
+  fetchPaymentSettings,
+  fetchSocialLinks,
+  fetchContactInfo,
+  fetchStoreMenus,
+  fetchStaticPages,
+} from "@/lib/storefront";
 import { StoreProvider } from "@/components/storefront/StoreContext";
 import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
 import { StorefrontNav, MobileNavDrawer } from "@/components/storefront/StorefrontNav";
@@ -20,12 +29,28 @@ import { StorefrontCustomizer } from "@/components/storefront/StorefrontCustomiz
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
     const store = await fetchStoreBySlug(params.slug);
-    if (!store) return { store: null, categories: [], activeThemeSlug: null };
-    const [categories, activeThemeSlug] = await Promise.all([
+    if (!store) {
+      return {
+        store: null,
+        categories: [],
+        activeThemeSlug: null,
+        paymentSettings: null,
+        socialLinks: null,
+        contactInfo: null,
+        menus: [],
+        pages: [],
+      };
+    }
+    const [categories, activeThemeSlug, paymentSettings, socialLinks, contactInfo, menus, pages] = await Promise.all([
       fetchCategories(store.id),
       fetchActiveThemeSlug(store.id),
+      fetchPaymentSettings(store.id),
+      fetchSocialLinks(store.id),
+      fetchContactInfo(store.id),
+      fetchStoreMenus(store.id),
+      fetchStaticPages(store.id),
     ]);
-    return { store, categories, activeThemeSlug };
+    return { store, categories, activeThemeSlug, paymentSettings, socialLinks, contactInfo, menus, pages };
   },
   head: ({ loaderData }) => ({
     meta: loaderData?.store
@@ -51,7 +76,8 @@ export const Route = createFileRoute("/loja/$slug")({
 });
 
 function StorefrontLayout() {
-  const { store, categories, activeThemeSlug } = Route.useLoaderData();
+  const { store, categories, activeThemeSlug, paymentSettings, socialLinks, contactInfo, menus, pages } =
+    Route.useLoaderData();
   const [navOpen, setNavOpen] = useState(false);
 
   if (!store) {
@@ -66,10 +92,32 @@ function StorefrontLayout() {
     );
   }
 
+  // Trial expired or store inactive → block storefront
+  const trialExpired =
+    store.subscription_status === "trialing" && store.trial_ends_at && new Date(store.trial_ends_at) < new Date();
+  if (!store.active || trialExpired) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
+        <div className="max-w-md rounded-2xl bg-background p-8 text-center shadow-md">
+          <div className="mb-4 text-4xl">🔒</div>
+          <h1 className="mb-2 text-xl font-bold">Loja temporariamente indisponível</h1>
+          <p className="text-sm text-muted-foreground">
+            Esta loja está com o acesso suspenso. Se você é o proprietário, acesse o painel para renovar sua assinatura.
+          </p>
+          <Link to="/login" className="mt-4 inline-block text-sm text-[#25d366] underline">
+            Acessar painel →
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const isTheShoes = activeThemeSlug === "mio-style" || store.slug === "the-shoes";
 
   return (
-    <StoreProvider value={{ store, categories, activeThemeSlug }}>
+    <StoreProvider
+      value={{ store, categories, activeThemeSlug, paymentSettings, socialLinks, contactInfo, menus, pages }}
+    >
       <div
         className="storefront-root min-h-screen bg-background"
         data-store-slug={store.slug}
