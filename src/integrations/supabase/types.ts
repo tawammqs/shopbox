@@ -1505,6 +1505,54 @@ export type Database = {
           },
         ]
       }
+      store_visits: {
+        Row: {
+          created_at: string
+          device: string | null
+          id: string
+          path: string
+          product_id: string | null
+          referrer: string | null
+          session_id: string | null
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          device?: string | null
+          id?: string
+          path: string
+          product_id?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          device?: string | null
+          id?: string
+          path?: string
+          product_id?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_visits_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_visits_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stores: {
         Row: {
           accent_color: string

@@ -32,14 +32,23 @@ function EstatisticasOverview() {
     (async () => {
       const days = parseInt(range, 10);
       const since = new Date(Date.now() - days * 86400000).toISOString();
-      const { data: orders } = await supabase
-        .from("orders")
-        .select("total_cents, created_at, status")
-        .eq("store_id", store.id)
-        .gte("created_at", since);
-      const list = orders ?? [];
+      const [ordersRes, visitsRes] = await Promise.all([
+        supabase
+          .from("orders")
+          .select("total_cents, created_at, status")
+          .eq("store_id", store.id)
+          .gte("created_at", since),
+        supabase
+          .from("store_visits")
+          .select("created_at")
+          .eq("store_id", store.id)
+          .gte("created_at", since),
+      ]);
+      const list = ordersRes.data ?? [];
+      const visitsList = visitsRes.data ?? [];
       const revenue = list.reduce((s: number, o: any) => s + (o.total_cents ?? 0), 0) / 100;
       const ordersCount = list.length;
+      const visitsCount = visitsList.length;
       const avgTicket = ordersCount > 0 ? revenue / ordersCount : 0;
 
       // daily aggregate
@@ -58,7 +67,7 @@ function EstatisticasOverview() {
       }
       const daily = Object.entries(byDay).map(([day, v]) => ({ day, ...v }));
 
-      setData({ orders: ordersCount, revenue, visits: 0, avgTicket, daily });
+      setData({ orders: ordersCount, revenue, visits: visitsCount, avgTicket, daily });
     })();
   }, [store?.id, range]);
 
