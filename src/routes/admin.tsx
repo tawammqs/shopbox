@@ -75,6 +75,10 @@ function AdminLayout() {
     );
   }
 
+  if (isFullscreenEditor) {
+    return <Outlet />;
+  }
+
   return (
     <AdminShell storeId={store.id} storeName={store.name} storeSlug={store.slug}>
       <PaymentTestModeBanner />
