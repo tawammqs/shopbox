@@ -64,6 +64,7 @@ import { Route as AdminEstatisticasVisitasRouteImport } from './routes/admin.est
 import { Route as AdminEstatisticasVendasRouteImport } from './routes/admin.estatisticas.vendas'
 import { Route as AdminEstatisticasTempoRealRouteImport } from './routes/admin.estatisticas.tempo-real'
 import { Route as AdminEstatisticasProdutosRouteImport } from './routes/admin.estatisticas.produtos'
+import { Route as AdminDescontosPromocoesRouteImport } from './routes/admin.descontos.promocoes'
 import { Route as AdminDescontosFreteGratisRouteImport } from './routes/admin.descontos.frete-gratis'
 import { Route as AdminDescontosCuponsRouteImport } from './routes/admin.descontos.cupons'
 import { Route as AdminClientesCupomPrimeiraCompraRouteImport } from './routes/admin.clientes.cupom-primeira-compra'
@@ -357,6 +358,11 @@ const AdminEstatisticasProdutosRoute =
     path: '/produtos',
     getParentRoute: () => AdminEstatisticasRoute,
   } as any)
+const AdminDescontosPromocoesRoute = AdminDescontosPromocoesRouteImport.update({
+  id: '/promocoes',
+  path: '/promocoes',
+  getParentRoute: () => AdminDescontosRoute,
+} as any)
 const AdminDescontosFreteGratisRoute =
   AdminDescontosFreteGratisRouteImport.update({
     id: '/frete-gratis',
@@ -472,6 +478,7 @@ export interface FileRoutesByFullPath {
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
   '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
@@ -537,6 +544,7 @@ export interface FileRoutesByTo {
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
   '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
@@ -607,6 +615,7 @@ export interface FileRoutesById {
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
   '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
@@ -678,6 +687,7 @@ export interface FileRouteTypes {
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
+    | '/admin/descontos/promocoes'
     | '/admin/estatisticas/produtos'
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
@@ -743,6 +753,7 @@ export interface FileRouteTypes {
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
+    | '/admin/descontos/promocoes'
     | '/admin/estatisticas/produtos'
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
@@ -812,6 +823,7 @@ export interface FileRouteTypes {
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
+    | '/admin/descontos/promocoes'
     | '/admin/estatisticas/produtos'
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
@@ -1255,6 +1267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEstatisticasProdutosRouteImport
       parentRoute: typeof AdminEstatisticasRoute
     }
+    '/admin/descontos/promocoes': {
+      id: '/admin/descontos/promocoes'
+      path: '/promocoes'
+      fullPath: '/admin/descontos/promocoes'
+      preLoaderRoute: typeof AdminDescontosPromocoesRouteImport
+      parentRoute: typeof AdminDescontosRoute
+    }
     '/admin/descontos/frete-gratis': {
       id: '/admin/descontos/frete-gratis'
       path: '/frete-gratis'
@@ -1359,11 +1378,13 @@ const AdminClientesRouteWithChildren = AdminClientesRoute._addFileChildren(
 interface AdminDescontosRouteChildren {
   AdminDescontosCuponsRoute: typeof AdminDescontosCuponsRoute
   AdminDescontosFreteGratisRoute: typeof AdminDescontosFreteGratisRoute
+  AdminDescontosPromocoesRoute: typeof AdminDescontosPromocoesRoute
 }
 
 const AdminDescontosRouteChildren: AdminDescontosRouteChildren = {
   AdminDescontosCuponsRoute: AdminDescontosCuponsRoute,
   AdminDescontosFreteGratisRoute: AdminDescontosFreteGratisRoute,
+  AdminDescontosPromocoesRoute: AdminDescontosPromocoesRoute,
 }
 
 const AdminDescontosRouteWithChildren = AdminDescontosRoute._addFileChildren(
