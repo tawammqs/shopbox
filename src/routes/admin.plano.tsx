@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   Check, X, ChevronRight, ChevronDown, CheckCircle, CreditCard, FileText,
   ArrowLeft, Receipt,
@@ -447,8 +447,8 @@ function ComparisonTable({ currentSlug }: { currentSlug: PlanSlug | null }) {
           </thead>
           <tbody>
             {filteredCats.map((cat) => (
-              <>
-                <tr key={`cat-${cat.label}`} className="border-t border-gray-100 bg-gray-50/50">
+              <Fragment key={cat.label}>
+                <tr className="border-t border-gray-100 bg-gray-50/50">
                   <td colSpan={4} className="px-4 py-2">
                     <button
                       onClick={() => setOpenCats((s) => ({ ...s, [cat.label]: !s[cat.label] }))}
@@ -474,7 +474,7 @@ function ComparisonTable({ currentSlug }: { currentSlug: PlanSlug | null }) {
                       ))}
                     </tr>
                   ))}
-              </>
+              </Fragment>
             ))}
           </tbody>
         </table>

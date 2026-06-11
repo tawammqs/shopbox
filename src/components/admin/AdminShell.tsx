@@ -136,7 +136,7 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/loja/redes-sociais": "Links de redes sociais",
   "/admin/personalizar-loja": "Loja online",
   "/admin/configuracoes": "Configurações",
-  "/admin/plano": "Plano & Cobrança",
+  "/admin/plano": "Planos e Cobrança",
   "/admin/temas": "Temas",
   "/admin/banners": "Banners",
   "/admin/home-video": "Vídeo da home",
