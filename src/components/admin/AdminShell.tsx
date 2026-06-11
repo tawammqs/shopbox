@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { signOut } from "@/hooks/useAuth";
 import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
+import { useMyStore } from "@/hooks/useMyStore";
+import { isPremiumStore } from "@/lib/access";
 import { cn } from "@/lib/utils";
 
 type SubItem = { label: string; to: string; premium?: boolean; external?: boolean };
@@ -51,7 +53,7 @@ const SECTIONS: NavSection[] = [
         icon: Users,
         children: [
           { label: "Lista de clientes", to: "/admin/clientes" },
-          { label: "Cupom Primeira Compra", to: "/admin/clientes/cupom-primeira-compra", premium: true },
+          { label: "Leads", to: "/admin/clientes/leads" },
           { label: "Perguntas e Avaliações", to: "/admin/clientes/avaliacoes", premium: true },
         ],
       },
@@ -116,7 +118,7 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/pedidos": "Vendas",
   "/admin/financeiro": "Financeiro",
   "/admin/clientes": "Clientes",
-  "/admin/clientes/cupom-primeira-compra": "Cupom Primeira Compra",
+  "/admin/clientes/leads": "Leads",
   "/admin/clientes/avaliacoes": "Perguntas e Avaliações",
   "/admin/perguntas": "Perguntas e Avaliações",
   "/admin/produtos": "Produtos",
@@ -252,7 +254,7 @@ function Sidebar({
         ) : (
           <>
             <Link to="/admin" className="flex items-center">
-              <img src="/LOGO_SHOPBOX.png" alt="ShopBox" className="h-14 w-auto object-contain" style={{ maxWidth: 200, display: "block" }} />
+              <img src="/LOGO_SHOPBOX.png" alt="ShopBox" className="h-7 w-auto object-contain" style={{ maxWidth: 140, display: "block" }} />
             </Link>
             <button
               type="button"
