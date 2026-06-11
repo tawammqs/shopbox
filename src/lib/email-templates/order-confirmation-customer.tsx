@@ -36,7 +36,7 @@ const OrderConfirmationCustomerEmail = ({
 }: OrderConfirmationCustomerProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Pedido #{orderNumber} confirmado em {storeName}</Preview>
+    <Preview>{`Pedido #${orderNumber} confirmado em ${storeName}`}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={brandBar}>

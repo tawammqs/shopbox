@@ -47,7 +47,7 @@ const NewOrderStoreEmail = ({
   return (
     <Html lang="pt-BR" dir="ltr">
       <Head />
-      <Preview>Novo pedido #{orderNumber} em {storeName}</Preview>
+      <Preview>{`Novo pedido #${orderNumber} em ${storeName}`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={brandBar}>

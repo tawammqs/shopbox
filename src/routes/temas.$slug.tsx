@@ -125,7 +125,7 @@ function ThemeDetailPage() {
             themeId: themeQ.data.id,
             storeId: store.id,
             environment: getStripeEnvironment(),
-            returnUrl: `${window.location.origin}/temas/${themeQ.data.slug}?paid=1&session_id={CHECKOUT_SESSION_ID}`,
+            returnUrl: `${window.location.origin}/admin/temas/sucesso?session_id={CHECKOUT_SESSION_ID}&theme=${encodeURIComponent(themeQ.data.name)}`,
           },
         },
       );
