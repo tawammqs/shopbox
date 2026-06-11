@@ -46,10 +46,39 @@ type Props = {
 };
 
 export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, total, buyNow }: Props) {
-  const { store } = useStorefront();
+  const { store, paymentSettings } = useStorefront();
   const clearCart = useCart((s) => s.clear);
 
   const isTheShoes = useIsMioTheme();
+
+  // Build dynamic payment options from store settings
+  const paymentOptions = (() => {
+    const ps = paymentSettings;
+    const opts: { value: string; label: string }[] = [];
+    if (!ps) {
+      // sensible fallback so checkout never breaks
+      opts.push({ value: "pix", label: "PIX" });
+      opts.push({ value: "cartao", label: "Cartão de crédito" });
+      return opts;
+    }
+    if (ps.pix_enabled) {
+      opts.push({
+        value: "pix",
+        label: ps.pix_discount_percent > 0 ? `PIX (${ps.pix_discount_percent}% de desconto)` : "PIX",
+      });
+    }
+    if (ps.credit_card_enabled) {
+      const label = ps.installments_enabled
+        ? `Cartão de crédito (até ${ps.max_installments}x${ps.installments_no_interest ? " sem juros" : ""})`
+        : "Cartão de crédito";
+      opts.push({ value: "cartao", label });
+    }
+    if (ps.cash_enabled) opts.push({ value: "dinheiro", label: "Dinheiro na entrega" });
+    if (ps.pickup_payment_enabled) opts.push({ value: "retirada", label: "Pagamento na retirada" });
+    return opts;
+  })();
+
+  const requirePayment = paymentOptions.length > 0;
 
   const [form, setForm] = useState({
     name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "", paymentMethod: "",
@@ -78,10 +107,11 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
       setErrors(errs);
       return;
     }
-    if (isTheShoes && !form.paymentMethod) {
+    if (requirePayment && !form.paymentMethod) {
       setErrors({ ...errors, paymentMethod: "Selecione uma forma de pagamento" });
       return;
     }
+
     setErrors({});
     setBusy(true);
     try {

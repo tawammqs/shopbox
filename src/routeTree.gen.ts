@@ -87,6 +87,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LojaSlugProdutoProductSlugRouteImport } from './routes/loja.$slug.produto.$productSlug'
+import { Route as LojaSlugPaginaPageSlugRouteImport } from './routes/loja.$slug.pagina.$pageSlug'
 import { Route as LojaSlugCategoriaCategorySlugRouteImport } from './routes/loja.$slug.categoria.$categorySlug'
 import { Route as AdminLojaLayoutEditarRouteImport } from './routes/admin.loja.layout.editar'
 
@@ -497,6 +498,11 @@ const LojaSlugProdutoProductSlugRoute =
     path: '/produto/$productSlug',
     getParentRoute: () => LojaSlugRoute,
   } as any)
+const LojaSlugPaginaPageSlugRoute = LojaSlugPaginaPageSlugRouteImport.update({
+  id: '/pagina/$pageSlug',
+  path: '/pagina/$pageSlug',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
 const LojaSlugCategoriaCategorySlugRoute =
   LojaSlugCategoriaCategorySlugRouteImport.update({
     id: '/categoria/$categorySlug',
@@ -583,6 +589,7 @@ export interface FileRoutesByFullPath {
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
+  '/loja/$slug/pagina/$pageSlug': typeof LojaSlugPaginaPageSlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -660,6 +667,7 @@ export interface FileRoutesByTo {
   '/loja/$slug': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
+  '/loja/$slug/pagina/$pageSlug': typeof LojaSlugPaginaPageSlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -743,6 +751,7 @@ export interface FileRoutesById {
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
+  '/loja/$slug/pagina/$pageSlug': typeof LojaSlugPaginaPageSlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -827,6 +836,7 @@ export interface FileRouteTypes {
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
     | '/loja/$slug/categoria/$categorySlug'
+    | '/loja/$slug/pagina/$pageSlug'
     | '/loja/$slug/produto/$productSlug'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -904,6 +914,7 @@ export interface FileRouteTypes {
     | '/loja/$slug'
     | '/admin/loja/layout/editar'
     | '/loja/$slug/categoria/$categorySlug'
+    | '/loja/$slug/pagina/$pageSlug'
     | '/loja/$slug/produto/$productSlug'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -986,6 +997,7 @@ export interface FileRouteTypes {
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
     | '/loja/$slug/categoria/$categorySlug'
+    | '/loja/$slug/pagina/$pageSlug'
     | '/loja/$slug/produto/$productSlug'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1575,6 +1587,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojaSlugProdutoProductSlugRouteImport
       parentRoute: typeof LojaSlugRoute
     }
+    '/loja/$slug/pagina/$pageSlug': {
+      id: '/loja/$slug/pagina/$pageSlug'
+      path: '/pagina/$pageSlug'
+      fullPath: '/loja/$slug/pagina/$pageSlug'
+      preLoaderRoute: typeof LojaSlugPaginaPageSlugRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
     '/loja/$slug/categoria/$categorySlug': {
       id: '/loja/$slug/categoria/$categorySlug'
       path: '/categoria/$categorySlug'
@@ -1755,6 +1774,7 @@ interface LojaSlugRouteChildren {
   LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
   LojaSlugIndexRoute: typeof LojaSlugIndexRoute
   LojaSlugCategoriaCategorySlugRoute: typeof LojaSlugCategoriaCategorySlugRoute
+  LojaSlugPaginaPageSlugRoute: typeof LojaSlugPaginaPageSlugRoute
   LojaSlugProdutoProductSlugRoute: typeof LojaSlugProdutoProductSlugRoute
 }
 
@@ -1763,6 +1783,7 @@ const LojaSlugRouteChildren: LojaSlugRouteChildren = {
   LojaSlugWishlistRoute: LojaSlugWishlistRoute,
   LojaSlugIndexRoute: LojaSlugIndexRoute,
   LojaSlugCategoriaCategorySlugRoute: LojaSlugCategoriaCategorySlugRoute,
+  LojaSlugPaginaPageSlugRoute: LojaSlugPaginaPageSlugRoute,
   LojaSlugProdutoProductSlugRoute: LojaSlugProdutoProductSlugRoute,
 }
 
