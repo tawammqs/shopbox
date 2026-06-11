@@ -74,7 +74,9 @@ import { Route as AdminDescontosPromocoesRouteImport } from './routes/admin.desc
 import { Route as AdminDescontosFreteGratisRouteImport } from './routes/admin.descontos.frete-gratis'
 import { Route as AdminDescontosCuponsRouteImport } from './routes/admin.descontos.cupons'
 import { Route as AdminConfiguracoesWhatsappRouteImport } from './routes/admin.configuracoes.whatsapp'
+import { Route as AdminConfiguracoesUsuariosRouteImport } from './routes/admin.configuracoes.usuarios'
 import { Route as AdminConfiguracoesPagamentosRouteImport } from './routes/admin.configuracoes.pagamentos'
+import { Route as AdminConfiguracoesDominiosRouteImport } from './routes/admin.configuracoes.dominios'
 import { Route as AdminConfiguracoesContatoRouteImport } from './routes/admin.configuracoes.contato'
 import { Route as AdminClientesCupomPrimeiraCompraRouteImport } from './routes/admin.clientes.cupom-primeira-compra'
 import { Route as AdminClientesAvaliacoesRouteImport } from './routes/admin.clientes.avaliacoes'
@@ -420,10 +422,22 @@ const AdminConfiguracoesWhatsappRoute =
     path: '/whatsapp',
     getParentRoute: () => AdminConfiguracoesRoute,
   } as any)
+const AdminConfiguracoesUsuariosRoute =
+  AdminConfiguracoesUsuariosRouteImport.update({
+    id: '/usuarios',
+    path: '/usuarios',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
 const AdminConfiguracoesPagamentosRoute =
   AdminConfiguracoesPagamentosRouteImport.update({
     id: '/pagamentos',
     path: '/pagamentos',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
+const AdminConfiguracoesDominiosRoute =
+  AdminConfiguracoesDominiosRouteImport.update({
+    id: '/dominios',
+    path: '/dominios',
     getParentRoute: () => AdminConfiguracoesRoute,
   } as any)
 const AdminConfiguracoesContatoRoute =
@@ -540,7 +554,9 @@ export interface FileRoutesByFullPath {
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
+  '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
@@ -615,7 +631,9 @@ export interface FileRoutesByTo {
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
+  '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
@@ -696,7 +714,9 @@ export interface FileRoutesById {
   '/admin/clientes/avaliacoes': typeof AdminClientesAvaliacoesRoute
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/configuracoes/contato': typeof AdminConfiguracoesContatoRoute
+  '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
@@ -778,7 +798,9 @@ export interface FileRouteTypes {
     | '/admin/clientes/avaliacoes'
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/configuracoes/contato'
+    | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
@@ -853,7 +875,9 @@ export interface FileRouteTypes {
     | '/admin/clientes/avaliacoes'
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/configuracoes/contato'
+    | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
@@ -933,7 +957,9 @@ export interface FileRouteTypes {
     | '/admin/clientes/avaliacoes'
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/configuracoes/contato'
+    | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
@@ -1458,11 +1484,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConfiguracoesWhatsappRouteImport
       parentRoute: typeof AdminConfiguracoesRoute
     }
+    '/admin/configuracoes/usuarios': {
+      id: '/admin/configuracoes/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/configuracoes/usuarios'
+      preLoaderRoute: typeof AdminConfiguracoesUsuariosRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
     '/admin/configuracoes/pagamentos': {
       id: '/admin/configuracoes/pagamentos'
       path: '/pagamentos'
       fullPath: '/admin/configuracoes/pagamentos'
       preLoaderRoute: typeof AdminConfiguracoesPagamentosRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
+    '/admin/configuracoes/dominios': {
+      id: '/admin/configuracoes/dominios'
+      path: '/dominios'
+      fullPath: '/admin/configuracoes/dominios'
+      preLoaderRoute: typeof AdminConfiguracoesDominiosRouteImport
       parentRoute: typeof AdminConfiguracoesRoute
     }
     '/admin/configuracoes/contato': {
@@ -1568,14 +1608,18 @@ const AdminClientesRouteWithChildren = AdminClientesRoute._addFileChildren(
 
 interface AdminConfiguracoesRouteChildren {
   AdminConfiguracoesContatoRoute: typeof AdminConfiguracoesContatoRoute
+  AdminConfiguracoesDominiosRoute: typeof AdminConfiguracoesDominiosRoute
   AdminConfiguracoesPagamentosRoute: typeof AdminConfiguracoesPagamentosRoute
+  AdminConfiguracoesUsuariosRoute: typeof AdminConfiguracoesUsuariosRoute
   AdminConfiguracoesWhatsappRoute: typeof AdminConfiguracoesWhatsappRoute
   AdminConfiguracoesIndexRoute: typeof AdminConfiguracoesIndexRoute
 }
 
 const AdminConfiguracoesRouteChildren: AdminConfiguracoesRouteChildren = {
   AdminConfiguracoesContatoRoute: AdminConfiguracoesContatoRoute,
+  AdminConfiguracoesDominiosRoute: AdminConfiguracoesDominiosRoute,
   AdminConfiguracoesPagamentosRoute: AdminConfiguracoesPagamentosRoute,
+  AdminConfiguracoesUsuariosRoute: AdminConfiguracoesUsuariosRoute,
   AdminConfiguracoesWhatsappRoute: AdminConfiguracoesWhatsappRoute,
   AdminConfiguracoesIndexRoute: AdminConfiguracoesIndexRoute,
 }
