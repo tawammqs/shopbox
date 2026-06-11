@@ -1059,6 +1059,7 @@ export type Database = {
           promo_starts_at: string | null
           seo_description: string | null
           seo_title: string | null
+          show_price: boolean | null
           size_guide_url: string | null
           sku: string | null
           slug: string
@@ -1069,6 +1070,7 @@ export type Database = {
           tags: Database["public"]["Enums"]["product_tag"][]
           title: string
           updated_at: string
+          url_slug: string | null
           video_type: string | null
           video_url: string | null
           view_count: number
@@ -1096,6 +1098,7 @@ export type Database = {
           promo_starts_at?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          show_price?: boolean | null
           size_guide_url?: string | null
           sku?: string | null
           slug: string
@@ -1106,6 +1109,7 @@ export type Database = {
           tags?: Database["public"]["Enums"]["product_tag"][]
           title: string
           updated_at?: string
+          url_slug?: string | null
           video_type?: string | null
           video_url?: string | null
           view_count?: number
@@ -1133,6 +1137,7 @@ export type Database = {
           promo_starts_at?: string | null
           seo_description?: string | null
           seo_title?: string | null
+          show_price?: boolean | null
           size_guide_url?: string | null
           sku?: string | null
           slug?: string
@@ -1143,6 +1148,7 @@ export type Database = {
           tags?: Database["public"]["Enums"]["product_tag"][]
           title?: string
           updated_at?: string
+          url_slug?: string | null
           video_type?: string | null
           video_url?: string | null
           view_count?: number
