@@ -42,3 +42,30 @@ export function trialHoursRemaining(trial_ends_at: string | null | undefined): n
   const diff = new Date(trial_ends_at).getTime() - Date.now();
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60)));
 }
+
+/**
+ * Premium-tier unlock: returns true if the store has access to premium-only screens
+ * (advanced stats, premium customer tools, etc.). Sources: subscription_status from the
+ * stores row (premium/professional/active) OR a still-valid trial.
+ */
+export function isPremiumStore(
+  store:
+    | {
+        subscription_status?: string | null;
+        trial_ends_at?: string | null;
+        plan?: { slug?: string | null } | null;
+      }
+    | null
+    | undefined,
+): boolean {
+  if (!store) return false;
+  const s = (store.subscription_status ?? "").toLowerCase();
+  if (["premium", "professional", "profissional", "active", "past_due"].includes(s)) return true;
+  if (s === "trialing" && store.trial_ends_at && new Date(store.trial_ends_at).getTime() > Date.now()) return true;
+  // Trial window failsafe even if status drift
+  if (store.trial_ends_at && new Date(store.trial_ends_at).getTime() > Date.now()) return true;
+  // Plan-based fallback when subscription_status isn't set but plan is upgraded
+  const slug = (store.plan?.slug ?? "").toLowerCase();
+  if (slug === "premium" || slug === "profissional" || slug === "professional") return true;
+  return false;
+}
