@@ -61,7 +61,9 @@ import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.pr
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
 import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
+import { Route as AdminLojaMenusRouteImport } from './routes/admin.loja.menus'
 import { Route as AdminLojaLayoutRouteImport } from './routes/admin.loja.layout'
+import { Route as AdminLojaFiltrosRouteImport } from './routes/admin.loja.filtros'
 import { Route as AdminEstatisticasVisitasRouteImport } from './routes/admin.estatisticas.visitas'
 import { Route as AdminEstatisticasVendasRouteImport } from './routes/admin.estatisticas.vendas'
 import { Route as AdminEstatisticasTempoRealRouteImport } from './routes/admin.estatisticas.tempo-real'
@@ -342,9 +344,19 @@ const AdminLojaPaginasRoute = AdminLojaPaginasRouteImport.update({
   path: '/loja/paginas',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLojaMenusRoute = AdminLojaMenusRouteImport.update({
+  id: '/loja/menus',
+  path: '/loja/menus',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLojaLayoutRoute = AdminLojaLayoutRouteImport.update({
   id: '/loja/layout',
   path: '/loja/layout',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLojaFiltrosRoute = AdminLojaFiltrosRouteImport.update({
+  id: '/loja/filtros',
+  path: '/loja/filtros',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminEstatisticasVisitasRoute =
@@ -495,7 +507,9 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
   '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -563,7 +577,9 @@ export interface FileRoutesByTo {
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
   '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -636,7 +652,9 @@ export interface FileRoutesById {
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
   '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -710,7 +728,9 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/filtros'
     | '/admin/loja/layout'
+    | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -778,7 +798,9 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/filtros'
     | '/admin/loja/layout'
+    | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -850,7 +872,9 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/filtros'
     | '/admin/loja/layout'
+    | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -1270,11 +1294,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLojaPaginasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/loja/menus': {
+      id: '/admin/loja/menus'
+      path: '/loja/menus'
+      fullPath: '/admin/loja/menus'
+      preLoaderRoute: typeof AdminLojaMenusRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/loja/layout': {
       id: '/admin/loja/layout'
       path: '/loja/layout'
       fullPath: '/admin/loja/layout'
       preLoaderRoute: typeof AdminLojaLayoutRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/loja/filtros': {
+      id: '/admin/loja/filtros'
+      path: '/loja/filtros'
+      fullPath: '/admin/loja/filtros'
+      preLoaderRoute: typeof AdminLojaFiltrosRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/estatisticas/visitas': {
@@ -1465,7 +1503,9 @@ interface AdminRouteChildren {
   AdminTemasRoute: typeof AdminTemasRoute
   AdminVendasRoute: typeof AdminVendasRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminLojaFiltrosRoute: typeof AdminLojaFiltrosRoute
   AdminLojaLayoutRoute: typeof AdminLojaLayoutRoute
+  AdminLojaMenusRoute: typeof AdminLojaMenusRoute
   AdminLojaPaginasRoute: typeof AdminLojaPaginasRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
   AdminProdutosCategoriasRoute: typeof AdminProdutosCategoriasRoute
@@ -1490,7 +1530,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminTemasRoute: AdminTemasRoute,
   AdminVendasRoute: AdminVendasRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminLojaFiltrosRoute: AdminLojaFiltrosRoute,
   AdminLojaLayoutRoute: AdminLojaLayoutRoute,
+  AdminLojaMenusRoute: AdminLojaMenusRoute,
   AdminLojaPaginasRoute: AdminLojaPaginasRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
   AdminProdutosCategoriasRoute: AdminProdutosCategoriasRoute,
@@ -1573,3 +1615,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
