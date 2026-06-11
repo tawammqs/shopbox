@@ -58,6 +58,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
+import { Route as AdminTemasSucessoRouteImport } from './routes/admin.temas.sucesso'
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
@@ -337,6 +338,11 @@ const FeedSlugMetaDotxmlRoute = FeedSlugMetaDotxmlRouteImport.update({
   path: '/feed/$slug/meta.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTemasSucessoRoute = AdminTemasSucessoRouteImport.update({
+  id: '/sucesso',
+  path: '/sucesso',
+  getParentRoute: () => AdminTemasRoute,
+} as any)
 const AdminProdutosTabelaPrecosRoute =
   AdminProdutosTabelaPrecosRouteImport.update({
     id: '/produtos/tabela-precos',
@@ -542,7 +548,7 @@ export interface FileRoutesByFullPath {
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
-  '/admin/temas': typeof AdminTemasRoute
+  '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -578,6 +584,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
+  '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -621,7 +628,7 @@ export interface FileRoutesByTo {
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
-  '/admin/temas': typeof AdminTemasRoute
+  '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -656,6 +663,7 @@ export interface FileRoutesByTo {
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
+  '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -704,7 +712,7 @@ export interface FileRoutesById {
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
   '/admin/plano': typeof AdminPlanoRoute
-  '/admin/temas': typeof AdminTemasRoute
+  '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
@@ -740,6 +748,7 @@ export interface FileRoutesById {
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
+  '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -825,6 +834,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
+    | '/admin/temas/sucesso'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
@@ -903,6 +913,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
+    | '/admin/temas/sucesso'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
@@ -986,6 +997,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
+    | '/admin/temas/sucesso'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/wishlist'
@@ -1383,6 +1395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeedSlugMetaDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/temas/sucesso': {
+      id: '/admin/temas/sucesso'
+      path: '/sucesso'
+      fullPath: '/admin/temas/sucesso'
+      preLoaderRoute: typeof AdminTemasSucessoRouteImport
+      parentRoute: typeof AdminTemasRoute
+    }
     '/admin/produtos/tabela-precos': {
       id: '/admin/produtos/tabela-precos'
       path: '/produtos/tabela-precos'
@@ -1680,6 +1699,18 @@ const AdminEstatisticasRouteChildren: AdminEstatisticasRouteChildren = {
 const AdminEstatisticasRouteWithChildren =
   AdminEstatisticasRoute._addFileChildren(AdminEstatisticasRouteChildren)
 
+interface AdminTemasRouteChildren {
+  AdminTemasSucessoRoute: typeof AdminTemasSucessoRoute
+}
+
+const AdminTemasRouteChildren: AdminTemasRouteChildren = {
+  AdminTemasSucessoRoute: AdminTemasSucessoRoute,
+}
+
+const AdminTemasRouteWithChildren = AdminTemasRoute._addFileChildren(
+  AdminTemasRouteChildren,
+)
+
 interface AdminLojaLayoutRouteChildren {
   AdminLojaLayoutEditarRoute: typeof AdminLojaLayoutEditarRoute
 }
@@ -1706,7 +1737,7 @@ interface AdminRouteChildren {
   AdminPerguntasRoute: typeof AdminPerguntasRoute
   AdminPersonalizarLojaRoute: typeof AdminPersonalizarLojaRoute
   AdminPlanoRoute: typeof AdminPlanoRoute
-  AdminTemasRoute: typeof AdminTemasRoute
+  AdminTemasRoute: typeof AdminTemasRouteWithChildren
   AdminVendasRoute: typeof AdminVendasRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminLojaFiltrosRoute: typeof AdminLojaFiltrosRoute
@@ -1734,7 +1765,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPerguntasRoute: AdminPerguntasRoute,
   AdminPersonalizarLojaRoute: AdminPersonalizarLojaRoute,
   AdminPlanoRoute: AdminPlanoRoute,
-  AdminTemasRoute: AdminTemasRoute,
+  AdminTemasRoute: AdminTemasRouteWithChildren,
   AdminVendasRoute: AdminVendasRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminLojaFiltrosRoute: AdminLojaFiltrosRoute,

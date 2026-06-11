@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SEGMENT_GROUPS } from "@/lib/segments";
+import { sendTransactionalEmail } from "@/lib/email/send";
 import { Eye, EyeOff, Check, Loader2, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/cadastro")({
@@ -210,6 +211,19 @@ function SignupPage() {
         toast.error("Erro ao criar loja: " + storeError.message);
         return;
       }
+
+      // Fire-and-forget welcome email (non-blocking)
+      void sendTransactionalEmail({
+        templateName: "welcome",
+        recipientEmail: accountData.email,
+        idempotencyKey: `welcome-${userId}`,
+        templateData: {
+          name: accountData.name,
+          planName: selectedPlan.name,
+          trialDays: 7,
+          dashboardUrl: `${window.location.origin}/admin/dashboard`,
+        },
+      });
 
       toast.success("Loja criada! Você tem 7 dias grátis para testar tudo.");
       navigate({ to: "/admin/dashboard" });
