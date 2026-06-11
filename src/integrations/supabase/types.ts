@@ -1908,6 +1908,7 @@ export type Database = {
       themes: {
         Row: {
           carousel_urls: Json
+          category: string | null
           created_at: string
           default_sections: Json
           demo_url: string | null
@@ -1935,6 +1936,7 @@ export type Database = {
         }
         Insert: {
           carousel_urls?: Json
+          category?: string | null
           created_at?: string
           default_sections?: Json
           demo_url?: string | null
@@ -1962,6 +1964,7 @@ export type Database = {
         }
         Update: {
           carousel_urls?: Json
+          category?: string | null
           created_at?: string
           default_sections?: Json
           demo_url?: string | null
