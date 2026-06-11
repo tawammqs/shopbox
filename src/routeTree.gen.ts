@@ -60,10 +60,16 @@ import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
+import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
+import { Route as AdminLojaMenusRouteImport } from './routes/admin.loja.menus'
+import { Route as AdminLojaLayoutRouteImport } from './routes/admin.loja.layout'
+import { Route as AdminLojaFiltrosRouteImport } from './routes/admin.loja.filtros'
 import { Route as AdminEstatisticasVisitasRouteImport } from './routes/admin.estatisticas.visitas'
 import { Route as AdminEstatisticasVendasRouteImport } from './routes/admin.estatisticas.vendas'
 import { Route as AdminEstatisticasTempoRealRouteImport } from './routes/admin.estatisticas.tempo-real'
 import { Route as AdminEstatisticasProdutosRouteImport } from './routes/admin.estatisticas.produtos'
+import { Route as AdminDescontosPromocoesRouteImport } from './routes/admin.descontos.promocoes'
 import { Route as AdminDescontosFreteGratisRouteImport } from './routes/admin.descontos.frete-gratis'
 import { Route as AdminDescontosCuponsRouteImport } from './routes/admin.descontos.cupons'
 import { Route as AdminClientesCupomPrimeiraCompraRouteImport } from './routes/admin.clientes.cupom-primeira-compra'
@@ -334,6 +340,31 @@ const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   path: '/produtos/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLojaRedesSociaisRoute = AdminLojaRedesSociaisRouteImport.update({
+  id: '/loja/redes-sociais',
+  path: '/loja/redes-sociais',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLojaPaginasRoute = AdminLojaPaginasRouteImport.update({
+  id: '/loja/paginas',
+  path: '/loja/paginas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLojaMenusRoute = AdminLojaMenusRouteImport.update({
+  id: '/loja/menus',
+  path: '/loja/menus',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLojaLayoutRoute = AdminLojaLayoutRouteImport.update({
+  id: '/loja/layout',
+  path: '/loja/layout',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLojaFiltrosRoute = AdminLojaFiltrosRouteImport.update({
+  id: '/loja/filtros',
+  path: '/loja/filtros',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEstatisticasVisitasRoute =
   AdminEstatisticasVisitasRouteImport.update({
     id: '/visitas',
@@ -357,6 +388,11 @@ const AdminEstatisticasProdutosRoute =
     path: '/produtos',
     getParentRoute: () => AdminEstatisticasRoute,
   } as any)
+const AdminDescontosPromocoesRoute = AdminDescontosPromocoesRouteImport.update({
+  id: '/promocoes',
+  path: '/promocoes',
+  getParentRoute: () => AdminDescontosRoute,
+} as any)
 const AdminDescontosFreteGratisRoute =
   AdminDescontosFreteGratisRouteImport.update({
     id: '/frete-gratis',
@@ -472,10 +508,16 @@ export interface FileRoutesByFullPath {
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
   '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/menus': typeof AdminLojaMenusRoute
+  '/admin/loja/paginas': typeof AdminLojaPaginasRoute
+  '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -537,10 +579,16 @@ export interface FileRoutesByTo {
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
   '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/menus': typeof AdminLojaMenusRoute
+  '/admin/loja/paginas': typeof AdminLojaPaginasRoute
+  '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -607,10 +655,16 @@ export interface FileRoutesById {
   '/admin/clientes/cupom-primeira-compra': typeof AdminClientesCupomPrimeiraCompraRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
   '/admin/descontos/frete-gratis': typeof AdminDescontosFreteGratisRoute
+  '/admin/descontos/promocoes': typeof AdminDescontosPromocoesRoute
   '/admin/estatisticas/produtos': typeof AdminEstatisticasProdutosRoute
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRoute
+  '/admin/loja/menus': typeof AdminLojaMenusRoute
+  '/admin/loja/paginas': typeof AdminLojaPaginasRoute
+  '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -678,10 +732,16 @@ export interface FileRouteTypes {
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
+    | '/admin/descontos/promocoes'
     | '/admin/estatisticas/produtos'
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/filtros'
+    | '/admin/loja/layout'
+    | '/admin/loja/menus'
+    | '/admin/loja/paginas'
+    | '/admin/loja/redes-sociais'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -743,10 +803,16 @@ export interface FileRouteTypes {
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
+    | '/admin/descontos/promocoes'
     | '/admin/estatisticas/produtos'
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/filtros'
+    | '/admin/loja/layout'
+    | '/admin/loja/menus'
+    | '/admin/loja/paginas'
+    | '/admin/loja/redes-sociais'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -812,10 +878,16 @@ export interface FileRouteTypes {
     | '/admin/clientes/cupom-primeira-compra'
     | '/admin/descontos/cupons'
     | '/admin/descontos/frete-gratis'
+    | '/admin/descontos/promocoes'
     | '/admin/estatisticas/produtos'
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/filtros'
+    | '/admin/loja/layout'
+    | '/admin/loja/menus'
+    | '/admin/loja/paginas'
+    | '/admin/loja/redes-sociais'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -1227,6 +1299,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/loja/redes-sociais': {
+      id: '/admin/loja/redes-sociais'
+      path: '/loja/redes-sociais'
+      fullPath: '/admin/loja/redes-sociais'
+      preLoaderRoute: typeof AdminLojaRedesSociaisRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/loja/paginas': {
+      id: '/admin/loja/paginas'
+      path: '/loja/paginas'
+      fullPath: '/admin/loja/paginas'
+      preLoaderRoute: typeof AdminLojaPaginasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/loja/menus': {
+      id: '/admin/loja/menus'
+      path: '/loja/menus'
+      fullPath: '/admin/loja/menus'
+      preLoaderRoute: typeof AdminLojaMenusRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/loja/layout': {
+      id: '/admin/loja/layout'
+      path: '/loja/layout'
+      fullPath: '/admin/loja/layout'
+      preLoaderRoute: typeof AdminLojaLayoutRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/loja/filtros': {
+      id: '/admin/loja/filtros'
+      path: '/loja/filtros'
+      fullPath: '/admin/loja/filtros'
+      preLoaderRoute: typeof AdminLojaFiltrosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/estatisticas/visitas': {
       id: '/admin/estatisticas/visitas'
       path: '/visitas'
@@ -1254,6 +1361,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/estatisticas/produtos'
       preLoaderRoute: typeof AdminEstatisticasProdutosRouteImport
       parentRoute: typeof AdminEstatisticasRoute
+    }
+    '/admin/descontos/promocoes': {
+      id: '/admin/descontos/promocoes'
+      path: '/promocoes'
+      fullPath: '/admin/descontos/promocoes'
+      preLoaderRoute: typeof AdminDescontosPromocoesRouteImport
+      parentRoute: typeof AdminDescontosRoute
     }
     '/admin/descontos/frete-gratis': {
       id: '/admin/descontos/frete-gratis'
@@ -1359,11 +1473,13 @@ const AdminClientesRouteWithChildren = AdminClientesRoute._addFileChildren(
 interface AdminDescontosRouteChildren {
   AdminDescontosCuponsRoute: typeof AdminDescontosCuponsRoute
   AdminDescontosFreteGratisRoute: typeof AdminDescontosFreteGratisRoute
+  AdminDescontosPromocoesRoute: typeof AdminDescontosPromocoesRoute
 }
 
 const AdminDescontosRouteChildren: AdminDescontosRouteChildren = {
   AdminDescontosCuponsRoute: AdminDescontosCuponsRoute,
   AdminDescontosFreteGratisRoute: AdminDescontosFreteGratisRoute,
+  AdminDescontosPromocoesRoute: AdminDescontosPromocoesRoute,
 }
 
 const AdminDescontosRouteWithChildren = AdminDescontosRoute._addFileChildren(
@@ -1406,6 +1522,11 @@ interface AdminRouteChildren {
   AdminTemasRoute: typeof AdminTemasRoute
   AdminVendasRoute: typeof AdminVendasRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminLojaFiltrosRoute: typeof AdminLojaFiltrosRoute
+  AdminLojaLayoutRoute: typeof AdminLojaLayoutRoute
+  AdminLojaMenusRoute: typeof AdminLojaMenusRoute
+  AdminLojaPaginasRoute: typeof AdminLojaPaginasRoute
+  AdminLojaRedesSociaisRoute: typeof AdminLojaRedesSociaisRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
   AdminProdutosCategoriasRoute: typeof AdminProdutosCategoriasRoute
   AdminProdutosTabelaPrecosRoute: typeof AdminProdutosTabelaPrecosRoute
@@ -1429,6 +1550,11 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminTemasRoute: AdminTemasRoute,
   AdminVendasRoute: AdminVendasRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminLojaFiltrosRoute: AdminLojaFiltrosRoute,
+  AdminLojaLayoutRoute: AdminLojaLayoutRoute,
+  AdminLojaMenusRoute: AdminLojaMenusRoute,
+  AdminLojaPaginasRoute: AdminLojaPaginasRoute,
+  AdminLojaRedesSociaisRoute: AdminLojaRedesSociaisRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
   AdminProdutosCategoriasRoute: AdminProdutosCategoriasRoute,
   AdminProdutosTabelaPrecosRoute: AdminProdutosTabelaPrecosRoute,

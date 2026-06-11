@@ -1288,6 +1288,105 @@ export type Database = {
           },
         ]
       }
+      store_filter_settings: {
+        Row: {
+          id: string
+          show_brand: boolean
+          show_price: boolean
+          show_variations: boolean
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          show_brand?: boolean
+          show_price?: boolean
+          show_variations?: boolean
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          show_brand?: boolean
+          show_price?: boolean
+          show_variations?: boolean
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_filter_settings_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_menu_items: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          menu_id: string
+          position: number
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          menu_id: string
+          position?: number
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          menu_id?: string
+          position?: number
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_menu_items_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "store_menus"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_menus: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_menus_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_private_secrets: {
         Row: {
           meta_conversion_token: string | null
@@ -1307,6 +1406,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "store_private_secrets_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_social_links: {
+        Row: {
+          blog_url: string | null
+          facebook_url: string | null
+          id: string
+          instagram_token: string | null
+          instagram_username: string | null
+          pinterest_tag: string | null
+          pinterest_url: string | null
+          store_id: string
+          tiktok_username: string | null
+          twitter_username: string | null
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          blog_url?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_token?: string | null
+          instagram_username?: string | null
+          pinterest_tag?: string | null
+          pinterest_url?: string | null
+          store_id: string
+          tiktok_username?: string | null
+          twitter_username?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          blog_url?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_token?: string | null
+          instagram_username?: string | null
+          pinterest_tag?: string | null
+          pinterest_url?: string | null
+          store_id?: string
+          tiktok_username?: string | null
+          twitter_username?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_social_links_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: true
             referencedRelation: "stores"
