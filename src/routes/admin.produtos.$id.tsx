@@ -895,10 +895,13 @@ function TagsInput({
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="form-card form-section product-form-section min-w-0 rounded-2xl border border-border bg-card p-5">
-      <h3 className="mb-3 font-display text-base font-semibold">{title}</h3>
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <h3 className="font-display text-base font-semibold">{title}</h3>
+        {action}
+      </div>
       {children}
     </div>
   );
