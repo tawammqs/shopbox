@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMyStore } from "@/hooks/useMyStore";
+import { isPremiumStore } from "@/lib/access";
 import { PremiumLock } from "@/components/admin/PremiumLock";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/admin/estatisticas/tempo-real")({
 
 function Page() {
   const { data: store } = useMyStore();
-  const isPremium = store?.plan?.slug === "premium";
+  const isPremium = isPremiumStore(store);
   const [tab, setTab] = useState<"visitantes" | "pedidos">("visitantes");
 
   const content = (

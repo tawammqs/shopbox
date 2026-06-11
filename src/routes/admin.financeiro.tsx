@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, SlidersHorizontal, Settings, ChevronRight } from "lucide-react";
+import { Search, SlidersHorizontal, Settings, TrendingUp, TrendingDown } from "lucide-react";
 import { useMyStore } from "@/hooks/useMyStore";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
@@ -49,14 +49,14 @@ function FinanceiroPage() {
   }, [store?.id]);
 
   const totals = useMemo(() => {
-    let available = 0;
-    let future = 0;
+    let realized = 0;
+    let lost = 0;
     for (const p of payments) {
       const ok = ["entregue", "confirmado", "enviado"].includes(p.status);
-      if (ok) available += Number(p.total);
-      else if (p.status === "aguardando") future += Number(p.total);
+      if (ok) realized += Number(p.total);
+      else if (p.status === "cancelado") lost += Number(p.total);
     }
-    return { available, future };
+    return { realized, lost };
   }, [payments]);
 
   const filtered = useMemo(() => {
@@ -87,21 +87,25 @@ function FinanceiroPage() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <p className="text-xs font-medium uppercase tracking-wide text-[#6b7280]">Saldo disponível</p>
-          <p className="mt-2 text-3xl font-bold text-[#111827]">{fmtBRL(totals.available)}</p>
-          <button className="mt-4 inline-flex h-10 items-center gap-1.5 rounded-lg bg-[#25d366] px-5 text-sm font-semibold text-white hover:bg-[#1fb959]">
-            Transferir →
-          </button>
-        </div>
-        <button className="rounded-xl border border-gray-200 bg-white p-6 text-left shadow-sm transition hover:border-gray-300">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-[#6b7280]">Lançamentos futuros</p>
-              <p className="mt-2 text-3xl font-bold text-[#111827]">{fmtBRL(totals.future)}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium uppercase tracking-wide text-[#6b7280]">Vendas realizadas</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#d1fae5]">
+              <TrendingUp className="h-5 w-5 text-[#059669]" />
             </div>
-            <ChevronRight className="h-5 w-5 text-gray-400" />
           </div>
-        </button>
+          <p className="mt-3 text-3xl font-bold text-[#111827]">{fmtBRL(totals.realized)}</p>
+          <p className="mt-1 text-xs text-[#6b7280]">Pedidos confirmados no período</p>
+        </div>
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium uppercase tracking-wide text-[#6b7280]">Vendas perdidas</p>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#fee2e2]">
+              <TrendingDown className="h-5 w-5 text-[#ef4444]" />
+            </div>
+          </div>
+          <p className="mt-3 text-3xl font-bold text-[#111827]">{fmtBRL(totals.lost)}</p>
+          <p className="mt-1 text-xs text-[#6b7280]">Pedidos cancelados no período</p>
+        </div>
       </div>
 
       <section className="space-y-3">

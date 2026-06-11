@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMyStore } from "@/hooks/useMyStore";
+import { isPremiumStore } from "@/lib/access";
 import { PremiumLock } from "@/components/admin/PremiumLock";
 
 export const Route = createFileRoute("/admin/clientes/cupom-primeira-compra")({
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/admin/clientes/cupom-primeira-compra")({
 
 function Page() {
   const { data: store } = useMyStore();
-  const isPremium = store?.plan?.slug === "premium";
+  const isPremium = isPremiumStore(store);
   const mock = (
     <div className="space-y-6">
       <header><h1 className="text-2xl font-bold tracking-tight text-[#111827]">Cupom Primeira Compra</h1><p className="mt-1 text-sm text-[#6b7280]">Ofereça um desconto automático para novos clientes.</p></header>
