@@ -14,6 +14,7 @@ import { TheShoesCartDrawer } from "@/components/storefront/the-shoes/TheShoesCa
 import { TheShoesCouponTab } from "@/components/storefront/the-shoes/TheShoesCouponTab";
 import { TheShoesGlobalStyles } from "@/components/storefront/the-shoes/TheShoesGlobalStyles";
 import { Button } from "@/components/ui/button";
+import { VisitTracker } from "@/components/storefront/VisitTracker";
 
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
@@ -92,6 +93,7 @@ function StorefrontLayout() {
         {isTheShoes && <TheShoesGlobalStyles />}
         <WelcomePopup />
         <MarketingScripts pixelId={store.facebook_pixel_id} gaId={store.google_analytics_id} />
+        <VisitTracker storeId={store.id} />
       </div>
     </StoreProvider>
   );
