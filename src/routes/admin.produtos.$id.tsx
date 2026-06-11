@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import {
   Plus, X, Save, Trash2, Pencil, Check, ChevronDown, ChevronRight,
-  Sparkles, Loader2, GripVertical, PlusCircle,
+  Sparkles, Loader2,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
