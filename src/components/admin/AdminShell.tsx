@@ -3,12 +3,11 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Home, BarChart2, ShoppingCart, DollarSign, Users, Package, Tag,
   Store as StoreIcon, Settings, ChevronDown, ChevronRight, Lock, Search,
-  HelpCircle, Menu, X, LogOut, ExternalLink, Instagram,
+  HelpCircle, Menu, X, LogOut, ExternalLink,
   CreditCard,
 } from "lucide-react";
 import { signOut } from "@/hooks/useAuth";
 import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
-import shopboxLogo from "@/assets/shopbox-logo.png";
 import { cn } from "@/lib/utils";
 
 type SubItem = { label: string; to: string; premium?: boolean; external?: boolean };
