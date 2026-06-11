@@ -76,6 +76,7 @@ const SECTIONS: NavSection[] = [
         children: [
           { label: "Cupons", to: "/admin/descontos/cupons" },
           { label: "Frete grátis", to: "/admin/descontos/frete-gratis" },
+          { label: "Promoções", to: "/admin/descontos/promocoes" },
         ],
       },
     ],
@@ -83,7 +84,18 @@ const SECTIONS: NavSection[] = [
   {
     label: "CANAIS DE VENDA",
     items: [
-      { label: "Loja online", to: "/admin/personalizar-loja", icon: StoreIcon },
+      {
+        label: "Loja online",
+        icon: StoreIcon,
+        children: [
+          { label: "Layout", to: "/admin/loja/layout" },
+          { label: "Temas", to: "/admin/temas" },
+          { label: "Páginas", to: "/admin/loja/paginas" },
+          { label: "Menus", to: "/admin/loja/menus" },
+          { label: "Filtros", to: "/admin/loja/filtros" },
+          { label: "Links de redes sociais", to: "/admin/loja/redes-sociais" },
+        ],
+      },
       { label: "Instagram e Facebook", to: "https://business.facebook.com/", icon: Instagram, external: true },
       { label: "Google Shopping", to: "https://merchants.google.com/", icon: ShoppingBag, external: true },
       { label: "TikTok", to: "https://seller.tiktok.com/", icon: Facebook, external: true },
