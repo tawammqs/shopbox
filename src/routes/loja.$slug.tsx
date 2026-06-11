@@ -15,6 +15,7 @@ import { TheShoesCouponTab } from "@/components/storefront/the-shoes/TheShoesCou
 import { TheShoesGlobalStyles } from "@/components/storefront/the-shoes/TheShoesGlobalStyles";
 import { Button } from "@/components/ui/button";
 import { VisitTracker } from "@/components/storefront/VisitTracker";
+import { StorefrontCustomizer } from "@/components/storefront/StorefrontCustomizer";
 
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
