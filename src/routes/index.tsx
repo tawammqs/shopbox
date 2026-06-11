@@ -457,6 +457,19 @@ const PLANS = [
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAnnual, setIsAnnual] = useState(false);
+  const navigate = useNavigate();
+
+  // Custom-domain routing: if the visitor is on a non-ShopBox hostname, look up
+  // the store mapped to that hostname and forward to its storefront.
+  useEffect(() => {
+    const host = window.location.hostname.toLowerCase();
+    if (isShopBoxHost(host)) return;
+    let cancelled = false;
+    resolveDomainSlug({ data: { hostname: host } })
+      .then((r) => { if (!cancelled && r?.slug) navigate({ to: "/loja/$slug", params: { slug: r.slug }, replace: true }); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [navigate]);
 
   useEffect(() => {
     const onScroll = () => {};
