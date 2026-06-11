@@ -35,12 +35,15 @@ type OrderRow = {
 };
 
 const STATUS_META: Record<OrderStatus, { label: string; className: string }> = {
-  aguardando: { label: "Pendente",   className: "bg-[#f3f4f6] text-[#374151]" },
-  confirmado: { label: "Recebido",   className: "bg-[#d1fae5] text-[#065f46]" },
-  enviado:    { label: "Recebido",   className: "bg-[#d1fae5] text-[#065f46]" },
-  entregue:   { label: "Recebido",   className: "bg-[#d1fae5] text-[#065f46]" },
+  aguardando: { label: "Pendente",   className: "bg-[#fef3c7] text-[#92400e]" },
+  confirmado: { label: "Confirmado", className: "bg-[#d1fae5] text-[#065f46]" },
+  enviado:    { label: "Confirmado", className: "bg-[#d1fae5] text-[#065f46]" },
+  entregue:   { label: "Confirmado", className: "bg-[#d1fae5] text-[#065f46]" },
   cancelado:  { label: "Cancelado",  className: "bg-[#fee2e2] text-[#991b1b]" },
 };
+
+// Only these 3 statuses are user-selectable in the UI
+const SELECTABLE_STATUSES: OrderStatus[] = ["aguardando", "confirmado", "cancelado"];
 
 const PAGE_SIZE = 20;
 
