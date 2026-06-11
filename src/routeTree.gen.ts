@@ -60,6 +60,7 @@ import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as AdminLojaLayoutRouteImport } from './routes/admin.loja.layout'
 import { Route as AdminEstatisticasVisitasRouteImport } from './routes/admin.estatisticas.visitas'
 import { Route as AdminEstatisticasVendasRouteImport } from './routes/admin.estatisticas.vendas'
 import { Route as AdminEstatisticasTempoRealRouteImport } from './routes/admin.estatisticas.tempo-real'
@@ -335,6 +336,11 @@ const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   path: '/produtos/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLojaLayoutRoute = AdminLojaLayoutRouteImport.update({
+  id: '/loja/layout',
+  path: '/loja/layout',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEstatisticasVisitasRoute =
   AdminEstatisticasVisitasRouteImport.update({
     id: '/visitas',
@@ -483,6 +489,7 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -549,6 +556,7 @@ export interface FileRoutesByTo {
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -620,6 +628,7 @@ export interface FileRoutesById {
   '/admin/estatisticas/tempo-real': typeof AdminEstatisticasTempoRealRoute
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -692,6 +701,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/layout'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -758,6 +768,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/layout'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -828,6 +839,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/tempo-real'
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
+    | '/admin/loja/layout'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -1239,6 +1251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/loja/layout': {
+      id: '/admin/loja/layout'
+      path: '/loja/layout'
+      fullPath: '/admin/loja/layout'
+      preLoaderRoute: typeof AdminLojaLayoutRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/estatisticas/visitas': {
       id: '/admin/estatisticas/visitas'
       path: '/visitas'
@@ -1427,6 +1446,7 @@ interface AdminRouteChildren {
   AdminTemasRoute: typeof AdminTemasRoute
   AdminVendasRoute: typeof AdminVendasRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminLojaLayoutRoute: typeof AdminLojaLayoutRoute
   AdminProdutosIdRoute: typeof AdminProdutosIdRoute
   AdminProdutosCategoriasRoute: typeof AdminProdutosCategoriasRoute
   AdminProdutosTabelaPrecosRoute: typeof AdminProdutosTabelaPrecosRoute
@@ -1450,6 +1470,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminTemasRoute: AdminTemasRoute,
   AdminVendasRoute: AdminVendasRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminLojaLayoutRoute: AdminLojaLayoutRoute,
   AdminProdutosIdRoute: AdminProdutosIdRoute,
   AdminProdutosCategoriasRoute: AdminProdutosCategoriasRoute,
   AdminProdutosTabelaPrecosRoute: AdminProdutosTabelaPrecosRoute,
