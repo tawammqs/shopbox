@@ -1,0 +1,2 @@
+UPDATE public.themes SET preview_desktop_url = '/themes/padrao-desktop.png', preview_mobile_url = '/themes/padrao-mobile.png' WHERE slug = 'padrao';
+UPDATE public.themes SET preview_desktop_url = '/themes/mio-desktop.png', preview_mobile_url = '/themes/mio-mobile.png' WHERE slug = 'mio-style';
