@@ -72,23 +72,28 @@ export function StorefrontCustomizer({ storeId }: { storeId: string }) {
 
   const css = useMemo(() => {
     const lines: string[] = [];
-    const bg = hexToHsl(data?.colors?.background);
-    const fg = hexToHsl(data?.colors?.text);
-    const accent = hexToHsl(data?.colors?.accent);
+    const bg = data?.colors?.background;
+    const fg = data?.colors?.text;
+    const accent = data?.colors?.accent;
     if (bg) lines.push(`--background: ${bg};`);
     if (fg) lines.push(`--foreground: ${fg}; --card-foreground: ${fg};`);
-    if (accent) lines.push(`--accent: ${accent}; --primary: ${accent}; --ring: ${accent};`);
-    if (data?.colors?.accent) lines.push(`--store-accent: ${data.colors.accent};`);
+    if (accent) {
+      lines.push(`--accent: ${accent}; --primary: ${accent}; --ring: ${accent}; --store-accent: ${accent};`);
+    }
     if (headingFont) lines.push(`--font-display: '${headingFont}', sans-serif;`);
     if (bodyFont) lines.push(`--font-body: '${bodyFont}', sans-serif;`);
-    return lines.length
-      ? `.storefront-root{${lines.join("")}} .storefront-root, .storefront-root *{${
-          bodyFont ? `font-family: var(--font-body, inherit);` : ""
-        }} .storefront-root .font-display, .storefront-root h1, .storefront-root h2, .storefront-root h3{${
-          headingFont ? `font-family: var(--font-display, inherit);` : ""
-        }}`
-      : "";
+    if (!lines.length) return "";
+    return `.storefront-root{${lines.join("")}}${
+      bodyFont ? ` .storefront-root{font-family: var(--font-body);}` : ""
+    }${
+      headingFont
+        ? ` .storefront-root .font-display, .storefront-root h1, .storefront-root h2, .storefront-root h3{font-family: var(--font-display);}`
+        : ""
+    }${bg ? ` .storefront-root{background-color: ${bg};}` : ""}${
+      fg ? ` .storefront-root{color: ${fg};}` : ""
+    }`;
   }, [data, headingFont, bodyFont]);
+
 
   const ab = data?.header;
   return (
