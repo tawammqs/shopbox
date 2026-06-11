@@ -6,6 +6,7 @@ import { ProductRow } from "@/components/storefront/ProductRow";
 import { CategoryGrid } from "@/components/storefront/CategoryGrid";
 import { HomeVideoSection } from "@/components/storefront/HomeVideoSection";
 import { useStorefront, useIsMioTheme } from "@/components/storefront/StoreContext";
+import { useStorefrontHomepageSections } from "@/components/storefront/StorefrontCustomizer";
 import { Fragment } from "react";
 import { TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
 import { TheShoesHomepage } from "@/components/storefront/the-shoes/TheShoesHomepage";
@@ -14,12 +15,22 @@ export const Route = createFileRoute("/loja/$slug/")({
   component: HomePage,
 });
 
-const TAGS = [
-  { tag: "destaques", label: "Destaques" },
-  { tag: "lancamentos", label: "Lançamentos" },
-  { tag: "ofertas", label: "Ofertas" },
-  { tag: "principal", label: "Principal" },
-] as const;
+// section id (do editor) -> tag de produtos
+const TAG_BY_SECTION: Record<string, { tag: string; label: string }> = {
+  "produtos-oferta": { tag: "ofertas", label: "Ofertas" },
+  "produtos-destaque": { tag: "destaques", label: "Destaques" },
+  "produtos-novos": { tag: "lancamentos", label: "Lançamentos" },
+  "produto-principal": { tag: "principal", label: "Principal" },
+};
+
+const DEFAULT_ORDER = [
+  "banners-rotativos",
+  "produtos-oferta",
+  "produtos-destaque",
+  "produtos-novos",
+  "video",
+  "categorias-principais",
+];
 
 function HomePage() {
   const { store } = useStorefront();
@@ -34,18 +45,31 @@ function DefaultHomePage({ storeId }: { storeId: string }) {
     queryFn: () => fetchActiveBanners(storeId),
     staleTime: 60_000,
   });
+  const { data: sections } = useStorefrontHomepageSections(storeId);
+
+  const order = sections?.order?.length ? sections.order : DEFAULT_ORDER;
+  const visible = (id: string) => (sections?.map ? sections.map[id] !== false : DEFAULT_ORDER.includes(id));
 
   return (
     <>
-      {banners.data && <BannerCarousel banners={banners.data} />}
-      {TAGS.map((t, i) => (
-        <Fragment key={t.tag}>
-          <TagRow storeId={storeId} tag={t.tag} label={t.label} />
-          {i === 0 && <TheShoesVipBanner />}
-        </Fragment>
-      ))}
-      <HomeVideoSection />
-      <CategoryGrid />
+      {order.map((id, i) => {
+        if (!visible(id)) return null;
+        if (id === "banners-rotativos") {
+          return banners.data ? <BannerCarousel key={id} banners={banners.data} /> : null;
+        }
+        if (TAG_BY_SECTION[id]) {
+          const t = TAG_BY_SECTION[id];
+          return (
+            <Fragment key={id}>
+              <TagRow storeId={storeId} tag={t.tag} label={t.label} />
+              {i === 0 && <TheShoesVipBanner />}
+            </Fragment>
+          );
+        }
+        if (id === "video") return <HomeVideoSection key={id} />;
+        if (id === "categorias-principais" || id === "banners-categorias") return <CategoryGrid key={id} />;
+        return null;
+      })}
     </>
   );
 }

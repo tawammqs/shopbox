@@ -15,6 +15,7 @@ import { TheShoesCouponTab } from "@/components/storefront/the-shoes/TheShoesCou
 import { TheShoesGlobalStyles } from "@/components/storefront/the-shoes/TheShoesGlobalStyles";
 import { Button } from "@/components/ui/button";
 import { VisitTracker } from "@/components/storefront/VisitTracker";
+import { StorefrontCustomizer } from "@/components/storefront/StorefrontCustomizer";
 
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
@@ -75,6 +76,7 @@ function StorefrontLayout() {
         data-theme={isTheShoes ? "mio" : undefined}
         style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
+        {!isTheShoes && <StorefrontCustomizer storeId={store.id} />}
         {isTheShoes ? (
           <TheShoesHeader />
         ) : (
