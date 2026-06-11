@@ -34,12 +34,20 @@ function ClientesPage() {
   const planSlug = (store?.plan?.slug ?? null) as any;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold">Clientes</h1>
-        <p className="text-sm text-muted-foreground">
-          Quem comprou pelo WhatsApp aparece aqui. Acompanhe pedidos e converse direto.
-        </p>
+    <div className="mx-auto max-w-7xl space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Clientes</h1>
+          <p className="mt-1 text-sm text-[#6b7280]">Quem comprou pelo WhatsApp aparece aqui.</p>
+        </div>
+        <div className="flex gap-2">
+          <button className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium hover:bg-gray-50">
+            Mais opções ⋮
+          </button>
+          <button className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-[#25d366] px-4 text-sm font-semibold text-white hover:bg-[#1fb959]">
+            + Adicionar novo cliente
+          </button>
+        </div>
       </div>
 
       <PlanGate plan={planSlug} feature="customers">
@@ -48,6 +56,7 @@ function ClientesPage() {
     </div>
   );
 }
+
 
 function ClientesContent({ storeId, storeName }: { storeId: string; storeName: string }) {
   const [customers, setCustomers] = useState<CustomerWithStats[]>([]);
