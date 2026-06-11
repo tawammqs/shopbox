@@ -243,16 +243,19 @@ function Sidebar({
     <>
       <div className={cn("flex h-14 items-center border-b border-[#e5e7eb]", collapsed ? "justify-center px-2" : "justify-between px-4")}>
         {collapsed ? (
-          <Link to="/admin" className="flex items-center justify-center" aria-label="ShopBox">
-            <span className="block h-7 w-7 overflow-hidden">
-              <img
-                src={shopboxLogo}
-                alt="ShopBox"
-                className="h-7 w-auto max-w-none object-cover object-left"
-                style={{ objectPosition: "0 50%" }}
-              />
-            </span>
-          </Link>
+          <button
+            type="button"
+            onClick={onToggle}
+            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md hover:bg-gray-100"
+            aria-label="Expandir menu"
+          >
+            <img
+              src={shopboxLogo}
+              alt="ShopBox"
+              className="h-7 w-auto max-w-none object-cover"
+              style={{ objectPosition: "0 50%", width: "32px" }}
+            />
+          </button>
         ) : (
           <>
             <Link to="/admin" className="flex items-center">
@@ -262,21 +265,11 @@ function Sidebar({
               type="button"
               onClick={onToggle}
               className="rounded-md p-2 text-gray-600 hover:bg-gray-100"
-              aria-label="Recolher menu"
+              aria-label={mobile ? "Fechar menu" : "Recolher menu"}
             >
-              <Menu className="h-5 w-5" />
+              {mobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </>
-        )}
-        {collapsed && (
-          <button
-            type="button"
-            onClick={onToggle}
-            className="sr-only"
-            aria-label="Expandir menu"
-          >
-            {mobile ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
         )}
       </div>
 
