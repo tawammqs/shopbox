@@ -1,10 +1,15 @@
 import { createContext, useContext, type ReactNode } from "react";
-import type { StoreRow } from "@/lib/storefront";
+import type { StoreRow, PaymentSettings, SocialLinks, ContactInfo, StoreMenu, StaticPageSummary } from "@/lib/storefront";
 
 type Ctx = {
   store: StoreRow;
   categories: { id: string; name: string; slug: string; parent_id: string | null; image_url: string | null; display_order: number }[];
   activeThemeSlug: string | null;
+  paymentSettings: PaymentSettings | null;
+  socialLinks: SocialLinks | null;
+  contactInfo: ContactInfo | null;
+  menus: StoreMenu[];
+  pages: StaticPageSummary[];
 };
 
 const StoreContext = createContext<Ctx | null>(null);

@@ -24,16 +24,57 @@ export type StoreRow = {
     message?: string;
     frequency?: string;
   };
+  active: boolean;
+  subscription_status: string;
+  trial_ends_at: string | null;
 };
+
+export type PaymentSettings = {
+  pix_enabled: boolean;
+  pix_discount_percent: number;
+  credit_card_enabled: boolean;
+  cash_enabled: boolean;
+  pickup_payment_enabled: boolean;
+  installments_enabled: boolean;
+  max_installments: number;
+  installments_no_interest: boolean;
+  min_installment_value: number;
+};
+
+export type SocialLinks = {
+  instagram_username: string | null;
+  facebook_url: string | null;
+  youtube_url: string | null;
+  tiktok_username: string | null;
+  twitter_username: string | null;
+  pinterest_url: string | null;
+  blog_url: string | null;
+};
+
+export type ContactInfo = {
+  company_name: string | null;
+  tax_id: string | null;
+  store_email: string | null;
+  address: string | null;
+  phone: string | null;
+  contact_text: string | null;
+};
+
+export type StoreMenu = {
+  id: string;
+  name: string;
+  items: { id: string; label: string; url: string | null; position: number }[];
+};
+
+export type StaticPageSummary = { id: string; slug: string; title: string };
 
 export async function fetchStoreBySlug(slug: string): Promise<StoreRow | null> {
   const { data, error } = await supabase
     .from("stores")
     .select(
-      "id, slug, name, tagline, logo_url, accent_color, whatsapp, whatsapp_greeting, instagram, facebook, tiktok, youtube, facebook_pixel_id, google_analytics_id, trust_badges, welcome_popup",
+      "id, slug, name, tagline, logo_url, accent_color, whatsapp, whatsapp_greeting, instagram, facebook, tiktok, youtube, facebook_pixel_id, google_analytics_id, trust_badges, welcome_popup, active, subscription_status, trial_ends_at",
     )
     .eq("slug", slug)
-    .eq("active", true)
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
@@ -42,6 +83,78 @@ export async function fetchStoreBySlug(slug: string): Promise<StoreRow | null> {
     trust_badges: Array.isArray(data.trust_badges) ? (data.trust_badges as string[]) : [],
     welcome_popup: (data.welcome_popup ?? {}) as StoreRow["welcome_popup"],
   };
+}
+
+export async function fetchPaymentSettings(storeId: string): Promise<PaymentSettings | null> {
+  const { data } = await supabase
+    .from("store_payment_settings")
+    .select("pix_enabled, pix_discount_percent, credit_card_enabled, cash_enabled, pickup_payment_enabled, installments_enabled, max_installments, installments_no_interest, min_installment_value")
+    .eq("store_id", storeId)
+    .maybeSingle();
+  if (!data) return null;
+  return {
+    pix_enabled: !!data.pix_enabled,
+    pix_discount_percent: Number(data.pix_discount_percent ?? 0),
+    credit_card_enabled: !!data.credit_card_enabled,
+    cash_enabled: !!data.cash_enabled,
+    pickup_payment_enabled: !!data.pickup_payment_enabled,
+    installments_enabled: !!data.installments_enabled,
+    max_installments: Number(data.max_installments ?? 3),
+    installments_no_interest: !!data.installments_no_interest,
+    min_installment_value: Number(data.min_installment_value ?? 10),
+  };
+}
+
+export async function fetchSocialLinks(storeId: string): Promise<SocialLinks | null> {
+  const { data } = await supabase
+    .from("store_social_links")
+    .select("instagram_username, facebook_url, youtube_url, tiktok_username, twitter_username, pinterest_url, blog_url")
+    .eq("store_id", storeId)
+    .maybeSingle();
+  return (data as SocialLinks) ?? null;
+}
+
+export async function fetchContactInfo(storeId: string): Promise<ContactInfo | null> {
+  const { data } = await supabase
+    .from("store_contact_info")
+    .select("company_name, tax_id, store_email, address, phone, contact_text")
+    .eq("store_id", storeId)
+    .maybeSingle();
+  return (data as ContactInfo) ?? null;
+}
+
+export async function fetchStoreMenus(storeId: string): Promise<StoreMenu[]> {
+  const { data } = await supabase
+    .from("store_menus")
+    .select("id, name, store_menu_items(id, label, url, position)")
+    .eq("store_id", storeId);
+  return (data ?? []).map((m: any) => ({
+    id: m.id,
+    name: m.name,
+    items: (m.store_menu_items ?? [])
+      .slice()
+      .sort((a: any, b: any) => a.position - b.position)
+      .map((i: any) => ({ id: i.id, label: i.label, url: i.url, position: i.position })),
+  }));
+}
+
+export async function fetchStaticPages(storeId: string): Promise<StaticPageSummary[]> {
+  const { data } = await supabase
+    .from("static_pages")
+    .select("id, slug, title")
+    .eq("store_id", storeId)
+    .order("title", { ascending: true });
+  return (data ?? []) as StaticPageSummary[];
+}
+
+export async function fetchStaticPage(storeId: string, slug: string) {
+  const { data } = await supabase
+    .from("static_pages")
+    .select("id, slug, title, content_md")
+    .eq("store_id", storeId)
+    .eq("slug", slug)
+    .maybeSingle();
+  return data;
 }
 
 export async function fetchCategories(storeId: string) {

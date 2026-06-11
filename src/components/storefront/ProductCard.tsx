@@ -12,7 +12,7 @@ import { getInstallment } from "@/lib/installments";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
-  const { store } = useStorefront();
+  const { store, paymentSettings } = useStorefront();
   const isMio = useIsMioTheme();
   const wished = useWishlist((s) => s.has(p.id));
   const toggleWish = useWishlist((s) => s.toggle);
@@ -23,6 +23,20 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const pct = discountPct(p.price, p.promo_price);
   const img1 = p.images[0]?.url ?? "";
   const img2 = p.images[1]?.url ?? img1;
+
+  const pixPrice =
+    paymentSettings?.pix_enabled && paymentSettings.pix_discount_percent > 0
+      ? price * (1 - paymentSettings.pix_discount_percent / 100)
+      : null;
+  const installmentInfo = (() => {
+    const ps = paymentSettings;
+    if (!ps?.credit_card_enabled || !ps.installments_enabled) return null;
+    const n = ps.max_installments || 3;
+    const value = price / n;
+    if (value < (ps.min_installment_value || 0)) return null;
+    return { n, value, noInterest: ps.installments_no_interest };
+  })();
+
 
   const quickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -135,23 +149,42 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <span className="text-base font-bold text-foreground">{formatBRL(price)}</span>
           {pct > 0 && <span className="text-xs text-muted-foreground line-through">{formatBRL(p.price)}</span>}
         </div>
-        {isMio && (() => {
-          const inst = getInstallment(p.price, p.promo_price);
-          if (!inst.show) return null;
-          return (
-            <span style={{
-              display: 'block',
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: '11px',
-              fontWeight: 400,
-              color: '#aaa',
-              marginTop: '2px',
-              lineHeight: 1.3,
-            }}>
-              3x de {inst.formatted} sem juros
-            </span>
-          );
-        })()}
+        {isMio ? (
+          (() => {
+            const inst = getInstallment(p.price, p.promo_price);
+            if (!inst.show) return null;
+            return (
+              <span style={{
+                display: 'block',
+                fontFamily: 'DM Sans, sans-serif',
+                fontSize: '11px',
+                fontWeight: 400,
+                color: '#aaa',
+                marginTop: '2px',
+                lineHeight: 1.3,
+              }}>
+                3x de {inst.formatted} sem juros
+              </span>
+            );
+          })()
+        ) : (
+          <div className="mt-1 space-y-0.5 text-xs">
+            {pixPrice && (
+              <p className="font-medium text-emerald-600">
+                {formatBRL(pixPrice)} no PIX
+                <span className="ml-1 rounded bg-emerald-100 px-1 text-[10px] font-bold text-emerald-700">
+                  -{paymentSettings!.pix_discount_percent}%
+                </span>
+              </p>
+            )}
+            {installmentInfo && (
+              <p className="text-muted-foreground">
+                {installmentInfo.n}x de {formatBRL(installmentInfo.value)}
+                {installmentInfo.noInterest ? " sem juros" : ""}
+              </p>
+            )}
+          </div>
+        )}
 
         {p.colors.length > 0 && (
           <div className="flex items-center gap-1 pt-1">
@@ -168,6 +201,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
             )}
           </div>
         )}
+
       </div>
     </Link>
   );

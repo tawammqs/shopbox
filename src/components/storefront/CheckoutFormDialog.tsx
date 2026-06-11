@@ -46,10 +46,39 @@ type Props = {
 };
 
 export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, total, buyNow }: Props) {
-  const { store } = useStorefront();
+  const { store, paymentSettings } = useStorefront();
   const clearCart = useCart((s) => s.clear);
 
   const isTheShoes = useIsMioTheme();
+
+  // Build dynamic payment options from store settings
+  const paymentOptions = (() => {
+    const ps = paymentSettings;
+    const opts: { value: string; label: string }[] = [];
+    if (!ps) {
+      // sensible fallback so checkout never breaks
+      opts.push({ value: "pix", label: "PIX" });
+      opts.push({ value: "cartao", label: "Cartão de crédito" });
+      return opts;
+    }
+    if (ps.pix_enabled) {
+      opts.push({
+        value: "pix",
+        label: ps.pix_discount_percent > 0 ? `PIX (${ps.pix_discount_percent}% de desconto)` : "PIX",
+      });
+    }
+    if (ps.credit_card_enabled) {
+      const label = ps.installments_enabled
+        ? `Cartão de crédito (até ${ps.max_installments}x${ps.installments_no_interest ? " sem juros" : ""})`
+        : "Cartão de crédito";
+      opts.push({ value: "cartao", label });
+    }
+    if (ps.cash_enabled) opts.push({ value: "dinheiro", label: "Dinheiro na entrega" });
+    if (ps.pickup_payment_enabled) opts.push({ value: "retirada", label: "Pagamento na retirada" });
+    return opts;
+  })();
+
+  const requirePayment = paymentOptions.length > 0;
 
   const [form, setForm] = useState({
     name: "", whatsapp: "", email: "", cpf: "", cep: "", address: "", city_state: "", paymentMethod: "",
@@ -78,10 +107,11 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
       setErrors(errs);
       return;
     }
-    if (isTheShoes && !form.paymentMethod) {
+    if (requirePayment && !form.paymentMethod) {
       setErrors({ ...errors, paymentMethod: "Selecione uma forma de pagamento" });
       return;
     }
+
     setErrors({});
     setBusy(true);
     try {
@@ -124,7 +154,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         cep: form.cep,
         address: form.address,
         city_state: form.city_state,
-        paymentMethod: isTheShoes ? form.paymentMethod : undefined,
+        paymentMethod: requirePayment ? form.paymentMethod : undefined,
       };
 
       if (buyNow) {
@@ -220,48 +250,66 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
             <Input value={form.city_state} onChange={update("city_state")} placeholder="São Paulo / SP" />
           </Field>
 
-          {isTheShoes && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{
-                fontFamily: 'DM Sans, sans-serif',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: '#333',
-                marginBottom: '6px'
-              }}>
-                Forma de pagamento *
-              </label>
-              <select
-                value={form.paymentMethod}
-                onChange={update("paymentMethod")}
-                required
-                style={{
-                  width: '100%',
-                  height: '52px',
-                  border: errors.paymentMethod ? '1px solid #ef4444' : '1px solid #e0e0e0',
-                  borderRadius: '8px',
-                  padding: '0 16px',
+          {requirePayment && (
+            isTheShoes ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{
                   fontFamily: 'DM Sans, sans-serif',
-                  fontSize: '15px',
-                  color: form.paymentMethod ? '#111' : '#aaa',
-                  background: '#fff',
-                  cursor: 'pointer',
-                  appearance: 'none',
-                  WebkitAppearance: 'none',
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 16px center'
-                }}
-              >
-                <option value="" disabled>Selecione a forma de pagamento</option>
-                <option value="pix">PIX</option>
-                <option value="cartao">Cartão de crédito — até 3x sem juros</option>
-              </select>
-              {errors.paymentMethod && (
-                <p className="text-xs text-destructive">{errors.paymentMethod}</p>
-              )}
-            </div>
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#333',
+                  marginBottom: '6px'
+                }}>
+                  Forma de pagamento *
+                </label>
+                <select
+                  value={form.paymentMethod}
+                  onChange={update("paymentMethod")}
+                  required
+                  style={{
+                    width: '100%',
+                    height: '52px',
+                    border: errors.paymentMethod ? '1px solid #ef4444' : '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    padding: '0 16px',
+                    fontFamily: 'DM Sans, sans-serif',
+                    fontSize: '15px',
+                    color: form.paymentMethod ? '#111' : '#aaa',
+                    background: '#fff',
+                    cursor: 'pointer',
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 16px center'
+                  }}
+                >
+                  <option value="" disabled>Selecione a forma de pagamento</option>
+                  {paymentOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                {errors.paymentMethod && (
+                  <p className="text-xs text-destructive">{errors.paymentMethod}</p>
+                )}
+              </div>
+            ) : (
+              <Field label="Forma de pagamento *" error={errors.paymentMethod}>
+                <select
+                  value={form.paymentMethod}
+                  onChange={update("paymentMethod")}
+                  required
+                  className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-accent"
+                >
+                  <option value="" disabled>Selecione a forma de pagamento</option>
+                  {paymentOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </Field>
+            )
           )}
+
 
           <Button
             type="submit"
