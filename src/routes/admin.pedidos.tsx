@@ -132,6 +132,12 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
 
   useEffect(() => { load(); }, [storeId]);
 
+  // Mark pending orders as viewed when entering the page
+  useEffect(() => {
+    if (!storeId) return;
+    import("@/hooks/useUnreadCounts").then((m) => m.markOrdersViewed(storeId).catch(() => {}));
+  }, [storeId]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const fromDate = from ? new Date(from) : null;

@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Star, MessageCircle, CheckCircle2, EyeOff, Trash2, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
+import { markQuestionsReviewsViewed } from "@/hooks/useUnreadCounts";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,11 @@ export const Route = createFileRoute("/admin/perguntas")({
 function PerguntasPage() {
   const { data: store } = useMyStore();
   const [tab, setTab] = useState<"perguntas" | "avaliacoes">("perguntas");
+
+  useEffect(() => {
+    if (!store?.id) return;
+    markQuestionsReviewsViewed(store.id).catch(() => {});
+  }, [store?.id]);
 
   if (!store) return <p>Carregando...</p>;
 
