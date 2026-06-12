@@ -7,7 +7,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { signOut } from "@/hooks/useAuth";
-import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
+import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import { useMyStore } from "@/hooks/useMyStore";
 import { isPremiumStore } from "@/lib/access";
 import { cn } from "@/lib/utils";
@@ -237,7 +237,8 @@ function Sidebar({
   currentPath: string;
   mobile?: boolean;
 }) {
-  const pendingOrders = usePendingOrdersCount(storeId);
+  const unread = useUnreadCounts(storeId);
+  const pendingOrders = unread.orders;
   const { data: store } = useMyStore();
   const isPremium = isPremiumStore(store);
 
