@@ -286,7 +286,11 @@ function Sidebar({
                   item={item}
                   collapsed={collapsed}
                   currentPath={currentPath}
-                  pendingOrders={pendingOrders}
+                  unreadByPath={{
+                    "/admin/vendas": unread.orders,
+                    "/admin/clientes/leads": unread.leads,
+                    "/admin/clientes/avaliacoes": unread.questions,
+                  }}
                   isPremium={isPremium}
                 />
               ))}
@@ -297,7 +301,7 @@ function Sidebar({
 
       <div className="border-t border-[#e5e7eb] p-2 space-y-0.5">
         {FOOTER_ITEMS.map((item) => (
-          <NavRow key={item.label} item={item} collapsed={collapsed} currentPath={currentPath} pendingOrders={0} isPremium={isPremium} />
+          <NavRow key={item.label} item={item} collapsed={collapsed} currentPath={currentPath} unreadByPath={{}} isPremium={isPremium} />
         ))}
       </div>
     </>
