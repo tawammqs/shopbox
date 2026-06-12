@@ -98,8 +98,14 @@ export function CartDrawer() {
 
   const total = Math.max(0, subtotal - (coupon?.discount ?? 0));
 
+  const belowMin = minPurchase > 0 && subtotal < minPurchase;
+
   const checkout = () => {
     if (items.length === 0) return;
+    if (belowMin) {
+      toast.error(`Pedido mínimo de ${formatBRL(minPurchase)}`);
+      return;
+    }
     void trackInitiateCheckout(store, {
       ids: items.map((i) => i.productId),
       numItems: items.reduce((s, i) => s + i.quantity, 0),
@@ -228,23 +234,25 @@ export function CartDrawer() {
               </div>
 
               {/* CEP */}
-              <div className="mt-3 rounded-lg border border-border p-3">
-                <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <Truck className="h-3 w-3" /> Calcular frete
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    value={cep}
-                    onChange={(e) => setCep(e.target.value)}
-                    placeholder="00000-000"
-                    className="h-9 flex-1 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus:border-accent"
-                  />
-                  <Button size="sm" variant="outline" onClick={checkCep}>
-                    OK
-                  </Button>
+              {showShipping && (
+                <div className="mt-3 rounded-lg border border-border p-3">
+                  <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <Truck className="h-3 w-3" /> Calcular frete
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      value={cep}
+                      onChange={(e) => setCep(e.target.value)}
+                      placeholder="00000-000"
+                      className="h-9 flex-1 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus:border-accent"
+                    />
+                    <Button size="sm" variant="outline" onClick={checkCep}>
+                      OK
+                    </Button>
+                  </div>
+                  {shippingMsg && <p className="mt-2 text-xs text-muted-foreground">{shippingMsg}</p>}
                 </div>
-                {shippingMsg && <p className="mt-2 text-xs text-muted-foreground">{shippingMsg}</p>}
-              </div>
+              )}
             </div>
 
             <footer className="space-y-3 border-t border-border bg-muted/30 px-5 py-4">
