@@ -181,6 +181,7 @@ export type Database = {
           name: string
           source: string
           store_id: string
+          viewed_at: string | null
           whatsapp: string
         }
         Insert: {
@@ -192,6 +193,7 @@ export type Database = {
           name: string
           source?: string
           store_id: string
+          viewed_at?: string | null
           whatsapp: string
         }
         Update: {
@@ -203,6 +205,7 @@ export type Database = {
           name?: string
           source?: string
           store_id?: string
+          viewed_at?: string | null
           whatsapp?: string
         }
         Relationships: [
@@ -569,18 +572,21 @@ export type Database = {
           email: string
           id: string
           store_id: string
+          viewed_at: string | null
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
           store_id: string
+          viewed_at?: string | null
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
           store_id?: string
+          viewed_at?: string | null
         }
         Relationships: [
           {
@@ -636,6 +642,7 @@ export type Database = {
           subtotal: number
           total: number
           updated_at: string
+          viewed_at: string | null
         }
         Insert: {
           coupon_code?: string | null
@@ -651,6 +658,7 @@ export type Database = {
           subtotal?: number
           total?: number
           updated_at?: string
+          viewed_at?: string | null
         }
         Update: {
           coupon_code?: string | null
@@ -666,6 +674,7 @@ export type Database = {
           subtotal?: number
           total?: number
           updated_at?: string
+          viewed_at?: string | null
         }
         Relationships: [
           {
@@ -841,6 +850,7 @@ export type Database = {
           question: string
           status: Database["public"]["Enums"]["question_status"]
           updated_at: string
+          viewed_at: string | null
         }
         Insert: {
           answer?: string | null
@@ -853,6 +863,7 @@ export type Database = {
           question: string
           status?: Database["public"]["Enums"]["question_status"]
           updated_at?: string
+          viewed_at?: string | null
         }
         Update: {
           answer?: string | null
@@ -865,6 +876,7 @@ export type Database = {
           question?: string
           status?: Database["public"]["Enums"]["question_status"]
           updated_at?: string
+          viewed_at?: string | null
         }
         Relationships: [
           {
@@ -886,6 +898,7 @@ export type Database = {
           rating: number
           status: Database["public"]["Enums"]["review_status"]
           text: string | null
+          viewed_at: string | null
         }
         Insert: {
           created_at?: string
@@ -896,6 +909,7 @@ export type Database = {
           rating: number
           status?: Database["public"]["Enums"]["review_status"]
           text?: string | null
+          viewed_at?: string | null
         }
         Update: {
           created_at?: string
@@ -906,6 +920,7 @@ export type Database = {
           rating?: number
           status?: Database["public"]["Enums"]["review_status"]
           text?: string | null
+          viewed_at?: string | null
         }
         Relationships: [
           {
@@ -2273,22 +2288,28 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          name: string | null
           source: string | null
           store_id: string | null
+          viewed_at: string | null
           whatsapp: string
         }
         Insert: {
           created_at?: string
           id?: string
+          name?: string | null
           source?: string | null
           store_id?: string | null
+          viewed_at?: string | null
           whatsapp: string
         }
         Update: {
           created_at?: string
           id?: string
+          name?: string | null
           source?: string | null
           store_id?: string | null
+          viewed_at?: string | null
           whatsapp?: string
         }
         Relationships: [

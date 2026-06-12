@@ -7,7 +7,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { signOut } from "@/hooks/useAuth";
-import { usePendingOrdersCount } from "@/hooks/usePendingOrdersCount";
+import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import { useMyStore } from "@/hooks/useMyStore";
 import { isPremiumStore } from "@/lib/access";
 import { cn } from "@/lib/utils";
@@ -237,7 +237,8 @@ function Sidebar({
   currentPath: string;
   mobile?: boolean;
 }) {
-  const pendingOrders = usePendingOrdersCount(storeId);
+  const unread = useUnreadCounts(storeId);
+  const pendingOrders = unread.orders;
   const { data: store } = useMyStore();
   const isPremium = isPremiumStore(store);
 
@@ -285,7 +286,11 @@ function Sidebar({
                   item={item}
                   collapsed={collapsed}
                   currentPath={currentPath}
-                  pendingOrders={pendingOrders}
+                  unreadByPath={{
+                    "/admin/vendas": unread.orders,
+                    "/admin/clientes/leads": unread.leads,
+                    "/admin/clientes/avaliacoes": unread.questions,
+                  }}
                   isPremium={isPremium}
                 />
               ))}
@@ -296,7 +301,7 @@ function Sidebar({
 
       <div className="border-t border-[#e5e7eb] p-2 space-y-0.5">
         {FOOTER_ITEMS.map((item) => (
-          <NavRow key={item.label} item={item} collapsed={collapsed} currentPath={currentPath} pendingOrders={0} isPremium={isPremium} />
+          <NavRow key={item.label} item={item} collapsed={collapsed} currentPath={currentPath} unreadByPath={{}} isPremium={isPremium} />
         ))}
       </div>
     </>
@@ -304,12 +309,12 @@ function Sidebar({
 }
 
 function NavRow({
-  item, collapsed, currentPath, pendingOrders, hasSubmenuIndicator, isPremium,
+  item, collapsed, currentPath, unreadByPath, hasSubmenuIndicator, isPremium,
 }: {
   item: NavItem;
   collapsed: boolean;
   currentPath: string;
-  pendingOrders: number;
+  unreadByPath: Record<string, number>;
   hasSubmenuIndicator?: boolean;
   isPremium?: boolean;
 }) {
@@ -323,17 +328,25 @@ function NavRow({
   }, [childActive]);
 
   const Icon = item.icon;
-  const showBadge = item.to === "/admin/vendas" && pendingOrders > 0;
+  const leafUnread = !hasChildren && item.to ? (unreadByPath[item.to] ?? 0) : 0;
+  const groupUnread = hasChildren
+    ? item.children!.reduce((sum, c) => sum + (unreadByPath[c.to] ?? 0), 0)
+    : 0;
 
   if (!hasChildren && item.to) {
     const content = (
       <>
-        <Icon className="h-[18px] w-[18px] shrink-0" />
+        <div className="relative">
+          <Icon className="h-[18px] w-[18px] shrink-0" />
+          {collapsed && leafUnread > 0 && (
+            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
+          )}
+        </div>
         {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
         {!collapsed && hasSubmenuIndicator && <ChevronRight className="h-4 w-4 text-gray-400" />}
-        {!collapsed && showBadge && (
-          <span className="ml-auto min-w-[1.25rem] rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
-            {pendingOrders > 99 ? "99+" : pendingOrders}
+        {!collapsed && leafUnread > 0 && (
+          <span className="ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-[#25d366] px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
+            {leafUnread > 9 ? "9+" : leafUnread}
           </span>
         )}
       </>
@@ -374,14 +387,25 @@ function NavRow({
         title={collapsed ? item.label : undefined}
       >
         {childActive && <span className="absolute left-0 top-0 h-full w-[3px] rounded-r bg-[#25d366]" />}
-        <Icon className="h-[18px] w-[18px] shrink-0" />
+        <div className="relative">
+          <Icon className="h-[18px] w-[18px] shrink-0" />
+          {collapsed && groupUnread > 0 && (
+            <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-red-500" />
+          )}
+        </div>
         {!collapsed && <span className="flex-1 truncate text-left">{item.label}</span>}
+        {!collapsed && groupUnread > 0 && (
+          <span className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-[#25d366] px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
+            {groupUnread > 9 ? "9+" : groupUnread}
+          </span>
+        )}
         {!collapsed && (open ? <ChevronDown className="h-4 w-4 text-gray-400" /> : <ChevronRight className="h-4 w-4 text-gray-400" />)}
       </button>
       {!collapsed && open && (
         <div className="ml-8 mt-0.5 space-y-0.5 border-l border-[#e5e7eb] pl-3">
           {item.children!.map((child) => {
             const active = currentPath === child.to;
+            const childUnread = unreadByPath[child.to] ?? 0;
             return (
               <Link
                 key={child.to}
@@ -392,6 +416,11 @@ function NavRow({
                 )}
               >
                 <span className="flex-1 truncate">{child.label}</span>
+                {childUnread > 0 && (
+                  <span className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-[#25d366] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                    {childUnread > 9 ? "9+" : childUnread}
+                  </span>
+                )}
                 {child.premium && !isPremium && (
                   <>
                     <Lock className="h-3.5 w-3.5 text-gray-400" />
