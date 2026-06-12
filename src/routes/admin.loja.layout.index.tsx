@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMyStore } from "@/hooks/useMyStore";
 import { MoreVertical } from "lucide-react";
 
-export const Route = createFileRoute("/admin/loja/layout")({
+export const Route = createFileRoute("/admin/loja/layout/")({
   head: () => ({ meta: [{ title: "Layout — ShopBox" }] }),
   component: Page,
 });

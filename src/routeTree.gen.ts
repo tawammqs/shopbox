@@ -65,7 +65,6 @@ import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id
 import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
 import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
 import { Route as AdminLojaMenusRouteImport } from './routes/admin.loja.menus'
-import { Route as AdminLojaLayoutRouteImport } from './routes/admin.loja.layout'
 import { Route as AdminLojaFiltrosRouteImport } from './routes/admin.loja.filtros'
 import { Route as AdminEstatisticasVisitasRouteImport } from './routes/admin.estatisticas.visitas'
 import { Route as AdminEstatisticasVendasRouteImport } from './routes/admin.estatisticas.vendas'
@@ -81,6 +80,7 @@ import { Route as AdminConfiguracoesDominiosRouteImport } from './routes/admin.c
 import { Route as AdminConfiguracoesContatoRouteImport } from './routes/admin.configuracoes.contato'
 import { Route as AdminClientesLeadsRouteImport } from './routes/admin.clientes.leads'
 import { Route as AdminClientesAvaliacoesRouteImport } from './routes/admin.clientes.avaliacoes'
+import { Route as AdminLojaLayoutIndexRouteImport } from './routes/admin.loja.layout.index'
 import { Route as LovableEmailTransactionalSendInternalRouteImport } from './routes/lovable/email/transactional/send-internal'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -374,11 +374,6 @@ const AdminLojaMenusRoute = AdminLojaMenusRouteImport.update({
   path: '/loja/menus',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminLojaLayoutRoute = AdminLojaLayoutRouteImport.update({
-  id: '/loja/layout',
-  path: '/loja/layout',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminLojaFiltrosRoute = AdminLojaFiltrosRouteImport.update({
   id: '/loja/filtros',
   path: '/loja/filtros',
@@ -463,6 +458,11 @@ const AdminClientesAvaliacoesRoute = AdminClientesAvaliacoesRouteImport.update({
   path: '/avaliacoes',
   getParentRoute: () => AdminClientesRoute,
 } as any)
+const AdminLojaLayoutIndexRoute = AdminLojaLayoutIndexRouteImport.update({
+  id: '/loja/layout/',
+  path: '/loja/layout/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const LovableEmailTransactionalSendInternalRoute =
   LovableEmailTransactionalSendInternalRouteImport.update({
     id: '/lovable/email/transactional/send-internal',
@@ -515,9 +515,9 @@ const LojaSlugCategoriaCategorySlugRoute =
     getParentRoute: () => LojaSlugRoute,
   } as any)
 const AdminLojaLayoutEditarRoute = AdminLojaLayoutEditarRouteImport.update({
-  id: '/editar',
-  path: '/editar',
-  getParentRoute: () => AdminLojaLayoutRoute,
+  id: '/loja/layout/editar',
+  path: '/loja/layout/editar',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -577,7 +577,6 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
-  '/admin/loja/layout': typeof AdminLojaLayoutRouteWithChildren
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
@@ -603,6 +602,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
+  '/admin/loja/layout/': typeof AdminLojaLayoutIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -656,7 +656,6 @@ export interface FileRoutesByTo {
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
-  '/admin/loja/layout': typeof AdminLojaLayoutRouteWithChildren
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
@@ -682,6 +681,7 @@ export interface FileRoutesByTo {
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
+  '/admin/loja/layout': typeof AdminLojaLayoutIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -741,7 +741,6 @@ export interface FileRoutesById {
   '/admin/estatisticas/vendas': typeof AdminEstatisticasVendasRoute
   '/admin/estatisticas/visitas': typeof AdminEstatisticasVisitasRoute
   '/admin/loja/filtros': typeof AdminLojaFiltrosRoute
-  '/admin/loja/layout': typeof AdminLojaLayoutRouteWithChildren
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
@@ -767,6 +766,7 @@ export interface FileRoutesById {
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
+  '/admin/loja/layout/': typeof AdminLojaLayoutIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -827,7 +827,6 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
     | '/admin/loja/filtros'
-    | '/admin/loja/layout'
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
@@ -853,6 +852,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
+    | '/admin/loja/layout/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -906,7 +906,6 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
     | '/admin/loja/filtros'
-    | '/admin/loja/layout'
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
@@ -932,6 +931,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
+    | '/admin/loja/layout'
   id:
     | '__root__'
     | '/'
@@ -990,7 +990,6 @@ export interface FileRouteTypes {
     | '/admin/estatisticas/vendas'
     | '/admin/estatisticas/visitas'
     | '/admin/loja/filtros'
-    | '/admin/loja/layout'
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
@@ -1016,6 +1015,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
+    | '/admin/loja/layout/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1444,13 +1444,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLojaMenusRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/loja/layout': {
-      id: '/admin/loja/layout'
-      path: '/loja/layout'
-      fullPath: '/admin/loja/layout'
-      preLoaderRoute: typeof AdminLojaLayoutRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/loja/filtros': {
       id: '/admin/loja/filtros'
       path: '/loja/filtros'
@@ -1556,6 +1549,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesAvaliacoesRouteImport
       parentRoute: typeof AdminClientesRoute
     }
+    '/admin/loja/layout/': {
+      id: '/admin/loja/layout/'
+      path: '/loja/layout'
+      fullPath: '/admin/loja/layout/'
+      preLoaderRoute: typeof AdminLojaLayoutIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/lovable/email/transactional/send-internal': {
       id: '/lovable/email/transactional/send-internal'
       path: '/lovable/email/transactional/send-internal'
@@ -1621,10 +1621,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/loja/layout/editar': {
       id: '/admin/loja/layout/editar'
-      path: '/editar'
+      path: '/loja/layout/editar'
       fullPath: '/admin/loja/layout/editar'
       preLoaderRoute: typeof AdminLojaLayoutEditarRouteImport
-      parentRoute: typeof AdminLojaLayoutRoute
+      parentRoute: typeof AdminRoute
     }
   }
 }
@@ -1711,18 +1711,6 @@ const AdminTemasRouteWithChildren = AdminTemasRoute._addFileChildren(
   AdminTemasRouteChildren,
 )
 
-interface AdminLojaLayoutRouteChildren {
-  AdminLojaLayoutEditarRoute: typeof AdminLojaLayoutEditarRoute
-}
-
-const AdminLojaLayoutRouteChildren: AdminLojaLayoutRouteChildren = {
-  AdminLojaLayoutEditarRoute: AdminLojaLayoutEditarRoute,
-}
-
-const AdminLojaLayoutRouteWithChildren = AdminLojaLayoutRoute._addFileChildren(
-  AdminLojaLayoutRouteChildren,
-)
-
 interface AdminRouteChildren {
   AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
@@ -1741,7 +1729,6 @@ interface AdminRouteChildren {
   AdminVendasRoute: typeof AdminVendasRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminLojaFiltrosRoute: typeof AdminLojaFiltrosRoute
-  AdminLojaLayoutRoute: typeof AdminLojaLayoutRouteWithChildren
   AdminLojaMenusRoute: typeof AdminLojaMenusRoute
   AdminLojaPaginasRoute: typeof AdminLojaPaginasRoute
   AdminLojaRedesSociaisRoute: typeof AdminLojaRedesSociaisRoute
@@ -1749,6 +1736,8 @@ interface AdminRouteChildren {
   AdminProdutosCategoriasRoute: typeof AdminProdutosCategoriasRoute
   AdminProdutosTabelaPrecosRoute: typeof AdminProdutosTabelaPrecosRoute
   AdminProdutosIndexRoute: typeof AdminProdutosIndexRoute
+  AdminLojaLayoutEditarRoute: typeof AdminLojaLayoutEditarRoute
+  AdminLojaLayoutIndexRoute: typeof AdminLojaLayoutIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -1769,7 +1758,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminVendasRoute: AdminVendasRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminLojaFiltrosRoute: AdminLojaFiltrosRoute,
-  AdminLojaLayoutRoute: AdminLojaLayoutRouteWithChildren,
   AdminLojaMenusRoute: AdminLojaMenusRoute,
   AdminLojaPaginasRoute: AdminLojaPaginasRoute,
   AdminLojaRedesSociaisRoute: AdminLojaRedesSociaisRoute,
@@ -1777,6 +1765,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProdutosCategoriasRoute: AdminProdutosCategoriasRoute,
   AdminProdutosTabelaPrecosRoute: AdminProdutosTabelaPrecosRoute,
   AdminProdutosIndexRoute: AdminProdutosIndexRoute,
+  AdminLojaLayoutEditarRoute: AdminLojaLayoutEditarRoute,
+  AdminLojaLayoutIndexRoute: AdminLojaLayoutIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -1856,13 +1846,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
