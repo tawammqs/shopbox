@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Download, MessageCircle, Trash2, Search, Mail } from "lucide-react";
 import { useMyStore } from "@/hooks/useMyStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { markLeadsViewed } from "@/hooks/useUnreadCounts";
 
 export const Route = createFileRoute("/admin/clientes/leads")({
   head: () => ({ meta: [{ title: "Leads — ShopBox" }] }),
@@ -20,17 +21,49 @@ type CouponLead = {
   birthday: string | null;
   created_at: string;
 };
-type VipLead = { id: string; whatsapp: string; created_at: string };
+type VipLead = { id: string; name: string | null; whatsapp: string; created_at: string };
 type NewsletterLead = { id: string; email: string; created_at: string };
 
 type SourceTab = "all" | "coupon" | "vip" | "newsletter";
 
 const TAB_DEFS: { id: SourceTab; label: string }[] = [
   { id: "all", label: "Todos" },
-  { id: "coupon", label: "5% Primeira Compra" },
-  { id: "vip", label: "Ofertas Secretas" },
-  { id: "newsletter", label: "Newsletter / Rodapé" },
+  { id: "coupon", label: "🎁 Cupom 5%" },
+  { id: "vip", label: "👑 Ofertas Secretas" },
+  { id: "newsletter", label: "📧 Newsletter" },
 ];
+
+const TAB_DESCRIPTIONS: Record<SourceTab, string> = {
+  all: "Visão consolidada de todas as fontes de leads, ordenadas por data.",
+  coupon: "Pessoas que preencheram o formulário para ganhar 5% de desconto na primeira compra.",
+  vip: 'Pessoas que deixaram o WhatsApp na seção "Ofertas Secretas" para entrar no grupo VIP.',
+  newsletter: "E-mails cadastrados na seção de newsletter do rodapé da loja.",
+};
+
+function fmtPhone(raw: string): string {
+  const d = (raw || "").replace(/\D/g, "");
+  if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return raw;
+}
+function fmtBirthday(b: string | null): string {
+  if (!b) return "—";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(b);
+  if (m) return `${m[3]}/${m[2]}`;
+  const m2 = /^(\d{2})\/(\d{2})/.exec(b);
+  if (m2) return `${m2[1]}/${m2[2]}`;
+  return b;
+}
+function fmtDateTime(s: string): string {
+  const d = new Date(s);
+  const date = d.toLocaleDateString("pt-BR");
+  const time = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return `${date} ${time}`;
+}
+function waLink(whatsapp: string): string {
+  const digits = (whatsapp || "").replace(/\D/g, "");
+  return `https://wa.me/${digits.startsWith("55") ? digits : "55" + digits}`;
+}
 
 function Page() {
   const { data: store } = useMyStore();
@@ -38,6 +71,12 @@ function Page() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<SourceTab>("all");
   const [q, setQ] = useState("");
+
+  // Mark all leads as viewed when entering the page
+  useEffect(() => {
+    if (!storeId) return;
+    markLeadsViewed(storeId).catch(() => {});
+  }, [storeId]);
 
   const couponQ = useQuery({
     queryKey: ["leads-coupon", storeId],
@@ -59,7 +98,7 @@ function Page() {
     queryFn: async (): Promise<VipLead[]> => {
       const { data, error } = await (supabase as any)
         .from("vip_group_leads")
-        .select("id, whatsapp, created_at")
+        .select("id, name, whatsapp, created_at")
         .eq("store_id", storeId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -112,26 +151,16 @@ function Page() {
     vip.filter((l) => new Date(l.created_at).getTime() >= sevenDaysAgo).length +
     news.filter((l) => new Date(l.created_at).getTime() >= sevenDaysAgo).length;
 
-  const month = new Date().getMonth() + 1;
-  const birthdayThisMonth = coupon.filter((l) => {
-    if (!l.birthday) return false;
-    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(l.birthday) || /^(\d{2})\/(\d{2})/.exec(l.birthday);
-    if (!m) return false;
-    return parseInt(m[2], 10) === month;
-  }).length;
-
-  function fmtBirthday(b: string | null): string {
-    if (!b) return "—";
-    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(b);
-    if (m) return `${m[3]}/${m[2]}`;
-    const m2 = /^(\d{2})\/(\d{2})/.exec(b);
-    if (m2) return `${m2[1]}/${m2[2]}`;
-    return b;
-  }
-  function waLink(whatsapp: string): string {
-    const digits = (whatsapp || "").replace(/\D/g, "");
-    return `https://wa.me/${digits.startsWith("55") ? digits : "55" + digits}`;
-  }
+  // Most popular origin
+  const topOrigin = useMemo(() => {
+    const arr = [
+      { label: "Cupom 5%", count: coupon.length },
+      { label: "Ofertas Secretas", count: vip.length },
+      { label: "Newsletter", count: news.length },
+    ].sort((a, b) => b.count - a.count);
+    if (arr[0].count === 0) return { label: "—", count: 0 };
+    return arr[0];
+  }, [coupon.length, vip.length, news.length]);
 
   const tabCounts: Record<SourceTab, number> = {
     all: totalCount,
@@ -152,7 +181,10 @@ function Page() {
   const filterTextVip = (l: VipLead) => {
     const t = q.trim().toLowerCase();
     if (!t) return true;
-    return (l.whatsapp || "").toLowerCase().includes(t);
+    return (
+      (l.name || "").toLowerCase().includes(t) ||
+      (l.whatsapp || "").toLowerCase().includes(t)
+    );
   };
   const filterTextNews = (l: NewsletterLead) => {
     const t = q.trim().toLowerCase();
@@ -163,38 +195,37 @@ function Page() {
   function exportCsv() {
     let headers: string[] = [];
     let rows: (string | number)[][] = [];
-    const fmtDate = (d: string) => new Date(d).toLocaleDateString("pt-BR");
     if (tab === "newsletter") {
       headers = ["E-mail", "Cadastrado em"];
-      rows = news.filter(filterTextNews).map((l) => [l.email, fmtDate(l.created_at)]);
+      rows = news.filter(filterTextNews).map((l) => [l.email, fmtDateTime(l.created_at)]);
     } else if (tab === "coupon") {
       headers = ["Nome", "WhatsApp", "Email", "Aniversário", "Cadastrado em"];
       rows = coupon
         .filter(filterTextCoupon)
-        .map((l) => [l.name, l.whatsapp, l.email ?? "", fmtBirthday(l.birthday), fmtDate(l.created_at)]);
+        .map((l) => [l.name, fmtPhone(l.whatsapp), l.email ?? "", fmtBirthday(l.birthday), fmtDateTime(l.created_at)]);
     } else if (tab === "vip") {
-      headers = ["WhatsApp", "Cadastrado em"];
-      rows = vip.filter(filterTextVip).map((l) => [l.whatsapp, fmtDate(l.created_at)]);
+      headers = ["Nome", "WhatsApp", "Cadastrado em"];
+      rows = vip.filter(filterTextVip).map((l) => [l.name ?? "", fmtPhone(l.whatsapp), fmtDateTime(l.created_at)]);
     } else {
-      headers = ["Nome/E-mail", "Contato", "Origem", "Cadastrado em"];
+      headers = ["Contato", "Detalhes", "Origem", "Cadastrado em"];
       rows = [
         ...coupon.filter(filterTextCoupon).map((l): (string | number)[] => [
           l.name,
-          l.whatsapp,
+          `${fmtPhone(l.whatsapp)}${l.birthday ? ` · Aniversário: ${fmtBirthday(l.birthday)}` : ""}`,
           "Cupom 5%",
-          fmtDate(l.created_at),
+          fmtDateTime(l.created_at),
         ]),
         ...vip.filter(filterTextVip).map((l): (string | number)[] => [
-          "—",
-          l.whatsapp,
+          l.name ?? "—",
+          fmtPhone(l.whatsapp),
           "Ofertas Secretas",
-          fmtDate(l.created_at),
+          fmtDateTime(l.created_at),
         ]),
         ...news.filter(filterTextNews).map((l): (string | number)[] => [
           l.email,
-          l.email,
+          "—",
           "Newsletter",
-          fmtDate(l.created_at),
+          fmtDateTime(l.created_at),
         ]),
       ];
     }
@@ -230,7 +261,7 @@ function Page() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <MetricCard label="Total de leads" value={totalCount} />
         <MetricCard label="Novos esta semana" value={thisWeek} />
-        <MetricCard label="Aniversariantes este mês" value={birthdayThisMonth} />
+        <MetricCard label="Origem mais popular" valueText={topOrigin.label} hint={topOrigin.count > 0 ? `${topOrigin.count} leads` : undefined} />
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white">
@@ -252,6 +283,10 @@ function Page() {
           ))}
         </div>
 
+        <p className="border-b border-gray-200 px-4 py-2.5 text-xs text-gray-500">
+          {TAB_DESCRIPTIONS[tab]}
+        </p>
+
         <div className="border-b border-gray-200 p-3">
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -268,8 +303,6 @@ function Page() {
           <CouponTable
             rows={coupon.filter(filterTextCoupon)}
             loading={couponQ.isLoading}
-            fmtBirthday={fmtBirthday}
-            waLink={waLink}
             onRemove={(id) => remove.mutate({ source: "coupon", id })}
           />
         )}
@@ -277,7 +310,6 @@ function Page() {
           <VipTable
             rows={vip.filter(filterTextVip)}
             loading={vipQ.isLoading}
-            waLink={waLink}
             onRemove={(id) => remove.mutate({ source: "vip", id })}
           />
         )}
@@ -294,7 +326,6 @@ function Page() {
             vip={vip.filter(filterTextVip)}
             news={news.filter(filterTextNews)}
             loading={couponQ.isLoading || vipQ.isLoading || newsQ.isLoading}
-            waLink={waLink}
             onRemove={(source, id) => remove.mutate({ source, id })}
           />
         )}
@@ -303,17 +334,30 @@ function Page() {
   );
 }
 
-function MetricCard({ label, value }: { label: string; value: number }) {
+function MetricCard({ label, value, valueText, hint }: { label: string; value?: number; valueText?: string; hint?: string }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4">
       <p className="text-xs font-medium text-gray-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-[#111827]">{value}</p>
+      <p className="mt-1 text-2xl font-bold text-[#111827]">{valueText ?? value}</p>
+      {hint && <p className="mt-0.5 text-xs text-gray-400">{hint}</p>}
     </div>
   );
 }
 
-function EmptyState({ msg }: { msg: string }) {
-  return <div className="p-12 text-center text-sm text-gray-500">{msg}</div>;
+function EmptyState({ tab }: { tab: SourceTab }) {
+  const sub: Record<SourceTab, string> = {
+    all: "Ative pop-ups de captação no editor de layout para começar.",
+    coupon: "Ative o pop-up de cupom de boas-vindas no editor de layout.",
+    vip: 'A seção "Ofertas Secretas" precisa estar ativa na sua loja.',
+    newsletter: "Ative a seção de newsletter no rodapé da sua loja.",
+  };
+  return (
+    <div className="py-12 text-center">
+      <div className="mb-3 text-4xl">📭</div>
+      <p className="text-sm text-gray-500">Ainda não há leads desta origem.</p>
+      <p className="mt-1 text-xs text-gray-400">{sub[tab]}</p>
+    </div>
+  );
 }
 function Loading() {
   return <div className="p-8 text-center text-sm text-gray-500">Carregando…</div>;
@@ -333,16 +377,14 @@ function RemoveBtn({ onClick }: { onClick: () => void }) {
 }
 
 function CouponTable({
-  rows, loading, fmtBirthday, waLink, onRemove,
+  rows, loading, onRemove,
 }: {
   rows: CouponLead[];
   loading: boolean;
-  fmtBirthday: (b: string | null) => string;
-  waLink: (w: string) => string;
   onRemove: (id: string) => void;
 }) {
   if (loading) return <Loading />;
-  if (rows.length === 0) return <EmptyState msg="Nenhum lead capturado pelo cupom de boas-vindas ainda." />;
+  if (rows.length === 0) return <EmptyState tab="coupon" />;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -361,11 +403,11 @@ function CouponTable({
               <td className="px-4 py-3 font-medium text-[#111827]">{l.name}</td>
               <td className="px-4 py-3">
                 <a href={waLink(l.whatsapp)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-[#25d366] hover:underline">
-                  <MessageCircle className="h-4 w-4" /> {l.whatsapp}
+                  <MessageCircle className="h-4 w-4" /> {fmtPhone(l.whatsapp)}
                 </a>
               </td>
               <td className="px-4 py-3 text-gray-600">{fmtBirthday(l.birthday)}</td>
-              <td className="px-4 py-3 text-gray-600">{new Date(l.created_at).toLocaleDateString("pt-BR")}</td>
+              <td className="px-4 py-3 text-gray-600">{fmtDateTime(l.created_at)}</td>
               <td className="px-4 py-3 text-right"><RemoveBtn onClick={() => onRemove(l.id)} /></td>
             </tr>
           ))}
@@ -376,15 +418,16 @@ function CouponTable({
 }
 
 function VipTable({
-  rows, loading, waLink, onRemove,
-}: { rows: VipLead[]; loading: boolean; waLink: (w: string) => string; onRemove: (id: string) => void }) {
+  rows, loading, onRemove,
+}: { rows: VipLead[]; loading: boolean; onRemove: (id: string) => void }) {
   if (loading) return <Loading />;
-  if (rows.length === 0) return <EmptyState msg="Nenhum lead capturado pela seção Ofertas Secretas ainda." />;
+  if (rows.length === 0) return <EmptyState tab="vip" />;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
           <tr>
+            <th className="px-4 py-2.5 text-left font-medium">Nome</th>
             <th className="px-4 py-2.5 text-left font-medium">WhatsApp</th>
             <th className="px-4 py-2.5 text-left font-medium">Cadastrado em</th>
             <th className="px-4 py-2.5 text-right font-medium">Ações</th>
@@ -393,12 +436,13 @@ function VipTable({
         <tbody>
           {rows.map((l) => (
             <tr key={l.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+              <td className="px-4 py-3 font-medium text-[#111827]">{l.name || "—"}</td>
               <td className="px-4 py-3">
                 <a href={waLink(l.whatsapp)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-[#25d366] hover:underline">
-                  <MessageCircle className="h-4 w-4" /> {l.whatsapp}
+                  <MessageCircle className="h-4 w-4" /> {fmtPhone(l.whatsapp)}
                 </a>
               </td>
-              <td className="px-4 py-3 text-gray-600">{new Date(l.created_at).toLocaleDateString("pt-BR")}</td>
+              <td className="px-4 py-3 text-gray-600">{fmtDateTime(l.created_at)}</td>
               <td className="px-4 py-3 text-right"><RemoveBtn onClick={() => onRemove(l.id)} /></td>
             </tr>
           ))}
@@ -412,7 +456,7 @@ function NewsletterTable({
   rows, loading, onRemove,
 }: { rows: NewsletterLead[]; loading: boolean; onRemove: (id: string) => void }) {
   if (loading) return <Loading />;
-  if (rows.length === 0) return <EmptyState msg="Nenhum e-mail captado pelo formulário do rodapé ainda." />;
+  if (rows.length === 0) return <EmptyState tab="newsletter" />;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -431,7 +475,7 @@ function NewsletterTable({
                   <Mail className="h-4 w-4" /> {l.email}
                 </a>
               </td>
-              <td className="px-4 py-3 text-gray-600">{new Date(l.created_at).toLocaleDateString("pt-BR")}</td>
+              <td className="px-4 py-3 text-gray-600">{fmtDateTime(l.created_at)}</td>
               <td className="px-4 py-3 text-right"><RemoveBtn onClick={() => onRemove(l.id)} /></td>
             </tr>
           ))}
@@ -442,35 +486,60 @@ function NewsletterTable({
 }
 
 function AllTable({
-  coupon, vip, news, loading, waLink, onRemove,
+  coupon, vip, news, loading, onRemove,
 }: {
   coupon: CouponLead[];
   vip: VipLead[];
   news: NewsletterLead[];
   loading: boolean;
-  waLink: (w: string) => string;
   onRemove: (source: Exclude<SourceTab, "all">, id: string) => void;
 }) {
-  type Row =
-    | { source: "coupon"; id: string; name: string; contact: string; created_at: string }
-    | { source: "vip"; id: string; name: string; contact: string; created_at: string }
-    | { source: "newsletter"; id: string; name: string; contact: string; created_at: string };
+  type Row = {
+    source: Exclude<SourceTab, "all">;
+    id: string;
+    contato: string;
+    detalhes: string;
+    whatsapp?: string;
+    email?: string;
+    created_at: string;
+  };
 
   const rows: Row[] = useMemo(() => {
     const all: Row[] = [
-      ...coupon.map((l): Row => ({ source: "coupon", id: l.id, name: l.name, contact: l.whatsapp, created_at: l.created_at })),
-      ...vip.map((l): Row => ({ source: "vip", id: l.id, name: "Sem nome", contact: l.whatsapp, created_at: l.created_at })),
-      ...news.map((l): Row => ({ source: "newsletter", id: l.id, name: l.email, contact: l.email, created_at: l.created_at })),
+      ...coupon.map((l): Row => ({
+        source: "coupon",
+        id: l.id,
+        contato: l.name,
+        detalhes: `${fmtPhone(l.whatsapp)}${l.birthday ? ` · Aniversário: ${fmtBirthday(l.birthday)}` : ""}`,
+        whatsapp: l.whatsapp,
+        created_at: l.created_at,
+      })),
+      ...vip.map((l): Row => ({
+        source: "vip",
+        id: l.id,
+        contato: l.name || "—",
+        detalhes: fmtPhone(l.whatsapp),
+        whatsapp: l.whatsapp,
+        created_at: l.created_at,
+      })),
+      ...news.map((l): Row => ({
+        source: "newsletter",
+        id: l.id,
+        contato: l.email,
+        detalhes: "—",
+        email: l.email,
+        created_at: l.created_at,
+      })),
     ];
     all.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     return all;
   }, [coupon, vip, news]);
 
   if (loading) return <Loading />;
-  if (rows.length === 0) return <EmptyState msg="Nenhum lead ainda. Ative captação na sua loja para começar." />;
+  if (rows.length === 0) return <EmptyState tab="all" />;
 
   const badge = (s: Row["source"]) => {
-    if (s === "coupon") return <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">🎟 Cupom 5%</span>;
+    if (s === "coupon") return <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">🎁 Cupom 5%</span>;
     if (s === "vip") return <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">👑 Ofertas Secretas</span>;
     return <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">📧 Newsletter</span>;
   };
@@ -480,8 +549,8 @@ function AllTable({
       <table className="w-full text-sm">
         <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase text-gray-500">
           <tr>
-            <th className="px-4 py-2.5 text-left font-medium">Nome / E-mail</th>
             <th className="px-4 py-2.5 text-left font-medium">Contato</th>
+            <th className="px-4 py-2.5 text-left font-medium">Detalhes</th>
             <th className="px-4 py-2.5 text-left font-medium">Origem</th>
             <th className="px-4 py-2.5 text-left font-medium">Cadastrado em</th>
             <th className="px-4 py-2.5 text-right font-medium">Ações</th>
@@ -490,20 +559,26 @@ function AllTable({
         <tbody>
           {rows.map((r) => (
             <tr key={`${r.source}-${r.id}`} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
-              <td className="px-4 py-3 font-medium text-[#111827]">{r.name}</td>
-              <td className="px-4 py-3">
+              <td className="px-4 py-3 font-medium text-[#111827]">
                 {r.source === "newsletter" ? (
-                  <a href={`mailto:${r.contact}`} className="inline-flex items-center gap-1.5 text-[#3b82f6] hover:underline">
-                    <Mail className="h-4 w-4" /> {r.contact}
+                  <a href={`mailto:${r.email}`} className="inline-flex items-center gap-1.5 text-[#3b82f6] hover:underline">
+                    <Mail className="h-4 w-4" /> {r.contato}
                   </a>
                 ) : (
-                  <a href={waLink(r.contact)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-[#25d366] hover:underline">
-                    <MessageCircle className="h-4 w-4" /> {r.contact}
+                  r.contato
+                )}
+              </td>
+              <td className="px-4 py-3 text-gray-600">
+                {r.whatsapp ? (
+                  <a href={waLink(r.whatsapp)} target="_blank" rel="noopener" className="inline-flex items-center gap-1.5 text-[#25d366] hover:underline">
+                    <MessageCircle className="h-4 w-4" /> {r.detalhes}
                   </a>
+                ) : (
+                  r.detalhes
                 )}
               </td>
               <td className="px-4 py-3">{badge(r.source)}</td>
-              <td className="px-4 py-3 text-gray-600">{new Date(r.created_at).toLocaleDateString("pt-BR")}</td>
+              <td className="px-4 py-3 text-gray-600">{fmtDateTime(r.created_at)}</td>
               <td className="px-4 py-3 text-right"><RemoveBtn onClick={() => onRemove(r.source, r.id)} /></td>
             </tr>
           ))}
