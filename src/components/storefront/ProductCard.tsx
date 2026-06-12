@@ -3,6 +3,7 @@ import { Heart, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useStorefront, useIsMioTheme } from "./StoreContext";
+import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import { useWishlist } from "@/stores/wishlist";
 import { useCart } from "@/stores/cart";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
@@ -13,6 +14,9 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { store, paymentSettings } = useStorefront();
+  const { data: cust } = useStorefrontCustomizations(store.id);
+  const quickBuyEnabled = cust?.productList?.quickBuy !== false;
+  const showColors = cust?.productList?.showColorVariations !== false;
   const isMio = useIsMioTheme();
   const wished = useWishlist((s) => s.has(p.id));
   const toggleWish = useWishlist((s) => s.toggle);

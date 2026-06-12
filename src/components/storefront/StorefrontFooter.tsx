@@ -142,11 +142,11 @@ export function StorefrontFooter() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Atendimento</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            {contactInfo?.phone && <li>📱 {contactInfo.phone}</li>}
-            {contactInfo?.store_email && (
+            {phone && <li>📱 {phone}</li>}
+            {email && (
               <li>
-                <a href={`mailto:${contactInfo.store_email}`} className="hover:text-accent">
-                  ✉ {contactInfo.store_email}
+                <a href={`mailto:${email}`} className="hover:text-accent">
+                  ✉ {email}
                 </a>
               </li>
             )}
