@@ -4,6 +4,7 @@ import { X, ShoppingBag, Trash2, Tag, Truck } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { useCart, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront, useIsMioTheme } from "./StoreContext";
+import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
@@ -15,6 +16,10 @@ import { cn } from "@/lib/utils";
 
 export function CartDrawer() {
   const { store } = useStorefront();
+  const { data: cust } = useStorefrontCustomizations(store.id);
+  const cartCfg = cust?.cart ?? {};
+  const minPurchase = Number(cartCfg.minPurchase || 0);
+  const showShipping = cartCfg.shippingCalc !== false;
   const isOpen = useCart((s) => s.isOpen);
   const close = useCart((s) => s.close);
   const allItems = useCart((s) => s.items);
@@ -93,8 +98,14 @@ export function CartDrawer() {
 
   const total = Math.max(0, subtotal - (coupon?.discount ?? 0));
 
+  const belowMin = minPurchase > 0 && subtotal < minPurchase;
+
   const checkout = () => {
     if (items.length === 0) return;
+    if (belowMin) {
+      toast.error(`Pedido mínimo de ${formatBRL(minPurchase)}`);
+      return;
+    }
     void trackInitiateCheckout(store, {
       ids: items.map((i) => i.productId),
       numItems: items.reduce((s, i) => s + i.quantity, 0),
@@ -223,23 +234,25 @@ export function CartDrawer() {
               </div>
 
               {/* CEP */}
-              <div className="mt-3 rounded-lg border border-border p-3">
-                <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <Truck className="h-3 w-3" /> Calcular frete
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    value={cep}
-                    onChange={(e) => setCep(e.target.value)}
-                    placeholder="00000-000"
-                    className="h-9 flex-1 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus:border-accent"
-                  />
-                  <Button size="sm" variant="outline" onClick={checkCep}>
-                    OK
-                  </Button>
+              {showShipping && (
+                <div className="mt-3 rounded-lg border border-border p-3">
+                  <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <Truck className="h-3 w-3" /> Calcular frete
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      value={cep}
+                      onChange={(e) => setCep(e.target.value)}
+                      placeholder="00000-000"
+                      className="h-9 flex-1 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus:border-accent"
+                    />
+                    <Button size="sm" variant="outline" onClick={checkCep}>
+                      OK
+                    </Button>
+                  </div>
+                  {shippingMsg && <p className="mt-2 text-xs text-muted-foreground">{shippingMsg}</p>}
                 </div>
-                {shippingMsg && <p className="mt-2 text-xs text-muted-foreground">{shippingMsg}</p>}
-              </div>
+              )}
             </div>
 
             <footer className="space-y-3 border-t border-border bg-muted/30 px-5 py-4">
@@ -259,10 +272,27 @@ export function CartDrawer() {
                   <span>{formatBRL(total)}</span>
                 </div>
               </div>
-              <Button onClick={checkout} className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a]">
+              {belowMin && (
+                <p className="rounded-md bg-amber-50 px-3 py-2 text-center text-xs font-medium text-amber-900">
+                  Pedido mínimo: {formatBRL(minPurchase)} (faltam {formatBRL(minPurchase - subtotal)})
+                </p>
+              )}
+              <Button
+                onClick={checkout}
+                disabled={belowMin}
+                className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a] disabled:opacity-50"
+              >
                 <WhatsAppIcon className="h-5 w-5" />
                 Finalizar pelo WhatsApp
               </Button>
+              {cartCfg.showSeeMore && (
+                <button
+                  onClick={close}
+                  className="w-full text-center text-xs font-medium text-muted-foreground underline-offset-2 hover:underline"
+                >
+                  Ver mais produtos
+                </button>
+              )}
               <p className="text-center text-[11px] text-muted-foreground">
                 Você será direcionado ao WhatsApp da loja com seu pedido pronto
               </p>

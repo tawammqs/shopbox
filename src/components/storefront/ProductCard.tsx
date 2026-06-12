@@ -3,6 +3,7 @@ import { Heart, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useStorefront, useIsMioTheme } from "./StoreContext";
+import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import { useWishlist } from "@/stores/wishlist";
 import { useCart } from "@/stores/cart";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
@@ -13,6 +14,9 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { store, paymentSettings } = useStorefront();
+  const { data: cust } = useStorefrontCustomizations(store.id);
+  const quickBuyEnabled = cust?.productList?.quickBuy !== false;
+  const showColors = cust?.productList?.showColorVariations !== false;
   const isMio = useIsMioTheme();
   const wished = useWishlist((s) => s.has(p.id));
   const toggleWish = useWishlist((s) => s.toggle);
@@ -103,7 +107,10 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         {/* badges */}
         <div className="absolute left-2 top-2 flex flex-col gap-1">
           {pct > 0 && (
-            <span className="rounded-md bg-destructive px-2 py-0.5 text-[10px] font-bold uppercase text-destructive-foreground">
+            <span
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase text-destructive-foreground"
+              style={{ background: "var(--store-badge, hsl(var(--destructive)))" }}
+            >
               -{pct}%
             </span>
           )}
@@ -129,16 +136,22 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         </button>
 
         {/* quick add (desktop) */}
-        <button
-          type="button"
-          onClick={quickAdd}
-          className={cn(
-            "absolute inset-x-2 bottom-2 hidden items-center justify-center gap-2 rounded-full bg-foreground py-2 text-xs font-semibold text-background opacity-0 shadow transition group-hover:opacity-100 md:flex",
-          )}
-        >
-          <ShoppingBag className="h-3.5 w-3.5" />
-          {p.colors.length > 0 ? "Escolher opções" : "Adicionar"}
-        </button>
+        {quickBuyEnabled && (
+          <button
+            type="button"
+            onClick={quickAdd}
+            className={cn(
+              "absolute inset-x-2 bottom-2 hidden items-center justify-center gap-2 rounded-full py-2 text-xs font-semibold opacity-0 shadow transition group-hover:opacity-100 md:flex",
+            )}
+            style={{
+              background: "var(--store-btn-bg, hsl(var(--foreground)))",
+              color: "var(--store-btn-text, hsl(var(--background)))",
+            }}
+          >
+            <ShoppingBag className="h-3.5 w-3.5" />
+            {p.colors.length > 0 ? "Escolher opções" : "Adicionar"}
+          </button>
+        )}
       </div>
 
       <div className="mt-3 space-y-1">
@@ -186,7 +199,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           </div>
         )}
 
-        {p.colors.length > 0 && (
+        {showColors && p.colors.length > 0 && (
           <div className="flex items-center gap-1 pt-1">
             {p.colors.slice(0, 4).map((c) => (
               <span

@@ -1,21 +1,40 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Youtube, Music2 } from "lucide-react";
 import { useStorefront } from "./StoreContext";
+import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import shopboxLogo from "@/assets/shopbox-badge-logo.png";
 
 export function StorefrontFooter() {
   const { store, menus, socialLinks, contactInfo, pages } = useStorefront();
+  const { data: cust } = useStorefrontCustomizations(store.id);
+  const fcfg = cust?.footer ?? {};
 
   const ig = socialLinks?.instagram_username || store.instagram;
   const fb = socialLinks?.facebook_url || (store.facebook ? `https://facebook.com/${store.facebook}` : null);
   const yt = socialLinks?.youtube_url || store.youtube;
   const tt = socialLinks?.tiktok_username || store.tiktok;
 
-  // Pick up to 2 menus to render as columns
-  const renderedMenus = menus.slice(0, 2);
+  // Editor can override the menus rendered in the footer
+  const pickedMenus = (() => {
+    const picks: typeof menus = [];
+    if (fcfg.primaryMenuEnabled && fcfg.primaryMenuId) {
+      const m = menus.find((x) => x.id === fcfg.primaryMenuId);
+      if (m) picks.push(m);
+    }
+    if (fcfg.secondaryMenuEnabled && fcfg.secondaryMenuId) {
+      const m = menus.find((x) => x.id === fcfg.secondaryMenuId);
+      if (m) picks.push(m);
+    }
+    return picks.length ? picks : menus.slice(0, 2);
+  })();
+  const renderedMenus = pickedMenus;
+
+  // Contact overrides from editor (fall back to store contact info)
+  const phone = fcfg.showContact ? (fcfg.phone || contactInfo?.phone) : contactInfo?.phone;
+  const email = fcfg.showContact ? (fcfg.email || contactInfo?.store_email) : contactInfo?.store_email;
 
   return (
-    <footer className="mt-16 border-t border-border bg-muted/30">
+    <footer data-sf-footer className="mt-16 border-t border-border bg-muted/30">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-4">
         <div>
           {store.logo_url ? (
@@ -123,11 +142,11 @@ export function StorefrontFooter() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Atendimento</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            {contactInfo?.phone && <li>📱 {contactInfo.phone}</li>}
-            {contactInfo?.store_email && (
+            {phone && <li>📱 {phone}</li>}
+            {email && (
               <li>
-                <a href={`mailto:${contactInfo.store_email}`} className="hover:text-accent">
-                  ✉ {contactInfo.store_email}
+                <a href={`mailto:${email}`} className="hover:text-accent">
+                  ✉ {email}
                 </a>
               </li>
             )}
