@@ -272,10 +272,27 @@ export function CartDrawer() {
                   <span>{formatBRL(total)}</span>
                 </div>
               </div>
-              <Button onClick={checkout} className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a]">
+              {belowMin && (
+                <p className="rounded-md bg-amber-50 px-3 py-2 text-center text-xs font-medium text-amber-900">
+                  Pedido mínimo: {formatBRL(minPurchase)} (faltam {formatBRL(minPurchase - subtotal)})
+                </p>
+              )}
+              <Button
+                onClick={checkout}
+                disabled={belowMin}
+                className="h-12 w-full bg-[#25d366] text-white hover:bg-[#20bd5a] disabled:opacity-50"
+              >
                 <WhatsAppIcon className="h-5 w-5" />
                 Finalizar pelo WhatsApp
               </Button>
+              {cartCfg.showSeeMore && (
+                <button
+                  onClick={close}
+                  className="w-full text-center text-xs font-medium text-muted-foreground underline-offset-2 hover:underline"
+                >
+                  Ver mais produtos
+                </button>
+              )}
               <p className="text-center text-[11px] text-muted-foreground">
                 Você será direcionado ao WhatsApp da loja com seu pedido pronto
               </p>
