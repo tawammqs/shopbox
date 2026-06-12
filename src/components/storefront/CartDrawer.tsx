@@ -4,6 +4,7 @@ import { X, ShoppingBag, Trash2, Tag, Truck } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { useCart, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront, useIsMioTheme } from "./StoreContext";
+import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { fetchActiveCoupon } from "@/lib/storefront";
@@ -15,6 +16,10 @@ import { cn } from "@/lib/utils";
 
 export function CartDrawer() {
   const { store } = useStorefront();
+  const { data: cust } = useStorefrontCustomizations(store.id);
+  const cartCfg = cust?.cart ?? {};
+  const minPurchase = Number(cartCfg.minPurchase || 0);
+  const showShipping = cartCfg.shippingCalc !== false;
   const isOpen = useCart((s) => s.isOpen);
   const close = useCart((s) => s.close);
   const allItems = useCart((s) => s.items);
