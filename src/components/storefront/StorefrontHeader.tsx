@@ -51,7 +51,10 @@ export function StorefrontHeader({ onOpenMobileNav }: { onOpenMobileNav: () => v
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header
+      data-sf-header
+      className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 md:gap-6">
         <button
           aria-label="Abrir menu"
@@ -61,9 +64,19 @@ export function StorefrontHeader({ onOpenMobileNav }: { onOpenMobileNav: () => v
           <Menu className="h-5 w-5" />
         </button>
 
-        <Link to="/loja/$slug" params={{ slug: store.slug }} className="flex shrink-0 items-center gap-2">
+        <Link
+          to="/loja/$slug"
+          params={{ slug: store.slug }}
+          className="flex shrink-0 items-center gap-2"
+          style={{ height: "var(--store-logo-size, 36px)" }}
+        >
           {store.logo_url ? (
-            <img src={store.logo_url} alt={store.name} className="h-9 w-auto max-w-[160px] object-contain" />
+            <img
+              src={store.logo_url}
+              alt={store.name}
+              className="w-auto max-w-[200px] object-contain"
+              style={{ height: "var(--store-logo-size, 36px)" }}
+            />
           ) : (
             <span className="font-display text-lg font-bold text-foreground md:text-xl">{store.name}</span>
           )}
