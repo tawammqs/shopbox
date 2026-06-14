@@ -157,6 +157,12 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/banners": "Banners",
   "/admin/home-video": "Vídeo da home",
   "/admin/dashboard": "Dashboard",
+  "/admin/marketing": "Marketing",
+  "/admin/marketing/video-commerce": "Video Commerce",
+  "/admin/marketing/grupo-vip": "Grupo VIP",
+  "/admin/marketing/captura-leads": "Captura de Leads",
+  "/admin/marketing/compre-junto": "Compre Junto",
+  "/admin/marketing/perguntas-avaliacoes": "Perguntas e Avaliações",
 };
 
 function pageTitleFor(pathname: string): string {
