@@ -120,12 +120,6 @@ function VideoList({ storeId, placement, limit }: { storeId: string; placement: 
   const list = videos.data ?? [];
   const productList = products.data ?? [];
 
-  async function updateVideo(id: string, patch: any) {
-    const { error } = await (supabase as any).from("store_videos").update(patch).eq("id", id);
-    if (error) return toast.error(error.message);
-    qc.invalidateQueries({ queryKey: ["store_videos"] });
-  }
-
   async function deleteVideo(id: string) {
     if (!confirm("Remover vídeo?")) return;
     const { error } = await (supabase as any).from("store_videos").delete().eq("id", id);
@@ -156,35 +150,13 @@ function VideoList({ storeId, placement, limit }: { storeId: string; placement: 
       ) : (
         <div className="space-y-2">
           {list.map((v: any) => (
-            <div key={v.id} className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
-              <video src={v.video_url} className="h-20 w-20 shrink-0 rounded-lg bg-black object-cover" muted />
-              <div className="min-w-0 flex-1 space-y-1">
-                <input
-                  defaultValue={v.title ?? ""}
-                  placeholder="Sem título"
-                  onBlur={(e) => {
-                    if (e.target.value !== (v.title ?? "")) updateVideo(v.id, { title: e.target.value });
-                  }}
-                  className="h-8 w-full rounded-md border border-gray-200 px-2 text-sm font-medium"
-                />
-                <select
-                  value={v.product_id ?? ""}
-                  onChange={(e) => updateVideo(v.id, { product_id: e.target.value || null })}
-                  className="h-8 w-full max-w-xs rounded-md border border-gray-200 px-2 text-xs"
-                >
-                  <option value="">— Sem produto associado —</option>
-                  {productList.map((p) => (
-                    <option key={p.id} value={p.id}>{p.title}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-col items-end gap-2 text-xs text-gray-500">
-                <span>👁 {v.views_count ?? 0}</span>
-                <button onClick={() => deleteVideo(v.id)} className="text-gray-400 hover:text-red-500" title="Remover">
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
+            <VideoCard
+              key={v.id}
+              video={v}
+              products={productList}
+              onDelete={() => deleteVideo(v.id)}
+              onSaved={() => qc.invalidateQueries({ queryKey: ["store_videos"] })}
+            />
           ))}
         </div>
       )}
@@ -202,6 +174,123 @@ function VideoList({ storeId, placement, limit }: { storeId: string; placement: 
           }}
         />
       )}
+    </div>
+  );
+}
+
+function ProductPicker({
+  value,
+  onChange,
+  products,
+}: {
+  value: string | null;
+  onChange: (id: string | null) => void;
+  products: Product[];
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = products.find((p) => p.id === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="flex h-8 w-full max-w-xs items-center justify-between rounded-md border border-gray-200 bg-white px-2 text-left text-xs"
+        >
+          <span className="truncate">{selected?.title ?? "— Sem produto associado —"}</span>
+          <ChevronDown className="ml-1 h-3 w-3 shrink-0 text-gray-400" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Buscar produto..." />
+          <CommandList className="max-h-60">
+            <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
+            <CommandItem
+              value="__none__"
+              onSelect={() => {
+                onChange(null);
+                setOpen(false);
+              }}
+            >
+              — Sem produto associado —
+            </CommandItem>
+            {products.map((p) => (
+              <CommandItem
+                key={p.id}
+                value={p.title}
+                onSelect={() => {
+                  onChange(p.id);
+                  setOpen(false);
+                }}
+              >
+                <span className="flex-1 truncate">{p.title}</span>
+                {value === p.id && <Check className="h-3 w-3 text-[#25d366]" />}
+              </CommandItem>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function VideoCard({
+  video,
+  products,
+  onDelete,
+  onSaved,
+}: {
+  video: any;
+  products: Product[];
+  onDelete: () => void;
+  onSaved: () => void;
+}) {
+  const [productId, setProductId] = useState<string | null>(video.product_id ?? null);
+  const [title, setTitle] = useState<string>(video.title ?? "");
+  const [saving, setSaving] = useState(false);
+
+  const isDirty =
+    productId !== (video.product_id ?? null) || title !== (video.title ?? "");
+
+  async function save() {
+    setSaving(true);
+    const { error } = await (supabase as any)
+      .from("store_videos")
+      .update({ product_id: productId, title: title.trim() || null })
+      .eq("id", video.id);
+    setSaving(false);
+    if (error) return toast.error("Erro ao salvar: " + error.message);
+    toast.success("Vídeo atualizado");
+    onSaved();
+  }
+
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
+      <video src={video.video_url} className="h-20 w-20 shrink-0 rounded-lg bg-black object-cover" muted />
+      <div className="min-w-0 flex-1 space-y-1">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Sem título"
+          className="h-8 w-full rounded-md border border-gray-200 px-2 text-sm font-medium"
+        />
+        <ProductPicker value={productId} onChange={setProductId} products={products} />
+      </div>
+      <div className="flex flex-col items-end gap-2 text-xs text-gray-500">
+        <span>👁 {video.views_count ?? 0}</span>
+        {isDirty && (
+          <button
+            onClick={save}
+            disabled={saving}
+            className="rounded-md bg-[#25d366] px-2 py-1 text-xs font-semibold text-white hover:bg-[#1fb959] disabled:opacity-50"
+          >
+            {saving ? "Salvando..." : "Salvar"}
+          </button>
+        )}
+        <button onClick={onDelete} className="text-gray-400 hover:text-red-500" title="Remover">
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 }
