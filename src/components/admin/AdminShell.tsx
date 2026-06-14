@@ -312,9 +312,10 @@ function Sidebar({
                   unreadByPath={{
                     "/admin/vendas": unread.orders,
                     "/admin/clientes/leads": unread.leads,
-                    "/admin/clientes/avaliacoes": unread.questions,
+                    "/admin/marketing/perguntas-avaliacoes": unread.questions,
                   }}
                   isPremium={isPremium}
+                  addonsActive={addonsActive}
                 />
               ))}
             </div>
