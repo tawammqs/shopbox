@@ -1339,6 +1339,88 @@ export type Database = {
           },
         ]
       }
+      store_addon_configs: {
+        Row: {
+          addon_key: string
+          config: Json
+          created_at: string
+          id: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          addon_key: string
+          config?: Json
+          created_at?: string
+          id?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          addon_key?: string
+          config?: Json
+          created_at?: string
+          id?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_addon_configs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_addons: {
+        Row: {
+          addon_key: string
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan_tier: string | null
+          status: string
+          store_id: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          addon_key: string
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_tier?: string | null
+          status?: string
+          store_id: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          addon_key?: string
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_tier?: string | null
+          status?: string
+          store_id?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_addons_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_contact_info: {
         Row: {
           address: string | null
@@ -1761,6 +1843,63 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "store_users_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_videos: {
+        Row: {
+          created_at: string
+          id: string
+          placement: string
+          position: number
+          product_id: string | null
+          store_id: string
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string
+          video_url: string
+          views_count: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          placement?: string
+          position?: number
+          product_id?: string | null
+          store_id: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          video_url: string
+          views_count?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          placement?: string
+          position?: number
+          product_id?: string | null
+          store_id?: string
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          video_url?: string
+          views_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_videos_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_videos_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
