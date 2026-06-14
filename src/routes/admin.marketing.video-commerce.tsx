@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Trash2, Plus, Lock } from "lucide-react";
+import { Loader2, Trash2, Plus, Lock, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
@@ -19,6 +19,8 @@ const TIER_LIMITS: Record<string, number> = {
   profissional: 80,
   escala: 150,
 };
+
+type Product = { id: string; title: string };
 
 function Page() {
   const { data: store } = useMyStore();
@@ -86,12 +88,14 @@ function VideoCommerceConfig({ storeId, planTier }: { storeId: string; planTier:
 
 function VideoList({ storeId, placement, limit }: { storeId: string; placement: string; limit: number }) {
   const qc = useQueryClient();
+  const [modalOpen, setModalOpen] = useState(false);
+
   const videos = useQuery({
     queryKey: ["store_videos", storeId, placement],
     queryFn: async () => {
       const { data } = await (supabase as any)
         .from("store_videos")
-        .select("*, products(name)")
+        .select("*")
         .eq("store_id", storeId)
         .eq("placement", placement)
         .order("position");
@@ -105,90 +109,260 @@ function VideoList({ storeId, placement, limit }: { storeId: string; placement: 
         .from("products")
         .select("id, title")
         .eq("store_id", storeId)
+        .eq("is_visible", true)
         .order("title");
-      return data ?? [];
+      return (data ?? []) as Product[];
     },
   });
 
   const list = videos.data ?? [];
-
-  async function handleUpload(file: File) {
-    if (list.length >= limit) {
-      toast.error(`Limite de ${limit} vídeos atingido para este plano.`);
-      return;
-    }
-    const ext = file.name.split(".").pop();
-    const path = `${storeId}/${Date.now()}.${ext}`;
-    const { error: upErr } = await supabase.storage.from("product-videos").upload(path, file);
-    if (upErr) return toast.error(upErr.message);
-    const { data: urlData } = supabase.storage.from("product-videos").getPublicUrl(path);
-    const { error } = await (supabase as any).from("store_videos").insert({
-      store_id: storeId,
-      video_url: urlData.publicUrl,
-      placement,
-      position: list.length,
-    });
-    if (error) return toast.error(error.message);
-    toast.success("Vídeo enviado");
-    qc.invalidateQueries({ queryKey: ["store_videos"] });
-  }
+  const productList = products.data ?? [];
 
   async function updateVideo(id: string, patch: any) {
-    await (supabase as any).from("store_videos").update(patch).eq("id", id);
+    const { error } = await (supabase as any).from("store_videos").update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["store_videos"] });
   }
 
   async function deleteVideo(id: string) {
     if (!confirm("Remover vídeo?")) return;
-    await (supabase as any).from("store_videos").delete().eq("id", id);
+    const { error } = await (supabase as any).from("store_videos").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Vídeo removido");
     qc.invalidateQueries({ queryKey: ["store_videos"] });
   }
 
   return (
     <div className="space-y-3">
-      <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-gray-300 bg-white px-4 py-3 text-sm font-medium hover:bg-gray-50">
-        <Plus className="h-4 w-4" /> Enviar vídeo
-        <input
-          type="file"
-          accept="video/*"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) handleUpload(f);
-            e.target.value = "";
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs text-[#6b7280]">{list.length} de {limit} vídeos</p>
+        <button
+          onClick={() => {
+            if (list.length >= limit) return toast.error(`Limite de ${limit} vídeos atingido para este plano.`);
+            setModalOpen(true);
+          }}
+          className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959]"
+        >
+          <Plus className="h-4 w-4" /> Adicionar vídeo
+        </button>
+      </div>
+
+      {list.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500">
+          Nenhum vídeo adicionado ainda. Clique em "Adicionar vídeo" para começar.
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {list.map((v: any) => (
+            <div key={v.id} className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-3">
+              <video src={v.video_url} className="h-20 w-20 shrink-0 rounded-lg bg-black object-cover" muted />
+              <div className="min-w-0 flex-1 space-y-1">
+                <input
+                  defaultValue={v.title ?? ""}
+                  placeholder="Sem título"
+                  onBlur={(e) => {
+                    if (e.target.value !== (v.title ?? "")) updateVideo(v.id, { title: e.target.value });
+                  }}
+                  className="h-8 w-full rounded-md border border-gray-200 px-2 text-sm font-medium"
+                />
+                <select
+                  value={v.product_id ?? ""}
+                  onChange={(e) => updateVideo(v.id, { product_id: e.target.value || null })}
+                  className="h-8 w-full max-w-xs rounded-md border border-gray-200 px-2 text-xs"
+                >
+                  <option value="">— Sem produto associado —</option>
+                  {productList.map((p) => (
+                    <option key={p.id} value={p.id}>{p.title}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col items-end gap-2 text-xs text-gray-500">
+                <span>👁 {v.views_count ?? 0}</span>
+                <button onClick={() => deleteVideo(v.id)} className="text-gray-400 hover:text-red-500" title="Remover">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {modalOpen && (
+        <UploadModal
+          storeId={storeId}
+          placement={placement}
+          position={list.length}
+          products={productList}
+          onClose={() => setModalOpen(false)}
+          onSaved={() => {
+            setModalOpen(false);
+            qc.invalidateQueries({ queryKey: ["store_videos"] });
           }}
         />
-      </label>
-      <p className="text-xs text-[#6b7280]">{list.length} de {limit} vídeos</p>
+      )}
+    </div>
+  );
+}
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((v: any) => (
-          <div key={v.id} className="rounded-xl border border-gray-200 bg-white p-3">
-            <video src={v.video_url} controls className="w-full rounded-lg bg-black" />
+function UploadModal({
+  storeId,
+  placement,
+  position,
+  products,
+  onClose,
+  onSaved,
+}: {
+  storeId: string;
+  placement: string;
+  position: number;
+  products: Product[];
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [productId, setProductId] = useState<string>("");
+  const [productSearch, setProductSearch] = useState("");
+  const [title, setTitle] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const filteredProducts = useMemo(() => {
+    const q = productSearch.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter((p) => p.title.toLowerCase().includes(q));
+  }, [products, productSearch]);
+
+  async function handleFile(f: File) {
+    setFile(f);
+    setPreviewUrl(URL.createObjectURL(f));
+    setUploading(true);
+    try {
+      const ext = f.name.split(".").pop();
+      const path = `${storeId}/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("product-videos").upload(path, f);
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from("product-videos").getPublicUrl(path);
+      setUploadedUrl(urlData.publicUrl);
+      toast.success("Vídeo enviado");
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro no upload");
+      setFile(null);
+      setPreviewUrl(null);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function save() {
+    if (!uploadedUrl) return toast.error("Envie um vídeo primeiro");
+    setSaving(true);
+    try {
+      const { error } = await (supabase as any).from("store_videos").insert({
+        store_id: storeId,
+        video_url: uploadedUrl,
+        product_id: productId || null,
+        placement,
+        title: title.trim() || null,
+        position,
+      });
+      if (error) throw error;
+      toast.success("Vídeo salvo");
+      onSaved();
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao salvar");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div
+        className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute right-4 top-4 text-gray-400 hover:text-gray-700">
+          <X className="h-5 w-5" />
+        </button>
+        <h2 className="mb-4 text-lg font-bold text-[#111827]">Adicionar vídeo</h2>
+
+        <div className="space-y-4">
+          {!previewUrl ? (
+            <label className="flex h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100">
+              <Upload className="h-6 w-6 text-gray-400" />
+              <span className="text-sm font-medium text-gray-600">Selecionar arquivo de vídeo</span>
+              <span className="text-xs text-gray-400">MP4, MOV, WEBM</span>
+              <input
+                type="file"
+                accept="video/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleFile(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          ) : (
+            <div className="relative">
+              <video src={previewUrl} controls className="w-full rounded-lg bg-black" />
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
+                  <Loader2 className="h-6 w-6 animate-spin text-white" />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div>
+            <label className="text-sm font-medium text-[#374151]">Produto associado</label>
             <input
-              defaultValue={v.title ?? ""}
-              placeholder="Título (opcional)"
-              onBlur={(e) => updateVideo(v.id, { title: e.target.value })}
-              className="mt-2 h-9 w-full rounded-md border border-gray-200 px-2 text-sm"
+              value={productSearch}
+              onChange={(e) => setProductSearch(e.target.value)}
+              placeholder="Buscar produto..."
+              className="mt-1 h-9 w-full rounded-md border border-gray-200 px-2 text-sm"
             />
             <select
-              defaultValue={v.product_id ?? ""}
-              onChange={(e) => updateVideo(v.id, { product_id: e.target.value || null })}
-              className="mt-2 h-9 w-full rounded-md border border-gray-200 px-2 text-sm"
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+              className="mt-2 h-10 w-full rounded-md border border-gray-200 px-2 text-sm"
+              size={Math.min(6, Math.max(3, filteredProducts.length + 1))}
             >
-              <option value="">Sem produto</option>
-              {(products.data ?? []).map((p) => (
+              <option value="">— Nenhum produto —</option>
+              {filteredProducts.map((p) => (
                 <option key={p.id} value={p.id}>{p.title}</option>
               ))}
             </select>
-            <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-              <span>👁 {v.views_count}</span>
-              <button onClick={() => deleteVideo(v.id)} className="text-red-500 hover:text-red-700">
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
           </div>
-        ))}
+
+          <div>
+            <label className="text-sm font-medium text-[#374151]">Título do vídeo (opcional)</label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ex: Unboxing Nike Dunk"
+              className="mt-1 h-10 w-full rounded-md border border-gray-200 px-2 text-sm"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              onClick={onClose}
+              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium hover:bg-gray-50"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={save}
+              disabled={!uploadedUrl || uploading || saving}
+              className="rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959] disabled:opacity-50"
+            >
+              {saving ? "Salvando..." : "Salvar vídeo"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
