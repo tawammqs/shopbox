@@ -53,6 +53,7 @@ import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
+import { Route as AdminMarketingIndexRouteImport } from './routes/admin.marketing.index'
 import { Route as AdminEstatisticasIndexRouteImport } from './routes/admin.estatisticas.index'
 import { Route as AdminConfiguracoesIndexRouteImport } from './routes/admin.configuracoes.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -314,6 +315,11 @@ const AdminProdutosIndexRoute = AdminProdutosIndexRouteImport.update({
   path: '/produtos/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMarketingIndexRoute = AdminMarketingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminMarketingRoute,
+} as any)
 const AdminEstatisticasIndexRoute = AdminEstatisticasIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -550,7 +556,7 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
-  '/admin/marketing': typeof AdminMarketingRoute
+  '/admin/marketing': typeof AdminMarketingRouteWithChildren
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -597,6 +603,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
+  '/admin/marketing/': typeof AdminMarketingIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
@@ -631,7 +638,6 @@ export interface FileRoutesByTo {
   '/admin/descontos': typeof AdminDescontosRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
-  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -677,6 +683,7 @@ export interface FileRoutesByTo {
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas': typeof AdminEstatisticasIndexRoute
+  '/admin/marketing': typeof AdminMarketingIndexRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
@@ -716,7 +723,7 @@ export interface FileRoutesById {
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
-  '/admin/marketing': typeof AdminMarketingRoute
+  '/admin/marketing': typeof AdminMarketingRouteWithChildren
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -763,6 +770,7 @@ export interface FileRoutesById {
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
+  '/admin/marketing/': typeof AdminMarketingIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
@@ -850,6 +858,7 @@ export interface FileRouteTypes {
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
     | '/admin/estatisticas/'
+    | '/admin/marketing/'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
@@ -884,7 +893,6 @@ export interface FileRouteTypes {
     | '/admin/descontos'
     | '/admin/financeiro'
     | '/admin/home-video'
-    | '/admin/marketing'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
@@ -930,6 +938,7 @@ export interface FileRouteTypes {
     | '/lovable/email/suppression'
     | '/admin/configuracoes'
     | '/admin/estatisticas'
+    | '/admin/marketing'
     | '/admin/produtos'
     | '/loja/$slug'
     | '/admin/loja/layout/editar'
@@ -1015,6 +1024,7 @@ export interface FileRouteTypes {
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
     | '/admin/estatisticas/'
+    | '/admin/marketing/'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
@@ -1372,6 +1382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/marketing/': {
+      id: '/admin/marketing/'
+      path: '/'
+      fullPath: '/admin/marketing/'
+      preLoaderRoute: typeof AdminMarketingIndexRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
     '/admin/estatisticas/': {
       id: '/admin/estatisticas/'
       path: '/'
@@ -1718,6 +1735,18 @@ const AdminEstatisticasRouteChildren: AdminEstatisticasRouteChildren = {
 const AdminEstatisticasRouteWithChildren =
   AdminEstatisticasRoute._addFileChildren(AdminEstatisticasRouteChildren)
 
+interface AdminMarketingRouteChildren {
+  AdminMarketingIndexRoute: typeof AdminMarketingIndexRoute
+}
+
+const AdminMarketingRouteChildren: AdminMarketingRouteChildren = {
+  AdminMarketingIndexRoute: AdminMarketingIndexRoute,
+}
+
+const AdminMarketingRouteWithChildren = AdminMarketingRoute._addFileChildren(
+  AdminMarketingRouteChildren,
+)
+
 interface AdminTemasRouteChildren {
   AdminTemasSucessoRoute: typeof AdminTemasSucessoRoute
 }
@@ -1740,7 +1769,7 @@ interface AdminRouteChildren {
   AdminEstatisticasRoute: typeof AdminEstatisticasRouteWithChildren
   AdminFinanceiroRoute: typeof AdminFinanceiroRoute
   AdminHomeVideoRoute: typeof AdminHomeVideoRoute
-  AdminMarketingRoute: typeof AdminMarketingRoute
+  AdminMarketingRoute: typeof AdminMarketingRouteWithChildren
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminPerguntasRoute: typeof AdminPerguntasRoute
   AdminPersonalizarLojaRoute: typeof AdminPersonalizarLojaRoute
@@ -1770,7 +1799,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEstatisticasRoute: AdminEstatisticasRouteWithChildren,
   AdminFinanceiroRoute: AdminFinanceiroRoute,
   AdminHomeVideoRoute: AdminHomeVideoRoute,
-  AdminMarketingRoute: AdminMarketingRoute,
+  AdminMarketingRoute: AdminMarketingRouteWithChildren,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminPerguntasRoute: AdminPerguntasRoute,
   AdminPersonalizarLojaRoute: AdminPersonalizarLojaRoute,
