@@ -13,7 +13,7 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { isPremiumStore } from "@/lib/access";
 import { cn } from "@/lib/utils";
 
-type SubItem = { label: string; to: string; premium?: boolean; external?: boolean };
+type SubItem = { label: string; to: string; premium?: boolean; external?: boolean; addonKey?: string };
 type NavItem = {
   label: string;
   to?: string;
