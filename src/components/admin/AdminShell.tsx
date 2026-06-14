@@ -263,6 +263,7 @@ function Sidebar({
   const pendingOrders = unread.orders;
   const { data: store } = useMyStore();
   const isPremium = isPremiumStore(store);
+  const { data: addonsActive = {} } = useAllAddonStatus(storeId);
 
   return (
     <>
