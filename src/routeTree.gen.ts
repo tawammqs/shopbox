@@ -65,6 +65,7 @@ import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.pr
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
 import { Route as AdminMarketingVideoCommerceRouteImport } from './routes/admin.marketing.video-commerce'
+import { Route as AdminMarketingGrupoVipRouteImport } from './routes/admin.marketing.grupo-vip'
 import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
 import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
 import { Route as AdminLojaMenusRouteImport } from './routes/admin.loja.menus'
@@ -378,6 +379,11 @@ const AdminMarketingVideoCommerceRoute =
     path: '/video-commerce',
     getParentRoute: () => AdminMarketingRoute,
   } as any)
+const AdminMarketingGrupoVipRoute = AdminMarketingGrupoVipRouteImport.update({
+  id: '/grupo-vip',
+  path: '/grupo-vip',
+  getParentRoute: () => AdminMarketingRoute,
+} as any)
 const AdminLojaRedesSociaisRoute = AdminLojaRedesSociaisRouteImport.update({
   id: '/loja/redes-sociais',
   path: '/loja/redes-sociais',
@@ -600,6 +606,7 @@ export interface FileRoutesByFullPath {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -681,6 +688,7 @@ export interface FileRoutesByTo {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -769,6 +777,7 @@ export interface FileRoutesById {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -858,6 +867,7 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/grupo-vip'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -939,6 +949,7 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/grupo-vip'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -1026,6 +1037,7 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/grupo-vip'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -1479,6 +1491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingVideoCommerceRouteImport
       parentRoute: typeof AdminMarketingRoute
     }
+    '/admin/marketing/grupo-vip': {
+      id: '/admin/marketing/grupo-vip'
+      path: '/grupo-vip'
+      fullPath: '/admin/marketing/grupo-vip'
+      preLoaderRoute: typeof AdminMarketingGrupoVipRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
     '/admin/loja/redes-sociais': {
       id: '/admin/loja/redes-sociais'
       path: '/loja/redes-sociais'
@@ -1756,11 +1775,13 @@ const AdminEstatisticasRouteWithChildren =
   AdminEstatisticasRoute._addFileChildren(AdminEstatisticasRouteChildren)
 
 interface AdminMarketingRouteChildren {
+  AdminMarketingGrupoVipRoute: typeof AdminMarketingGrupoVipRoute
   AdminMarketingVideoCommerceRoute: typeof AdminMarketingVideoCommerceRoute
   AdminMarketingIndexRoute: typeof AdminMarketingIndexRoute
 }
 
 const AdminMarketingRouteChildren: AdminMarketingRouteChildren = {
+  AdminMarketingGrupoVipRoute: AdminMarketingGrupoVipRoute,
   AdminMarketingVideoCommerceRoute: AdminMarketingVideoCommerceRoute,
   AdminMarketingIndexRoute: AdminMarketingIndexRoute,
 }
