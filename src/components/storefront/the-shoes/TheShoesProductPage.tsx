@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft, ChevronRight, Plus, Minus, ShoppingBag, Heart, Share2,
   FileText, Ruler, ShieldCheck, Truck, CreditCard, Star, ThumbsUp, CheckCircle2, X,
-  MessageCircle,
+  MessageCircle, Camera,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
