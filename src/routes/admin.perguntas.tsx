@@ -177,7 +177,7 @@ function ReviewsList({ storeId }: { storeId: string }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_reviews")
-        .select("id, product_id, customer_name, customer_whatsapp, rating, text, status, created_at, products!inner(title, store_id)")
+        .select("id, product_id, customer_name, customer_whatsapp, rating, text, status, photo_url, created_at, products!inner(title, store_id)")
         .eq("products.store_id", storeId)
         .order("created_at", { ascending: false });
       if (error) throw error;
