@@ -220,6 +220,11 @@ function ReviewsList({ storeId }: { storeId: string }) {
                 ))}
               </div>
               {r.text && <p className="mt-2 text-sm">{r.text}</p>}
+              {r.photo_url && (
+                <a href={r.photo_url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block">
+                  <img src={r.photo_url} alt="Foto enviada pelo cliente" className="h-20 w-20 rounded-lg border border-border object-cover" />
+                </a>
+              )}
               <p className="mt-1 text-xs text-muted-foreground">
                 {r.customer_name}{r.customer_whatsapp ? ` • ${r.customer_whatsapp}` : ""} • {new Date(r.created_at).toLocaleString("pt-BR")}
               </p>
