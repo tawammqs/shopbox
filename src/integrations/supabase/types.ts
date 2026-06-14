@@ -894,6 +894,7 @@ export type Database = {
           customer_name: string
           customer_whatsapp: string | null
           id: string
+          photo_url: string | null
           product_id: string
           rating: number
           status: Database["public"]["Enums"]["review_status"]
@@ -905,6 +906,7 @@ export type Database = {
           customer_name: string
           customer_whatsapp?: string | null
           id?: string
+          photo_url?: string | null
           product_id: string
           rating: number
           status?: Database["public"]["Enums"]["review_status"]
@@ -916,6 +918,7 @@ export type Database = {
           customer_name?: string
           customer_whatsapp?: string | null
           id?: string
+          photo_url?: string | null
           product_id?: string
           rating?: number
           status?: Database["public"]["Enums"]["review_status"]

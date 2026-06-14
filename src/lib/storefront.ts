@@ -442,7 +442,7 @@ export async function fetchProductFull(storeId: string, slug: string) {
        product_sizes(id, label, position),
        product_stock(id, color_id, size_id, quantity),
        product_video_testimonials(id, video_url, kind, customer_name, quote, rating, position),
-       product_reviews(id, customer_name, rating, text, status, created_at)`,
+       product_reviews(id, customer_name, rating, text, status, photo_url, created_at)`,
     )
     .eq("store_id", storeId)
     .eq("slug", slug)

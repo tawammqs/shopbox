@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft, ChevronRight, Plus, Minus, ShoppingBag, Heart, Share2,
   FileText, Ruler, ShieldCheck, Truck, CreditCard, Star, ThumbsUp, CheckCircle2, X,
-  MessageCircle,
+  MessageCircle, Camera,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
@@ -423,6 +423,11 @@ export function TheShoesProductPage({ product }: { product: any }) {
                   <article key={r.id} className="rounded-lg border border-[#eee] bg-white p-4">
                     <Stars value={r.rating} />
                     {r.text && <p className="mt-2 text-[14px] leading-snug text-[#111]">{r.text}</p>}
+                    {r.photo_url && (
+                      <a href={r.photo_url} target="_blank" rel="noopener noreferrer" className="mt-3 block">
+                        <img src={r.photo_url} alt="Foto enviada pelo cliente" className="h-24 w-24 rounded-lg border border-[#eee] object-cover" />
+                      </a>
+                    )}
                     <p className="mt-2 text-[12px] text-[#999]">
                       {r.customer_name}
                       {r.created_at && ` - ${daysAgo(r.created_at)}`}
@@ -549,25 +554,64 @@ function ReviewDialog({ open, onOpenChange, productId }: { open: boolean; onOpen
   const [whatsapp, setWhatsapp] = useState("");
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Selecione um arquivo de imagem.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB.");
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
+
+  function clearPhoto() {
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoFile(null);
+    setPhotoPreview(null);
+  }
+
+  function reset() {
+    setName(""); setWhatsapp(""); setRating(5); setText("");
+    clearPhoto();
+  }
 
   async function submit() {
     if (name.trim().length < 2) return toast.error("Informe seu nome");
     if (rating < 1 || rating > 5) return toast.error("Selecione uma nota");
     setBusy(true);
     try {
+      let photo_url: string | null = null;
+      if (photoFile) {
+        const ext = (photoFile.name.split(".").pop() || "jpg").toLowerCase();
+        const path = `reviews/${productId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("products")
+          .upload(path, photoFile, { contentType: photoFile.type, upsert: false });
+        if (upErr) throw new Error("Erro ao enviar a foto: " + upErr.message);
+        photo_url = supabase.storage.from("products").getPublicUrl(path).data.publicUrl;
+      }
       const { error } = await supabase.from("product_reviews").insert({
         product_id: productId,
         customer_name: name.trim(),
         customer_whatsapp: whatsapp.trim() || null,
         rating,
         text: text.trim() || null,
+        photo_url,
         status: "pending" as const,
       });
       if (error) throw error;
       toast.success("Avaliação enviada! Aguardando moderação.");
       onOpenChange(false);
-      setName(""); setWhatsapp(""); setRating(5); setText("");
+      reset();
     } catch (e: any) {
       toast.error(e.message ?? "Erro ao enviar");
     } finally {
@@ -593,6 +637,30 @@ function ReviewDialog({ open, onOpenChange, productId }: { open: boolean; onOpen
           <Input placeholder="Seu nome" value={name} onChange={(e) => setName(e.target.value)} />
           <Input placeholder="WhatsApp (opcional)" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
           <Textarea placeholder="Conte sua experiência com o produto" value={text} onChange={(e) => setText(e.target.value)} rows={4} />
+          <div>
+            <label className="text-sm font-medium">Foto do produto (opcional)</label>
+            <div className="mt-1">
+              {photoPreview ? (
+                <div className="relative inline-block">
+                  <img src={photoPreview} alt="Pré-visualização" className="h-24 w-24 rounded-lg border border-[#e0e0e0] object-cover" />
+                  <button
+                    type="button"
+                    onClick={clearPhoto}
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#e0e0e0] bg-white shadow"
+                    aria-label="Remover foto"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex h-24 w-24 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-[#e0e0e0] text-[#999] transition-colors hover:border-[#111] hover:text-[#111]">
+                  <Camera className="h-6 w-6" />
+                  <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                </label>
+              )}
+              <p className="mt-1 text-[11px] text-[#999]">JPG ou PNG, máximo 5MB</p>
+            </div>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
