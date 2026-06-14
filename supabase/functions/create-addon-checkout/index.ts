@@ -15,23 +15,21 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-// Per-addon, per-tier Stripe price IDs. Configured as secrets so they can be
-// swapped without code changes. The user must create these recurring prices
-// in the Stripe Dashboard and add the IDs as secrets.
-function priceIdFor(addonKey: string, planTier: string | null): string | null {
-  const tier = (planTier || "default").toUpperCase();
+// Human-readable price IDs (Stripe lookup_keys) created via the payments tool.
+// Resolved server-side via stripe.prices.list({ lookup_keys }).
+function lookupKeyFor(addonKey: string, planTier: string | null): string | null {
+  const tier = planTier || "default";
   const map: Record<string, string> = {
-    VIDEO_COMMERCE_INICIANTE: Deno.env.get("STRIPE_PRICE_VIDEO_INICIANTE") || "",
-    VIDEO_COMMERCE_ESSENCIAL: Deno.env.get("STRIPE_PRICE_VIDEO_ESSENCIAL") || "",
-    VIDEO_COMMERCE_PROFISSIONAL: Deno.env.get("STRIPE_PRICE_VIDEO_PROFISSIONAL") || "",
-    VIDEO_COMMERCE_ESCALA: Deno.env.get("STRIPE_PRICE_VIDEO_ESCALA") || "",
-    GRUPO_VIP_DEFAULT: Deno.env.get("STRIPE_PRICE_GRUPO_VIP") || "",
-    CAPTURA_LEADS_DEFAULT: Deno.env.get("STRIPE_PRICE_CAPTURA_LEADS") || "",
-    COMPRE_JUNTO_DEFAULT: Deno.env.get("STRIPE_PRICE_COMPRE_JUNTO") || "",
-    PERGUNTAS_AVALIACOES_DEFAULT: Deno.env.get("STRIPE_PRICE_PERGUNTAS_AVALIACOES") || "",
+    "video_commerce:iniciante": "addon_video_iniciante",
+    "video_commerce:essencial": "addon_video_essencial",
+    "video_commerce:profissional": "addon_video_profissional",
+    "video_commerce:escala": "addon_video_escala",
+    "grupo_vip:default": "addon_grupo_vip",
+    "captura_leads:default": "addon_captura_leads",
+    "compre_junto:default": "addon_compre_junto",
+    "perguntas_avaliacoes:default": "addon_perguntas_avaliacoes",
   };
-  const key = `${addonKey.toUpperCase()}_${tier}`;
-  return map[key] || null;
+  return map[`${addonKey}:${tier}`] || null;
 }
 
 const ADDON_URL_SLUG: Record<string, string> = {
@@ -71,13 +69,10 @@ serve(async (req) => {
     if (!store || store.owner_user_id !== user.id) throw new Error("Loja não encontrada");
 
     const env: StripeEnv = envRaw === "live" ? "live" : "sandbox";
-    const priceId = priceIdFor(addon_key, plan_tier);
-    if (!priceId) {
+    const lookupKey = lookupKeyFor(addon_key, plan_tier);
+    if (!lookupKey) {
       return new Response(
-        JSON.stringify({
-          error:
-            "Este add-on ainda não foi configurado para venda. Cadastre o price ID do Stripe correspondente nas variáveis de ambiente.",
-        }),
+        JSON.stringify({ error: "Add-on/plano inválido." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -86,10 +81,18 @@ serve(async (req) => {
     const slug = ADDON_URL_SLUG[addon_key] || addon_key.replace(/_/g, "-");
 
     const stripe = createStripeClient(env);
+    const prices = await stripe.prices.list({ lookup_keys: [lookupKey], limit: 1 });
+    if (!prices.data.length) {
+      return new Response(
+        JSON.stringify({ error: `Preço não encontrado no Stripe (${lookupKey}).` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+    const stripePrice = prices.data[0];
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: stripePrice.id, quantity: 1 }],
       success_url: `${appUrl}/admin/marketing/${slug}?addon_success=true`,
       cancel_url: `${appUrl}/admin/marketing/${slug}`,
       customer_email: user.email ?? undefined,
