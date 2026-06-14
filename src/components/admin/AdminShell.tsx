@@ -4,8 +4,9 @@ import {
   Home, BarChart2, ShoppingCart, DollarSign, Users, Package, Tag,
   Store as StoreIcon, Settings, ChevronDown, ChevronRight, Lock, Search,
   HelpCircle, Menu, X, LogOut, ExternalLink,
-  CreditCard,
+  CreditCard, Megaphone,
 } from "lucide-react";
+import { useAllAddonStatus } from "@/lib/addons";
 import { signOut } from "@/hooks/useAuth";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import { useMyStore } from "@/hooks/useMyStore";
