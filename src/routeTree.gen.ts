@@ -64,6 +64,7 @@ import { Route as AdminTemasSucessoRouteImport } from './routes/admin.temas.suce
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as AdminMarketingVideoCommerceRouteImport } from './routes/admin.marketing.video-commerce'
 import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
 import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
 import { Route as AdminLojaMenusRouteImport } from './routes/admin.loja.menus'
@@ -371,6 +372,12 @@ const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   path: '/produtos/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMarketingVideoCommerceRoute =
+  AdminMarketingVideoCommerceRouteImport.update({
+    id: '/video-commerce',
+    path: '/video-commerce',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
 const AdminLojaRedesSociaisRoute = AdminLojaRedesSociaisRouteImport.update({
   id: '/loja/redes-sociais',
   path: '/loja/redes-sociais',
@@ -593,6 +600,7 @@ export interface FileRoutesByFullPath {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -673,6 +681,7 @@ export interface FileRoutesByTo {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -760,6 +769,7 @@ export interface FileRoutesById {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -848,6 +858,7 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -928,6 +939,7 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -1014,6 +1026,7 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -1459,6 +1472,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/marketing/video-commerce': {
+      id: '/admin/marketing/video-commerce'
+      path: '/video-commerce'
+      fullPath: '/admin/marketing/video-commerce'
+      preLoaderRoute: typeof AdminMarketingVideoCommerceRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
     '/admin/loja/redes-sociais': {
       id: '/admin/loja/redes-sociais'
       path: '/loja/redes-sociais'
@@ -1736,10 +1756,12 @@ const AdminEstatisticasRouteWithChildren =
   AdminEstatisticasRoute._addFileChildren(AdminEstatisticasRouteChildren)
 
 interface AdminMarketingRouteChildren {
+  AdminMarketingVideoCommerceRoute: typeof AdminMarketingVideoCommerceRoute
   AdminMarketingIndexRoute: typeof AdminMarketingIndexRoute
 }
 
 const AdminMarketingRouteChildren: AdminMarketingRouteChildren = {
+  AdminMarketingVideoCommerceRoute: AdminMarketingVideoCommerceRoute,
   AdminMarketingIndexRoute: AdminMarketingIndexRoute,
 }
 
