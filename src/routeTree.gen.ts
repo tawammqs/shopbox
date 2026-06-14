@@ -41,6 +41,7 @@ import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
 import { Route as AdminPersonalizarLojaRouteImport } from './routes/admin.personalizar-loja'
 import { Route as AdminPerguntasRouteImport } from './routes/admin.perguntas'
 import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
+import { Route as AdminMarketingRouteImport } from './routes/admin.marketing'
 import { Route as AdminHomeVideoRouteImport } from './routes/admin.home-video'
 import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminEstatisticasRouteImport } from './routes/admin.estatisticas'
@@ -251,6 +252,11 @@ const AdminPerguntasRoute = AdminPerguntasRouteImport.update({
 const AdminPedidosRoute = AdminPedidosRouteImport.update({
   id: '/pedidos',
   path: '/pedidos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMarketingRoute = AdminMarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminHomeVideoRoute = AdminHomeVideoRouteImport.update({
@@ -544,6 +550,7 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -624,6 +631,7 @@ export interface FileRoutesByTo {
   '/admin/descontos': typeof AdminDescontosRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -708,6 +716,7 @@ export interface FileRoutesById {
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -794,6 +803,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas'
     | '/admin/financeiro'
     | '/admin/home-video'
+    | '/admin/marketing'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
@@ -874,6 +884,7 @@ export interface FileRouteTypes {
     | '/admin/descontos'
     | '/admin/financeiro'
     | '/admin/home-video'
+    | '/admin/marketing'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
@@ -957,6 +968,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas'
     | '/admin/financeiro'
     | '/admin/home-video'
+    | '/admin/marketing'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
@@ -1274,6 +1286,13 @@ declare module '@tanstack/react-router' {
       path: '/pedidos'
       fullPath: '/admin/pedidos'
       preLoaderRoute: typeof AdminPedidosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/marketing': {
+      id: '/admin/marketing'
+      path: '/marketing'
+      fullPath: '/admin/marketing'
+      preLoaderRoute: typeof AdminMarketingRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/home-video': {
@@ -1721,6 +1740,7 @@ interface AdminRouteChildren {
   AdminEstatisticasRoute: typeof AdminEstatisticasRouteWithChildren
   AdminFinanceiroRoute: typeof AdminFinanceiroRoute
   AdminHomeVideoRoute: typeof AdminHomeVideoRoute
+  AdminMarketingRoute: typeof AdminMarketingRoute
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminPerguntasRoute: typeof AdminPerguntasRoute
   AdminPersonalizarLojaRoute: typeof AdminPersonalizarLojaRoute
@@ -1750,6 +1770,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEstatisticasRoute: AdminEstatisticasRouteWithChildren,
   AdminFinanceiroRoute: AdminFinanceiroRoute,
   AdminHomeVideoRoute: AdminHomeVideoRoute,
+  AdminMarketingRoute: AdminMarketingRoute,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminPerguntasRoute: AdminPerguntasRoute,
   AdminPersonalizarLojaRoute: AdminPersonalizarLojaRoute,
