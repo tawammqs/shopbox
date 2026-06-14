@@ -309,7 +309,6 @@ function Sidebar({
                   currentPath={currentPath}
                   unreadByPath={{
                     "/admin/vendas": unread.orders,
-                    "/admin/clientes/leads": unread.leads,
                     "/admin/marketing/perguntas-avaliacoes": unread.questions,
                   }}
                   isPremium={isPremium}
