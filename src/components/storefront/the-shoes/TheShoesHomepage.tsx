@@ -71,7 +71,7 @@ export function TheShoesHomepage() {
       <MarqueeBar cfg={s.marquee2} />
       <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
       <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
-      <VideoTestimonialsSection storeSlug={store.slug} section={s.video_section} />
+      <VideoTestimonialsSection storeId={store.id} storeSlug={store.slug} section={s.video_section} />
       <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
       <InstagramSection handle={s.instagram_handle} images={s.instagram_images} />
       {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
