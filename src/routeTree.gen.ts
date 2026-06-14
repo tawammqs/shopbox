@@ -41,6 +41,7 @@ import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
 import { Route as AdminPersonalizarLojaRouteImport } from './routes/admin.personalizar-loja'
 import { Route as AdminPerguntasRouteImport } from './routes/admin.perguntas'
 import { Route as AdminPedidosRouteImport } from './routes/admin.pedidos'
+import { Route as AdminMarketingRouteImport } from './routes/admin.marketing'
 import { Route as AdminHomeVideoRouteImport } from './routes/admin.home-video'
 import { Route as AdminFinanceiroRouteImport } from './routes/admin.financeiro'
 import { Route as AdminEstatisticasRouteImport } from './routes/admin.estatisticas'
@@ -52,6 +53,7 @@ import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
+import { Route as AdminMarketingIndexRouteImport } from './routes/admin.marketing.index'
 import { Route as AdminEstatisticasIndexRouteImport } from './routes/admin.estatisticas.index'
 import { Route as AdminConfiguracoesIndexRouteImport } from './routes/admin.configuracoes.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
@@ -62,6 +64,11 @@ import { Route as AdminTemasSucessoRouteImport } from './routes/admin.temas.suce
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
+import { Route as AdminMarketingVideoCommerceRouteImport } from './routes/admin.marketing.video-commerce'
+import { Route as AdminMarketingPerguntasAvaliacoesRouteImport } from './routes/admin.marketing.perguntas-avaliacoes'
+import { Route as AdminMarketingGrupoVipRouteImport } from './routes/admin.marketing.grupo-vip'
+import { Route as AdminMarketingCompreJuntoRouteImport } from './routes/admin.marketing.compre-junto'
+import { Route as AdminMarketingCapturaLeadsRouteImport } from './routes/admin.marketing.captura-leads'
 import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
 import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
 import { Route as AdminLojaMenusRouteImport } from './routes/admin.loja.menus'
@@ -253,6 +260,11 @@ const AdminPedidosRoute = AdminPedidosRouteImport.update({
   path: '/pedidos',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMarketingRoute = AdminMarketingRouteImport.update({
+  id: '/marketing',
+  path: '/marketing',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminHomeVideoRoute = AdminHomeVideoRouteImport.update({
   id: '/home-video',
   path: '/home-video',
@@ -308,6 +320,11 @@ const AdminProdutosIndexRoute = AdminProdutosIndexRouteImport.update({
   path: '/produtos/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMarketingIndexRoute = AdminMarketingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminMarketingRoute,
+} as any)
 const AdminEstatisticasIndexRoute = AdminEstatisticasIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -359,6 +376,35 @@ const AdminProdutosIdRoute = AdminProdutosIdRouteImport.update({
   path: '/produtos/$id',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMarketingVideoCommerceRoute =
+  AdminMarketingVideoCommerceRouteImport.update({
+    id: '/video-commerce',
+    path: '/video-commerce',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
+const AdminMarketingPerguntasAvaliacoesRoute =
+  AdminMarketingPerguntasAvaliacoesRouteImport.update({
+    id: '/perguntas-avaliacoes',
+    path: '/perguntas-avaliacoes',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
+const AdminMarketingGrupoVipRoute = AdminMarketingGrupoVipRouteImport.update({
+  id: '/grupo-vip',
+  path: '/grupo-vip',
+  getParentRoute: () => AdminMarketingRoute,
+} as any)
+const AdminMarketingCompreJuntoRoute =
+  AdminMarketingCompreJuntoRouteImport.update({
+    id: '/compre-junto',
+    path: '/compre-junto',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
+const AdminMarketingCapturaLeadsRoute =
+  AdminMarketingCapturaLeadsRouteImport.update({
+    id: '/captura-leads',
+    path: '/captura-leads',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
 const AdminLojaRedesSociaisRoute = AdminLojaRedesSociaisRouteImport.update({
   id: '/loja/redes-sociais',
   path: '/loja/redes-sociais',
@@ -544,6 +590,7 @@ export interface FileRoutesByFullPath {
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
+  '/admin/marketing': typeof AdminMarketingRouteWithChildren
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -580,6 +627,11 @@ export interface FileRoutesByFullPath {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
+  '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
+  '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
+  '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
+  '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -590,6 +642,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
+  '/admin/marketing/': typeof AdminMarketingIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
@@ -659,6 +712,11 @@ export interface FileRoutesByTo {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
+  '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
+  '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
+  '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
+  '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -669,6 +727,7 @@ export interface FileRoutesByTo {
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas': typeof AdminEstatisticasIndexRoute
+  '/admin/marketing': typeof AdminMarketingIndexRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
@@ -708,6 +767,7 @@ export interface FileRoutesById {
   '/admin/estatisticas': typeof AdminEstatisticasRouteWithChildren
   '/admin/financeiro': typeof AdminFinanceiroRoute
   '/admin/home-video': typeof AdminHomeVideoRoute
+  '/admin/marketing': typeof AdminMarketingRouteWithChildren
   '/admin/pedidos': typeof AdminPedidosRoute
   '/admin/perguntas': typeof AdminPerguntasRoute
   '/admin/personalizar-loja': typeof AdminPersonalizarLojaRoute
@@ -744,6 +804,11 @@ export interface FileRoutesById {
   '/admin/loja/menus': typeof AdminLojaMenusRoute
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
+  '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
+  '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
+  '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
+  '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
+  '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
@@ -754,6 +819,7 @@ export interface FileRoutesById {
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
   '/admin/estatisticas/': typeof AdminEstatisticasIndexRoute
+  '/admin/marketing/': typeof AdminMarketingIndexRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
@@ -794,6 +860,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas'
     | '/admin/financeiro'
     | '/admin/home-video'
+    | '/admin/marketing'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
@@ -830,6 +897,11 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/captura-leads'
+    | '/admin/marketing/compre-junto'
+    | '/admin/marketing/grupo-vip'
+    | '/admin/marketing/perguntas-avaliacoes'
+    | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -840,6 +912,7 @@ export interface FileRouteTypes {
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
     | '/admin/estatisticas/'
+    | '/admin/marketing/'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
@@ -909,6 +982,11 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/captura-leads'
+    | '/admin/marketing/compre-junto'
+    | '/admin/marketing/grupo-vip'
+    | '/admin/marketing/perguntas-avaliacoes'
+    | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -919,6 +997,7 @@ export interface FileRouteTypes {
     | '/lovable/email/suppression'
     | '/admin/configuracoes'
     | '/admin/estatisticas'
+    | '/admin/marketing'
     | '/admin/produtos'
     | '/loja/$slug'
     | '/admin/loja/layout/editar'
@@ -957,6 +1036,7 @@ export interface FileRouteTypes {
     | '/admin/estatisticas'
     | '/admin/financeiro'
     | '/admin/home-video'
+    | '/admin/marketing'
     | '/admin/pedidos'
     | '/admin/perguntas'
     | '/admin/personalizar-loja'
@@ -993,6 +1073,11 @@ export interface FileRouteTypes {
     | '/admin/loja/menus'
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
+    | '/admin/marketing/captura-leads'
+    | '/admin/marketing/compre-junto'
+    | '/admin/marketing/grupo-vip'
+    | '/admin/marketing/perguntas-avaliacoes'
+    | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
@@ -1003,6 +1088,7 @@ export interface FileRouteTypes {
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
     | '/admin/estatisticas/'
+    | '/admin/marketing/'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
@@ -1276,6 +1362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPedidosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/marketing': {
+      id: '/admin/marketing'
+      path: '/marketing'
+      fullPath: '/admin/marketing'
+      preLoaderRoute: typeof AdminMarketingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/home-video': {
       id: '/admin/home-video'
       path: '/home-video'
@@ -1353,6 +1446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/marketing/': {
+      id: '/admin/marketing/'
+      path: '/'
+      fullPath: '/admin/marketing/'
+      preLoaderRoute: typeof AdminMarketingIndexRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
     '/admin/estatisticas/': {
       id: '/admin/estatisticas/'
       path: '/'
@@ -1422,6 +1522,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/produtos/$id'
       preLoaderRoute: typeof AdminProdutosIdRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/admin/marketing/video-commerce': {
+      id: '/admin/marketing/video-commerce'
+      path: '/video-commerce'
+      fullPath: '/admin/marketing/video-commerce'
+      preLoaderRoute: typeof AdminMarketingVideoCommerceRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
+    '/admin/marketing/perguntas-avaliacoes': {
+      id: '/admin/marketing/perguntas-avaliacoes'
+      path: '/perguntas-avaliacoes'
+      fullPath: '/admin/marketing/perguntas-avaliacoes'
+      preLoaderRoute: typeof AdminMarketingPerguntasAvaliacoesRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
+    '/admin/marketing/grupo-vip': {
+      id: '/admin/marketing/grupo-vip'
+      path: '/grupo-vip'
+      fullPath: '/admin/marketing/grupo-vip'
+      preLoaderRoute: typeof AdminMarketingGrupoVipRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
+    '/admin/marketing/compre-junto': {
+      id: '/admin/marketing/compre-junto'
+      path: '/compre-junto'
+      fullPath: '/admin/marketing/compre-junto'
+      preLoaderRoute: typeof AdminMarketingCompreJuntoRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
+    '/admin/marketing/captura-leads': {
+      id: '/admin/marketing/captura-leads'
+      path: '/captura-leads'
+      fullPath: '/admin/marketing/captura-leads'
+      preLoaderRoute: typeof AdminMarketingCapturaLeadsRouteImport
+      parentRoute: typeof AdminMarketingRoute
     }
     '/admin/loja/redes-sociais': {
       id: '/admin/loja/redes-sociais'
@@ -1699,6 +1834,29 @@ const AdminEstatisticasRouteChildren: AdminEstatisticasRouteChildren = {
 const AdminEstatisticasRouteWithChildren =
   AdminEstatisticasRoute._addFileChildren(AdminEstatisticasRouteChildren)
 
+interface AdminMarketingRouteChildren {
+  AdminMarketingCapturaLeadsRoute: typeof AdminMarketingCapturaLeadsRoute
+  AdminMarketingCompreJuntoRoute: typeof AdminMarketingCompreJuntoRoute
+  AdminMarketingGrupoVipRoute: typeof AdminMarketingGrupoVipRoute
+  AdminMarketingPerguntasAvaliacoesRoute: typeof AdminMarketingPerguntasAvaliacoesRoute
+  AdminMarketingVideoCommerceRoute: typeof AdminMarketingVideoCommerceRoute
+  AdminMarketingIndexRoute: typeof AdminMarketingIndexRoute
+}
+
+const AdminMarketingRouteChildren: AdminMarketingRouteChildren = {
+  AdminMarketingCapturaLeadsRoute: AdminMarketingCapturaLeadsRoute,
+  AdminMarketingCompreJuntoRoute: AdminMarketingCompreJuntoRoute,
+  AdminMarketingGrupoVipRoute: AdminMarketingGrupoVipRoute,
+  AdminMarketingPerguntasAvaliacoesRoute:
+    AdminMarketingPerguntasAvaliacoesRoute,
+  AdminMarketingVideoCommerceRoute: AdminMarketingVideoCommerceRoute,
+  AdminMarketingIndexRoute: AdminMarketingIndexRoute,
+}
+
+const AdminMarketingRouteWithChildren = AdminMarketingRoute._addFileChildren(
+  AdminMarketingRouteChildren,
+)
+
 interface AdminTemasRouteChildren {
   AdminTemasSucessoRoute: typeof AdminTemasSucessoRoute
 }
@@ -1721,6 +1879,7 @@ interface AdminRouteChildren {
   AdminEstatisticasRoute: typeof AdminEstatisticasRouteWithChildren
   AdminFinanceiroRoute: typeof AdminFinanceiroRoute
   AdminHomeVideoRoute: typeof AdminHomeVideoRoute
+  AdminMarketingRoute: typeof AdminMarketingRouteWithChildren
   AdminPedidosRoute: typeof AdminPedidosRoute
   AdminPerguntasRoute: typeof AdminPerguntasRoute
   AdminPersonalizarLojaRoute: typeof AdminPersonalizarLojaRoute
@@ -1750,6 +1909,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEstatisticasRoute: AdminEstatisticasRouteWithChildren,
   AdminFinanceiroRoute: AdminFinanceiroRoute,
   AdminHomeVideoRoute: AdminHomeVideoRoute,
+  AdminMarketingRoute: AdminMarketingRouteWithChildren,
   AdminPedidosRoute: AdminPedidosRoute,
   AdminPerguntasRoute: AdminPerguntasRoute,
   AdminPersonalizarLojaRoute: AdminPersonalizarLojaRoute,
@@ -1846,13 +2006,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

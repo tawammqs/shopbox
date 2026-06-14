@@ -4,15 +4,16 @@ import {
   Home, BarChart2, ShoppingCart, DollarSign, Users, Package, Tag,
   Store as StoreIcon, Settings, ChevronDown, ChevronRight, Lock, Search,
   HelpCircle, Menu, X, LogOut, ExternalLink,
-  CreditCard,
+  CreditCard, Megaphone,
 } from "lucide-react";
+import { useAllAddonStatus } from "@/lib/addons";
 import { signOut } from "@/hooks/useAuth";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import { useMyStore } from "@/hooks/useMyStore";
 import { isPremiumStore } from "@/lib/access";
 import { cn } from "@/lib/utils";
 
-type SubItem = { label: string; to: string; premium?: boolean; external?: boolean };
+type SubItem = { label: string; to: string; premium?: boolean; external?: boolean; addonKey?: string };
 type NavItem = {
   label: string;
   to?: string;
@@ -54,7 +55,6 @@ const SECTIONS: NavSection[] = [
         children: [
           { label: "Lista de clientes", to: "/admin/clientes" },
           { label: "Leads", to: "/admin/clientes/leads" },
-          { label: "Perguntas e Avaliações", to: "/admin/clientes/avaliacoes", premium: true },
         ],
       },
     ],
@@ -78,6 +78,22 @@ const SECTIONS: NavSection[] = [
           { label: "Cupons", to: "/admin/descontos/cupons" },
           { label: "Frete grátis", to: "/admin/descontos/frete-gratis" },
           { label: "Promoções", to: "/admin/descontos/promocoes" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "MARKETING",
+    items: [
+      {
+        label: "Marketing",
+        icon: Megaphone,
+        children: [
+          { label: "Video Commerce", to: "/admin/marketing/video-commerce", addonKey: "video_commerce" },
+          { label: "Grupo VIP", to: "/admin/marketing/grupo-vip", addonKey: "grupo_vip" },
+          { label: "Captura de Leads", to: "/admin/marketing/captura-leads", addonKey: "captura_leads" },
+          { label: "Compre Junto", to: "/admin/marketing/compre-junto", addonKey: "compre_junto" },
+          { label: "Perguntas e Avaliações", to: "/admin/marketing/perguntas-avaliacoes", addonKey: "perguntas_avaliacoes" },
         ],
       },
     ],
@@ -141,6 +157,12 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/banners": "Banners",
   "/admin/home-video": "Vídeo da home",
   "/admin/dashboard": "Dashboard",
+  "/admin/marketing": "Marketing",
+  "/admin/marketing/video-commerce": "Video Commerce",
+  "/admin/marketing/grupo-vip": "Grupo VIP",
+  "/admin/marketing/captura-leads": "Captura de Leads",
+  "/admin/marketing/compre-junto": "Compre Junto",
+  "/admin/marketing/perguntas-avaliacoes": "Perguntas e Avaliações",
 };
 
 function pageTitleFor(pathname: string): string {
@@ -241,6 +263,7 @@ function Sidebar({
   const pendingOrders = unread.orders;
   const { data: store } = useMyStore();
   const isPremium = isPremiumStore(store);
+  const { data: addonsActive = {} } = useAllAddonStatus(storeId);
 
   return (
     <>
@@ -289,9 +312,10 @@ function Sidebar({
                   unreadByPath={{
                     "/admin/vendas": unread.orders,
                     "/admin/clientes/leads": unread.leads,
-                    "/admin/clientes/avaliacoes": unread.questions,
+                    "/admin/marketing/perguntas-avaliacoes": unread.questions,
                   }}
                   isPremium={isPremium}
+                  addonsActive={addonsActive}
                 />
               ))}
             </div>
@@ -309,7 +333,7 @@ function Sidebar({
 }
 
 function NavRow({
-  item, collapsed, currentPath, unreadByPath, hasSubmenuIndicator, isPremium,
+  item, collapsed, currentPath, unreadByPath, hasSubmenuIndicator, isPremium, addonsActive,
 }: {
   item: NavItem;
   collapsed: boolean;
@@ -317,6 +341,7 @@ function NavRow({
   unreadByPath: Record<string, number>;
   hasSubmenuIndicator?: boolean;
   isPremium?: boolean;
+  addonsActive?: Record<string, boolean>;
 }) {
   const hasChildren = !!item.children?.length;
   const childActive = hasChildren && item.children!.some((c) => currentPath === c.to || currentPath.startsWith(c.to + "/"));
@@ -428,6 +453,9 @@ function NavRow({
                       Premium
                     </span>
                   </>
+                )}
+                {child.addonKey && !addonsActive?.[child.addonKey] && (
+                  <Lock className="h-3 w-3 text-gray-300" />
                 )}
               </Link>
             );

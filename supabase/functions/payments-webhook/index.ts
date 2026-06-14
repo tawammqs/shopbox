@@ -19,16 +19,34 @@ serve(async (req) => {
 
     switch (event.type) {
       case "customer.subscription.created":
-      case "customer.subscription.updated":
-        await handleSubscriptionUpsert(event.data.object, env);
+      case "customer.subscription.updated": {
+        const sub = event.data.object;
+        if (sub.metadata?.kind === "addon_subscription") {
+          await handleAddonSubscriptionUpsert(sub);
+        } else {
+          await handleSubscriptionUpsert(sub, env);
+        }
         break;
-      case "customer.subscription.deleted":
-        await handleSubscriptionDeleted(event.data.object, env);
+      }
+      case "customer.subscription.deleted": {
+        const sub = event.data.object;
+        if (sub.metadata?.kind === "addon_subscription") {
+          await handleAddonSubscriptionDeleted(sub);
+        } else {
+          await handleSubscriptionDeleted(sub, env);
+        }
         break;
-      case "checkout.session.completed":
-        console.log("Checkout completed:", event.data.object.id);
-        await handleCheckoutCompleted(event.data.object);
+      }
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        console.log("Checkout completed:", session.id);
+        if (session.metadata?.kind === "addon_subscription") {
+          await handleAddonCheckoutCompleted(session);
+        } else {
+          await handleCheckoutCompleted(session);
+        }
         break;
+      }
       default:
         console.log("Unhandled:", event.type);
     }
@@ -248,4 +266,60 @@ async function handleCheckoutCompleted(session: any) {
   );
 
   await supabase.rpc("increment_theme_installs", { _theme_id: themeId });
+}
+
+async function handleAddonCheckoutCompleted(session: any) {
+  const meta = session.metadata ?? {};
+  const storeId = meta.store_id;
+  const addonKey = meta.addon_key;
+  if (!storeId || !addonKey) return;
+
+  await supabase.from("store_addons").upsert(
+    {
+      store_id: storeId,
+      addon_key: addonKey,
+      plan_tier: meta.plan_tier || null,
+      status: "active",
+      stripe_subscription_id: session.subscription ?? null,
+      stripe_customer_id: session.customer ?? null,
+      current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "store_id,addon_key" },
+  );
+}
+
+async function handleAddonSubscriptionUpsert(subscription: any) {
+  const meta = subscription.metadata ?? {};
+  const storeId = meta.store_id;
+  const addonKey = meta.addon_key;
+  if (!storeId || !addonKey) {
+    console.error("addon sub missing metadata", subscription.id);
+    return;
+  }
+  const item = subscription.items?.data?.[0];
+  const periodEnd = item?.current_period_end ?? subscription.current_period_end;
+
+  await supabase.from("store_addons").upsert(
+    {
+      store_id: storeId,
+      addon_key: addonKey,
+      plan_tier: meta.plan_tier || null,
+      status: subscription.status === "active" || subscription.status === "trialing"
+        ? "active"
+        : subscription.status,
+      stripe_subscription_id: subscription.id,
+      stripe_customer_id: subscription.customer,
+      current_period_end: tsToIso(periodEnd),
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "store_id,addon_key" },
+  );
+}
+
+async function handleAddonSubscriptionDeleted(subscription: any) {
+  await supabase
+    .from("store_addons")
+    .update({ status: "cancelled", updated_at: new Date().toISOString() })
+    .eq("stripe_subscription_id", subscription.id);
 }
