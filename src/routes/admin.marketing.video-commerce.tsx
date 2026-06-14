@@ -178,7 +178,7 @@ function VideoList({ storeId, placement, limit }: { storeId: string; placement: 
             >
               <option value="">Sem produto</option>
               {(products.data ?? []).map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
+                <option key={p.id} value={p.id}>{p.title}</option>
               ))}
             </select>
             <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
