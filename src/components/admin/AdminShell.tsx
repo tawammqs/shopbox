@@ -54,7 +54,6 @@ const SECTIONS: NavSection[] = [
         icon: Users,
         children: [
           { label: "Lista de clientes", to: "/admin/clientes" },
-          { label: "Leads", to: "/admin/clientes/leads" },
         ],
       },
     ],
@@ -134,7 +133,6 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/pedidos": "Vendas",
   "/admin/financeiro": "Financeiro",
   "/admin/clientes": "Clientes",
-  "/admin/clientes/leads": "Leads",
   "/admin/clientes/avaliacoes": "Perguntas e Avaliações",
   "/admin/perguntas": "Perguntas e Avaliações",
   "/admin/produtos": "Produtos",
@@ -311,7 +309,6 @@ function Sidebar({
                   currentPath={currentPath}
                   unreadByPath={{
                     "/admin/vendas": unread.orders,
-                    "/admin/clientes/leads": unread.leads,
                     "/admin/marketing/perguntas-avaliacoes": unread.questions,
                   }}
                   isPremium={isPremium}

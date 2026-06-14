@@ -41,8 +41,6 @@ function Page() {
 function Tabs({ storeId }: { storeId: string }) {
   const [tab, setTab] = useState<"config" | "leads">("config");
   const { data: count = 0 } = useLeadsCount(storeId, "coupon_leads");
-  const { data: cfg = {} as Cfg } = useAddonConfig<Cfg>(storeId, "captura_leads");
-  const showBirthday = !!cfg.ask_birthday;
 
   return (
     <div className="max-w-3xl space-y-5">
@@ -72,8 +70,8 @@ function Tabs({ storeId }: { storeId: string }) {
         <LeadsTable
           storeId={storeId}
           table="coupon_leads"
-          columns={showBirthday ? ["name", "whatsapp", "birthday", "created_at"] : ["name", "whatsapp", "created_at"]}
-          metrics={showBirthday ? ["total", "week", "birthday_month"] : ["total", "week"]}
+          columns={["name", "whatsapp", "birthday", "created_at"]}
+          metrics={["total", "week", "birthday_month"]}
           searchPlaceholder="Buscar por nome ou WhatsApp"
           emptyTitle="Ainda não há leads capturados."
           emptySubtitle="Quando alguém preencher o formulário do popup de cupom na sua loja, aparecerá aqui."
