@@ -19,16 +19,34 @@ serve(async (req) => {
 
     switch (event.type) {
       case "customer.subscription.created":
-      case "customer.subscription.updated":
-        await handleSubscriptionUpsert(event.data.object, env);
+      case "customer.subscription.updated": {
+        const sub = event.data.object;
+        if (sub.metadata?.kind === "addon_subscription") {
+          await handleAddonSubscriptionUpsert(sub);
+        } else {
+          await handleSubscriptionUpsert(sub, env);
+        }
         break;
-      case "customer.subscription.deleted":
-        await handleSubscriptionDeleted(event.data.object, env);
+      }
+      case "customer.subscription.deleted": {
+        const sub = event.data.object;
+        if (sub.metadata?.kind === "addon_subscription") {
+          await handleAddonSubscriptionDeleted(sub);
+        } else {
+          await handleSubscriptionDeleted(sub, env);
+        }
         break;
-      case "checkout.session.completed":
-        console.log("Checkout completed:", event.data.object.id);
-        await handleCheckoutCompleted(event.data.object);
+      }
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        console.log("Checkout completed:", session.id);
+        if (session.metadata?.kind === "addon_subscription") {
+          await handleAddonCheckoutCompleted(session);
+        } else {
+          await handleCheckoutCompleted(session);
+        }
         break;
+      }
       default:
         console.log("Unhandled:", event.type);
     }
