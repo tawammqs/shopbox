@@ -333,7 +333,7 @@ function Sidebar({
 }
 
 function NavRow({
-  item, collapsed, currentPath, unreadByPath, hasSubmenuIndicator, isPremium,
+  item, collapsed, currentPath, unreadByPath, hasSubmenuIndicator, isPremium, addonsActive,
 }: {
   item: NavItem;
   collapsed: boolean;
@@ -341,6 +341,7 @@ function NavRow({
   unreadByPath: Record<string, number>;
   hasSubmenuIndicator?: boolean;
   isPremium?: boolean;
+  addonsActive?: Record<string, boolean>;
 }) {
   const hasChildren = !!item.children?.length;
   const childActive = hasChildren && item.children!.some((c) => currentPath === c.to || currentPath.startsWith(c.to + "/"));
