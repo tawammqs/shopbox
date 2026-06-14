@@ -54,7 +54,6 @@ const SECTIONS: NavSection[] = [
         icon: Users,
         children: [
           { label: "Lista de clientes", to: "/admin/clientes" },
-          { label: "Leads", to: "/admin/clientes/leads" },
         ],
       },
     ],
