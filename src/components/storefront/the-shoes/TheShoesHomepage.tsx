@@ -455,7 +455,7 @@ function VideoTestimonialsSection({ storeId, storeSlug, section }: { storeId: st
       </h2>
       <div className="flex gap-3 overflow-x-auto pb-2 md:gap-4" style={{ scrollbarWidth: "thin" }}>
         {videos.map((v, idx) => {
-          const product = productsById.get(v.product_id);
+          const product = v.product_id ? productsById.get(v.product_id) : null;
           const images = (product?.product_images ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
           const thumb = images[0]?.url ?? "";
           const price = product ? Number(product.promo_price ?? product.price ?? 0) : 0;
