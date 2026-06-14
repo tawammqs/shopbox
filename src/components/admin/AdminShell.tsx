@@ -454,6 +454,9 @@ function NavRow({
                     </span>
                   </>
                 )}
+                {child.addonKey && !addonsActive?.[child.addonKey] && (
+                  <Lock className="h-3 w-3 text-gray-300" />
+                )}
               </Link>
             );
           })}
