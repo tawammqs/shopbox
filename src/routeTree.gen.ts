@@ -65,6 +65,7 @@ import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.pr
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
 import { Route as AdminMarketingVideoCommerceRouteImport } from './routes/admin.marketing.video-commerce'
+import { Route as AdminMarketingPerguntasAvaliacoesRouteImport } from './routes/admin.marketing.perguntas-avaliacoes'
 import { Route as AdminMarketingGrupoVipRouteImport } from './routes/admin.marketing.grupo-vip'
 import { Route as AdminMarketingCompreJuntoRouteImport } from './routes/admin.marketing.compre-junto'
 import { Route as AdminMarketingCapturaLeadsRouteImport } from './routes/admin.marketing.captura-leads'
@@ -381,6 +382,12 @@ const AdminMarketingVideoCommerceRoute =
     path: '/video-commerce',
     getParentRoute: () => AdminMarketingRoute,
   } as any)
+const AdminMarketingPerguntasAvaliacoesRoute =
+  AdminMarketingPerguntasAvaliacoesRouteImport.update({
+    id: '/perguntas-avaliacoes',
+    path: '/perguntas-avaliacoes',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
 const AdminMarketingGrupoVipRoute = AdminMarketingGrupoVipRouteImport.update({
   id: '/grupo-vip',
   path: '/grupo-vip',
@@ -623,6 +630,7 @@ export interface FileRoutesByFullPath {
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
   '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
+  '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -707,6 +715,7 @@ export interface FileRoutesByTo {
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
   '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
+  '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -798,6 +807,7 @@ export interface FileRoutesById {
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
   '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
+  '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
@@ -890,6 +900,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/captura-leads'
     | '/admin/marketing/compre-junto'
     | '/admin/marketing/grupo-vip'
+    | '/admin/marketing/perguntas-avaliacoes'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -974,6 +985,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/captura-leads'
     | '/admin/marketing/compre-junto'
     | '/admin/marketing/grupo-vip'
+    | '/admin/marketing/perguntas-avaliacoes'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -1064,6 +1076,7 @@ export interface FileRouteTypes {
     | '/admin/marketing/captura-leads'
     | '/admin/marketing/compre-junto'
     | '/admin/marketing/grupo-vip'
+    | '/admin/marketing/perguntas-avaliacoes'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
     | '/admin/produtos/categorias'
@@ -1517,6 +1530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingVideoCommerceRouteImport
       parentRoute: typeof AdminMarketingRoute
     }
+    '/admin/marketing/perguntas-avaliacoes': {
+      id: '/admin/marketing/perguntas-avaliacoes'
+      path: '/perguntas-avaliacoes'
+      fullPath: '/admin/marketing/perguntas-avaliacoes'
+      preLoaderRoute: typeof AdminMarketingPerguntasAvaliacoesRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
     '/admin/marketing/grupo-vip': {
       id: '/admin/marketing/grupo-vip'
       path: '/grupo-vip'
@@ -1818,6 +1838,7 @@ interface AdminMarketingRouteChildren {
   AdminMarketingCapturaLeadsRoute: typeof AdminMarketingCapturaLeadsRoute
   AdminMarketingCompreJuntoRoute: typeof AdminMarketingCompreJuntoRoute
   AdminMarketingGrupoVipRoute: typeof AdminMarketingGrupoVipRoute
+  AdminMarketingPerguntasAvaliacoesRoute: typeof AdminMarketingPerguntasAvaliacoesRoute
   AdminMarketingVideoCommerceRoute: typeof AdminMarketingVideoCommerceRoute
   AdminMarketingIndexRoute: typeof AdminMarketingIndexRoute
 }
@@ -1826,6 +1847,8 @@ const AdminMarketingRouteChildren: AdminMarketingRouteChildren = {
   AdminMarketingCapturaLeadsRoute: AdminMarketingCapturaLeadsRoute,
   AdminMarketingCompreJuntoRoute: AdminMarketingCompreJuntoRoute,
   AdminMarketingGrupoVipRoute: AdminMarketingGrupoVipRoute,
+  AdminMarketingPerguntasAvaliacoesRoute:
+    AdminMarketingPerguntasAvaliacoesRoute,
   AdminMarketingVideoCommerceRoute: AdminMarketingVideoCommerceRoute,
   AdminMarketingIndexRoute: AdminMarketingIndexRoute,
 }
