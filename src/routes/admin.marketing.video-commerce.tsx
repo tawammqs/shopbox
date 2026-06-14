@@ -103,9 +103,9 @@ function VideoList({ storeId, placement, limit }: { storeId: string; placement: 
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("id, name")
+        .select("id, title")
         .eq("store_id", storeId)
-        .order("name");
+        .order("title");
       return data ?? [];
     },
   });
