@@ -83,6 +83,22 @@ const SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: "MARKETING",
+    items: [
+      {
+        label: "Marketing",
+        icon: Megaphone,
+        children: [
+          { label: "Video Commerce", to: "/admin/marketing/video-commerce", addonKey: "video_commerce" },
+          { label: "Grupo VIP", to: "/admin/marketing/grupo-vip", addonKey: "grupo_vip" },
+          { label: "Captura de Leads", to: "/admin/marketing/captura-leads", addonKey: "captura_leads" },
+          { label: "Compre Junto", to: "/admin/marketing/compre-junto", addonKey: "compre_junto" },
+          { label: "Perguntas e Avaliações", to: "/admin/marketing/perguntas-avaliacoes", addonKey: "perguntas_avaliacoes" },
+        ],
+      },
+    ],
+  },
+  {
     label: "CANAIS DE VENDA",
     items: [
       {
