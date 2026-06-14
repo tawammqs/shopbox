@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useMyStore } from "@/hooks/useMyStore";
 import { useAddonStatus, useAddonConfig, saveAddonConfig } from "@/lib/addons";
 import { AddonPaywall } from "@/components/admin/marketing/AddonPaywall";
+import { LeadsTable, useLeadsCount } from "@/components/admin/marketing/LeadsTable";
 
 export const Route = createFileRoute("/admin/marketing/grupo-vip")({
   head: () => ({ meta: [{ title: "Grupo VIP — ShopBox" }] }),
@@ -33,7 +34,50 @@ function Page() {
   }, [qc]);
   if (isLoading) return <Loader2 className="mx-auto mt-10 h-6 w-6 animate-spin text-gray-400" />;
   if (!status?.isActive) return <AddonPaywall addonKey="grupo_vip" />;
-  return <Config storeId={store!.id} />;
+  return <Tabs storeId={store!.id} />;
+}
+
+function Tabs({ storeId }: { storeId: string }) {
+  const [tab, setTab] = useState<"config" | "leads">("config");
+  const { data: count = 0 } = useLeadsCount(storeId, "vip_group_leads");
+  return (
+    <div className="max-w-3xl space-y-5">
+      <h1 className="text-2xl font-bold text-[#111827]">Grupo VIP</h1>
+      <div className="flex gap-1 border-b border-gray-200">
+        <button
+          onClick={() => setTab("config")}
+          className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${
+            tab === "config" ? "border-[#25d366] text-[#25d366]" : "border-transparent text-gray-500"
+          }`}
+        >
+          Configuração
+        </button>
+        <button
+          onClick={() => setTab("leads")}
+          className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${
+            tab === "leads" ? "border-[#25d366] text-[#25d366]" : "border-transparent text-gray-500"
+          }`}
+        >
+          Leads captados ({count})
+        </button>
+      </div>
+
+      {tab === "config" ? (
+        <Config storeId={storeId} />
+      ) : (
+        <LeadsTable
+          storeId={storeId}
+          table="vip_group_leads"
+          columns={["whatsapp", "created_at"]}
+          metrics={["total", "week"]}
+          searchPlaceholder="Buscar por WhatsApp"
+          emptyTitle="Ainda não há leads capturados pelo Grupo VIP."
+          emptySubtitle='Quando alguém deixar o WhatsApp na seção "Ofertas Secretas" da sua loja, aparecerá aqui.'
+          csvFilenamePrefix="vip_leads"
+        />
+      )}
+    </div>
+  );
 }
 
 function Config({ storeId }: { storeId: string }) {
@@ -49,9 +93,7 @@ function Config({ storeId }: { storeId: string }) {
   }
 
   return (
-    <div className="max-w-2xl space-y-5">
-      <h1 className="text-2xl font-bold text-[#111827]">Grupo VIP</h1>
-
+    <div className="space-y-5">
       <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-5">
         <label className="flex items-center justify-between text-sm font-medium">
           Ativar seção na loja
