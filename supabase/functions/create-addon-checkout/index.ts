@@ -69,13 +69,10 @@ serve(async (req) => {
     if (!store || store.owner_user_id !== user.id) throw new Error("Loja não encontrada");
 
     const env: StripeEnv = envRaw === "live" ? "live" : "sandbox";
-    const priceId = priceIdFor(addon_key, plan_tier);
-    if (!priceId) {
+    const lookupKey = lookupKeyFor(addon_key, plan_tier);
+    if (!lookupKey) {
       return new Response(
-        JSON.stringify({
-          error:
-            "Este add-on ainda não foi configurado para venda. Cadastre o price ID do Stripe correspondente nas variáveis de ambiente.",
-        }),
+        JSON.stringify({ error: "Add-on/plano inválido." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -84,10 +81,18 @@ serve(async (req) => {
     const slug = ADDON_URL_SLUG[addon_key] || addon_key.replace(/_/g, "-");
 
     const stripe = createStripeClient(env);
+    const prices = await stripe.prices.list({ lookup_keys: [lookupKey], limit: 1 });
+    if (!prices.data.length) {
+      return new Response(
+        JSON.stringify({ error: `Preço não encontrado no Stripe (${lookupKey}).` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+    const stripePrice = prices.data[0];
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{ price: stripePrice.id, quantity: 1 }],
       success_url: `${appUrl}/admin/marketing/${slug}?addon_success=true`,
       cancel_url: `${appUrl}/admin/marketing/${slug}`,
       customer_email: user.email ?? undefined,
