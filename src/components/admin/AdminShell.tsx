@@ -133,7 +133,6 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/pedidos": "Vendas",
   "/admin/financeiro": "Financeiro",
   "/admin/clientes": "Clientes",
-  "/admin/clientes/leads": "Leads",
   "/admin/clientes/avaliacoes": "Perguntas e Avaliações",
   "/admin/perguntas": "Perguntas e Avaliações",
   "/admin/produtos": "Produtos",
