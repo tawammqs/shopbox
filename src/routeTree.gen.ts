@@ -66,6 +66,7 @@ import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.prod
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
 import { Route as AdminMarketingVideoCommerceRouteImport } from './routes/admin.marketing.video-commerce'
 import { Route as AdminMarketingGrupoVipRouteImport } from './routes/admin.marketing.grupo-vip'
+import { Route as AdminMarketingCompreJuntoRouteImport } from './routes/admin.marketing.compre-junto'
 import { Route as AdminMarketingCapturaLeadsRouteImport } from './routes/admin.marketing.captura-leads'
 import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
 import { Route as AdminLojaPaginasRouteImport } from './routes/admin.loja.paginas'
@@ -385,6 +386,12 @@ const AdminMarketingGrupoVipRoute = AdminMarketingGrupoVipRouteImport.update({
   path: '/grupo-vip',
   getParentRoute: () => AdminMarketingRoute,
 } as any)
+const AdminMarketingCompreJuntoRoute =
+  AdminMarketingCompreJuntoRouteImport.update({
+    id: '/compre-junto',
+    path: '/compre-junto',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
 const AdminMarketingCapturaLeadsRoute =
   AdminMarketingCapturaLeadsRouteImport.update({
     id: '/captura-leads',
@@ -614,6 +621,7 @@ export interface FileRoutesByFullPath {
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
+  '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -697,6 +705,7 @@ export interface FileRoutesByTo {
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
+  '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -787,6 +796,7 @@ export interface FileRoutesById {
   '/admin/loja/paginas': typeof AdminLojaPaginasRoute
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
+  '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
@@ -878,6 +888,7 @@ export interface FileRouteTypes {
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
     | '/admin/marketing/captura-leads'
+    | '/admin/marketing/compre-junto'
     | '/admin/marketing/grupo-vip'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
@@ -961,6 +972,7 @@ export interface FileRouteTypes {
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
     | '/admin/marketing/captura-leads'
+    | '/admin/marketing/compre-junto'
     | '/admin/marketing/grupo-vip'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
@@ -1050,6 +1062,7 @@ export interface FileRouteTypes {
     | '/admin/loja/paginas'
     | '/admin/loja/redes-sociais'
     | '/admin/marketing/captura-leads'
+    | '/admin/marketing/compre-junto'
     | '/admin/marketing/grupo-vip'
     | '/admin/marketing/video-commerce'
     | '/admin/produtos/$id'
@@ -1511,6 +1524,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMarketingGrupoVipRouteImport
       parentRoute: typeof AdminMarketingRoute
     }
+    '/admin/marketing/compre-junto': {
+      id: '/admin/marketing/compre-junto'
+      path: '/compre-junto'
+      fullPath: '/admin/marketing/compre-junto'
+      preLoaderRoute: typeof AdminMarketingCompreJuntoRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
     '/admin/marketing/captura-leads': {
       id: '/admin/marketing/captura-leads'
       path: '/captura-leads'
@@ -1796,6 +1816,7 @@ const AdminEstatisticasRouteWithChildren =
 
 interface AdminMarketingRouteChildren {
   AdminMarketingCapturaLeadsRoute: typeof AdminMarketingCapturaLeadsRoute
+  AdminMarketingCompreJuntoRoute: typeof AdminMarketingCompreJuntoRoute
   AdminMarketingGrupoVipRoute: typeof AdminMarketingGrupoVipRoute
   AdminMarketingVideoCommerceRoute: typeof AdminMarketingVideoCommerceRoute
   AdminMarketingIndexRoute: typeof AdminMarketingIndexRoute
@@ -1803,6 +1824,7 @@ interface AdminMarketingRouteChildren {
 
 const AdminMarketingRouteChildren: AdminMarketingRouteChildren = {
   AdminMarketingCapturaLeadsRoute: AdminMarketingCapturaLeadsRoute,
+  AdminMarketingCompreJuntoRoute: AdminMarketingCompreJuntoRoute,
   AdminMarketingGrupoVipRoute: AdminMarketingGrupoVipRoute,
   AdminMarketingVideoCommerceRoute: AdminMarketingVideoCommerceRoute,
   AdminMarketingIndexRoute: AdminMarketingIndexRoute,
