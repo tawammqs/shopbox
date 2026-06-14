@@ -15,23 +15,21 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-// Per-addon, per-tier Stripe price IDs. Configured as secrets so they can be
-// swapped without code changes. The user must create these recurring prices
-// in the Stripe Dashboard and add the IDs as secrets.
-function priceIdFor(addonKey: string, planTier: string | null): string | null {
-  const tier = (planTier || "default").toUpperCase();
+// Human-readable price IDs (Stripe lookup_keys) created via the payments tool.
+// Resolved server-side via stripe.prices.list({ lookup_keys }).
+function lookupKeyFor(addonKey: string, planTier: string | null): string | null {
+  const tier = planTier || "default";
   const map: Record<string, string> = {
-    VIDEO_COMMERCE_INICIANTE: Deno.env.get("STRIPE_PRICE_VIDEO_INICIANTE") || "",
-    VIDEO_COMMERCE_ESSENCIAL: Deno.env.get("STRIPE_PRICE_VIDEO_ESSENCIAL") || "",
-    VIDEO_COMMERCE_PROFISSIONAL: Deno.env.get("STRIPE_PRICE_VIDEO_PROFISSIONAL") || "",
-    VIDEO_COMMERCE_ESCALA: Deno.env.get("STRIPE_PRICE_VIDEO_ESCALA") || "",
-    GRUPO_VIP_DEFAULT: Deno.env.get("STRIPE_PRICE_GRUPO_VIP") || "",
-    CAPTURA_LEADS_DEFAULT: Deno.env.get("STRIPE_PRICE_CAPTURA_LEADS") || "",
-    COMPRE_JUNTO_DEFAULT: Deno.env.get("STRIPE_PRICE_COMPRE_JUNTO") || "",
-    PERGUNTAS_AVALIACOES_DEFAULT: Deno.env.get("STRIPE_PRICE_PERGUNTAS_AVALIACOES") || "",
+    "video_commerce:iniciante": "addon_video_iniciante",
+    "video_commerce:essencial": "addon_video_essencial",
+    "video_commerce:profissional": "addon_video_profissional",
+    "video_commerce:escala": "addon_video_escala",
+    "grupo_vip:default": "addon_grupo_vip",
+    "captura_leads:default": "addon_captura_leads",
+    "compre_junto:default": "addon_compre_junto",
+    "perguntas_avaliacoes:default": "addon_perguntas_avaliacoes",
   };
-  const key = `${addonKey.toUpperCase()}_${tier}`;
-  return map[key] || null;
+  return map[`${addonKey}:${tier}`] || null;
 }
 
 const ADDON_URL_SLUG: Record<string, string> = {
