@@ -423,6 +423,11 @@ export function TheShoesProductPage({ product }: { product: any }) {
                   <article key={r.id} className="rounded-lg border border-[#eee] bg-white p-4">
                     <Stars value={r.rating} />
                     {r.text && <p className="mt-2 text-[14px] leading-snug text-[#111]">{r.text}</p>}
+                    {r.photo_url && (
+                      <a href={r.photo_url} target="_blank" rel="noopener noreferrer" className="mt-3 block">
+                        <img src={r.photo_url} alt="Foto enviada pelo cliente" className="h-24 w-24 rounded-lg border border-[#eee] object-cover" />
+                      </a>
+                    )}
                     <p className="mt-2 text-[12px] text-[#999]">
                       {r.customer_name}
                       {r.created_at && ` - ${daysAgo(r.created_at)}`}
