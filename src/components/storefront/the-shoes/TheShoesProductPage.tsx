@@ -587,16 +587,20 @@ function ReviewDialog({ open, onOpenChange, productId }: { open: boolean; onOpen
   async function submit() {
     if (name.trim().length < 2) return toast.error("Informe seu nome");
     if (rating < 1 || rating > 5) return toast.error("Selecione uma nota");
+    if (!productId) return toast.error("Erro interno: produto não identificado.");
     setBusy(true);
     try {
       let photo_url: string | null = null;
       if (photoFile) {
-        const ext = (photoFile.name.split(".").pop() || "jpg").toLowerCase();
+        const ext = ((photoFile.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "")) || "jpg";
         const path = `reviews/${productId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
         const { error: upErr } = await supabase.storage
           .from("products")
-          .upload(path, photoFile, { contentType: photoFile.type, upsert: false });
-        if (upErr) throw new Error("Erro ao enviar a foto: " + upErr.message);
+          .upload(path, photoFile, { contentType: photoFile.type || "image/jpeg", upsert: false });
+        if (upErr) {
+          console.error("[review-photo upload]", upErr);
+          throw new Error("Erro ao enviar a foto: " + (upErr.message || "falha de rede"));
+        }
         photo_url = supabase.storage.from("products").getPublicUrl(path).data.publicUrl;
       }
       const { error } = await supabase.from("product_reviews").insert({
@@ -613,7 +617,8 @@ function ReviewDialog({ open, onOpenChange, productId }: { open: boolean; onOpen
       onOpenChange(false);
       reset();
     } catch (e: any) {
-      toast.error(e.message ?? "Erro ao enviar");
+      console.error("[review submit]", e);
+      toast.error(e?.message ?? "Erro ao enviar");
     } finally {
       setBusy(false);
     }
