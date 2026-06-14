@@ -55,7 +55,6 @@ const SECTIONS: NavSection[] = [
         children: [
           { label: "Lista de clientes", to: "/admin/clientes" },
           { label: "Leads", to: "/admin/clientes/leads" },
-          { label: "Perguntas e Avaliações", to: "/admin/clientes/avaliacoes", premium: true },
         ],
       },
     ],
