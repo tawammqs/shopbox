@@ -71,7 +71,7 @@ export function TheShoesHomepage() {
       <MarqueeBar cfg={s.marquee2} />
       <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
       <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
-      <VideoTestimonialsSection storeSlug={store.slug} section={s.video_section} />
+      <VideoTestimonialsSection storeId={store.id} storeSlug={store.slug} section={s.video_section} />
       <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
       <InstagramSection handle={s.instagram_handle} images={s.instagram_images} />
       {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
@@ -404,9 +404,33 @@ function IconsBar({ items }: { items: TheShoesSettings["icons_bar"] }) {
 }
 
 /* -------------- Video Testimonials -------------- */
-function VideoTestimonialsSection({ storeSlug, section }: { storeSlug: string; section: TheShoesSettings["video_section"] }) {
-  const videos = section?.videos ?? [];
-  const productIds = videos.map((v) => v.product_id).filter(Boolean);
+function VideoTestimonialsSection({ storeId, storeSlug, section }: { storeId: string; storeSlug: string; section: TheShoesSettings["video_section"] }) {
+  // New source of truth: store_videos (placement = 'home_carousel'),
+  // populated via /admin/marketing/video-commerce.
+  const storeVideosQ = useQuery({
+    queryKey: ["ts-home-carousel-videos", storeId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("store_videos")
+        .select("id, video_url, thumbnail_url, product_id, title, position")
+        .eq("store_id", storeId)
+        .eq("placement", "home_carousel")
+        .order("position", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  // Fallback to legacy theme settings for stores that still have data there.
+  const legacyVideos = section?.videos ?? [];
+  const newVideos = storeVideosQ.data ?? [];
+  const videos: { video_url: string | null; product_id: string | null; title?: string | null }[] =
+    newVideos.length > 0
+      ? newVideos.map((v) => ({ video_url: v.video_url, product_id: v.product_id, title: v.title }))
+      : legacyVideos.map((v) => ({ video_url: v.video_url, product_id: v.product_id }));
+
+  const productIds = videos.map((v) => v.product_id).filter(Boolean) as string[];
   const q = useQuery({
     queryKey: ["ts-video-section-products", productIds.sort().join(",")],
     enabled: productIds.length > 0,
@@ -431,7 +455,7 @@ function VideoTestimonialsSection({ storeSlug, section }: { storeSlug: string; s
       </h2>
       <div className="flex gap-3 overflow-x-auto pb-2 md:gap-4" style={{ scrollbarWidth: "thin" }}>
         {videos.map((v, idx) => {
-          const product = productsById.get(v.product_id);
+          const product = v.product_id ? productsById.get(v.product_id) : null;
           const images = (product?.product_images ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
           const thumb = images[0]?.url ?? "";
           const price = product ? Number(product.promo_price ?? product.price ?? 0) : 0;
