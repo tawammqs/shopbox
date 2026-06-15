@@ -1,0 +1,359 @@
+import { useQuery } from "@tanstack/react-query";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Truck,
+  CreditCard,
+  ShieldCheck,
+  Tag,
+  Package,
+  Percent,
+  Gift,
+  Clock,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
+import { useStorefront } from "../StoreContext";
+import { cn } from "@/lib/utils";
+import type {
+  BannerRotativoCfg,
+  ProductsTagCfg,
+  ProductsCategoryCfg,
+  MarqueeCfg,
+  FretePagamentoCfg,
+  BannerCategoriasCfg,
+  InstagramCfg,
+  FaqCfg,
+} from "@/lib/homepage-sections";
+
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
+  Truck, CreditCard, ShieldCheck, Tag, Package, Percent, Gift, Clock,
+};
+
+// ============== Reused: product card from existing TheShoesHomepage ==============
+// Mirror of TsProductCard but extracted; keep visual identical.
+import { Heart } from "lucide-react";
+import { effectivePrice, discountPct, formatBRL } from "@/lib/format";
+import { getInstallment } from "@/lib/installments";
+import { useCart } from "@/stores/cart";
+import { useWishlist } from "@/stores/wishlist";
+import { toast } from "sonner";
+import { trackAddToCart } from "@/lib/tracking";
+
+function ProductCardMio({ p }: { p: ProductCardData }) {
+  const { store } = useStorefront();
+  const addItem = useCart((s) => s.addItem);
+  const wished = useWishlist((s) => s.has(p.id));
+  const toggleWish = useWishlist((s) => s.toggle);
+  const price = effectivePrice(p.price, p.promo_price);
+  const pct = discountPct(p.price, p.promo_price);
+  const img1 = p.images[0]?.url ?? "";
+  const img2 = p.images[1]?.url ?? img1;
+  const [hover, setHover] = useState(false);
+  const quickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (p.colors.length > 0) { window.location.href = `/loja/${store.slug}/produto/${p.slug}`; return; }
+    addItem({
+      productId: p.id, slug: p.slug, title: p.title, image: img1,
+      colorId: null, colorName: null, sizeId: null, sizeLabel: null,
+      unitPrice: price, quantity: 1, storeId: store.id,
+    });
+    void trackAddToCart(store, { id: p.id, title: p.title, value: price, quantity: 1 });
+    toast.success("Adicionado ao carrinho");
+  };
+  return (
+    <Link to="/loja/$slug/produto/$productSlug" params={{ slug: store.slug, productSlug: p.slug }}
+      className="group block" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[12px] bg-[#f7f7f7]">
+        {img1 && <img src={img1} alt={p.title} loading="lazy" className={cn("h-full w-full object-cover transition-opacity duration-500", hover && img2 !== img1 && "opacity-0")} />}
+        {img2 && img2 !== img1 && <img src={img2} alt="" loading="lazy" className={cn("absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500", hover && "opacity-100")} />}
+        {pct > 0 && (
+          <span className="absolute left-2 top-2 rounded bg-[var(--store-accent,#111)] text-white" style={{ fontSize: 11, fontWeight: 700, padding: "4px 8px" }}>
+            ATÉ {pct}% OFF
+          </span>
+        )}
+        <button onClick={(e) => { e.preventDefault(); toggleWish(p.id); }} aria-label="Favoritar"
+          className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-[#333] shadow-sm hover:bg-white">
+          <Heart className={cn("h-[14px] w-[14px]", wished && "fill-[#111] text-[#111]")} />
+        </button>
+        <button onClick={quickAdd}
+          className="absolute inset-x-2 bottom-2 hidden items-center justify-center rounded-full bg-[var(--store-accent,#111)] py-2 text-[11px] font-semibold text-white opacity-0 shadow transition group-hover:opacity-100 md:flex">
+          {p.colors.length > 0 ? "ESCOLHER OPÇÕES" : "ADICIONAR"}
+        </button>
+      </div>
+      <div className="px-1 pt-3 pb-1">
+        {p.brand && <p className="mb-[2px] text-[11px] font-medium uppercase text-[#aaa]" style={{ letterSpacing: "0.05em" }}>{p.brand}</p>}
+        <h3 className="line-clamp-2 text-[14px] font-semibold leading-snug text-[#111]" style={{ marginBottom: 6 }}>{p.title}</h3>
+        <div className="flex items-baseline">
+          {pct > 0 ? (
+            <>
+              <span className="text-[16px] font-bold text-[var(--store-accent,#111)]">{formatBRL(price)}</span>
+              <span className="ml-2 text-[13px] font-normal text-[#aaa] line-through">{formatBRL(p.price)}</span>
+            </>
+          ) : (
+            <span className="text-[16px] font-semibold text-[#111]">{formatBRL(price)}</span>
+          )}
+        </div>
+        {(() => {
+          const inst = getInstallment(p.price, p.promo_price);
+          if (!inst.show) return null;
+          return <span style={{ display: "block", fontSize: 11, color: "#aaa", marginTop: 2 }}>3x de {inst.formatted} sem juros</span>;
+        })()}
+      </div>
+    </Link>
+  );
+}
+
+// ============== 1. Banners rotativos ==============
+export function BannersRotativosRender({ cfg }: { cfg: BannerRotativoCfg }) {
+  const items = (cfg.items ?? []).filter((b) => b.desktop_url || b.mobile_url);
+  const autoplay = useRef(cfg.autoplay !== false ? Autoplay({ delay: (cfg.interval_seconds ?? 5) * 1000, stopOnInteraction: false }) : null);
+  const plugins = autoplay.current ? [autoplay.current] : [];
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, plugins);
+  const [selected, setSelected] = useState(0);
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSel = () => setSelected(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSel); onSel();
+    return () => { emblaApi.off("select", onSel); };
+  }, [emblaApi]);
+
+  if (items.length === 0) return null;
+
+  return (
+    <section className="relative w-full">
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex">
+          {items.map((b, i) => {
+            const desk = b.desktop_url || b.mobile_url;
+            const mob = b.mobile_url || b.desktop_url;
+            const inner = (
+              <div className="relative min-w-0 flex-[0_0_100%]">
+                <picture>
+                  {mob && <source media="(max-width: 768px)" srcSet={mob} />}
+                  <img src={desk} alt="" className="block h-[55vh] max-h-[600px] min-h-[280px] w-full object-cover md:h-[520px]" />
+                </picture>
+              </div>
+            );
+            return b.link ? (
+              <a key={i} href={b.link} className="contents">{inner}</a>
+            ) : (
+              <div key={i} className="contents">{inner}</div>
+            );
+          })}
+        </div>
+      </div>
+      {items.length > 1 && (
+        <>
+          <button aria-label="Anterior" onClick={() => emblaApi?.scrollPrev()} className="absolute left-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 hover:bg-white"><ChevronLeft className="h-5 w-5" /></button>
+          <button aria-label="Próximo" onClick={() => emblaApi?.scrollNext()} className="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 hover:bg-white"><ChevronRight className="h-5 w-5" /></button>
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
+            {items.map((_, i) => (
+              <button key={i} aria-label={`Banner ${i + 1}`} onClick={() => emblaApi?.scrollTo(i)} className={cn("h-1.5 w-6 rounded-full transition", i === selected ? "bg-white" : "bg-white/50")} />
+            ))}
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
+// ============== 2/3. Produtos por tag ==============
+export function ProductsByTagRender({ cfg, defaultTag }: { cfg: ProductsTagCfg; defaultTag: string }) {
+  const { store } = useStorefront();
+  const tag = cfg.tag || defaultTag;
+  const limit = cfg.limit ?? 8;
+  const q = useQuery({
+    queryKey: ["mio-products-tag", store.id, tag, limit],
+    queryFn: () => fetchProductsByTag(store.id, tag, limit),
+    staleTime: 60_000,
+  });
+  const products = q.data ?? [];
+  if (products.length === 0) return null;
+  return (
+    <section className="ts-section">
+      <div className="ts-section-head">
+        <h2 className="ts-section-title">{cfg.title || "Produtos"}</h2>
+        {cfg.show_more_button !== false && (
+          <Link to="/loja/$slug" params={{ slug: store.slug }} className="text-sm font-medium text-[#666] hover:text-[#111]">Ver mais →</Link>
+        )}
+      </div>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+        {products.map((p) => <ProductCardMio key={p.id} p={p as ProductCardData} />)}
+      </div>
+    </section>
+  );
+}
+
+// ============== 4. Produtos novos (categoria) ==============
+export function ProductsByCategoryRender({ cfg }: { cfg: ProductsCategoryCfg }) {
+  const { store } = useStorefront();
+  const limit = cfg.limit ?? 8;
+  const q = useQuery({
+    queryKey: ["mio-products-cat", store.id, cfg.category_id, limit],
+    queryFn: async () => {
+      let productIds: string[] | null = null;
+      if (cfg.category_id) {
+        const { data: links } = await supabase
+          .from("product_categories")
+          .select("product_id")
+          .eq("category_id", cfg.category_id);
+        productIds = Array.from(new Set((links ?? []).map((l: any) => l.product_id)));
+        if (productIds.length === 0) return [];
+      }
+      let sb = supabase
+        .from("products")
+        .select(`id, slug, title, brand, price, promo_price, tags,
+          product_images(url, position),
+          product_colors(id, name, hex),
+          product_stock(quantity)`)
+        .eq("store_id", store.id).eq("active", true)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+      if (productIds) sb = sb.in("id", productIds);
+      const { data } = await sb;
+      return (data ?? []).map((p: any) => ({
+        id: p.id, slug: p.slug, title: p.title, brand: p.brand,
+        price: Number(p.price), promo_price: p.promo_price != null ? Number(p.promo_price) : null,
+        tags: p.tags ?? [],
+        images: (p.product_images ?? []).sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0)),
+        colors: p.product_colors ?? [],
+        totalStock: (p.product_stock ?? []).reduce((s: number, st: any) => s + (st.quantity ?? 0), 0),
+      })) as ProductCardData[];
+    },
+    staleTime: 60_000,
+  });
+  const products = q.data ?? [];
+  if (products.length === 0) return null;
+  return (
+    <section className="ts-section">
+      <div className="ts-section-head">
+        <h2 className="ts-section-title">{cfg.title || "Lançamentos"}</h2>
+      </div>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+        {products.map((p) => <ProductCardMio key={p.id} p={p} />)}
+      </div>
+    </section>
+  );
+}
+
+// ============== 5/6. Marquee ==============
+export function MarqueeRender({ cfg }: { cfg: MarqueeCfg }) {
+  if (!cfg.text) return null;
+  const speed = cfg.speed ?? 30;
+  return (
+    <div className="overflow-hidden" style={{ background: cfg.background, color: cfg.text_color }}>
+      <div className="flex whitespace-nowrap py-3 text-sm font-bold uppercase" style={{ animation: `mioMarquee ${speed}s linear infinite` }}>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <span key={i} className="px-6">{cfg.text} ·</span>
+        ))}
+      </div>
+      <style>{`@keyframes mioMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
+    </div>
+  );
+}
+
+// ============== 7. Frete / pagamento ==============
+export function FretePagamentoRender({ cfg }: { cfg: FretePagamentoCfg }) {
+  const items = (cfg.items ?? []).filter((it) => it.title);
+  if (items.length === 0) return null;
+  return (
+    <section className="py-10 px-4" style={{ background: cfg.background }}>
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 md:grid-cols-4">
+        {items.map((it, i) => {
+          const Icon = ICON_MAP[it.icon] || Truck;
+          return (
+            <div key={i} className="flex flex-col items-center text-center">
+              <div className="mb-3 grid h-14 w-14 place-items-center rounded-full" style={{ background: cfg.icon_color, color: cfg.background }}>
+                <Icon size={24} />
+              </div>
+              <p className="text-sm font-bold text-[#111]">{it.title}</p>
+              {it.description && <p className="mt-1 text-xs text-[#444]">{it.description}</p>}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+// ============== 8. Banners de categorias ==============
+export function BannersCategoriasRender({ cfg }: { cfg: BannerCategoriasCfg }) {
+  const { store, categories } = useStorefront();
+  const items = (cfg.items ?? []).filter((it) => it.category_id && (it.desktop_url || it.mobile_url));
+  if (items.length === 0) return null;
+  return (
+    <section className="ts-section">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {items.map((it, i) => {
+          const cat = categories.find((c) => c.id === it.category_id);
+          if (!cat) return null;
+          return (
+            <Link key={i} to="/loja/$slug/categoria/$categorySlug" params={{ slug: store.slug, categorySlug: cat.slug }} className="block overflow-hidden rounded-xl">
+              <picture>
+                {it.mobile_url && <source media="(max-width: 768px)" srcSet={it.mobile_url} />}
+                <img src={it.desktop_url || it.mobile_url} alt={cat.name} className="h-44 w-full object-cover transition hover:scale-105 md:h-52" />
+              </picture>
+              <p className="mt-2 text-center text-sm font-semibold text-[#111]">{cat.name}</p>
+            </Link>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+// ============== 9. Instagram ==============
+export function InstagramRender({ cfg }: { cfg: InstagramCfg }) {
+  const photos = cfg.photos ?? [];
+  if (photos.length === 0) return null;
+  const clean = (cfg.handle || "").replace(/^@/, "");
+  const profile = clean ? `https://instagram.com/${clean}` : undefined;
+  return (
+    <section className="px-5 py-12 text-center">
+      <h2 className="mb-2 text-[22px] font-bold text-[#111]">{cfg.title || "Siga no Instagram"}</h2>
+      {clean && (
+        <a href={profile} target="_blank" rel="noreferrer" className="text-sm font-medium text-[#111] underline">@{clean}</a>
+      )}
+      <div className="mx-auto mt-6 grid max-w-6xl grid-cols-2 gap-3 md:grid-cols-4">
+        {photos.slice(0, 12).map((url, i) => {
+          const inner = <img src={url} alt="" loading="lazy" className="aspect-square w-full rounded-lg object-cover transition hover:scale-[1.03]" />;
+          return profile ? <a key={i} href={profile} target="_blank" rel="noreferrer">{inner}</a> : <div key={i}>{inner}</div>;
+        })}
+      </div>
+    </section>
+  );
+}
+
+// ============== 10. FAQ ==============
+export function FaqRender({ cfg }: { cfg: FaqCfg }) {
+  const items = (cfg.items ?? []).filter((it) => it.question);
+  const [open, setOpen] = useState<number | null>(null);
+  if (items.length === 0) return null;
+  return (
+    <section className="px-5 py-12">
+      <div className="mx-auto max-w-3xl text-center">
+        {cfg.subtitle && <p className="mb-2 text-sm font-semibold text-[#111]">{cfg.subtitle}</p>}
+        <h2 className="mb-6 text-3xl font-extrabold tracking-tight text-[#111]">{cfg.title || "Perguntas Frequentes"}</h2>
+        <div className="rounded-2xl p-6 text-left" style={{ background: "#dfdac8" }}>
+          {items.map((it, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={i} className="border-b border-black/10 py-4 last:border-b-0">
+                <button onClick={() => setOpen(isOpen ? null : i)} className="flex w-full items-center justify-between gap-4 text-left">
+                  <span className="text-base font-semibold text-[#111]">{it.question}</span>
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-black/10 text-[#111]">{isOpen ? "∧" : "∨"}</span>
+                </button>
+                {isOpen && <div className="pt-3 text-sm leading-relaxed text-[#444]">{it.answer}</div>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
