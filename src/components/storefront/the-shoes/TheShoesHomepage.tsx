@@ -37,9 +37,89 @@ function WhatsAppLogo({ size = 20, className = "" }: { size?: number; className?
   );
 }
 
+import { useStorefrontCustomizations } from "../StorefrontCustomizer";
+import {
+  getSectionsOrder,
+  isSectionVisible,
+  getSectionConfig,
+  type HomepageSectionKey,
+} from "@/lib/homepage-sections";
+import {
+  BannersRotativosRender,
+  ProductsByTagRender,
+  ProductsByCategoryRender,
+  MarqueeRender,
+  FretePagamentoRender,
+  BannersCategoriasRender,
+  InstagramRender,
+  FaqRender,
+} from "./HomepageSectionRenderers";
+
 export function TheShoesHomepage() {
   const { store } = useStorefront();
+  const isLegacyTheShoes = store.slug === "the-shoes";
 
+  // Legacy store keeps the original hardcoded layout.
+  if (isLegacyTheShoes) return <LegacyTheShoesHomepage />;
+
+  // All other Mio stores: render from customizations.homepage.
+  return <MioCustomHomepage />;
+}
+
+function MioCustomHomepage() {
+  const { store } = useStorefront();
+  const cust = useStorefrontCustomizations(store.id).data;
+  const settingsQ = useQuery({
+    queryKey: ["the-shoes-settings", store.id],
+    queryFn: () => fetchTheShoesSettings(store.id),
+    staleTime: 30_000,
+  });
+  const s = settingsQ.data;
+  if (!cust || !s) return null;
+
+  const order = getSectionsOrder(cust);
+
+  return (
+    <div className="ts-root">
+      {order.map((key) => {
+        if (!isSectionVisible(cust, key)) return null;
+        return <SectionSwitch key={key} sectionKey={key} cust={cust} />;
+      })}
+      {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
+      <TheShoesStyles />
+    </div>
+  );
+}
+
+function SectionSwitch({ sectionKey, cust }: { sectionKey: HomepageSectionKey; cust: any }) {
+  const cfg = getSectionConfig(cust, sectionKey);
+  switch (sectionKey) {
+    case "banners_rotativos":
+      return <BannersRotativosRender cfg={cfg} />;
+    case "produtos_oferta":
+      return <ProductsByTagRender cfg={cfg} defaultTag="ofertas" />;
+    case "produtos_destaque":
+      return <ProductsByTagRender cfg={cfg} defaultTag="destaques" />;
+    case "produtos_novos":
+      return <ProductsByCategoryRender cfg={cfg} />;
+    case "boas_vindas_marquee":
+    case "anuncios_marquee":
+      return <MarqueeRender cfg={cfg} />;
+    case "frete_pagamento":
+      return <FretePagamentoRender cfg={cfg} />;
+    case "banners_categorias":
+      return <BannersCategoriasRender cfg={cfg} />;
+    case "instagram":
+      return <InstagramRender cfg={cfg} />;
+    case "faq":
+      return <FaqRender cfg={cfg} />;
+    default:
+      return null;
+  }
+}
+
+function LegacyTheShoesHomepage() {
+  const { store } = useStorefront();
   const settingsQ = useQuery({
     queryKey: ["the-shoes-settings", store.id],
     queryFn: () => fetchTheShoesSettings(store.id),
@@ -50,23 +130,15 @@ export function TheShoesHomepage() {
     queryFn: () => fetchActiveBanners(store.id),
     staleTime: 60_000,
   });
-
   const s = settingsQ.data;
   if (!s) return null;
-
   return (
     <div className="ts-root">
       <HeroCarousel banners={bannersQ.data ?? []} />
-      <ProductCarouselSection
-        storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag}
-      />
-
+      <ProductCarouselSection storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag} />
       <MarqueeBar cfg={s.marquee1} />
       <PromoBannerSection promo={s.promo_banner} />
-      <ProductCarouselSection
-        storeId={store.id} title={s.section2_title} link={s.section2_subtitle} tag={s.section2_tag}
-        description={s.section2_description}
-      />
+      <ProductCarouselSection storeId={store.id} title={s.section2_title} link={s.section2_subtitle} tag={s.section2_tag} description={s.section2_description} />
       <IconsBar items={s.icons_bar} />
       <MarqueeBar cfg={s.marquee2} />
       <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
