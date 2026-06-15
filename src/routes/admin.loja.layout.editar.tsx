@@ -6,8 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
-  DEFAULT_SECTION_ORDER,
-  DEFAULT_VISIBILITY,
   SECTION_LABELS,
   getSectionConfig,
   getSectionsOrder,
