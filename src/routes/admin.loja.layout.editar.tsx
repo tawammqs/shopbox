@@ -275,6 +275,29 @@ function Panel({ section, setSection, store, customizations, update }: any) {
     </button>
   );
 
+  // Section-specific drilling for homepage sub-sections (e.g. "homepage:banners_rotativos")
+  if (section.startsWith("homepage:")) {
+    const key = section.slice("homepage:".length) as HomepageSectionKey;
+    return (
+      <>
+        <div className="p-4">
+          <button onClick={() => setSection("homepage")} className="mb-4 flex items-center gap-1 text-sm font-medium text-[#111827] hover:text-[#25d366]">
+            <ChevronLeft className="h-4 w-4" /> Voltar
+          </button>
+          <h2 className="mb-3 text-base font-semibold text-[#111827]">{SECTION_LABELS[key] ?? key}</h2>
+        </div>
+        <div className="px-4 pb-6">
+          <SectionEditor
+            storeId={store?.id}
+            sectionKey={key}
+            cfg={getSectionConfig(customizations, key)}
+            onChange={(nextCfg) => update((prev: any) => ({ ...prev, ...setSectionConfigPatch(prev, key, nextCfg) }))}
+          />
+        </div>
+      </>
+    );
+  }
+
   switch (section) {
     case "root":
       return <RootPanel setSection={setSection} store={store} update={update} customizations={customizations} />;
@@ -285,7 +308,7 @@ function Panel({ section, setSection, store, customizations, update }: any) {
     case "header":
       return <><div className="p-4">{back()}</div><HeaderPanel customizations={customizations} update={update} /></>;
     case "homepage":
-      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} /></>;
+      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} /></>;
     case "product-list":
       return <><div className="p-4">{back()}</div><ProductListPanel customizations={customizations} update={update} /></>;
     case "product-detail":
