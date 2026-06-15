@@ -697,9 +697,6 @@ function HomepagePanel({ customizations, update, setSection }: any) {
         )}
       </div>
 
-      <p className="text-[11px] text-[#9ca3af]">
-        DEFAULT_SECTIONS legacy: {DEFAULT_SECTION_ORDER.length} seções disponíveis · DEFAULT_VISIBILITY presente.
-      </p>
     </div>
   );
 }
