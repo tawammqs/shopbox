@@ -625,56 +625,54 @@ function HeaderPanel({ customizations, update }: any) {
 }
 
 // ---------- Homepage ----------
-function HomepagePanel({ customizations, update }: any) {
-  const stored = customizations.homepage?.sections;
-  const sections = useMemo(() => {
-    if (Array.isArray(stored)) {
-      const map = new Map(stored.map((s: any) => [s.id, s]));
-      const ordered = stored.map((s: any) => {
-        const def = DEFAULT_SECTIONS.find((d) => d.id === s.id);
-        return { id: s.id, label: def?.label ?? s.id, visible: !!s.visible };
-      });
-      // append any new defaults not in stored
-      DEFAULT_SECTIONS.forEach((d) => { if (!map.has(d.id)) ordered.push(d); });
-      return ordered;
-    }
-    return DEFAULT_SECTIONS;
-  }, [stored]);
+function HomepagePanel({ customizations, update, setSection }: any) {
+  const order = useMemo(() => getSectionsOrder(customizations), [customizations]);
 
-  const setSections = (next: typeof sections) => {
-    update({ homepage: { ...(customizations.homepage ?? {}), sections: next.map((s) => ({ id: s.id, visible: s.visible })) } });
+  const toggle = (key: HomepageSectionKey) => {
+    const next = !isSectionVisible(customizations, key);
+    update((prev: any) => ({ ...prev, ...setSectionVisibilityPatch(prev, key, next) }));
   };
 
-  const toggle = (id: string) => setSections(sections.map((s) => s.id === id ? { ...s, visible: !s.visible } : s));
   const move = (idx: number, dir: -1 | 1) => {
-    const next = [...sections];
     const j = idx + dir;
-    if (j < 0 || j >= next.length) return;
+    if (j < 0 || j >= order.length) return;
+    const next = [...order];
     [next[idx], next[j]] = [next[j], next[idx]];
-    setSections(next);
+    update((prev: any) => ({ ...prev, ...setSectionsOrderPatch(prev, next) }));
   };
 
   const popup = customizations.homepage?.popup ?? {};
-  const setPopup = (patch: any) => update({ homepage: { ...(customizations.homepage ?? {}), popup: { ...popup, ...patch } } });
+  const setPopup = (patch: any) =>
+    update({ homepage: { ...(customizations.homepage ?? {}), popup: { ...popup, ...patch } } });
 
   return (
     <div className="space-y-4 px-4 pb-6">
       <h2 className="text-base font-semibold text-[#111827]">Página inicial</h2>
+      <p className="text-xs text-[#6b7280]">Clique no nome de cada seção para configurar. Use o olho para mostrar/ocultar.</p>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        {sections.map((s, idx) => (
-          <div key={s.id} className="flex items-center gap-2 border-b border-gray-100 px-3 py-2 last:border-b-0">
-            <div className="flex flex-col">
-              <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
-              <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
+        {order.map((key, idx) => {
+          const visible = isSectionVisible(customizations, key);
+          const label = SECTION_LABELS[key] ?? key;
+          return (
+            <div key={key} className="flex items-center gap-2 border-b border-gray-100 px-2 py-2 last:border-b-0">
+              <div className="flex flex-col">
+                <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
+                <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
+              </div>
+              <GripVertical className="h-4 w-4 text-[#d1d5db]" />
+              <button onClick={() => toggle(key)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
+                {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
+              </button>
+              <button
+                onClick={() => setSection(`homepage:${key}`)}
+                className={cn("flex flex-1 items-center justify-between gap-2 rounded px-1 py-1 text-left text-sm hover:bg-gray-50", visible ? "text-[#111827]" : "text-[#9ca3af]")}
+              >
+                <span>{label}</span>
+                <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
+              </button>
             </div>
-            <GripVertical className="h-4 w-4 text-[#d1d5db]" />
-            <button onClick={() => toggle(s.id)} className="shrink-0">
-              {s.visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
-            </button>
-            <span className={cn("flex-1 text-sm", s.visible ? "text-[#111827]" : "text-[#9ca3af]")}>{s.label}</span>
-            <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white p-3">
@@ -698,6 +696,10 @@ function HomepagePanel({ customizations, update }: any) {
           </div>
         )}
       </div>
+
+      <p className="text-[11px] text-[#9ca3af]">
+        DEFAULT_SECTIONS legacy: {DEFAULT_SECTION_ORDER.length} seções disponíveis · DEFAULT_VISIBILITY presente.
+      </p>
     </div>
   );
 }
