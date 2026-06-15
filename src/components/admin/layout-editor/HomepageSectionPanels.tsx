@@ -105,7 +105,8 @@ async function uploadHomepageImage(
 ): Promise<string> {
   if (file.size > 5 * 1024 * 1024) throw new Error("Imagem maior que 5MB");
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^\w]/g, "") || "jpg";
-  const path = `homepage/${storeId}/${sectionKey}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  // RLS on storage.objects requires the FIRST folder to equal the store id.
+  const path = `${storeId}/homepage/${sectionKey}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage.from("banners").upload(path, file, {
     cacheControl: "3600",
     upsert: false,
