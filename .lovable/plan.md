@@ -1,70 +1,82 @@
-# Menu Marketing + 5 Add-ons pagos
 
-Implementação completa do menu Marketing com 5 funções vendidas como assinaturas Stripe separadas dos planos principais.
+# Editor "Página inicial" — Plano de execução
 
-## 1. Banco de dados (uma migration)
+## Diagnóstico atual
 
-- `store_addons` — controla status de cada add-on por loja (`addon_key`, `plan_tier`, `status`, `stripe_subscription_id`, `current_period_end`).
-- `store_addon_configs` — config JSON genérico por addon (`grupo_vip`, `captura_leads`, `compre_junto`).
-- `store_videos` — vídeos do Video Commerce (`placement: home_carousel | product_stories`, `product_id`, `position`, `views_count`).
-- RLS + GRANTs em todas (owner do store para escrita; SELECT público em `store_addon_configs` e `store_videos` para o storefront ler).
-- Bucket de Storage `store-videos` (público) para upload de vídeos.
+- O editor (`src/routes/admin.loja.layout.editar.tsx`, 941 linhas) lista as seções mas a maioria dos painéis de configuração ou não existe, ou salva em um lugar que o storefront não lê.
+- O storefront Mio (`TheShoesHomepage.tsx`, 934 linhas) ainda lê majoritariamente de `the_shoes_theme_settings` e tem fallbacks hardcoded da The Shoes, em vez de `store_theme_settings.customizations` (problema multi-tenant já mapeado em prompt anterior).
+- Resultado: nada do que o lojista edita aparece na loja.
 
-## 2. Edge function `create-addon-checkout`
+Cobrir as **13 seções pedidas** (4 de marca + 9 da home), com painel real + persistência + render no storefront, mais um teste E2E em `/loja/themini`, é trabalho grande e de alto risco. Vou dividir em fases entregáveis para você poder validar cada uma antes de seguir.
 
-Cria Stripe Checkout `mode: subscription` com price ID por `addon_key` + `plan_tier`. Os 7 price IDs são lidos de secrets (`STRIPE_PRICE_VIDEO_INICIANTE`, etc.) — placeholder vazio se não configurado, com mensagem clara de erro. Success/cancel URLs retornam ao admin com `?addon_success=true`.
+## Contrato de dados (única fonte de verdade)
 
-## 3. Webhook `payments-webhook` (extensão, não substituição)
+`store_theme_settings.customizations.homepage`:
 
-Adicionar handlers para:
-- `checkout.session.completed` com `metadata.addon_key` → upsert `store_addons` (status `active`).
-- `customer.subscription.updated` / `.deleted` → atualiza `status` e `current_period_end` quando `stripe_subscription_id` bate em `store_addons`.
+```text
+{
+  sections_order: string[],                       // ordem das seções
+  sections_visibility: Record<key, boolean>,      // toggle do olho
+  sections_config: Record<key, object>            // 1 objeto por seção (shapes do prompt)
+}
+```
 
-Lógica existente (assinaturas de planos, temas) permanece intocada.
+Chaves canônicas: `banners_rotativos`, `produtos_oferta`, `produtos_destaque`, `produtos_novos`, `boas_vindas_marquee`, `anuncios_marquee`, `frete_pagamento`, `banners_categorias`, `instagram`, `faq`, `produto_principal`, `marcas`, `newsletter`, `categorias_principais`, `video`, `depoimentos`, `imagem_texto`, `institucional`.
 
-## 4. Frontend — admin
+O tema Mio passa a ler **primeiro** de `customizations.homepage.sections_config[key]` e só cai em `the_shoes_theme_settings` como fallback legado **exclusivo da loja The Shoes**. Para qualquer outra loja (themini etc.), sem config = seção não renderiza (sem vazar dados de outra loja).
 
-**Sidebar (`AdminShell.tsx`):** novo grupo "MARKETING" abaixo de Produtos com 5 itens; badge de cadeado quando addon inativo. Remover "Perguntas e Avaliações" do grupo Clientes.
+## Fase 1 — Fundação (1 entrega)
 
-**Helpers/Hooks:**
-- `src/lib/addons.ts` — `ADDON_INFO`, `getAddonStatus`, `useAddonStatus(storeId, key)`, `useAddonConfig(storeId, key)`.
+1. Arquivo `src/lib/homepage-sections.ts`: define as chaves, defaults, tipos TS por seção, helpers `getSectionConfig(cust, key)` e `isSectionVisible(cust, key)`.
+2. Hook `useHomepageSection(storeId, key)` que devolve `{ visible, config }` a partir de `customizations`.
+3. Migração: nenhuma — `customizations` já é `jsonb`.
+4. Refator do editor: cada item da lista vira `<SectionRow>` com toggle de visibilidade que persiste em `sections_visibility[key]`; chevron abre um `<SectionEditorDrawer>` que despacha para o painel da seção.
 
-**Componentes compartilhados:**
-- `src/components/admin/marketing/AddonPaywall.tsx` — tela de venda com seletor de plano (Video Commerce) ou card único.
-- `src/components/admin/marketing/AddonConfigForm.tsx` — formulários reusáveis (Grupo VIP, Captura Leads, Compre Junto).
+Entrega: lista funcional, toggle do olho liga/desliga a seção na loja (mesmo que os painéis ainda não existam).
 
-**Rotas novas:**
-- `admin.marketing.tsx` (layout com `<Outlet/>`)
-- `admin.marketing.index.tsx` (redireciona para video-commerce)
-- `admin.marketing.video-commerce.tsx` — paywall ou 2 abas (Carrossel home / Stories produto) + métricas se tier ≥ essencial.
-- `admin.marketing.grupo-vip.tsx` — paywall ou config (link grupo, textos, toggle ativo).
-- `admin.marketing.captura-leads.tsx` — paywall ou config (cupom, %, título, aniversário, delay).
-- `admin.marketing.compre-junto.tsx` — paywall ou config (combos + faixas progressivas).
-- `admin.marketing.perguntas-avaliacoes.tsx` — paywall ou tela existente movida (mantém `product_questions` / `product_reviews`).
+## Fase 2 — 9 seções prioritárias (painel + render)
 
-**Remoção:** `admin.clientes.avaliacoes.tsx` deixa de aparecer no menu Clientes (o arquivo pode permanecer, mas o link sai da sidebar). Conteúdo reaproveitado na nova rota.
+Um componente de painel por seção em `src/components/admin/layout-editor/sections/`, e um componente de render por seção em `src/components/storefront/the-shoes/sections/`. O `TheShoesHomepage.tsx` passa a iterar `sections_order` filtrado por `sections_visibility` e renderiza cada componente com o config dele.
 
-## 5. Storefront — leitura dos novos configs
+| # | Chave | Painel (campos do prompt) | Render |
+|---|---|---|---|
+| 1 | banners_rotativos | lista de itens (upload desktop 1920×600, mobile 750×1000, link), intervalo, autoplay | Embla carousel responsivo |
+| 2 | produtos_destaque | título, limit (4/8/12), botão ver mais | query `products.featured_sections @> '{destaque}'` ou `is_featured` |
+| 3 | boas_vindas_marquee | texto, cor fundo, cor texto, velocidade | marquee horizontal |
+| 4 | produtos_novos | título, categoria, limit | join `product_categories` |
+| 5 | frete_pagamento | até 4 itens (ícone Lucide, título, descrição), cores | barra de ícones |
+| 6 | anuncios_marquee | igual ao 3, independente | marquee |
+| 7 | banners_categorias | lista (categoria, desktop 600×400, mobile 360×240) | grid de cards |
+| 8 | instagram | título, @, até 12 fotos | grid 3-4 col, esconde se `photos.length===0` |
+| 9 | faq | título, subtítulo, lista pergunta/resposta | Accordion shadcn, fundo `#dfdac8` |
 
-Tema padrão (`themini`) passa a ler `store_addon_configs` no loader de `/loja/$slug` e renderizar quando `active = true`:
-- `grupo_vip` → seção "Ofertas Secretas" + redirect para grupo após captura WhatsApp em `vip_group_leads`.
-- `captura_leads` → popup de cupom (substitui o atual `WelcomePopup` quando o addon está ativo; senão segue legacy).
-- `compre_junto` → CartDrawer aplica combos e desconto progressivo.
-- `video_commerce` → `store_videos` no `home_carousel` (homepage) e `product_stories` (página de produto).
+Storage: as imagens vão para o bucket `banners` (já existe, público) sob `homepage/<storeId>/<section>/...`.
 
-The Shoes (tema Mio) continua com sua lógica atual intocada.
+## Fase 3 — Demais seções
 
-## 6. Compatibilidade
+Para `produto_principal`, `marcas`, `newsletter`, `categorias_principais`, `video`, `depoimentos`, `imagem_texto`, `institucional`, `banners_promocionais`, `banners_novidades`: criar painel mínimo (toggle + título quando aplicável; placeholder "sem configurações adicionais" quando não). Garantir que todas aparecem na lista com toggle funcional.
 
-- Nada do checkout WhatsApp, RLS existente, feed XML, Mio Style, ou storefront público de lojas existentes é alterado.
-- Webhook existente é estendido, nunca substituído.
-- "Perguntas e Avaliações" da The Shoes continua funcionando — apenas a configuração no admin migra de lugar.
+## Fase 4 — Marca / tipografia / cabeçalho / logo
 
-## Detalhes técnicos
+Auditar e corrigir o que estiver quebrado:
+- Logo: `stores.logo_url` → header lê (já funciona em `StorefrontHeader`, confirmar no `TheShoesHeader`).
+- Cores: `customizations.colors` já é aplicado em `StorefrontCustomizer`. Confirmar que `TheShoesHomepage` usa `var(--store-accent)` em vez de `ACCENT = "#111111"`.
+- Tipografia: idem `StorefrontCustomizer` já injeta Google Fonts; verificar uso.
+- Cabeçalho: `customizations.header` → `TheShoesHeader` precisa consumir.
 
-- Server functions com `createServerFn` + `requireSupabaseAuth` para criar checkout e ler `store_addons` no admin. Webhook continua em edge function (chamado externamente pelo Stripe).
-- Price IDs do Stripe são placeholders — usuário precisa criar 7 produtos/preços recorrentes no painel Stripe e cadastrar como secrets (`STRIPE_PRICE_VIDEO_INICIANTE`, `STRIPE_PRICE_VIDEO_ESSENCIAL`, `STRIPE_PRICE_VIDEO_PROFISSIONAL`, `STRIPE_PRICE_VIDEO_ESCALA`, `STRIPE_PRICE_GRUPO_VIP`, `STRIPE_PRICE_CAPTURA_LEADS`, `STRIPE_PRICE_COMPRE_JUNTO`, `STRIPE_PRICE_PERGUNTAS_AVALIACOES`). Sem eles, o paywall mostra UI mas o "Ativar agora" retorna erro claro.
+Esta fase é majoritariamente verificação + pequenos ajustes, não reescrita.
 
-## Estimativa
+## Fase 5 — Teste E2E em `/loja/themini`
 
-~25 arquivos: 1 migration, 1 edge function nova, 1 edge function editada, ~10 rotas/componentes admin, ~5 edits no storefront, sidebar, helpers. Vai em um único turno.
+Script Playwright (headless) que para cada uma das 13 seções: faz login no admin (precisa de credenciais de teste — vou pedir), abre o editor, altera 1 valor, publica, abre `/loja/themini`, captura screenshot e compara. Gera a tabela final pedida.
+
+## Risco / tamanho
+
+- Volume de código: ~25 novos arquivos, ~3000 linhas. Faseado para você revisar cada fase.
+- Sem migrações de DB. Sem mudança de RLS. Sem mexer em checkout, feed, webhook, ou nas configurações atuais da The Shoes (que continuam via `the_shoes_theme_settings` como fallback).
+
+## Pré-requisitos para começar
+
+1. **Confirma a divisão em fases?** Posso entregar Fase 1 + Fase 2 (9 seções prioritárias) num primeiro turno (é o grosso do valor), e Fases 3-5 num segundo turno. Ou prefere tudo de uma vez (resposta muito longa, maior chance de bug)?
+2. **Credenciais de teste da themini** (`TEST_USER` / `TEST_PASS` ou similar) para a Fase 5 — sem isso valido só renderização lendo direto do DB, sem fluxo de publicar pela UI.
+3. **Tema Mio como única fonte**: posso assumir que toda loja que ativa Mio passa a ler de `customizations.homepage` e `the_shoes_theme_settings` vira apenas fallback legado read-only da The Shoes? (Confirma o que você já indicou no prompt anterior.)
