@@ -69,23 +69,16 @@ export function TheShoesHomepage() {
 function MioCustomHomepage() {
   const { store } = useStorefront();
   const cust = useStorefrontCustomizations(store.id).data;
-  const settingsQ = useQuery({
-    queryKey: ["the-shoes-settings", store.id],
-    queryFn: () => fetchTheShoesSettings(store.id),
-    staleTime: 30_000,
-  });
-  const s = settingsQ.data;
-  if (!cust || !s) return null;
-
+  if (!cust) return null;
   const order = getSectionsOrder(cust);
-
+  const whatsapp = (store as any).whatsapp as string | null | undefined;
   return (
     <div className="ts-root">
       {order.map((key) => {
         if (!isSectionVisible(cust, key)) return null;
         return <SectionSwitch key={key} sectionKey={key} cust={cust} />;
       })}
-      {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
+      {whatsapp && <FloatingWhatsApp number={whatsapp.replace(/\D/g, "")} />}
       <TheShoesStyles />
     </div>
   );
