@@ -5,6 +5,19 @@ import { useMyStore } from "@/hooks/useMyStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import {
+  DEFAULT_SECTION_ORDER,
+  DEFAULT_VISIBILITY,
+  SECTION_LABELS,
+  getSectionConfig,
+  getSectionsOrder,
+  isSectionVisible,
+  setSectionConfigPatch,
+  setSectionVisibilityPatch,
+  setSectionsOrderPatch,
+  type HomepageSectionKey,
+} from "@/lib/homepage-sections";
+import { SectionEditor } from "@/components/admin/layout-editor/HomepageSectionPanels";
 
 export const Route = createFileRoute("/admin/loja/layout/editar")({
   head: () => ({ meta: [{ title: "Editor de layout — ShopBox" }] }),
