@@ -479,6 +479,8 @@ function FaqPanel({ cfg, onChange }: { cfg: FaqCfg; onChange: (c: FaqCfg) => voi
         <FieldLabel>Subtítulo</FieldLabel>
         <TextInput value={cfg.subtitle ?? ""} onChange={(e) => onChange({ ...cfg, subtitle: e.target.value })} />
       </div>
+      <ColorRow label="Cor de fundo da caixa" value={cfg.background ?? "#dfdac8"} onChange={(v) => onChange({ ...cfg, background: v })} />
+      <ColorRow label="Cor do texto" value={cfg.text_color ?? "#0f0f0f"} onChange={(v) => onChange({ ...cfg, text_color: v })} />
       {items.map((it, i) => (
         <div key={i} className="space-y-2 rounded-lg border border-gray-200 p-3">
           <div className="flex items-center justify-between">
@@ -494,6 +496,60 @@ function FaqPanel({ cfg, onChange }: { cfg: FaqCfg; onChange: (c: FaqCfg) => voi
       <button onClick={add} className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-gray-300 py-2 text-sm font-medium hover:bg-gray-50">
         <Plus className="h-4 w-4" /> Adicionar pergunta
       </button>
+    </div>
+  );
+}
+
+// ---------------- 11. Depoimentos ----------------
+function DepoimentosPanel({ cfg, onChange }: { cfg: DepoimentosCfg; onChange: (c: DepoimentosCfg) => void }) {
+  const items = cfg.items ?? [];
+  const updateItem = (i: number, patch: any) => onChange({ ...cfg, items: items.map((it, k) => (k === i ? { ...it, ...patch } : it)) });
+  const remove = (i: number) => onChange({ ...cfg, items: items.filter((_, k) => k !== i) });
+  const add = () => onChange({ ...cfg, items: [...items, { name: "", text: "", rating: 5 }] });
+  return (
+    <div className="space-y-3">
+      <div>
+        <FieldLabel>Título da seção</FieldLabel>
+        <TextInput value={cfg.title ?? ""} onChange={(e) => onChange({ ...cfg, title: e.target.value })} placeholder="O que dizem nossos clientes" />
+      </div>
+      <ColorRow label="Cor de fundo" value={cfg.background ?? "#ffffff"} onChange={(v) => onChange({ ...cfg, background: v })} />
+      <ColorRow label="Cor do texto" value={cfg.text_color ?? "#111111"} onChange={(v) => onChange({ ...cfg, text_color: v })} />
+      {items.map((it, i) => (
+        <div key={i} className="space-y-2 rounded-lg border border-gray-200 p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold">Depoimento {i + 1}</p>
+            <button onClick={() => remove(i)} className="text-red-500 hover:text-red-700">
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <FieldLabel>Nome do cliente</FieldLabel>
+          <TextInput value={it.name} onChange={(e) => updateItem(i, { name: e.target.value })} />
+          <FieldLabel>Depoimento</FieldLabel>
+          <TextArea value={it.text} onChange={(e) => updateItem(i, { text: e.target.value })} />
+          <FieldLabel>Estrelas (1-5)</FieldLabel>
+          <SelectInput value={String(it.rating ?? 5)} onChange={(e) => updateItem(i, { rating: Number(e.target.value) })}>
+            {[1,2,3,4,5].map((n) => <option key={n} value={n}>{n}</option>)}
+          </SelectInput>
+        </div>
+      ))}
+      <button onClick={add} className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-gray-300 py-2 text-sm font-medium hover:bg-gray-50">
+        <Plus className="h-4 w-4" /> Adicionar depoimento
+      </button>
+    </div>
+  );
+}
+
+// ---------------- 12. Vídeo ----------------
+function VideoSectionPanel({ cfg, onChange }: { cfg: VideoSectionCfg; onChange: (c: VideoSectionCfg) => void }) {
+  return (
+    <div className="space-y-3">
+      <div>
+        <FieldLabel>Título da seção</FieldLabel>
+        <TextInput value={cfg.title ?? ""} onChange={(e) => onChange({ ...cfg, title: e.target.value })} placeholder="Veja mais detalhes em vídeo" />
+      </div>
+      <p className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-3 text-xs text-[#6b7280]">
+        Os vídeos exibidos aqui são gerenciados em <span className="font-semibold">Marketing → Video Commerce → Carrossel da home</span>. Cadastre os vídeos lá e eles aparecerão automaticamente.
+      </p>
     </div>
   );
 }
