@@ -305,7 +305,7 @@ function EditorPage() {
 }
 
 // ---------- Panel router ----------
-function Panel({ section, setSection, store, customizations, update }: any) {
+function Panel({ section, setSection, store, customizations, update, isLegacyTheShoes, legacySettings, updateLegacy }: any) {
   const back = (to = "root") => (
     <button onClick={() => setSection(to)} className="mb-4 flex items-center gap-1 text-sm font-medium text-[#111827] hover:text-[#25d366]">
       <ChevronLeft className="h-4 w-4" /> {section === to ? "Voltar" : "Voltar"}
@@ -324,12 +324,21 @@ function Panel({ section, setSection, store, customizations, update }: any) {
           <h2 className="mb-3 text-base font-semibold text-[#111827]">{SECTION_LABELS[key] ?? key}</h2>
         </div>
         <div className="px-4 pb-6">
-          <SectionEditor
-            storeId={store?.id}
-            sectionKey={key}
-            cfg={getSectionConfig(customizations, key)}
-            onChange={(nextCfg) => update((prev: any) => ({ ...prev, ...setSectionConfigPatch(prev, key, nextCfg) }))}
-          />
+          {isLegacyTheShoes && legacySettings ? (
+            <LegacySectionEditor
+              storeId={store?.id}
+              sectionKey={key}
+              settings={legacySettings}
+              onChange={updateLegacy}
+            />
+          ) : (
+            <SectionEditor
+              storeId={store?.id}
+              sectionKey={key}
+              cfg={getSectionConfig(customizations, key)}
+              onChange={(nextCfg) => update((prev: any) => ({ ...prev, ...setSectionConfigPatch(prev, key, nextCfg) }))}
+            />
+          )}
         </div>
       </>
     );
@@ -345,7 +354,7 @@ function Panel({ section, setSection, store, customizations, update }: any) {
     case "header":
       return <><div className="p-4">{back()}</div><HeaderPanel customizations={customizations} update={update} /></>;
     case "homepage":
-      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} /></>;
+      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} isLegacyTheShoes={isLegacyTheShoes} /></>;
     case "product-list":
       return <><div className="p-4">{back()}</div><ProductListPanel customizations={customizations} update={update} /></>;
     case "product-detail":
