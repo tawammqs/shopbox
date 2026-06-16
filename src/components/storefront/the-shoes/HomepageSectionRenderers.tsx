@@ -247,9 +247,18 @@ export function ProductsByCategoryRender({ cfg }: { cfg: ProductsCategoryCfg }) 
 export function MarqueeRender({ cfg }: { cfg: MarqueeCfg }) {
   if (!cfg.text) return null;
   const speed = cfg.speed ?? 30;
+  const fontSize = cfg.font_size ?? 16;
+  const uppercase = !!cfg.uppercase;
   return (
     <div className="overflow-hidden" style={{ background: cfg.background, color: cfg.text_color }}>
-      <div className="flex whitespace-nowrap py-3 text-sm font-bold uppercase" style={{ animation: `mioMarquee ${speed}s linear infinite` }}>
+      <div
+        className="flex whitespace-nowrap py-3 font-semibold"
+        style={{
+          animation: `mioMarquee ${speed}s linear infinite`,
+          fontSize: `${fontSize}px`,
+          textTransform: uppercase ? "uppercase" : "none",
+        }}
+      >
         {Array.from({ length: 8 }).map((_, i) => (
           <span key={i} className="px-6">{cfg.text} ·</span>
         ))}
