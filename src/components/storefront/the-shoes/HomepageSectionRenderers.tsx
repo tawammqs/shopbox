@@ -246,7 +246,7 @@ export function ProductsByCategoryRender({ cfg }: { cfg: ProductsCategoryCfg }) 
 // ============== 5/6. Marquee ==============
 export function MarqueeRender({ cfg }: { cfg: MarqueeCfg }) {
   if (!cfg.text) return null;
-  const speed = cfg.speed ?? 30;
+  const speed = cfg.speed ?? 15;
   const fontSize = cfg.font_size ?? 16;
   const uppercase = !!cfg.uppercase;
   return (
