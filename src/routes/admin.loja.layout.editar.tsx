@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
   SECTION_LABELS,
+  DEFAULT_SECTION_ORDER,
   getSectionConfig,
   getSectionsOrder,
   isSectionVisible,
@@ -16,6 +17,16 @@ import {
   type HomepageSectionKey,
 } from "@/lib/homepage-sections";
 import { SectionEditor } from "@/components/admin/layout-editor/HomepageSectionPanels";
+import {
+  LegacySectionEditor,
+  LEGACY_EDITABLE_SECTIONS,
+} from "@/components/admin/layout-editor/TheShoesLegacyEditor";
+import {
+  fetchTheShoesSettings,
+  upsertTheShoesSettings,
+  DEFAULT_THE_SHOES_SETTINGS,
+  type TheShoesSettings,
+} from "@/lib/the-shoes-theme";
 
 export const Route = createFileRoute("/admin/loja/layout/editar")({
   head: () => ({ meta: [{ title: "Editor de layout — ShopBox" }] }),
