@@ -113,6 +113,7 @@ function StorefrontLayout() {
   }
 
   const isTheShoes = activeThemeSlug === "mio-style" || store.slug === "the-shoes";
+  const isLegacyTheShoes = store.slug === "the-shoes";
 
   return (
     <StoreProvider
@@ -124,7 +125,7 @@ function StorefrontLayout() {
         data-theme={isTheShoes ? "mio" : undefined}
         style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
-        {!isTheShoes && <StorefrontCustomizer storeId={store.id} />}
+        {!isLegacyTheShoes && <StorefrontCustomizer storeId={store.id} />}
         {isTheShoes ? (
           <TheShoesHeader />
         ) : (
