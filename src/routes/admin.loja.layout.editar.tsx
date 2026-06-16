@@ -59,9 +59,12 @@ type Customizations = {
     logoSize?: number;
     transparent?: boolean;
     announcementEnabled?: boolean;
-    announcementText?: string;
+    announcementText?: string; // legacy single
+    announcementMessages?: string[];
     announcementBg?: string;
     announcementText_color?: string;
+    announcementFontSize?: number;
+    announcementSpeed?: number;
   };
   homepage?: {
     sections?: { id: string; visible: boolean }[];
