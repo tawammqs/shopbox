@@ -27,9 +27,12 @@ export type StorefrontCustomizations = {
     logoSize?: number;
     transparent?: boolean;
     announcementEnabled?: boolean;
-    announcementText?: string;
+    announcementText?: string; // legacy single message
+    announcementMessages?: string[];
     announcementBg?: string;
     announcementText_color?: string;
+    announcementFontSize?: number;
+    announcementSpeed?: number;
   };
   homepage?: {
     sections?: { id: string; visible: boolean }[];
@@ -192,18 +195,38 @@ export function StorefrontCustomizer({ storeId }: { storeId: string }) {
   }, [data, headingFont, bodyFont]);
 
   const ab = data?.header;
+  const abMessages = (() => {
+    const list = (ab?.announcementMessages ?? []).map((s) => (s ?? "").trim()).filter(Boolean);
+    if (list.length) return list;
+    const legacy = (ab?.announcementText ?? "").trim();
+    return legacy ? [legacy] : [];
+  })();
+  const abSpeed = ab?.announcementSpeed ?? 30;
+  const abFontSize = ab?.announcementFontSize ?? 14;
+  const abText = abMessages.join("   ·   ");
   return (
     <>
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
-      {ab?.announcementEnabled && ab.announcementText ? (
+      {ab?.announcementEnabled && abMessages.length ? (
         <div
-          className="w-full text-center text-xs font-medium py-2 px-3"
+          className="w-full overflow-hidden"
           style={{
             background: ab.announcementBg || "#111827",
             color: ab.announcementText_color || "#ffffff",
           }}
         >
-          {ab.announcementText}
+          <div
+            className="flex whitespace-nowrap py-2 font-medium"
+            style={{
+              animation: `sfAnnouncementMarquee ${abSpeed}s linear infinite`,
+              fontSize: `${abFontSize}px`,
+            }}
+          >
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i} className="px-6">{abText} ·</span>
+            ))}
+          </div>
+          <style>{`@keyframes sfAnnouncementMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
         </div>
       ) : null}
     </>

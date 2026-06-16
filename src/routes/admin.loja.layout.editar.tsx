@@ -59,9 +59,12 @@ type Customizations = {
     logoSize?: number;
     transparent?: boolean;
     announcementEnabled?: boolean;
-    announcementText?: string;
+    announcementText?: string; // legacy single
+    announcementMessages?: string[];
     announcementBg?: string;
     announcementText_color?: string;
+    announcementFontSize?: number;
+    announcementSpeed?: number;
   };
   homepage?: {
     sections?: { id: string; visible: boolean }[];
@@ -653,8 +656,50 @@ function HeaderPanel({ customizations, update }: any) {
       <section className="space-y-3 rounded-lg border border-gray-200 p-3">
         <p className="text-sm font-semibold">Barra de anúncio</p>
         <Toggle checked={!!h.announcementEnabled} onChange={(v) => set("announcementEnabled", v)} label="Ativar barra" />
-        <FieldLabel>Mensagem</FieldLabel>
-        <TextInput value={h.announcementText ?? ""} onChange={(e) => set("announcementText", e.target.value)} placeholder="Frete grátis acima de R$ 199" />
+        <FieldLabel>Mensagens (até 5)</FieldLabel>
+        {(() => {
+          const messages: string[] =
+            (Array.isArray(h.announcementMessages) && h.announcementMessages.length
+              ? h.announcementMessages
+              : h.announcementText
+              ? [h.announcementText]
+              : [""]) as string[];
+          const updateMessages = (next: string[]) => set("announcementMessages", next);
+          return (
+            <div className="space-y-2">
+              {messages.map((msg, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <TextInput
+                    value={msg}
+                    onChange={(e) => {
+                      const next = [...messages];
+                      next[i] = e.target.value;
+                      updateMessages(next);
+                    }}
+                    placeholder="PARCELE EM ATÉ 3X SEM JUROS"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => updateMessages(messages.filter((_, idx) => idx !== i))}
+                    className="rounded border border-gray-200 px-2 py-1 text-xs text-gray-600 hover:bg-gray-50"
+                    disabled={messages.length <= 1}
+                  >
+                    Remover
+                  </button>
+                </div>
+              ))}
+              {messages.length < 5 && (
+                <button
+                  type="button"
+                  onClick={() => updateMessages([...messages, ""])}
+                  className="rounded border border-dashed border-gray-300 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
+                >
+                  + Adicionar mensagem
+                </button>
+              )}
+            </div>
+          );
+        })()}
         <div className="grid grid-cols-2 gap-2">
           <div>
             <FieldLabel>Cor de fundo</FieldLabel>
@@ -664,6 +709,14 @@ function HeaderPanel({ customizations, update }: any) {
             <FieldLabel>Cor do texto</FieldLabel>
             <input type="color" value={h.announcementText_color ?? "#ffffff"} onChange={(e) => set("announcementText_color", e.target.value)} className="h-9 w-full rounded border border-gray-200" />
           </div>
+        </div>
+        <div>
+          <FieldLabel>Tamanho do texto ({h.announcementFontSize ?? 14}px)</FieldLabel>
+          <Slider value={h.announcementFontSize ?? 14} min={12} max={20} onChange={(v) => set("announcementFontSize", v)} />
+        </div>
+        <div>
+          <FieldLabel>Velocidade da animação ({h.announcementSpeed ?? 30}s)</FieldLabel>
+          <Slider value={h.announcementSpeed ?? 30} min={10} max={120} onChange={(v) => set("announcementSpeed", v)} />
         </div>
       </section>
     </div>
