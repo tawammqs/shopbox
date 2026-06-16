@@ -305,7 +305,7 @@ function MarqueePanel({ cfg, onChange }: { cfg: MarqueeCfg; onChange: (c: Marque
       <Toggle checked={!!cfg.uppercase} onChange={(v) => onChange({ ...cfg, uppercase: v })} label="Texto em CAIXA ALTA" />
       <div>
         <FieldLabel>Velocidade (segundos para uma volta)</FieldLabel>
-        <Slider value={cfg.speed ?? 30} min={10} max={60} onChange={(v) => onChange({ ...cfg, speed: v })} />
+        <Slider value={cfg.speed ?? 15} min={10} max={40} onChange={(v) => onChange({ ...cfg, speed: v })} />
       </div>
     </div>
   );
