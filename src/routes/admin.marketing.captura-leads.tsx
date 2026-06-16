@@ -113,7 +113,7 @@ function Config({ storeId }: { storeId: string }) {
           Pedir data de aniversário
           <input type="checkbox" checked={!!form.ask_birthday} onChange={(e) => setForm({ ...form, ask_birthday: e.target.checked })} className="h-5 w-9" />
         </label>
-        <NumField label="Delay para exibir (segundos)" value={form.delay_seconds ?? 3} onChange={(v) => setForm({ ...form, delay_seconds: v })} />
+        <p className="text-xs text-gray-500">O botão fica sempre visível na loja; o popup só abre quando o cliente clica nele.</p>
         <div className="grid grid-cols-2 gap-3">
           <ColorField label="Cor de fundo do botão" value={form.button_color ?? "#111111"} onChange={(v) => setForm({ ...form, button_color: v })} />
           <ColorField label="Cor do ícone/destaque" value={form.icon_color ?? "#ffffff"} onChange={(v) => setForm({ ...form, icon_color: v })} />
