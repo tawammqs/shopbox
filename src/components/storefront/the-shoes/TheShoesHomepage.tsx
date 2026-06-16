@@ -53,6 +53,8 @@ import {
   BannersCategoriasRender,
   InstagramRender,
   FaqRender,
+  DepoimentosRender,
+  VideoSectionRender,
 } from "./HomepageSectionRenderers";
 
 export function TheShoesHomepage() {
