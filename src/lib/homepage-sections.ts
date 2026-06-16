@@ -114,7 +114,7 @@ export type BannerRotativoCfg = { items: BannerRotativoItem[]; interval_seconds:
 export type ProductsTagCfg = { title: string; limit: number; show_more_button?: boolean; tag?: string };
 export type ProductsCategoryCfg = { title: string; category_id: string | null; limit: number };
 
-export type MarqueeCfg = { text: string; background: string; text_color: string; speed: number };
+export type MarqueeCfg = { text: string; background: string; text_color: string; speed: number; font_size?: number; uppercase?: boolean };
 
 export type FretePagamentoItem = { icon: string; title: string; description: string };
 export type FretePagamentoCfg = { background: string; icon_color: string; items: FretePagamentoItem[] };
@@ -125,15 +125,20 @@ export type BannerCategoriasCfg = { items: BannerCategoriaItem[] };
 export type InstagramCfg = { title: string; handle: string; photos: string[] };
 
 export type FaqItem = { question: string; answer: string };
-export type FaqCfg = { title: string; subtitle: string; items: FaqItem[] };
+export type FaqCfg = { title: string; subtitle: string; items: FaqItem[]; background?: string; text_color?: string };
+
+export type DepoimentoItem = { name: string; text: string; rating?: number; image_url?: string };
+export type DepoimentosCfg = { title: string; background: string; text_color?: string; items: DepoimentoItem[] };
+
+export type VideoSectionCfg = { title: string };
 
 export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   banners_rotativos: { items: [], interval_seconds: 5, autoplay: true } as BannerRotativoCfg,
   produtos_oferta: { title: "Ofertas", limit: 8, show_more_button: true, tag: "ofertas" } as ProductsTagCfg,
   produtos_destaque: { title: "Destaques", limit: 8, show_more_button: true } as ProductsTagCfg,
   produtos_novos: { title: "Lançamentos", category_id: null, limit: 8 } as ProductsCategoryCfg,
-  boas_vindas_marquee: { text: "BEM-VINDO À NOSSA LOJA", background: "#dfdac8", text_color: "#111111", speed: 30 } as MarqueeCfg,
-  anuncios_marquee: { text: "FRETE GRÁTIS ACIMA DE R$199", background: "#111827", text_color: "#ffffff", speed: 30 } as MarqueeCfg,
+  boas_vindas_marquee: { text: "Bem-vindo à nossa loja", background: "#dfdac8", text_color: "#111111", speed: 30, font_size: 16, uppercase: false } as MarqueeCfg,
+  anuncios_marquee: { text: "Frete grátis acima de R$199", background: "#111827", text_color: "#ffffff", speed: 30, font_size: 16, uppercase: false } as MarqueeCfg,
   frete_pagamento: {
     background: "#dfdac8",
     icon_color: "#ffffff",
@@ -145,7 +150,9 @@ export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   } as FretePagamentoCfg,
   banners_categorias: { items: [] } as BannerCategoriasCfg,
   instagram: { title: "Siga no Instagram", handle: "", photos: [] } as InstagramCfg,
-  faq: { title: "Perguntas Frequentes", subtitle: "", items: [] } as FaqCfg,
+  faq: { title: "Perguntas Frequentes", subtitle: "", items: [], background: "#dfdac8", text_color: "#0f0f0f" } as FaqCfg,
+  depoimentos: { title: "O que dizem nossos clientes", background: "#ffffff", text_color: "#111111", items: [] } as DepoimentosCfg,
+  video: { title: "Veja mais detalhes em vídeo" } as VideoSectionCfg,
 };
 
 export function getHomepage(cust: any): HomepageConfig {
