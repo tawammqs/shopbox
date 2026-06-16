@@ -25,7 +25,7 @@ import { TheShoesGlobalStyles } from "@/components/storefront/the-shoes/TheShoes
 import { Button } from "@/components/ui/button";
 import { VisitTracker } from "@/components/storefront/VisitTracker";
 import { StorefrontCustomizer } from "@/components/storefront/StorefrontCustomizer";
-import { MioVipTab, MioCouponTab } from "@/components/storefront/MioAddonOverlays";
+import { MioVipPopupHost, MioCouponTab } from "@/components/storefront/MioAddonOverlays";
 
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
