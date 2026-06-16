@@ -15,6 +15,8 @@ import {
   type BannerCategoriasCfg,
   type InstagramCfg,
   type FaqCfg,
+  type DepoimentosCfg,
+  type VideoSectionCfg,
 } from "@/lib/homepage-sections";
 
 // ---------------- shared mini UI ----------------
