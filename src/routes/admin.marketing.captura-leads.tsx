@@ -21,6 +21,8 @@ type Cfg = {
   description?: string;
   ask_birthday?: boolean;
   delay_seconds?: number;
+  button_color?: string;
+  icon_color?: string;
 };
 
 function Page() {
@@ -112,6 +114,10 @@ function Config({ storeId }: { storeId: string }) {
           <input type="checkbox" checked={!!form.ask_birthday} onChange={(e) => setForm({ ...form, ask_birthday: e.target.checked })} className="h-5 w-9" />
         </label>
         <NumField label="Delay para exibir (segundos)" value={form.delay_seconds ?? 3} onChange={(v) => setForm({ ...form, delay_seconds: v })} />
+        <div className="grid grid-cols-2 gap-3">
+          <ColorField label="Cor de fundo do botão" value={form.button_color ?? "#111111"} onChange={(v) => setForm({ ...form, button_color: v })} />
+          <ColorField label="Cor do ícone/destaque" value={form.icon_color ?? "#ffffff"} onChange={(v) => setForm({ ...form, icon_color: v })} />
+        </div>
       </div>
       <button onClick={save} className="rounded-lg bg-[#25d366] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#1fb959]">Salvar</button>
     </div>
@@ -132,6 +138,18 @@ function NumField({ label, value, onChange }: { label: string; value: number; on
     <div>
       <label className="text-sm font-medium text-[#374151]">{label}</label>
       <input type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} className="mt-1 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm" />
+    </div>
+  );
+}
+
+function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="text-sm font-medium text-[#374151]">{label}</label>
+      <div className="mt-1 flex items-center gap-2">
+        <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="h-10 w-12 cursor-pointer rounded border border-gray-200" />
+        <input value={value} onChange={(e) => onChange(e.target.value)} className="h-10 flex-1 rounded-lg border border-gray-200 px-3 text-sm" />
+      </div>
     </div>
   );
 }

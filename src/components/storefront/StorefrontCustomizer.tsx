@@ -201,7 +201,7 @@ export function StorefrontCustomizer({ storeId }: { storeId: string }) {
     const legacy = (ab?.announcementText ?? "").trim();
     return legacy ? [legacy] : [];
   })();
-  const abSpeed = ab?.announcementSpeed ?? 30;
+  const abSpeed = ab?.announcementSpeed ?? 15;
   const abFontSize = ab?.announcementFontSize ?? 14;
   const abText = abMessages.join("   ·   ");
   return (
