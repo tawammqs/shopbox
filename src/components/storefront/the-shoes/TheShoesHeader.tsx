@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { useStorefront } from "../StoreContext";
+import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { useCart } from "@/stores/cart";
 import { searchProductsLive } from "@/lib/storefront";
 import { effectivePrice, formatBRL } from "@/lib/format";
@@ -11,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export function TheShoesHeader() {
   const { store, categories } = useStorefront();
+  const isLegacyTheShoes = store.slug === "the-shoes";
   const navigate = useNavigate();
   const openCart = useCart((s) => s.open);
   const items = useCart((s) => s.items);
@@ -19,12 +21,27 @@ export function TheShoesHeader() {
     [items, store.id],
   );
 
+  // Legacy The Shoes: announcement comes from the_shoes_theme_settings.
   const settingsQ = useQuery({
     queryKey: ["the-shoes-settings", store.id],
     queryFn: () => fetchTheShoesSettings(store.id),
     staleTime: 30_000,
+    enabled: isLegacyTheShoes,
   });
-  const ab = settingsQ.data?.announcement_bar;
+  // Other Mio stores: announcement comes from customizations.header.
+  const custQ = useStorefrontCustomizations(store.id);
+  const customAb = custQ.data?.header;
+
+  const ab = isLegacyTheShoes
+    ? settingsQ.data?.announcement_bar
+    : customAb?.announcementEnabled
+      ? {
+          enabled: true,
+          bg_color: customAb.announcementBg || "#111111",
+          text_color: customAb.announcementText_color || "#ffffff",
+          items: customAb.announcementText ? [customAb.announcementText] : [],
+        }
+      : undefined;
 
   const roots = categories.filter((c) => !c.parent_id);
 
