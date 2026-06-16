@@ -14,13 +14,19 @@ import {
   setSectionConfigPatch,
   setSectionVisibilityPatch,
   setSectionsOrderPatch,
+  ADDON_HOMEPAGE_ITEMS,
+  ADDON_ROW_KEYS,
+  ADDON_ROW_KEY_TO_ITEM,
   type HomepageSectionKey,
+  type AddonHomepageItem,
 } from "@/lib/homepage-sections";
 import { SectionEditor } from "@/components/admin/layout-editor/HomepageSectionPanels";
 import {
   LegacySectionEditor,
   LEGACY_EDITABLE_SECTIONS,
 } from "@/components/admin/layout-editor/TheShoesLegacyEditor";
+import { useAllAddonStatus, useAddonConfig, saveAddonConfig, type AddonKey } from "@/lib/addons";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   fetchTheShoesSettings,
   upsertTheShoesSettings,
