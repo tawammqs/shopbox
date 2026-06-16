@@ -3,7 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { useStorefront } from "../StoreContext";
-import { useStorefrontCustomizations } from "../StorefrontCustomizer";
+// (StorefrontCustomizer is mounted at the layout level for non-legacy Mio stores)
 import { useCart } from "@/stores/cart";
 import { searchProductsLive } from "@/lib/storefront";
 import { effectivePrice, formatBRL } from "@/lib/format";
