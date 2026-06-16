@@ -363,7 +363,7 @@ function Panel({ section, setSection, store, customizations, update, isLegacyThe
     case "header":
       return <><div className="p-4">{back()}</div><HeaderPanel customizations={customizations} update={update} /></>;
     case "homepage":
-      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} isLegacyTheShoes={isLegacyTheShoes} /></>;
+      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} isLegacyTheShoes={isLegacyTheShoes} store={store} /></>;
     case "product-list":
       return <><div className="p-4">{back()}</div><ProductListPanel customizations={customizations} update={update} /></>;
     case "product-detail":
