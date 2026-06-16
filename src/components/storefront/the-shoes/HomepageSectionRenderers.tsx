@@ -28,6 +28,8 @@ import type {
   BannerCategoriasCfg,
   InstagramCfg,
   FaqCfg,
+  DepoimentosCfg,
+  VideoSectionCfg,
 } from "@/lib/homepage-sections";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
