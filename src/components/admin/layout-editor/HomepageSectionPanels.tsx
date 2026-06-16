@@ -294,10 +294,15 @@ function MarqueePanel({ cfg, onChange }: { cfg: MarqueeCfg; onChange: (c: Marque
     <div className="space-y-3">
       <div>
         <FieldLabel>Texto</FieldLabel>
-        <TextInput value={cfg.text ?? ""} onChange={(e) => onChange({ ...cfg, text: e.target.value })} placeholder="FRETE GRÁTIS ACIMA DE R$199" />
+        <TextInput value={cfg.text ?? ""} onChange={(e) => onChange({ ...cfg, text: e.target.value })} placeholder="Frete grátis acima de R$199" />
       </div>
       <ColorRow label="Cor de fundo" value={cfg.background ?? "#111827"} onChange={(v) => onChange({ ...cfg, background: v })} />
       <ColorRow label="Cor do texto" value={cfg.text_color ?? "#ffffff"} onChange={(v) => onChange({ ...cfg, text_color: v })} />
+      <div>
+        <FieldLabel>Tamanho do texto (px)</FieldLabel>
+        <Slider value={cfg.font_size ?? 16} min={12} max={32} onChange={(v) => onChange({ ...cfg, font_size: v })} />
+      </div>
+      <Toggle checked={!!cfg.uppercase} onChange={(v) => onChange({ ...cfg, uppercase: v })} label="Texto em CAIXA ALTA" />
       <div>
         <FieldLabel>Velocidade (segundos para uma volta)</FieldLabel>
         <Slider value={cfg.speed ?? 30} min={10} max={60} onChange={(v) => onChange({ ...cfg, speed: v })} />
