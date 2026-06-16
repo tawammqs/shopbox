@@ -117,9 +117,16 @@ export function MioVipMenuLink({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-/** Seção inline da homepage — equivalente ao "Achadinhos / Ofertas Secretas" da The Shoes. */
+/** Seção inline da homepage — equivalente ao "Achadinhos / Ofertas Secretas" da The Shoes.
+ *  Renderiza o input de WhatsApp INLINE (1 clique para submeter), sem abrir popup. */
 export function MioVipSection() {
+  const { store } = useStorefront();
   const q = useMioVipConfig();
+  const [value, setValue] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   if (!q.data?.enabled) return null;
   const cfg = q.data.cfg;
   const bg = cfg.background_color || "#111111";
@@ -128,29 +135,75 @@ export function MioVipSection() {
   const description = cfg.description || "Digite seu WhatsApp e tenha acesso às ofertas exclusivas.";
   const buttonText = cfg.button_text || "Desbloquear e ver ofertas";
 
+  const onSubmit = async () => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 11) {
+      setInvalid(true);
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await supabase.from("vip_group_leads" as any).insert({
+        store_id: store.id, whatsapp: digits, source: "mio_vip_section",
+      });
+      window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
+      setSuccess(true);
+      setValue("");
+    } catch {
+      toast.error("Não foi possível concluir. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <section style={{ position: "relative", padding: "48px 20px", overflow: "hidden" }}>
-      <div style={{ position: "absolute", inset: 0, background: "#f3f3f3", zIndex: 0 }} />
+    <section style={{ position: "relative", width: "100%", padding: "48px 20px", overflow: "hidden", background: "#f3f3f3" }}>
       <div style={{ position: "relative", zIndex: 1, maxWidth: 440, margin: "0 auto" }}>
         <div style={{
-          background: "#fff", borderRadius: 18, padding: "36px 28px",
+          background: "#fff", borderRadius: 18, padding: "32px 24px",
           textAlign: "center", boxShadow: "0 8px 28px rgba(0,0,0,0.08)",
         }}>
           <div style={{ width: 56, height: 56, borderRadius: "50%", background: bg, display: "grid", placeItems: "center", margin: "0 auto 14px" }}>
             <LockIcon color={iconColor} size={26} />
           </div>
           <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
-          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 22 }}>{description}</p>
-          <button
-            type="button"
-            onClick={openVipPopup}
+          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{description}</p>
+
+          <input
+            type="tel"
+            inputMode="numeric"
+            value={value}
+            onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
+            placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD) XXXXX-XXXX"}
+            disabled={success}
+            onKeyDown={(e) => { if (e.key === "Enter") onSubmit(); }}
             style={{
-              width: "100%", height: 50, background: bg, color: iconColor,
-              border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: "pointer",
+              width: "100%", height: 50,
+              border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
+              borderRadius: 10, padding: "0 16px", fontSize: 16,
+              textAlign: "center", color: "#111", marginBottom: 12,
+              outline: "none", boxSizing: "border-box",
             }}
-          >
-            {buttonText}
-          </button>
+          />
+
+          {success ? (
+            <p style={{ color: "#25D366", fontSize: 14, fontWeight: 600, padding: "12px 0" }}>
+              ✓ Redirecionando para o grupo VIP! 🎉
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={submitting}
+              style={{
+                width: "100%", height: 50, background: bg, color: iconColor,
+                border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700,
+                cursor: "pointer", opacity: submitting ? 0.7 : 1,
+              }}
+            >
+              {submitting ? "Enviando…" : buttonText}
+            </button>
+          )}
         </div>
       </div>
     </section>
