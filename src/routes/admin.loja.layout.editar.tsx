@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
   SECTION_LABELS,
+  DEFAULT_SECTION_ORDER,
   getSectionConfig,
   getSectionsOrder,
   isSectionVisible,
@@ -16,6 +17,16 @@ import {
   type HomepageSectionKey,
 } from "@/lib/homepage-sections";
 import { SectionEditor } from "@/components/admin/layout-editor/HomepageSectionPanels";
+import {
+  LegacySectionEditor,
+  LEGACY_EDITABLE_SECTIONS,
+} from "@/components/admin/layout-editor/TheShoesLegacyEditor";
+import {
+  fetchTheShoesSettings,
+  upsertTheShoesSettings,
+  DEFAULT_THE_SHOES_SETTINGS,
+  type TheShoesSettings,
+} from "@/lib/the-shoes-theme";
 
 export const Route = createFileRoute("/admin/loja/layout/editar")({
   head: () => ({ meta: [{ title: "Editor de layout — ShopBox" }] }),
@@ -124,11 +135,15 @@ function EditorPage() {
   const [device, setDevice] = useState<"mobile" | "desktop">("desktop");
   const [section, setSection] = useState<string>("root");
   const [customizations, setCustomizations] = useState<Customizations>({});
+  const [legacySettings, setLegacySettings] = useState<TheShoesSettings | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [legacyDirty, setLegacyDirty] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const isLegacyTheShoes = store?.slug === "the-shoes";
 
   // load existing
   useEffect(() => {
@@ -140,9 +155,17 @@ function EditorPage() {
         .eq("store_id", store.id)
         .maybeSingle();
       setCustomizations(((data?.customizations as any) ?? {}) as Customizations);
+      if (store.slug === "the-shoes") {
+        try {
+          const s = await fetchTheShoesSettings(store.id);
+          setLegacySettings(s);
+        } catch {
+          setLegacySettings(DEFAULT_THE_SHOES_SETTINGS);
+        }
+      }
       setLoaded(true);
     })();
-  }, [store?.id]);
+  }, [store?.id, store?.slug]);
 
   const update = (patch: Partial<Customizations> | ((c: Customizations) => Customizations)) => {
     setCustomizations((prev) => {
@@ -152,19 +175,30 @@ function EditorPage() {
     setDirty(true);
   };
 
+  const updateLegacy = (patch: Partial<TheShoesSettings>) => {
+    setLegacySettings((prev) => ({ ...(prev ?? DEFAULT_THE_SHOES_SETTINGS), ...patch }));
+    setLegacyDirty(true);
+  };
+
   const save = async () => {
     if (!store?.id) return;
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("store_theme_settings")
-        .upsert(
-          { store_id: store.id, customizations: customizations as any },
-          { onConflict: "store_id" },
-        );
-      if (error) throw error;
+      if (dirty) {
+        const { error } = await supabase
+          .from("store_theme_settings")
+          .upsert(
+            { store_id: store.id, customizations: customizations as any },
+            { onConflict: "store_id" },
+          );
+        if (error) throw error;
+      }
+      if (legacyDirty && legacySettings) {
+        await upsertTheShoesSettings(store.id, legacySettings);
+      }
       toast.success("Alterações publicadas");
       setDirty(false);
+      setLegacyDirty(false);
       setReloadKey((k) => k + 1);
     } catch (e: any) {
       toast.error(e.message ?? "Erro ao salvar");
@@ -176,6 +210,8 @@ function EditorPage() {
   if (!loaded) {
     return <div className="flex h-screen items-center justify-center text-sm text-[#6b7280]">Carregando editor…</div>;
   }
+
+  const canSave = dirty || legacyDirty;
 
   return (
     <div className="fixed inset-0 flex flex-col bg-white">
@@ -233,12 +269,15 @@ function EditorPage() {
               store={store}
               customizations={customizations}
               update={update}
+              isLegacyTheShoes={isLegacyTheShoes}
+              legacySettings={legacySettings}
+              updateLegacy={updateLegacy}
             />
           </div>
           <div className="border-t border-gray-200 p-3">
             <button
               onClick={save}
-              disabled={saving || !dirty}
+              disabled={saving || !canSave}
               className="h-11 w-full rounded-lg bg-[#25d366] text-sm font-bold text-white hover:bg-[#1fb959] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving ? "Publicando…" : "Publicar alterações"}
@@ -266,7 +305,7 @@ function EditorPage() {
 }
 
 // ---------- Panel router ----------
-function Panel({ section, setSection, store, customizations, update }: any) {
+function Panel({ section, setSection, store, customizations, update, isLegacyTheShoes, legacySettings, updateLegacy }: any) {
   const back = (to = "root") => (
     <button onClick={() => setSection(to)} className="mb-4 flex items-center gap-1 text-sm font-medium text-[#111827] hover:text-[#25d366]">
       <ChevronLeft className="h-4 w-4" /> {section === to ? "Voltar" : "Voltar"}
@@ -285,12 +324,21 @@ function Panel({ section, setSection, store, customizations, update }: any) {
           <h2 className="mb-3 text-base font-semibold text-[#111827]">{SECTION_LABELS[key] ?? key}</h2>
         </div>
         <div className="px-4 pb-6">
-          <SectionEditor
-            storeId={store?.id}
-            sectionKey={key}
-            cfg={getSectionConfig(customizations, key)}
-            onChange={(nextCfg) => update((prev: any) => ({ ...prev, ...setSectionConfigPatch(prev, key, nextCfg) }))}
-          />
+          {isLegacyTheShoes && legacySettings ? (
+            <LegacySectionEditor
+              storeId={store?.id}
+              sectionKey={key}
+              settings={legacySettings}
+              onChange={updateLegacy}
+            />
+          ) : (
+            <SectionEditor
+              storeId={store?.id}
+              sectionKey={key}
+              cfg={getSectionConfig(customizations, key)}
+              onChange={(nextCfg) => update((prev: any) => ({ ...prev, ...setSectionConfigPatch(prev, key, nextCfg) }))}
+            />
+          )}
         </div>
       </>
     );
@@ -306,7 +354,7 @@ function Panel({ section, setSection, store, customizations, update }: any) {
     case "header":
       return <><div className="p-4">{back()}</div><HeaderPanel customizations={customizations} update={update} /></>;
     case "homepage":
-      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} /></>;
+      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} isLegacyTheShoes={isLegacyTheShoes} /></>;
     case "product-list":
       return <><div className="p-4">{back()}</div><ProductListPanel customizations={customizations} update={update} /></>;
     case "product-detail":
@@ -623,15 +671,26 @@ function HeaderPanel({ customizations, update }: any) {
 }
 
 // ---------- Homepage ----------
-function HomepagePanel({ customizations, update, setSection }: any) {
-  const order = useMemo(() => getSectionsOrder(customizations), [customizations]);
+function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes }: any) {
+  const order = useMemo(
+    () => (isLegacyTheShoes ? DEFAULT_SECTION_ORDER : getSectionsOrder(customizations)),
+    [customizations, isLegacyTheShoes],
+  );
 
   const toggle = (key: HomepageSectionKey) => {
+    if (isLegacyTheShoes) {
+      toast.info("Visibilidade não é editável nesta loja (layout legado).");
+      return;
+    }
     const next = !isSectionVisible(customizations, key);
     update((prev: any) => ({ ...prev, ...setSectionVisibilityPatch(prev, key, next) }));
   };
 
   const move = (idx: number, dir: -1 | 1) => {
+    if (isLegacyTheShoes) {
+      toast.info("Ordem das seções não é editável nesta loja (layout legado).");
+      return;
+    }
     const j = idx + dir;
     if (j < 0 || j >= order.length) return;
     const next = [...order];
@@ -646,55 +705,73 @@ function HomepagePanel({ customizations, update, setSection }: any) {
   return (
     <div className="space-y-4 px-4 pb-6">
       <h2 className="text-base font-semibold text-[#111827]">Página inicial</h2>
-      <p className="text-xs text-[#6b7280]">Clique no nome de cada seção para configurar. Use o olho para mostrar/ocultar.</p>
+      <p className="text-xs text-[#6b7280]">
+        {isLegacyTheShoes
+          ? "Edite o conteúdo de cada seção. A ordem e o visual desta loja são fixos."
+          : "Clique no nome de cada seção para configurar. Use o olho para mostrar/ocultar."}
+      </p>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         {order.map((key, idx) => {
           const visible = isSectionVisible(customizations, key);
           const label = SECTION_LABELS[key] ?? key;
+          const legacyEditable = LEGACY_EDITABLE_SECTIONS.includes(key);
           return (
             <div key={key} className="flex items-center gap-2 border-b border-gray-100 px-2 py-2 last:border-b-0">
-              <div className="flex flex-col">
-                <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
-                <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
-              </div>
-              <GripVertical className="h-4 w-4 text-[#d1d5db]" />
-              <button onClick={() => toggle(key)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
-                {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
-              </button>
+              {!isLegacyTheShoes && (
+                <>
+                  <div className="flex flex-col">
+                    <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
+                    <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
+                  </div>
+                  <GripVertical className="h-4 w-4 text-[#d1d5db]" />
+                  <button onClick={() => toggle(key)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
+                    {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
+                  </button>
+                </>
+              )}
               <button
                 onClick={() => setSection(`homepage:${key}`)}
-                className={cn("flex flex-1 items-center justify-between gap-2 rounded px-1 py-1 text-left text-sm hover:bg-gray-50", visible ? "text-[#111827]" : "text-[#9ca3af]")}
+                className={cn(
+                  "flex flex-1 items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm hover:bg-gray-50",
+                  isLegacyTheShoes && !legacyEditable ? "text-[#9ca3af]" : visible ? "text-[#111827]" : "text-[#9ca3af]",
+                )}
               >
                 <span>{label}</span>
-                <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
+                <div className="flex items-center gap-2">
+                  {isLegacyTheShoes && !legacyEditable && (
+                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-[#6b7280]">não editável</span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
+                </div>
               </button>
             </div>
           );
         })}
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-3">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold">Pop-up promocional</p>
-          <Toggle checked={!!popup.enabled} onChange={(v) => setPopup({ enabled: v })} />
-        </div>
-        {popup.enabled && (
-          <div className="mt-3 space-y-2">
-            <TextInput placeholder="Título" value={popup.title ?? ""} onChange={(e) => setPopup({ title: e.target.value })} />
-            <TextInput placeholder="Texto" value={popup.text ?? ""} onChange={(e) => setPopup({ text: e.target.value })} />
-            <TextInput placeholder="URL da imagem" value={popup.image ?? ""} onChange={(e) => setPopup({ image: e.target.value })} />
-            <div className="grid grid-cols-2 gap-2">
-              <TextInput placeholder="CTA texto" value={popup.ctaText ?? ""} onChange={(e) => setPopup({ ctaText: e.target.value })} />
-              <TextInput placeholder="CTA link" value={popup.ctaLink ?? ""} onChange={(e) => setPopup({ ctaLink: e.target.value })} />
-            </div>
-            <div>
-              <FieldLabel>Delay (segundos)</FieldLabel>
-              <Slider value={popup.delay ?? 3} min={0} max={30} onChange={(v) => setPopup({ delay: v })} />
-            </div>
+      {!isLegacyTheShoes && (
+        <div className="rounded-xl border border-gray-200 bg-white p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold">Pop-up promocional</p>
+            <Toggle checked={!!popup.enabled} onChange={(v) => setPopup({ enabled: v })} />
           </div>
-        )}
-      </div>
-
+          {popup.enabled && (
+            <div className="mt-3 space-y-2">
+              <TextInput placeholder="Título" value={popup.title ?? ""} onChange={(e) => setPopup({ title: e.target.value })} />
+              <TextInput placeholder="Texto" value={popup.text ?? ""} onChange={(e) => setPopup({ text: e.target.value })} />
+              <TextInput placeholder="URL da imagem" value={popup.image ?? ""} onChange={(e) => setPopup({ image: e.target.value })} />
+              <div className="grid grid-cols-2 gap-2">
+                <TextInput placeholder="CTA texto" value={popup.ctaText ?? ""} onChange={(e) => setPopup({ ctaText: e.target.value })} />
+                <TextInput placeholder="CTA link" value={popup.ctaLink ?? ""} onChange={(e) => setPopup({ ctaLink: e.target.value })} />
+              </div>
+              <div>
+                <FieldLabel>Delay (segundos)</FieldLabel>
+                <Slider value={popup.delay ?? 3} min={0} max={30} onChange={(v) => setPopup({ delay: v })} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
