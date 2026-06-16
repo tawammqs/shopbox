@@ -209,3 +209,32 @@ export function setSectionsOrderPatch(cust: any, order: HomepageSectionKey[]) {
   const hp = getHomepage(cust);
   return { homepage: { ...hp, sections_order: order } };
 }
+
+/**
+ * Marketing addons that surface as items in the "Página inicial" list.
+ * The eye toggle for each row writes to store_addon_configs.config.active
+ * (single source of truth — no parallel customizations.homepage flag).
+ * Clicking the row navigates to its Marketing screen instead of opening
+ * an inline section editor.
+ */
+export type AddonHomepageItem = {
+  addonKey: "video_commerce" | "grupo_vip" | "captura_leads" | "compre_junto" | "perguntas_avaliacoes";
+  rowKey: string; // pseudo key for sections_order positioning
+  icon: string;
+  label: string;
+  urlSlug: string; // /admin/marketing/<urlSlug>
+};
+
+export const ADDON_HOMEPAGE_ITEMS: AddonHomepageItem[] = [
+  { addonKey: "video_commerce", rowKey: "addon:video_commerce", icon: "🎬", label: "Vídeos (Video Commerce)", urlSlug: "video-commerce" },
+  { addonKey: "grupo_vip", rowKey: "addon:grupo_vip", icon: "👑", label: "Grupo VIP / Ofertas Secretas", urlSlug: "grupo-vip" },
+  { addonKey: "captura_leads", rowKey: "addon:captura_leads", icon: "🎁", label: "Captura de Leads (popup cupom)", urlSlug: "captura-leads" },
+  { addonKey: "compre_junto", rowKey: "addon:compre_junto", icon: "🛍️", label: "Compre Junto", urlSlug: "compre-junto" },
+  { addonKey: "perguntas_avaliacoes", rowKey: "addon:perguntas_avaliacoes", icon: "⭐", label: "Perguntas e Avaliações", urlSlug: "perguntas-avaliacoes" },
+];
+
+export const ADDON_ROW_KEYS = ADDON_HOMEPAGE_ITEMS.map((a) => a.rowKey);
+export const ADDON_ROW_KEY_TO_ITEM: Record<string, AddonHomepageItem> = Object.fromEntries(
+  ADDON_HOMEPAGE_ITEMS.map((a) => [a.rowKey, a]),
+);
+

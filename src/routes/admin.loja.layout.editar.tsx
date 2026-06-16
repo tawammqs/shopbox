@@ -14,13 +14,19 @@ import {
   setSectionConfigPatch,
   setSectionVisibilityPatch,
   setSectionsOrderPatch,
+  ADDON_HOMEPAGE_ITEMS,
+  ADDON_ROW_KEYS,
+  ADDON_ROW_KEY_TO_ITEM,
   type HomepageSectionKey,
+  type AddonHomepageItem,
 } from "@/lib/homepage-sections";
 import { SectionEditor } from "@/components/admin/layout-editor/HomepageSectionPanels";
 import {
   LegacySectionEditor,
   LEGACY_EDITABLE_SECTIONS,
 } from "@/components/admin/layout-editor/TheShoesLegacyEditor";
+import { useAllAddonStatus, useAddonConfig, saveAddonConfig, type AddonKey } from "@/lib/addons";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   fetchTheShoesSettings,
   upsertTheShoesSettings,
@@ -357,7 +363,7 @@ function Panel({ section, setSection, store, customizations, update, isLegacyThe
     case "header":
       return <><div className="p-4">{back()}</div><HeaderPanel customizations={customizations} update={update} /></>;
     case "homepage":
-      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} isLegacyTheShoes={isLegacyTheShoes} /></>;
+      return <><div className="p-4">{back()}</div><HomepagePanel customizations={customizations} update={update} setSection={setSection} isLegacyTheShoes={isLegacyTheShoes} store={store} /></>;
     case "product-list":
       return <><div className="p-4">{back()}</div><ProductListPanel customizations={customizations} update={update} /></>;
     case "product-detail":
@@ -724,13 +730,53 @@ function HeaderPanel({ customizations, update }: any) {
 }
 
 // ---------- Homepage ----------
-function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes }: any) {
-  const order = useMemo(
+function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes, store }: any) {
+  const navigate = useNavigate();
+  const addonStatusQ = useAllAddonStatus(store?.id);
+  const activeAddons = addonStatusQ.data ?? {};
+
+  // Combine regular sections with addon rows (active addons only),
+  // honoring sections_order positions for addon rows that have been placed.
+  const baseOrder = useMemo(
     () => (isLegacyTheShoes ? DEFAULT_SECTION_ORDER : getSectionsOrder(customizations)),
     [customizations, isLegacyTheShoes],
   );
 
-  const toggle = (key: HomepageSectionKey) => {
+  const combinedOrder = useMemo<string[]>(() => {
+    if (isLegacyTheShoes) return baseOrder;
+    const stored = (customizations?.homepage?.sections_order ?? []) as string[];
+    const result: string[] = [...baseOrder];
+    // Insert addon rows already present in stored order at their stored index
+    const addonsInStored = stored.filter((k) => ADDON_ROW_KEYS.includes(k));
+    for (const k of addonsInStored) {
+      if (!result.includes(k)) {
+        const idx = stored.indexOf(k);
+        // Insert at same position as in stored order if reasonable, else append
+        result.splice(Math.min(idx, result.length), 0, k);
+      }
+    }
+    // Append any active addons not yet in the order
+    for (const item of ADDON_HOMEPAGE_ITEMS) {
+      if (activeAddons[item.addonKey] && !result.includes(item.rowKey)) {
+        result.push(item.rowKey);
+      }
+    }
+    // Hide the regular "video" row — superseded by the video_commerce addon row
+    return result.filter((k) => {
+      if (k === "video") return false;
+      if (ADDON_ROW_KEYS.includes(k)) {
+        const item = ADDON_ROW_KEY_TO_ITEM[k];
+        return !!activeAddons[item.addonKey];
+      }
+      return true;
+    });
+  }, [baseOrder, customizations, activeAddons, isLegacyTheShoes]);
+
+  const persistOrder = (next: string[]) => {
+    update((prev: any) => ({ ...prev, ...setSectionsOrderPatch(prev, next as any) }));
+  };
+
+  const toggleSection = (key: HomepageSectionKey) => {
     if (isLegacyTheShoes) {
       toast.info("Visibilidade não é editável nesta loja (layout legado).");
       return;
@@ -745,10 +791,10 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes }:
       return;
     }
     const j = idx + dir;
-    if (j < 0 || j >= order.length) return;
-    const next = [...order];
+    if (j < 0 || j >= combinedOrder.length) return;
+    const next = [...combinedOrder];
     [next[idx], next[j]] = [next[j], next[idx]];
-    update((prev: any) => ({ ...prev, ...setSectionsOrderPatch(prev, next) }));
+    persistOrder(next);
   };
 
   const popup = customizations.homepage?.popup ?? {};
@@ -764,10 +810,25 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes }:
           : "Clique no nome de cada seção para configurar. Use o olho para mostrar/ocultar."}
       </p>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        {order.map((key, idx) => {
-          const visible = isSectionVisible(customizations, key);
-          const label = SECTION_LABELS[key] ?? key;
-          const legacyEditable = LEGACY_EDITABLE_SECTIONS.includes(key);
+        {combinedOrder.map((key, idx) => {
+          if (ADDON_ROW_KEYS.includes(key)) {
+            const item = ADDON_ROW_KEY_TO_ITEM[key];
+            return (
+              <AddonRow
+                key={key}
+                item={item}
+                storeId={store?.id}
+                isLegacyTheShoes={isLegacyTheShoes}
+                onMoveUp={() => move(idx, -1)}
+                onMoveDown={() => move(idx, 1)}
+                onNavigate={() => navigate({ to: `/admin/marketing/${item.urlSlug}` as any })}
+              />
+            );
+          }
+          const sectionKey = key as HomepageSectionKey;
+          const visible = isSectionVisible(customizations, sectionKey);
+          const label = SECTION_LABELS[sectionKey] ?? sectionKey;
+          const legacyEditable = LEGACY_EDITABLE_SECTIONS.includes(sectionKey);
           return (
             <div key={key} className="flex items-center gap-2 border-b border-gray-100 px-2 py-2 last:border-b-0">
               {!isLegacyTheShoes && (
@@ -777,13 +838,13 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes }:
                     <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
                   </div>
                   <GripVertical className="h-4 w-4 text-[#d1d5db]" />
-                  <button onClick={() => toggle(key)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
+                  <button onClick={() => toggleSection(sectionKey)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
                     {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
                   </button>
                 </>
               )}
               <button
-                onClick={() => setSection(`homepage:${key}`)}
+                onClick={() => setSection(`homepage:${sectionKey}`)}
                 className={cn(
                   "flex flex-1 items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm hover:bg-gray-50",
                   isLegacyTheShoes && !legacyEditable ? "text-[#9ca3af]" : visible ? "text-[#111827]" : "text-[#9ca3af]",
@@ -825,6 +886,72 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes }:
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function AddonRow({
+  item, storeId, isLegacyTheShoes, onMoveUp, onMoveDown, onNavigate,
+}: {
+  item: AddonHomepageItem;
+  storeId: string | undefined;
+  isLegacyTheShoes: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  onNavigate: () => void;
+}) {
+  const qc = useQueryClient();
+  const cfgQ = useAddonConfig<any>(storeId, item.addonKey as AddonKey);
+  const cfg = cfgQ.data ?? {};
+  // Default active=true when unset, so a freshly-purchased addon shows up.
+  const active = cfg.active !== false;
+  const [saving, setSaving] = useState(false);
+
+  const toggle = async () => {
+    if (!storeId || saving) return;
+    setSaving(true);
+    try {
+      const next = { ...cfg, active: !active };
+      await saveAddonConfig(storeId, item.addonKey as AddonKey, next);
+      qc.setQueryData(["store_addon_config", storeId, item.addonKey], next);
+      qc.invalidateQueries({ queryKey: ["store_addon_config", storeId, item.addonKey] });
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao atualizar addon");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2 border-b border-gray-100 px-2 py-2 last:border-b-0">
+      {!isLegacyTheShoes && (
+        <>
+          <div className="flex flex-col">
+            <button onClick={onMoveUp} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
+            <button onClick={onMoveDown} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
+          </div>
+          <GripVertical className="h-4 w-4 text-[#d1d5db]" />
+          <button onClick={toggle} className="shrink-0" aria-label={active ? "Ocultar" : "Mostrar"} disabled={saving}>
+            {active ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
+          </button>
+        </>
+      )}
+      <button
+        onClick={onNavigate}
+        className={cn(
+          "flex flex-1 items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm hover:bg-gray-50",
+          active ? "text-[#111827]" : "text-[#9ca3af]",
+        )}
+      >
+        <div className="min-w-0 flex-1">
+          <p className="flex items-center gap-1.5 truncate">
+            <span aria-hidden>{item.icon}</span>
+            <span className="truncate">{item.label}</span>
+          </p>
+          <p className="mt-0.5 text-[11px] text-[#9ca3af]">Configurado em Marketing</p>
+        </div>
+        <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[#9ca3af]" />
+      </button>
     </div>
   );
 }
