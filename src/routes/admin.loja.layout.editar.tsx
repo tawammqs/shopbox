@@ -135,11 +135,15 @@ function EditorPage() {
   const [device, setDevice] = useState<"mobile" | "desktop">("desktop");
   const [section, setSection] = useState<string>("root");
   const [customizations, setCustomizations] = useState<Customizations>({});
+  const [legacySettings, setLegacySettings] = useState<TheShoesSettings | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [legacyDirty, setLegacyDirty] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const isLegacyTheShoes = store?.slug === "the-shoes";
 
   // load existing
   useEffect(() => {
@@ -151,9 +155,17 @@ function EditorPage() {
         .eq("store_id", store.id)
         .maybeSingle();
       setCustomizations(((data?.customizations as any) ?? {}) as Customizations);
+      if (store.slug === "the-shoes") {
+        try {
+          const s = await fetchTheShoesSettings(store.id);
+          setLegacySettings(s);
+        } catch {
+          setLegacySettings(DEFAULT_THE_SHOES_SETTINGS);
+        }
+      }
       setLoaded(true);
     })();
-  }, [store?.id]);
+  }, [store?.id, store?.slug]);
 
   const update = (patch: Partial<Customizations> | ((c: Customizations) => Customizations)) => {
     setCustomizations((prev) => {
@@ -163,19 +175,30 @@ function EditorPage() {
     setDirty(true);
   };
 
+  const updateLegacy = (patch: Partial<TheShoesSettings>) => {
+    setLegacySettings((prev) => ({ ...(prev ?? DEFAULT_THE_SHOES_SETTINGS), ...patch }));
+    setLegacyDirty(true);
+  };
+
   const save = async () => {
     if (!store?.id) return;
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("store_theme_settings")
-        .upsert(
-          { store_id: store.id, customizations: customizations as any },
-          { onConflict: "store_id" },
-        );
-      if (error) throw error;
+      if (dirty) {
+        const { error } = await supabase
+          .from("store_theme_settings")
+          .upsert(
+            { store_id: store.id, customizations: customizations as any },
+            { onConflict: "store_id" },
+          );
+        if (error) throw error;
+      }
+      if (legacyDirty && legacySettings) {
+        await upsertTheShoesSettings(store.id, legacySettings);
+      }
       toast.success("Alterações publicadas");
       setDirty(false);
+      setLegacyDirty(false);
       setReloadKey((k) => k + 1);
     } catch (e: any) {
       toast.error(e.message ?? "Erro ao salvar");
@@ -187,6 +210,8 @@ function EditorPage() {
   if (!loaded) {
     return <div className="flex h-screen items-center justify-center text-sm text-[#6b7280]">Carregando editor…</div>;
   }
+
+  const canSave = dirty || legacyDirty;
 
   return (
     <div className="fixed inset-0 flex flex-col bg-white">
@@ -244,12 +269,15 @@ function EditorPage() {
               store={store}
               customizations={customizations}
               update={update}
+              isLegacyTheShoes={isLegacyTheShoes}
+              legacySettings={legacySettings}
+              updateLegacy={updateLegacy}
             />
           </div>
           <div className="border-t border-gray-200 p-3">
             <button
               onClick={save}
-              disabled={saving || !dirty}
+              disabled={saving || !canSave}
               className="h-11 w-full rounded-lg bg-[#25d366] text-sm font-bold text-white hover:bg-[#1fb959] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving ? "Publicando…" : "Publicar alterações"}
