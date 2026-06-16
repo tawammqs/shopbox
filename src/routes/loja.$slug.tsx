@@ -25,6 +25,7 @@ import { TheShoesGlobalStyles } from "@/components/storefront/the-shoes/TheShoes
 import { Button } from "@/components/ui/button";
 import { VisitTracker } from "@/components/storefront/VisitTracker";
 import { StorefrontCustomizer } from "@/components/storefront/StorefrontCustomizer";
+import { MioVipTab, MioCouponTab } from "@/components/storefront/MioAddonOverlays";
 
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
@@ -140,7 +141,9 @@ function StorefrontLayout() {
         </main>
         {isTheShoes ? <TheShoesFooter /> : <StorefrontFooter />}
         {isTheShoes ? <TheShoesCartDrawer /> : <CartDrawer />}
-        {isTheShoes && <TheShoesCouponTab />}
+        {isLegacyTheShoes && <TheShoesCouponTab />}
+        {isTheShoes && !isLegacyTheShoes && <MioVipTab />}
+        {isTheShoes && !isLegacyTheShoes && <MioCouponTab />}
         {isTheShoes && <TheShoesGlobalStyles />}
         <WelcomePopup />
         <MarketingScripts pixelId={store.facebook_pixel_id} gaId={store.google_analytics_id} />
