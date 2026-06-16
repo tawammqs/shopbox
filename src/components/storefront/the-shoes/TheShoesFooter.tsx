@@ -4,16 +4,26 @@ import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useStorefront } from "../StoreContext";
+import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 
 export function TheShoesFooter() {
-  const { store } = useStorefront();
+  const { store, menus, contactInfo } = useStorefront();
+  const isLegacyTheShoes = store.slug === "the-shoes";
+
+  // Legacy The Shoes: data comes from the_shoes_theme_settings.
   const settingsQ = useQuery({
     queryKey: ["the-shoes-settings", store.id],
     queryFn: () => fetchTheShoesSettings(store.id),
     staleTime: 30_000,
+    enabled: isLegacyTheShoes,
   });
   const s = settingsQ.data;
+
+  // Other Mio stores: read editable config from customizations.footer.
+  const custQ = useStorefrontCustomizations(store.id);
+  const fcfg = custQ.data?.footer ?? {};
+
   const [email, setEmail] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -38,19 +48,64 @@ export function TheShoesFooter() {
     }
   };
 
-  const marqueeText = s?.footer_marquee_text || "The Shoes · Os tênis mais desejados · ";
-  const links = s?.footer_links?.length ? s.footer_links : [
-    { label: "Quem somos", url: "/sobre" },
-    { label: "Políticas de troca", url: "/politicas" },
-    { label: "Contato", url: "/contato" },
-    { label: "WhatsApp", url: `https://wa.me/${store.whatsapp}` },
-  ];
-  const about = s?.footer_about || "A loja com os tênis mais desejados na internet.";
+  // Resolve content depending on legacy vs custom store.
+  const marqueeText = isLegacyTheShoes
+    ? (s?.footer_marquee_text || `${store.name} · `)
+    : `${store.name} · `;
+  const about = isLegacyTheShoes
+    ? (s?.footer_about || store.tagline || "")
+    : (contactInfo?.contact_text || store.tagline || "");
+
+  // Links: legacy uses settings.footer_links; custom uses editor-picked menus (fallback to store menus).
+  type Lnk = { label: string; url: string };
+  const legacyLinks: Lnk[] = s?.footer_links?.length
+    ? s.footer_links
+    : [
+        { label: "Quem somos", url: "/sobre" },
+        { label: "Políticas de troca", url: "/politicas" },
+        { label: "Contato", url: "/contato" },
+        { label: "WhatsApp", url: `https://wa.me/${store.whatsapp}` },
+      ];
+
+  let customLinks: Lnk[] = [];
+  if (!isLegacyTheShoes) {
+    const picked: { name: string; items: { label: string; url: string | null }[] }[] = [];
+    if (fcfg.primaryMenuEnabled && fcfg.primaryMenuId) {
+      const m = menus.find((x) => x.id === fcfg.primaryMenuId);
+      if (m) picked.push(m);
+    }
+    if (fcfg.secondaryMenuEnabled && fcfg.secondaryMenuId) {
+      const m = menus.find((x) => x.id === fcfg.secondaryMenuId);
+      if (m) picked.push(m);
+    }
+    const base = picked.length ? picked : menus.slice(0, 2);
+    customLinks = base.flatMap((m) =>
+      m.items.map((it) => ({ label: it.label, url: it.url ?? "#" })),
+    );
+    if (customLinks.length === 0) {
+      const phone = (fcfg.showContact && fcfg.phone) || contactInfo?.phone;
+      const mail = (fcfg.showContact && fcfg.email) || contactInfo?.store_email;
+      customLinks = [
+        { label: "Início", url: `/loja/${store.slug}` },
+        { label: "WhatsApp", url: `https://wa.me/${store.whatsapp.replace(/\D/g, "")}` },
+        ...(phone ? [{ label: phone, url: `tel:${phone}` }] : []),
+        ...(mail ? [{ label: mail, url: `mailto:${mail}` }] : []),
+      ];
+    }
+  }
+  const links: Lnk[] = isLegacyTheShoes ? legacyLinks : customLinks;
+
+  // Colors: legacy fixed lime; custom honors fcfg.useCustomColors.
+  const useCustom = !isLegacyTheShoes && fcfg.useCustomColors;
+  const bg = isLegacyTheShoes ? "#d9f523" : (useCustom ? (fcfg.bg || "#111111") : "#d9f523");
+  const txt = isLegacyTheShoes ? "#111" : (useCustom ? (fcfg.text || "#ffffff") : "#111");
+  // For light bg (legacy/lime), keep current style with dark accents; for dark custom bg, invert.
+  const isDarkBg = useCustom && (fcfg.bg ?? "").toLowerCase() !== "#ffffff" && (fcfg.bg ?? "").toLowerCase() !== "#fff";
 
   return (
-    <footer className="ts-footer" style={{ background: "#d9f523" }}>
+    <footer className="ts-footer" style={{ background: bg, color: txt }}>
       <div className="ts-footer-marquee">
-        <div className="ts-footer-marquee-track">
+        <div className="ts-footer-marquee-track" style={{ WebkitTextStroke: `1.5px ${isDarkBg ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.25)"}` }}>
           {Array.from({ length: 6 }).map((_, i) => (
             <span key={i}>{marqueeText}</span>
           ))}
@@ -59,21 +114,27 @@ export function TheShoesFooter() {
       <div className="ts-footer-inner">
         <div className="ts-footer-grid">
           <div>
-            <h4 className="ts-footer-title">Links úteis</h4>
+            <h4 className="ts-footer-title" style={{ color: txt }}>Links úteis</h4>
             <ul className="flex flex-col gap-3">
               {links.map((l, i) => (
                 <li key={i}>
-                  <a href={l.url} className="ts-footer-link">{l.label}</a>
+                  <a href={l.url} className="ts-footer-link" style={{ color: txt, opacity: 0.75 }}>{l.label}</a>
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <h4 className="ts-footer-title">Sobre a {store.name}</h4>
-            <p className="ts-footer-text">{about}</p>
+            <h4 className="ts-footer-title" style={{ color: txt }}>Sobre a {store.name}</h4>
+            <p className="ts-footer-text" style={{ color: txt, opacity: 0.75 }}>{about}</p>
+            {!isLegacyTheShoes && fcfg.showContact && (
+              <div className="mt-3 space-y-1 text-[14px]" style={{ color: txt, opacity: 0.85 }}>
+                {fcfg.phone && <p>📱 {fcfg.phone}</p>}
+                {fcfg.email && <p>✉ <a href={`mailto:${fcfg.email}`} style={{ color: txt, textDecoration: "underline" }}>{fcfg.email}</a></p>}
+              </div>
+            )}
           </div>
           <div>
-            <h4 className="ts-footer-news-title">Só novidades, sem spam :)</h4>
+            <h4 className="ts-footer-news-title" style={{ color: txt }}>Só novidades, sem spam :)</h4>
             <form onSubmit={submit} className="relative">
               <input
                 type="email"
@@ -81,6 +142,7 @@ export function TheShoesFooter() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="E-mail"
                 className="ts-footer-input"
+                style={isDarkBg ? { background: "rgba(255,255,255,0.1)", color: txt } : undefined}
               />
               <button type="submit" disabled={saving} aria-label="Inscrever"
                 className="ts-footer-submit">
@@ -89,13 +151,14 @@ export function TheShoesFooter() {
             </form>
           </div>
         </div>
-        <div className="ts-footer-bottom">
-          © 2026, {store.name} | Os tênis mais desejados da internet. Site feito com a{" "}
+        <div className="ts-footer-bottom" style={{ color: txt, opacity: 0.65, borderColor: isDarkBg ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)" }}>
+          © {new Date().getFullYear()}, {contactInfo?.company_name || store.name}
+          {contactInfo?.tax_id ? ` — CNPJ ${contactInfo.tax_id}` : ""}
+          {" "}| Site feito com a{" "}
           <a href="https://shopboxapp.com.br" target="_blank" rel="noreferrer"
-            style={{ color: "#111", fontWeight: 700, textDecoration: "underline" }}>
+            style={{ color: txt, fontWeight: 700, textDecoration: "underline" }}>
             ShopBox
-          </a>{" "}
-          - Seu e-commerce nativo para WhatsApp.
+          </a>.
         </div>
       </div>
       <style>{`

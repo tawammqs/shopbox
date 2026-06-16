@@ -53,6 +53,8 @@ import {
   BannersCategoriasRender,
   InstagramRender,
   FaqRender,
+  DepoimentosRender,
+  VideoSectionRender,
 } from "./HomepageSectionRenderers";
 
 export function TheShoesHomepage() {
@@ -106,6 +108,10 @@ function SectionSwitch({ sectionKey, cust }: { sectionKey: HomepageSectionKey; c
       return <InstagramRender cfg={cfg} />;
     case "faq":
       return <FaqRender cfg={cfg} />;
+    case "depoimentos":
+      return <DepoimentosRender cfg={cfg} />;
+    case "video":
+      return <VideoSectionRender cfg={cfg} />;
     default:
       return null;
   }
