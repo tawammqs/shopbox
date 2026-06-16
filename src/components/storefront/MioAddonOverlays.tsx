@@ -1,10 +1,19 @@
 /**
- * Overlays para lojas com tema Mio (não-legacy The Shoes):
- *  - MioVipTab: tab lateral "Ofertas Secretas" + popup de captura de WhatsApp.
- *    Lê de store_addon_configs(grupo_vip) — só renderiza se addon ativo
- *    e config.active !== false.
- *  - MioCouponTab: popup de cupom da seção Captura de Leads.
- *    Lê de store_addon_configs(captura_leads). Cores configuráveis pelo lojista.
+ * Overlays e seções para lojas com tema Mio (não-legacy The Shoes):
+ *
+ *  GRUPO VIP (addon_key = "grupo_vip")
+ *   - É uma SEÇÃO inline na homepage (não tab/fab fixa) — renderizada via
+ *     <MioVipSection /> a partir de sections_order ("addon:grupo_vip").
+ *   - Também aparece como item no menu de navegação (<MioVipMenuLink />),
+ *     que abre o mesmo popup de captura de WhatsApp.
+ *   - <MioVipPopupHost /> é montado globalmente no layout para servir como
+ *     dono do modal compartilhado entre a seção e o item de menu (via
+ *     CustomEvent "mio:open-vip-popup").
+ *
+ *  CAPTURA DE LEADS (addon_key = "captura_leads")
+ *   - É um BOTÃO FIXO lateral (desktop) / ícone presente (mobile),
+ *     sempre visível enquanto o addon estiver ativo. NÃO abre sozinho:
+ *     o popup só aparece quando o usuário clica no botão.
  *
  * Layout/comportamento são FIXOS do tema; só conteúdo e cores variam por loja.
  */
@@ -13,6 +22,8 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useStorefront, useIsMioTheme } from "./StoreContext";
+
+const VIP_POPUP_EVENT = "mio:open-vip-popup";
 
 function formatWhatsapp(raw: string): string {
   const d = raw.replace(/\D/g, "").slice(0, 11);
@@ -55,14 +66,13 @@ type GrupoVipCfg = {
   icon_color?: string;
 };
 
-export function MioVipTab() {
+export function useMioVipConfig() {
   const { store } = useStorefront();
   const isMio = useIsMioTheme();
-  const isLegacyTheShoes = store.slug === "the-shoes";
-
-  const q = useQuery({
-    queryKey: ["mio-vip-tab", store.id],
-    enabled: isMio && !isLegacyTheShoes,
+  const isLegacy = store.slug === "the-shoes";
+  return useQuery({
+    queryKey: ["mio-vip-cfg", store.id],
+    enabled: isMio && !isLegacy,
     queryFn: async () => {
       const [statusRes, cfgRes] = await Promise.all([
         supabase.from("store_addons").select("status").eq("store_id", store.id).eq("addon_key", "grupo_vip").maybeSingle(),
@@ -70,15 +80,97 @@ export function MioVipTab() {
       ]);
       const active = (statusRes.data as any)?.status === "active";
       const cfg = ((cfgRes.data as any)?.config ?? {}) as GrupoVipCfg;
-      return { active, cfg };
+      const enabled = active && cfg.active !== false && !!cfg.whatsapp_group_link;
+      return { enabled, cfg };
     },
     staleTime: 30_000,
   });
+}
 
+function openVipPopup() {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(VIP_POPUP_EVENT));
+}
+
+/** Botão de menu (header drawer) — abre o popup de captura. */
+export function MioVipMenuLink({ onNavigate }: { onNavigate?: () => void }) {
+  const q = useMioVipConfig();
+  if (!q.data?.enabled) return null;
+  const cfg = q.data.cfg;
+  const bg = cfg.background_color || "#111111";
+  const fg = cfg.icon_color || "#ffffff";
+  const title = cfg.section_title || "Ofertas Secretas";
+  return (
+    <button
+      type="button"
+      onClick={() => { openVipPopup(); onNavigate?.(); }}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 8,
+        background: bg, color: fg,
+        borderRadius: 9999, padding: "10px 20px", marginTop: 16,
+        fontFamily: "inherit", fontSize: 15, fontWeight: 700,
+        border: "none", cursor: "pointer",
+      }}
+    >
+      <LockIcon color={fg} size={16} />
+      {title}
+    </button>
+  );
+}
+
+/** Seção inline da homepage — equivalente ao "Achadinhos / Ofertas Secretas" da The Shoes. */
+export function MioVipSection() {
+  const q = useMioVipConfig();
+  if (!q.data?.enabled) return null;
+  const cfg = q.data.cfg;
+  const bg = cfg.background_color || "#111111";
+  const iconColor = cfg.icon_color || "#ffffff";
+  const title = cfg.section_title || "Ofertas Secretas";
+  const description = cfg.description || "Digite seu WhatsApp e tenha acesso às ofertas exclusivas.";
+  const buttonText = cfg.button_text || "Desbloquear e ver ofertas";
+
+  return (
+    <section style={{ position: "relative", padding: "48px 20px", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, background: "#f3f3f3", zIndex: 0 }} />
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 440, margin: "0 auto" }}>
+        <div style={{
+          background: "#fff", borderRadius: 18, padding: "36px 28px",
+          textAlign: "center", boxShadow: "0 8px 28px rgba(0,0,0,0.08)",
+        }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: bg, display: "grid", placeItems: "center", margin: "0 auto 14px" }}>
+            <LockIcon color={iconColor} size={26} />
+          </div>
+          <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
+          <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 22 }}>{description}</p>
+          <button
+            type="button"
+            onClick={openVipPopup}
+            style={{
+              width: "100%", height: 50, background: bg, color: iconColor,
+              border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700, cursor: "pointer",
+            }}
+          >
+            {buttonText}
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Popup global compartilhado — montado uma única vez no layout. */
+export function MioVipPopupHost() {
+  const { store } = useStorefront();
+  const q = useMioVipConfig();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [invalid, setInvalid] = useState(false);
+
+  useEffect(() => {
+    const h = () => setOpen(true);
+    window.addEventListener(VIP_POPUP_EVENT, h);
+    return () => window.removeEventListener(VIP_POPUP_EVENT, h);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -87,12 +179,8 @@ export function MioVipTab() {
     return () => { document.body.style.overflow = prev; };
   }, [open]);
 
-  if (!isMio || isLegacyTheShoes) return null;
-  if (!q.data?.active) return null;
+  if (!q.data?.enabled || !open) return null;
   const cfg = q.data.cfg;
-  if (cfg.active === false) return null;
-  if (!cfg.whatsapp_group_link) return null;
-
   const bg = cfg.background_color || "#111111";
   const iconColor = cfg.icon_color || "#ffffff";
   const title = cfg.section_title || "Ofertas Secretas";
@@ -105,10 +193,10 @@ export function MioVipTab() {
     setSubmitting(true);
     try {
       await supabase.from("vip_group_leads" as any).insert({
-        store_id: store.id, whatsapp: digits, source: "mio_vip_tab",
+        store_id: store.id, whatsapp: digits, source: "mio_vip_section",
       });
       toast.success("Redirecionando para o grupo VIP! 🎉");
-      window.open(cfg.whatsapp_group_link, "_blank", "noopener,noreferrer");
+      window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
       setValue("");
       setOpen(false);
     } catch {
@@ -119,92 +207,48 @@ export function MioVipTab() {
   };
 
   return (
-    <>
-      <button
-        type="button"
-        aria-label={title}
-        onClick={() => setOpen(true)}
-        className="mio-vip-tab"
-        style={{ background: bg, color: iconColor }}
+    <div
+      onClick={() => setOpen(false)}
+      style={{
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+        zIndex: 1000, display: "flex", alignItems: "center",
+        justifyContent: "center", padding: 20,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "#fff", borderRadius: 16, padding: "36px 28px",
+          maxWidth: 420, width: "100%", textAlign: "center", position: "relative",
+        }}
       >
-        {title}
-      </button>
-      <button
-        type="button"
-        aria-label={title}
-        onClick={() => setOpen(true)}
-        className="mio-vip-fab"
-        style={{ background: bg, color: iconColor }}
-      >
-        <LockIcon color={iconColor} size={22} />
-      </button>
-
-      {open && (
-        <div
-          onClick={() => setOpen(false)}
-          style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
-            zIndex: 1000, display: "flex", alignItems: "center",
-            justifyContent: "center", padding: 20,
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "#fff", borderRadius: 16, padding: "36px 28px",
-              maxWidth: 420, width: "100%", textAlign: "center", position: "relative",
-            }}
-          >
-            <button onClick={() => setOpen(false)} aria-label="Fechar"
-              style={{ position: "absolute", top: 12, right: 16, background: "none", border: "none", fontSize: 22, color: "#aaa", cursor: "pointer" }}>×</button>
-            <div style={{ width: 64, height: 64, borderRadius: "50%", background: bg, display: "grid", placeItems: "center", margin: "0 auto 16px" }}>
-              <LockIcon color={iconColor} size={28} />
-            </div>
-            <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
-            <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{description}</p>
-            <input
-              type="tel" inputMode="numeric" value={value}
-              onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
-              placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD) XXXXX-XXXX"}
-              style={{
-                width: "100%", height: 50, border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
-                borderRadius: 10, padding: "0 16px", fontSize: 16, color: "#111",
-                textAlign: "center", marginBottom: 12, outline: "none", boxSizing: "border-box",
-              }}
-            />
-            <button type="button" onClick={onSubmit} disabled={submitting}
-              style={{
-                width: "100%", height: 50, background: bg, color: iconColor,
-                border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700,
-                cursor: "pointer", opacity: submitting ? 0.7 : 1,
-              }}>
-              {submitting ? "Enviando…" : buttonText}
-            </button>
-          </div>
+        <button onClick={() => setOpen(false)} aria-label="Fechar"
+          style={{ position: "absolute", top: 12, right: 16, background: "none", border: "none", fontSize: 22, color: "#aaa", cursor: "pointer" }}>×</button>
+        <div style={{ width: 64, height: 64, borderRadius: "50%", background: bg, display: "grid", placeItems: "center", margin: "0 auto 16px" }}>
+          <LockIcon color={iconColor} size={28} />
         </div>
-      )}
-
-      <style>{`
-        .mio-vip-tab {
-          position: fixed; left: 0; top: 50%;
-          transform: translateY(-50%) rotate(180deg);
-          z-index: 999; writing-mode: vertical-rl; text-orientation: mixed;
-          padding: 16px 10px; border: none; border-radius: 0 8px 8px 0;
-          font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
-          cursor: pointer; box-shadow: 2px 0 12px rgba(0,0,0,0.15);
-        }
-        .mio-vip-fab {
-          display: none; position: fixed; left: 20px; bottom: 92px;
-          width: 52px; height: 52px; border-radius: 50%;
-          border: none; align-items: center; justify-content: center;
-          z-index: 999; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-        @media (max-width: 767px) {
-          .mio-vip-tab { display: none; }
-          .mio-vip-fab { display: flex; }
-        }
-      `}</style>
-    </>
+        <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
+        <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{description}</p>
+        <input
+          type="tel" inputMode="numeric" value={value}
+          onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
+          placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD) XXXXX-XXXX"}
+          style={{
+            width: "100%", height: 50, border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
+            borderRadius: 10, padding: "0 16px", fontSize: 16, color: "#111",
+            textAlign: "center", marginBottom: 12, outline: "none", boxSizing: "border-box",
+          }}
+        />
+        <button type="button" onClick={onSubmit} disabled={submitting}
+          style={{
+            width: "100%", height: 50, background: bg, color: iconColor,
+            border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700,
+            cursor: "pointer", opacity: submitting ? 0.7 : 1,
+          }}>
+          {submitting ? "Enviando…" : buttonText}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -215,13 +259,12 @@ type CapturaLeadsCfg = {
   title?: string;
   description?: string;
   ask_birthday?: boolean;
-  delay_seconds?: number;
   button_color?: string;
   icon_color?: string;
+  tab_text?: string;
 };
 
 const STORAGE_SUBMITTED = "mio_coupon_submitted";
-const STORAGE_DISMISSED = "mio_coupon_dismissed";
 
 export function MioCouponTab() {
   const { store } = useStorefront();
@@ -270,10 +313,11 @@ export function MioCouponTab() {
   if (cfg.active === false) return null;
 
   const btnColor = cfg.button_color || "#111111";
-  const iconColor = cfg.icon_color || "#111111";
+  const iconColor = cfg.icon_color || "#ffffff";
   const title = cfg.title || `${cfg.discount_percent ?? 5}% OFF na primeira compra!`;
   const description = cfg.description || "Cadastre-se e ganhe desconto na sua primeira compra.";
   const couponCode = cfg.coupon_code || "BEMVINDO";
+  const tabText = cfg.tab_text || `${cfg.discount_percent ?? 5}% OFF — Primeira compra`;
 
   const validate = () => {
     const e: Record<string, boolean> = {};
@@ -304,6 +348,17 @@ export function MioCouponTab() {
 
   return (
     <>
+      {/* Desktop: side tab (sticky vertical). */}
+      <button
+        type="button" aria-label="Cupom de boas-vindas"
+        onClick={() => setOpen(true)}
+        className="mio-coupon-tab"
+        style={{ background: btnColor, color: iconColor }}
+      >
+        {tabText}
+      </button>
+
+      {/* Mobile: floating gift icon. */}
       <button
         type="button" aria-label="Cupom de boas-vindas"
         onClick={() => setOpen(true)}
@@ -373,11 +428,25 @@ export function MioCouponTab() {
       )}
 
       <style>{`
+        .mio-coupon-tab {
+          position: fixed; left: 0; top: 50%;
+          transform: translateY(-50%) rotate(180deg);
+          z-index: 999; writing-mode: vertical-rl; text-orientation: mixed;
+          padding: 16px 10px; border: none; border-radius: 0 8px 8px 0;
+          font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+          cursor: pointer; box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+          transition: filter 0.2s;
+        }
+        .mio-coupon-tab:hover { filter: brightness(1.15); }
         .mio-coupon-fab {
-          position: fixed; left: 20px; bottom: 24px;
+          display: none; position: fixed; left: 20px; bottom: 24px;
           width: 52px; height: 52px; border-radius: 50%;
-          border: none; display: flex; align-items: center; justify-content: center;
+          border: none; align-items: center; justify-content: center;
           z-index: 998; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+        }
+        @media (max-width: 767px) {
+          .mio-coupon-tab { display: none; }
+          .mio-coupon-fab { display: flex; }
         }
       `}</style>
     </>
