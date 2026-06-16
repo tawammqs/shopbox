@@ -431,6 +431,22 @@ function DepPill({ t, txt }: { t: { name: string; text: string; rating?: number;
 // ============== 12. Vídeo (carrossel da home, gerenciado em Video Commerce) ==============
 export function VideoSectionRender({ cfg }: { cfg: VideoSectionCfg }) {
   const { store } = useStorefront();
+  // Gate on video_commerce addon: hidden when addon inactive or its
+  // config.active was toggled off in the layout editor.
+  const addonGateQ = useQuery({
+    queryKey: ["mio-home-videos-gate", store.id],
+    queryFn: async () => {
+      const [statusRes, cfgRes] = await Promise.all([
+        supabase.from("store_addons").select("status").eq("store_id", store.id).eq("addon_key", "video_commerce").maybeSingle(),
+        supabase.from("store_addon_configs").select("config").eq("store_id", store.id).eq("addon_key", "video_commerce").maybeSingle(),
+      ]);
+      const status = (statusRes.data as any)?.status as string | undefined;
+      const config = ((cfgRes.data as any)?.config ?? {}) as { active?: boolean };
+      return { addonActive: status === "active", visible: config.active !== false };
+    },
+    staleTime: 30_000,
+  });
+  const gate = addonGateQ.data;
   const videosQ = useQuery({
     queryKey: ["mio-home-videos", store.id],
     queryFn: async () => {
@@ -443,6 +459,7 @@ export function VideoSectionRender({ cfg }: { cfg: VideoSectionCfg }) {
       return data ?? [];
     },
     staleTime: 60_000,
+    enabled: gate?.addonActive === true && gate?.visible === true,
   });
   const videos = videosQ.data ?? [];
   const productIds = videos.map((v) => v.product_id).filter(Boolean) as string[];
