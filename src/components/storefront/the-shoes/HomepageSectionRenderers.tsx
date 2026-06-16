@@ -110,16 +110,18 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
   );
 }
 
-// ============== 1. Banners rotativos ==============
+// ============== 1. Banners rotativos (numbered indicators) ==============
 export function BannersRotativosRender({ cfg }: { cfg: BannerRotativoCfg }) {
   const items = (cfg.items ?? []).filter((b) => b.desktop_url || b.mobile_url);
-  const autoplay = useRef(cfg.autoplay !== false ? Autoplay({ delay: (cfg.interval_seconds ?? 5) * 1000, stopOnInteraction: false }) : null);
+  const interval = cfg.interval_seconds ?? 5;
+  const autoplay = useRef(cfg.autoplay !== false ? Autoplay({ delay: interval * 1000, stopOnInteraction: false }) : null);
   const plugins = autoplay.current ? [autoplay.current] : [];
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, plugins);
   const [selected, setSelected] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
   useEffect(() => {
     if (!emblaApi) return;
-    const onSel = () => setSelected(emblaApi.selectedScrollSnap());
+    const onSel = () => { setSelected(emblaApi.selectedScrollSnap()); setAnimKey((k) => k + 1); };
     emblaApi.on("select", onSel); onSel();
     return () => { emblaApi.off("select", onSel); };
   }, [emblaApi]);
@@ -153,10 +155,23 @@ export function BannersRotativosRender({ cfg }: { cfg: BannerRotativoCfg }) {
         <>
           <button aria-label="Anterior" onClick={() => emblaApi?.scrollPrev()} className="absolute left-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 hover:bg-white"><ChevronLeft className="h-5 w-5" /></button>
           <button aria-label="Próximo" onClick={() => emblaApi?.scrollNext()} className="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full bg-white/80 hover:bg-white"><ChevronRight className="h-5 w-5" /></button>
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
-            {items.map((_, i) => (
-              <button key={i} aria-label={`Banner ${i + 1}`} onClick={() => emblaApi?.scrollTo(i)} className={cn("h-1.5 w-6 rounded-full transition", i === selected ? "bg-white" : "bg-white/50")} />
-            ))}
+          <div className="ts-banner-indicators">
+            {items.map((_, i) => {
+              const state = i === selected ? "active" : i < selected ? "past" : "future";
+              return (
+                <button key={i} aria-label={`Banner ${i + 1}`}
+                  onClick={() => { emblaApi?.scrollTo(i); setAnimKey((k) => k + 1); }}
+                  className="ts-banner-ind">
+                  <span className={cn("ts-banner-ind-num", state === "active" && "active")}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="ts-banner-ind-bar">
+                    <span key={state === "active" ? animKey : `s-${state}`}
+                      className={cn("ts-banner-ind-fill", state)} />
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </>
       )}
@@ -165,6 +180,39 @@ export function BannersRotativosRender({ cfg }: { cfg: BannerRotativoCfg }) {
 }
 
 // ============== 2/3. Produtos por tag ==============
+function ProductsGrid({ products }: { products: ProductCardData[] }) {
+  return (
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+      {products.map((p) => <ProductCardMio key={p.id} p={p} />)}
+    </div>
+  );
+}
+
+function ProductsCarousel({ products }: { products: ProductCardData[] }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true });
+  return (
+    <>
+      <div className="mb-3 hidden justify-end gap-2 md:flex">
+        <button onClick={() => emblaApi?.scrollPrev()} aria-label="Anterior" className="ts-circle-btn">
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <button onClick={() => emblaApi?.scrollNext()} aria-label="Próximo" className="ts-circle-btn">
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="ts-carousel">
+          {products.map((p) => (
+            <div key={p.id} className="ts-carousel-item">
+              <ProductCardMio p={p} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function ProductsByTagRender({ cfg, defaultTag }: { cfg: ProductsTagCfg; defaultTag: string }) {
   const { store } = useStorefront();
   const tag = cfg.tag || defaultTag;
@@ -174,8 +222,9 @@ export function ProductsByTagRender({ cfg, defaultTag }: { cfg: ProductsTagCfg; 
     queryFn: () => fetchProductsByTag(store.id, tag, limit),
     staleTime: 60_000,
   });
-  const products = q.data ?? [];
+  const products = (q.data ?? []) as ProductCardData[];
   if (products.length === 0) return null;
+  const mode = cfg.display_mode ?? "carousel";
   return (
     <section className="ts-section">
       <div className="ts-section-head">
@@ -184,9 +233,7 @@ export function ProductsByTagRender({ cfg, defaultTag }: { cfg: ProductsTagCfg; 
           <Link to="/loja/$slug" params={{ slug: store.slug }} className="text-sm font-medium text-[#666] hover:text-[#111]">Ver mais →</Link>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-        {products.map((p) => <ProductCardMio key={p.id} p={p as ProductCardData} />)}
-      </div>
+      {mode === "carousel" ? <ProductsCarousel products={products} /> : <ProductsGrid products={products} />}
     </section>
   );
 }
@@ -231,14 +278,13 @@ export function ProductsByCategoryRender({ cfg }: { cfg: ProductsCategoryCfg }) 
   });
   const products = q.data ?? [];
   if (products.length === 0) return null;
+  const mode = cfg.display_mode ?? "carousel";
   return (
     <section className="ts-section">
       <div className="ts-section-head">
         <h2 className="ts-section-title">{cfg.title || "Lançamentos"}</h2>
       </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-        {products.map((p) => <ProductCardMio key={p.id} p={p} />)}
-      </div>
+      {mode === "carousel" ? <ProductsCarousel products={products} /> : <ProductsGrid products={products} />}
     </section>
   );
 }
@@ -268,25 +314,34 @@ export function MarqueeRender({ cfg }: { cfg: MarqueeCfg }) {
   );
 }
 
-// ============== 7. Frete / pagamento ==============
+// ============== 7. Frete / pagamento (carousel mobile + desktop) ==============
 export function FretePagamentoRender({ cfg }: { cfg: FretePagamentoCfg }) {
   const items = (cfg.items ?? []).filter((it) => it.title);
+  const autoplay = useRef(Autoplay({ delay: 3500, stopOnInteraction: false, stopOnMouseEnter: true }));
+  const [emblaRef] = useEmblaCarousel(
+    { align: "start", loop: items.length > 2, dragFree: false, containScroll: "trimSnaps" },
+    items.length > 2 ? [autoplay.current] : [],
+  );
   if (items.length === 0) return null;
   return (
     <section className="py-10 px-4" style={{ background: cfg.background }}>
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 md:grid-cols-4">
-        {items.map((it, i) => {
-          const Icon = ICON_MAP[it.icon] || Truck;
-          return (
-            <div key={i} className="flex flex-col items-center text-center">
-              <div className="mb-3 grid h-14 w-14 place-items-center rounded-full" style={{ background: cfg.icon_color, color: cfg.background }}>
-                <Icon size={24} />
+      <div className="mx-auto max-w-6xl overflow-hidden" ref={emblaRef}>
+        <div className="flex">
+          {items.map((it, i) => {
+            const Icon = ICON_MAP[it.icon] || Truck;
+            return (
+              <div key={i} className="min-w-0 shrink-0 grow-0 basis-1/2 px-3 md:basis-1/4">
+                <div className="flex flex-col items-center text-center">
+                  <div className="mb-3 grid h-14 w-14 place-items-center rounded-full" style={{ background: cfg.icon_color, color: cfg.background }}>
+                    <Icon size={24} />
+                  </div>
+                  <p className="text-sm font-bold text-[#111]">{it.title}</p>
+                  {it.description && <p className="mt-1 text-xs text-[#444]">{it.description}</p>}
+                </div>
               </div>
-              <p className="text-sm font-bold text-[#111]">{it.title}</p>
-              {it.description && <p className="mt-1 text-xs text-[#444]">{it.description}</p>}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </section>
   );
