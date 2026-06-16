@@ -671,15 +671,26 @@ function HeaderPanel({ customizations, update }: any) {
 }
 
 // ---------- Homepage ----------
-function HomepagePanel({ customizations, update, setSection }: any) {
-  const order = useMemo(() => getSectionsOrder(customizations), [customizations]);
+function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes }: any) {
+  const order = useMemo(
+    () => (isLegacyTheShoes ? DEFAULT_SECTION_ORDER : getSectionsOrder(customizations)),
+    [customizations, isLegacyTheShoes],
+  );
 
   const toggle = (key: HomepageSectionKey) => {
+    if (isLegacyTheShoes) {
+      toast.info("Visibilidade não é editável nesta loja (layout legado).");
+      return;
+    }
     const next = !isSectionVisible(customizations, key);
     update((prev: any) => ({ ...prev, ...setSectionVisibilityPatch(prev, key, next) }));
   };
 
   const move = (idx: number, dir: -1 | 1) => {
+    if (isLegacyTheShoes) {
+      toast.info("Ordem das seções não é editável nesta loja (layout legado).");
+      return;
+    }
     const j = idx + dir;
     if (j < 0 || j >= order.length) return;
     const next = [...order];
@@ -694,55 +705,73 @@ function HomepagePanel({ customizations, update, setSection }: any) {
   return (
     <div className="space-y-4 px-4 pb-6">
       <h2 className="text-base font-semibold text-[#111827]">Página inicial</h2>
-      <p className="text-xs text-[#6b7280]">Clique no nome de cada seção para configurar. Use o olho para mostrar/ocultar.</p>
+      <p className="text-xs text-[#6b7280]">
+        {isLegacyTheShoes
+          ? "Edite o conteúdo de cada seção. A ordem e o visual desta loja são fixos."
+          : "Clique no nome de cada seção para configurar. Use o olho para mostrar/ocultar."}
+      </p>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         {order.map((key, idx) => {
           const visible = isSectionVisible(customizations, key);
           const label = SECTION_LABELS[key] ?? key;
+          const legacyEditable = LEGACY_EDITABLE_SECTIONS.includes(key);
           return (
             <div key={key} className="flex items-center gap-2 border-b border-gray-100 px-2 py-2 last:border-b-0">
-              <div className="flex flex-col">
-                <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
-                <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
-              </div>
-              <GripVertical className="h-4 w-4 text-[#d1d5db]" />
-              <button onClick={() => toggle(key)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
-                {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
-              </button>
+              {!isLegacyTheShoes && (
+                <>
+                  <div className="flex flex-col">
+                    <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
+                    <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
+                  </div>
+                  <GripVertical className="h-4 w-4 text-[#d1d5db]" />
+                  <button onClick={() => toggle(key)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
+                    {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
+                  </button>
+                </>
+              )}
               <button
                 onClick={() => setSection(`homepage:${key}`)}
-                className={cn("flex flex-1 items-center justify-between gap-2 rounded px-1 py-1 text-left text-sm hover:bg-gray-50", visible ? "text-[#111827]" : "text-[#9ca3af]")}
+                className={cn(
+                  "flex flex-1 items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm hover:bg-gray-50",
+                  isLegacyTheShoes && !legacyEditable ? "text-[#9ca3af]" : visible ? "text-[#111827]" : "text-[#9ca3af]",
+                )}
               >
                 <span>{label}</span>
-                <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
+                <div className="flex items-center gap-2">
+                  {isLegacyTheShoes && !legacyEditable && (
+                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-[#6b7280]">não editável</span>
+                  )}
+                  <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
+                </div>
               </button>
             </div>
           );
         })}
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-3">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold">Pop-up promocional</p>
-          <Toggle checked={!!popup.enabled} onChange={(v) => setPopup({ enabled: v })} />
-        </div>
-        {popup.enabled && (
-          <div className="mt-3 space-y-2">
-            <TextInput placeholder="Título" value={popup.title ?? ""} onChange={(e) => setPopup({ title: e.target.value })} />
-            <TextInput placeholder="Texto" value={popup.text ?? ""} onChange={(e) => setPopup({ text: e.target.value })} />
-            <TextInput placeholder="URL da imagem" value={popup.image ?? ""} onChange={(e) => setPopup({ image: e.target.value })} />
-            <div className="grid grid-cols-2 gap-2">
-              <TextInput placeholder="CTA texto" value={popup.ctaText ?? ""} onChange={(e) => setPopup({ ctaText: e.target.value })} />
-              <TextInput placeholder="CTA link" value={popup.ctaLink ?? ""} onChange={(e) => setPopup({ ctaLink: e.target.value })} />
-            </div>
-            <div>
-              <FieldLabel>Delay (segundos)</FieldLabel>
-              <Slider value={popup.delay ?? 3} min={0} max={30} onChange={(v) => setPopup({ delay: v })} />
-            </div>
+      {!isLegacyTheShoes && (
+        <div className="rounded-xl border border-gray-200 bg-white p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold">Pop-up promocional</p>
+            <Toggle checked={!!popup.enabled} onChange={(v) => setPopup({ enabled: v })} />
           </div>
-        )}
-      </div>
-
+          {popup.enabled && (
+            <div className="mt-3 space-y-2">
+              <TextInput placeholder="Título" value={popup.title ?? ""} onChange={(e) => setPopup({ title: e.target.value })} />
+              <TextInput placeholder="Texto" value={popup.text ?? ""} onChange={(e) => setPopup({ text: e.target.value })} />
+              <TextInput placeholder="URL da imagem" value={popup.image ?? ""} onChange={(e) => setPopup({ image: e.target.value })} />
+              <div className="grid grid-cols-2 gap-2">
+                <TextInput placeholder="CTA texto" value={popup.ctaText ?? ""} onChange={(e) => setPopup({ ctaText: e.target.value })} />
+                <TextInput placeholder="CTA link" value={popup.ctaLink ?? ""} onChange={(e) => setPopup({ ctaLink: e.target.value })} />
+              </div>
+              <div>
+                <FieldLabel>Delay (segundos)</FieldLabel>
+                <Slider value={popup.delay ?? 3} min={0} max={30} onChange={(v) => setPopup({ delay: v })} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
