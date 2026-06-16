@@ -19,6 +19,8 @@ type Cfg = {
   section_title?: string;
   description?: string;
   button_text?: string;
+  background_color?: string;
+  icon_color?: string;
 };
 
 function Page() {
@@ -103,6 +105,10 @@ function Config({ storeId }: { storeId: string }) {
         <Field label="Título da seção" value={form.section_title ?? ""} placeholder="Ofertas Secretas" onChange={(v) => setForm({ ...form, section_title: v })} />
         <Field label="Texto descritivo" value={form.description ?? ""} placeholder="novidades, promoções e descontos exclusivos" onChange={(v) => setForm({ ...form, description: v })} />
         <Field label="Texto do botão" value={form.button_text ?? ""} placeholder="Entrar no grupo" onChange={(v) => setForm({ ...form, button_text: v })} />
+        <div className="grid grid-cols-2 gap-3">
+          <ColorField label="Cor de fundo" value={form.background_color ?? "#111111"} onChange={(v) => setForm({ ...form, background_color: v })} />
+          <ColorField label="Cor do ícone" value={form.icon_color ?? "#ffffff"} onChange={(v) => setForm({ ...form, icon_color: v })} />
+        </div>
       </div>
       <button onClick={save} className="rounded-lg bg-[#25d366] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#1fb959]">Salvar</button>
     </div>
@@ -122,3 +128,14 @@ function Field({ label, value, onChange, placeholder }: { label: string; value: 
     </div>
   );
 }
+
+function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="text-sm font-medium text-[#374151]">{label}</label>
+      <div className="mt-1 flex items-center gap-2">
+        <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="h-10 w-12 cursor-pointer rounded border border-gray-200" />
+        <input value={value} onChange={(e) => onChange(e.target.value)} className="h-10 flex-1 rounded-lg border border-gray-200 px-3 text-sm" />
+      </div>
+    </div>
+  );
