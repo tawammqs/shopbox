@@ -224,6 +224,29 @@ function BannersRotativosPanel({ storeId, cfg, onChange }: { storeId: string; cf
 }
 
 // ---------------- 2/3. Produtos por tag ----------------
+function DisplayModeToggle({ value, onChange }: { value: "grid" | "carousel"; onChange: (v: "grid" | "carousel") => void }) {
+  return (
+    <div>
+      <FieldLabel>Formato de exibição</FieldLabel>
+      <div className="flex gap-2">
+        {(["carousel", "grid"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => onChange(m)}
+            className={cn(
+              "flex-1 rounded-lg border px-3 py-2 text-xs font-medium transition",
+              value === m ? "border-[#25d366] bg-[#f0fdf4] text-[#16a34a]" : "border-gray-200 bg-white text-[#374151] hover:bg-gray-50",
+            )}
+          >
+            {m === "carousel" ? "Carrossel" : "Grade"}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProductsTagPanel({ cfg, onChange, fixedTag }: { cfg: ProductsTagCfg; onChange: (c: ProductsTagCfg) => void; fixedTag?: string }) {
   return (
     <div className="space-y-3">
@@ -239,6 +262,7 @@ function ProductsTagPanel({ cfg, onChange, fixedTag }: { cfg: ProductsTagCfg; on
           <option value="12">12</option>
         </SelectInput>
       </div>
+      <DisplayModeToggle value={cfg.display_mode ?? "carousel"} onChange={(v) => onChange({ ...cfg, display_mode: v })} />
       {!fixedTag && (
         <div>
           <FieldLabel>Tag dos produtos</FieldLabel>
@@ -284,6 +308,7 @@ function ProductsCategoryPanel({ storeId, cfg, onChange }: { storeId: string; cf
           <option value="12">12</option>
         </SelectInput>
       </div>
+      <DisplayModeToggle value={cfg.display_mode ?? "carousel"} onChange={(v) => onChange({ ...cfg, display_mode: v })} />
     </div>
   );
 }
