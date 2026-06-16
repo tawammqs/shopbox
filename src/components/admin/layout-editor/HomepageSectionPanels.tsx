@@ -586,6 +586,10 @@ export function SectionEditor({
       return <InstagramPanel storeId={storeId} cfg={cfg} onChange={onChange} />;
     case "faq":
       return <FaqPanel cfg={cfg} onChange={onChange} />;
+    case "depoimentos":
+      return <DepoimentosPanel cfg={cfg} onChange={onChange} />;
+    case "video":
+      return <VideoSectionPanel cfg={cfg} onChange={onChange} />;
     default:
       return (
         <p className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-[#6b7280]">
