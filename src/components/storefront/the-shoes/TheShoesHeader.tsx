@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
+import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
 // (StorefrontCustomizer is mounted at the layout level for non-legacy Mio stores)
 import { useCart } from "@/stores/cart";
@@ -240,35 +241,39 @@ export function TheShoesHeader() {
                 );
               })}
               <div className="mt-4">
-                <a
-                  href="https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    background: '#d9f523',
-                    borderRadius: '9999px',
-                    padding: '10px 20px',
-                    marginTop: '16px',
-                    fontFamily: 'DM Sans, sans-serif',
-                    fontSize: '15px',
-                    fontWeight: 700,
-                    color: '#111111',
-                    textDecoration: 'none',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                       stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0110 0v4"/>
-                    <circle cx="12" cy="16" r="1" fill="#111"/>
-                  </svg>
-                  Ofertas Secretas
-                </a>
+                {isLegacyTheShoes ? (
+                  <a
+                    href="https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: '#d9f523',
+                      borderRadius: '9999px',
+                      padding: '10px 20px',
+                      marginTop: '16px',
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      color: '#111111',
+                      textDecoration: 'none',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0110 0v4"/>
+                      <circle cx="12" cy="16" r="1" fill="#111"/>
+                    </svg>
+                    Ofertas Secretas
+                  </a>
+                ) : (
+                  <MioVipMenuLink onNavigate={() => setNavOpen(false)} />
+                )}
               </div>
             </div>
           </aside>

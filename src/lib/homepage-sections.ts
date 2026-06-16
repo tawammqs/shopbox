@@ -159,15 +159,25 @@ export function getHomepage(cust: any): HomepageConfig {
   return (cust?.homepage ?? {}) as HomepageConfig;
 }
 
-export function getSectionsOrder(cust: any): HomepageSectionKey[] {
+export function getSectionsOrder(cust: any): string[] {
   const hp = getHomepage(cust);
   if (Array.isArray(hp.sections_order) && hp.sections_order.length) {
-    const known = hp.sections_order.filter((k) => k in SECTION_LABELS) as HomepageSectionKey[];
-    // append any new keys not in stored order
+    const known = (hp.sections_order as string[]).filter(
+      (k) => k in SECTION_LABELS || ADDON_ROW_KEYS.includes(k),
+    );
     for (const k of DEFAULT_SECTION_ORDER) if (!known.includes(k)) known.push(k);
+    if (!known.includes("addon:grupo_vip")) {
+      const idx = known.indexOf("frete_pagamento");
+      if (idx >= 0) known.splice(idx, 0, "addon:grupo_vip");
+      else known.push("addon:grupo_vip");
+    }
     return known;
   }
-  return DEFAULT_SECTION_ORDER;
+  const order: string[] = [...DEFAULT_SECTION_ORDER];
+  const idx = order.indexOf("frete_pagamento");
+  if (idx >= 0) order.splice(idx, 0, "addon:grupo_vip");
+  else order.push("addon:grupo_vip");
+  return order;
 }
 
 export function isSectionVisible(cust: any, key: HomepageSectionKey): boolean {

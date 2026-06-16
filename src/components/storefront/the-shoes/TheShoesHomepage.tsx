@@ -56,6 +56,7 @@ import {
   DepoimentosRender,
   VideoSectionRender,
 } from "./HomepageSectionRenderers";
+import { MioVipSection } from "../MioAddonOverlays";
 
 export function TheShoesHomepage() {
   const { store } = useStorefront();
@@ -77,8 +78,11 @@ function MioCustomHomepage() {
   return (
     <div className="ts-root">
       {order.map((key) => {
-        if (!isSectionVisible(cust, key)) return null;
-        return <SectionSwitch key={key} sectionKey={key} cust={cust} />;
+        if (key === "addon:grupo_vip") return <MioVipSection key={key} />;
+        if (!(key in {} || true)) return null; // keep flow simple
+        const sk = key as HomepageSectionKey;
+        if (!isSectionVisible(cust, sk)) return null;
+        return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
       })}
       {whatsapp && <FloatingWhatsApp number={whatsapp.replace(/\D/g, "")} />}
       <TheShoesStyles />
