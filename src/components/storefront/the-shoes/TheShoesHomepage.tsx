@@ -56,6 +56,7 @@ import {
   DepoimentosRender,
   VideoSectionRender,
 } from "./HomepageSectionRenderers";
+import { MioVipSection } from "../MioAddonOverlays";
 
 export function TheShoesHomepage() {
   const { store } = useStorefront();
