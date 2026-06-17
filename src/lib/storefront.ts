@@ -240,12 +240,13 @@ function sectionKeyFromTag(tag: string): ProductSectionKey | null {
 }
 
 export async function fetchProductsByHomepageSection(storeId: string, sectionKey: ProductSectionKey, limit = 12) {
-  let q = supabase
+  // STRICT filter — only products that explicitly carry the tag in featured_sections / tags.
+  // No fallback to on_sale, promo_price, or category names: if no product has the tag, the
+  // section is empty (and the renderer must not display it).
+  const { data, error } = await supabase
     .from("products")
     .select(
       `id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
-       category:categories!products_category_id_fkey(name),
-       product_categories(category:categories(name)),
        product_images(url, position),
        product_colors(id, name, hex),
        product_stock(quantity)`,
@@ -254,18 +255,9 @@ export async function fetchProductsByHomepageSection(storeId: string, sectionKey
     .eq("active", true)
     .order("created_at", { ascending: false })
     .limit(80);
-  const { data, error } = await q;
   if (error) throw error;
   return (data ?? [])
-    .filter((p: any) => {
-      if (sectionKey === "promocao") return hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey) || p.on_sale === true || p.promo_price != null;
-      if (sectionKey === "lancamento") {
-        const direct = String(p.category?.name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === "lancamentos";
-        const linked = (p.product_categories ?? []).some((link: any) => String(link?.category?.name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === "lancamentos");
-        return hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey) || direct || linked;
-      }
-      return hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey);
-    })
+    .filter((p: any) => hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey))
     .slice(0, limit)
     .map(normalizeProductCard);
 }
