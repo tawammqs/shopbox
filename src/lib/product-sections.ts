@@ -48,7 +48,13 @@ export function toggleProductSection(raw: unknown, key: ProductSectionKey, check
 
 export function normalizeProductSections(raw: unknown): string[] {
   const current = Array.isArray(raw) ? raw.map(String).filter(Boolean) : [];
-  const normalized = current.filter((item, index) => current.findIndex((x) => norm(x) === norm(item)) === index);
+  const aliasEntries = Object.entries(PRODUCT_SECTION_ALIASES).flatMap(([key, aliases]) =>
+    aliases.map((alias) => [norm(alias), key] as const),
+  );
+  const canonicalByAlias = new Map(aliasEntries);
+  const normalized = current
+    .map((item) => canonicalByAlias.get(norm(item)) ?? item)
+    .filter((item, index, list) => list.findIndex((x) => norm(x) === norm(item)) === index);
   for (const key of PRODUCT_SECTION_ITEMS.map((item) => item.key)) {
     if (hasProductSection(current, key) && !hasProductSection(normalized, key)) normalized.push(key);
   }
