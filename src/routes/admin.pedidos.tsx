@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Loader2, Package as PackageIcon, ShoppingBag, MessageCircle } from "lucide-react";
+import { Search, Loader2, Package as PackageIcon, ShoppingBag, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,17 @@ import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { PlanGate } from "@/components/admin/PlanGate";
 import { OrderDetailDrawer, type OrderDetail } from "@/components/admin/OrderDetailDrawer";
+import { EditOrderDialog, type EditableOrder } from "@/components/admin/EditOrderDialog";
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/admin/pedidos")({
   head: () => ({ meta: [{ title: "Pedidos — ShopBox" }] }),
@@ -90,6 +96,10 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
   const [openOrder, setOpenOrder] = useState<OrderDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [editOrder, setEditOrder] = useState<EditableOrder | null>(null);
+  const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
 
   const load = async () => {
     setLoading(true);
@@ -296,24 +306,53 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
                         </Select>
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                        {o.customer?.whatsapp ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                            className="border-[#25d366]/40 text-[#1a7a3e] hover:bg-[#25d366]/10"
-                          >
-                            <a
-                              href={`https://wa.me/${o.customer.whatsapp.replace(/\D/g, "")}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                        <div className="flex items-center justify-end gap-1">
+                          {o.customer?.whatsapp ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              asChild
+                              className="border-[#25d366]/40 text-[#1a7a3e] hover:bg-[#25d366]/10"
                             >
-                              <MessageCircle className="h-3.5 w-3.5" />
-                              WhatsApp
-                            </a>
-                          </Button>
-                        ) : null}
+                              <a
+                                href={`https://wa.me/${o.customer.whatsapp.replace(/\D/g, "")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <MessageCircle className="h-3.5 w-3.5" />
+                                WhatsApp
+                              </a>
+                            </Button>
+                          ) : null}
+                          <button
+                            onClick={() =>
+                              setEditOrder({
+                                id: o.id,
+                                store_id: storeId,
+                                order_number: o.order_number,
+                                items: o.items,
+                                subtotal: Number(o.subtotal ?? 0),
+                                discount_amount: Number(o.discount_amount ?? 0),
+                                total: Number(o.total ?? 0),
+                              })
+                            }
+                            className="rounded p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-600"
+                            aria-label="Editar venda"
+                            title="Editar venda"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteOrderId(o.id)}
+                            className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                            aria-label="Excluir venda"
+                            title="Excluir venda"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </td>
+
                     </tr>
                   );
                 })}
@@ -355,7 +394,53 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
           <Loader2 className="h-6 w-6 animate-spin text-white" />
         </div>
       )}
+
+      <EditOrderDialog
+        order={editOrder}
+        onClose={() => setEditOrder(null)}
+        onSaved={({ id, items, subtotal, total }) => {
+          setOrders((cur) =>
+            cur.map((o) => (o.id === id ? { ...o, items, subtotal, total } : o)),
+          );
+        }}
+      />
+
+      <AlertDialog open={!!deleteOrderId} onOpenChange={(open) => !open && setDeleteOrderId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir esta venda?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O pedido será removido permanentemente do seu histórico de vendas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={async (e) => {
+                e.preventDefault();
+                if (!deleteOrderId) return;
+                setDeleting(true);
+                const id = deleteOrderId;
+                const { error } = await supabase.from("orders").delete().eq("id", id);
+                setDeleting(false);
+                if (error) {
+                  toast.error("Erro ao excluir a venda.");
+                  return;
+                }
+                setOrders((cur) => cur.filter((o) => o.id !== id));
+                setDeleteOrderId(null);
+                toast.success("Venda excluída.");
+              }}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }
 
