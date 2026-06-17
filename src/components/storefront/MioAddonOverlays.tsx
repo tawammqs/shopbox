@@ -415,10 +415,17 @@ export function MioCouponTab() {
       <button
         type="button" aria-label="Cupom de boas-vindas"
         onClick={() => setOpen(true)}
-        className="mio-coupon-fab"
+        className="mio-coupon-fab relative"
         style={{ background: btnColor, color: iconColor }}
       >
-        <GiftIcon color={iconColor} size={24} />
+        <span
+          className="absolute inset-0 rounded-full animate-ping opacity-75"
+          style={{ backgroundColor: btnColor }}
+          aria-hidden="true"
+        />
+        <span className="relative z-10">
+          <GiftIcon color={iconColor} size={24} />
+        </span>
       </button>
 
       {open && (
