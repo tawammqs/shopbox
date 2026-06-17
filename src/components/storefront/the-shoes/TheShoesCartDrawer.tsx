@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { X, Lock } from "lucide-react";
-import { useCart } from "@/stores/cart";
+import { X, Lock, Tag } from "lucide-react";
+import { useCart, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront } from "../StoreContext";
 import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { formatBRL, effectivePrice, discountPct } from "@/lib/format";
-import { fetchBestSellersForStore, type ProductCardData } from "@/lib/storefront";
+import { fetchBestSellersForStore, fetchActiveCoupon, type ProductCardData } from "@/lib/storefront";
 
 import { CheckoutFormDialog } from "../CheckoutFormDialog";
 import { trackAddToCart, trackInitiateCheckout } from "@/lib/tracking";
