@@ -67,14 +67,9 @@ export function productHasBrand(product: any): boolean {
 }
 
 export function productIsInSection(product: any, key: ProductSectionKey): boolean {
-  const sectionHit = hasProductSection(product?.featured_sections, key) || hasProductSection(product?.tags, key);
-  if (key === "promocao") return sectionHit || product?.on_sale === true || product?.promo_price != null;
-  if (key === "lancamento") {
-    const directCategory = norm(product?.category?.name) === "lancamentos";
-    const linkedCategory = (product?.product_categories ?? []).some((link: any) => norm(link?.category?.name) === "lancamentos");
-    return sectionHit || directCategory || linkedCategory;
-  }
-  return sectionHit;
+  // STRICT: only the explicit tag/featured_sections entry counts.
+  // No fallback via on_sale / promo_price / category name.
+  return hasProductSection(product?.featured_sections, key) || hasProductSection(product?.tags, key);
 }
 
 export function productMatchesListFilter(product: any, filter: ProductListFilterKey): boolean {

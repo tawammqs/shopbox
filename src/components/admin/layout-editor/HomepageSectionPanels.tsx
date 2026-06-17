@@ -17,7 +17,10 @@ import {
   type FaqCfg,
   type DepoimentosCfg,
   type VideoSectionCfg,
+  type ProdutoPrincipalCfg,
 } from "@/lib/homepage-sections";
+import { hasProductSection } from "@/lib/product-sections";
+import { Link } from "@tanstack/react-router";
 
 // ---------------- shared mini UI ----------------
 function FieldLabel({ children }: { children: React.ReactNode }) {
@@ -579,6 +582,83 @@ function VideoSectionPanel({ cfg, onChange }: { cfg: VideoSectionCfg; onChange: 
   );
 }
 
+// ---------------- Produto Principal ----------------
+function ProdutoPrincipalPanel({ storeId, cfg, onChange }: { storeId: string; cfg: ProdutoPrincipalCfg; onChange: (c: ProdutoPrincipalCfg) => void }) {
+  const products = useQuery({
+    queryKey: ["editor-products-mais-vendido", storeId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("id, title, featured_sections, tags")
+        .eq("store_id", storeId)
+        .eq("active", true)
+        .order("title");
+      return (data ?? []).filter((p: any) => hasProductSection(p.featured_sections, "mais_vendido") || hasProductSection(p.tags, "mais_vendido"));
+    },
+    staleTime: 30_000,
+  });
+
+  // Convert ISO ↔ local datetime-local input value
+  const localValue = (() => {
+    if (!cfg.promotion_ends_at) return "";
+    const d = new Date(cfg.promotion_ends_at);
+    if (Number.isNaN(d.getTime())) return "";
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  })();
+
+  const list = products.data ?? [];
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <FieldLabel>Título da seção</FieldLabel>
+        <TextInput value={cfg.title ?? ""} onChange={(e) => onChange({ ...cfg, title: e.target.value })} placeholder="Oferta imperdível" />
+      </div>
+
+      <div>
+        <FieldLabel>Produto</FieldLabel>
+        {list.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-amber-300 bg-amber-50 p-3 text-xs text-amber-800">
+            Marque um produto como <strong>“Mais vendido”</strong> em{" "}
+            <Link to="/admin/produtos" className="underline">Produtos</Link> para poder selecioná-lo aqui.
+          </div>
+        ) : (
+          <SelectInput
+            value={cfg.product_id ?? ""}
+            onChange={(e) => onChange({ ...cfg, product_id: e.target.value || null })}
+          >
+            <option value="">— escolher produto —</option>
+            {list.map((p: any) => (
+              <option key={p.id} value={p.id}>{p.title}</option>
+            ))}
+          </SelectInput>
+        )}
+        <p className="mt-1 text-[11px] text-[#9ca3af]">A lista mostra apenas produtos marcados como “Mais vendido”.</p>
+      </div>
+
+      <div>
+        <FieldLabel>Data e hora de término da promoção</FieldLabel>
+        <TextInput
+          type="datetime-local"
+          value={localValue}
+          onChange={(e) => {
+            const v = e.target.value;
+            onChange({ ...cfg, promotion_ends_at: v ? new Date(v).toISOString() : null });
+          }}
+        />
+        <p className="mt-1 text-[11px] text-[#9ca3af]">A seção desaparece sozinha quando a data passar.</p>
+      </div>
+
+      <Toggle
+        checked={cfg.show_countdown !== false}
+        onChange={(v) => onChange({ ...cfg, show_countdown: v })}
+        label="Mostrar cronômetro regressivo"
+      />
+    </div>
+  );
+}
+
 // ---------------- Router ----------------
 export function SectionEditor({
   storeId,
@@ -615,6 +695,8 @@ export function SectionEditor({
       return <DepoimentosPanel cfg={cfg} onChange={onChange} />;
     case "video":
       return <VideoSectionPanel cfg={cfg} onChange={onChange} />;
+    case "produto_principal":
+      return <ProdutoPrincipalPanel storeId={storeId} cfg={cfg} onChange={onChange} />;
     default:
       return (
         <p className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-[#6b7280]">
