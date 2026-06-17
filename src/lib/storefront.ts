@@ -210,6 +210,9 @@ export type ProductCardData = {
 };
 
 export async function fetchProductsByTag(storeId: string, tag: string, limit = 12) {
+  const mappedSection = sectionKeyFromTag(tag);
+  if (mappedSection) return fetchProductsByHomepageSection(storeId, mappedSection, limit);
+
   const { data, error } = await supabase
     .from("products")
     .select(
@@ -224,14 +227,7 @@ export async function fetchProductsByTag(storeId: string, tag: string, limit = 1
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
-  const rows = data ?? [];
-  const mappedSection = sectionKeyFromTag(tag);
-  if (!mappedSection) return rows.map(normalizeProductCard);
-  if (rows.length >= limit) return rows.map(normalizeProductCard);
-  const byId = new Map(rows.map((row: any) => [row.id, row]));
-  const extra = await fetchProductsByHomepageSection(storeId, mappedSection, limit);
-  for (const product of extra) if (!byId.has(product.id)) byId.set(product.id, product);
-  return Array.from(byId.values()).slice(0, limit).map(normalizeProductCard);
+  return (data ?? []).map(normalizeProductCard);
 }
 
 function sectionKeyFromTag(tag: string): ProductSectionKey | null {
