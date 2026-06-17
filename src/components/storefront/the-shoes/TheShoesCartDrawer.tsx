@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, Lock } from "lucide-react";
 import { useCart } from "@/stores/cart";
 import { useStorefront } from "../StoreContext";
+import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { formatBRL, effectivePrice, discountPct } from "@/lib/format";
 import { fetchBestSellersForStore, type ProductCardData } from "@/lib/storefront";
 
@@ -13,12 +14,12 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const ACCENT = "#111111";
-const FREE_SHIPPING_THRESHOLD = 599.99;
+const DEFAULT_FREE_SHIPPING_THRESHOLD = 599.99;
 
-function TruckIcon({ size = 20 }: { size?: number }) {
+function TruckIcon({ size = 20, color = "white" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="1" y="3" width="13" height="13" rx="1" />
       <path d="M14 8h4l3 5v3h-7V8z" />
       <circle cx="5.5" cy="18.5" r="2" />
