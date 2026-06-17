@@ -1167,11 +1167,12 @@ function FooterPanel({ customizations, update, storeId }: any) {
           value={f.store_name ?? ""}
           onChange={(e) => set("store_name", e.target.value)}
         />
-        <Textarea
+        <textarea
           placeholder="Texto sobre a loja (ex: A The Mini nasceu para vestir crianças com estilo e conforto...)"
           value={f.about_text ?? ""}
-          onChange={(e) => set("about_text", e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => set("about_text", e.target.value)}
           rows={4}
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[#25d366]"
         />
       </section>
 
