@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Loader2, Package as PackageIcon, ShoppingBag, MessageCircle } from "lucide-react";
+import { Search, Loader2, Package as PackageIcon, ShoppingBag, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,17 @@ import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { PlanGate } from "@/components/admin/PlanGate";
 import { OrderDetailDrawer, type OrderDetail } from "@/components/admin/OrderDetailDrawer";
+import { EditOrderDialog, type EditableOrder } from "@/components/admin/EditOrderDialog";
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/admin/pedidos")({
   head: () => ({ meta: [{ title: "Pedidos — ShopBox" }] }),
