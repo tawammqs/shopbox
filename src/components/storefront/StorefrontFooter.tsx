@@ -40,9 +40,14 @@ export function StorefrontFooter() {
           {store.logo_url ? (
             <img src={store.logo_url} alt={store.name} className="h-10 w-auto object-contain" />
           ) : (
-            <span className="font-display text-xl font-bold">{store.name}</span>
+            <span className="font-display text-xl font-bold">{fcfg.store_name || store.name}</span>
           )}
-          {contactInfo?.contact_text ? (
+          {store.logo_url && (fcfg.store_name || store.name) && (
+            <h4 className="mt-3 text-sm font-bold">{fcfg.store_name || store.name}</h4>
+          )}
+          {fcfg.about_text ? (
+            <p className="mt-2 text-sm leading-relaxed opacity-80">{fcfg.about_text}</p>
+          ) : contactInfo?.contact_text ? (
             <p className="mt-3 text-sm text-muted-foreground">{contactInfo.contact_text}</p>
           ) : (
             store.tagline && <p className="mt-3 text-sm text-muted-foreground">{store.tagline}</p>
