@@ -219,9 +219,17 @@ export function ProductsByTagRender({ cfg, defaultTag }: { cfg: ProductsTagCfg; 
   const { store } = useStorefront();
   const tag = cfg.tag || defaultTag;
   const limit = cfg.limit ?? 8;
+  // STRICT mapping: tag → canonical section key. Only products that explicitly
+  // carry the tag in featured_sections / tags will show. No fallback.
+  const sectionKey = mapTagToSection(tag);
   const q = useQuery({
-    queryKey: ["mio-products-tag", store.id, tag, limit],
-    queryFn: () => fetchProductsByTag(store.id, tag, limit),
+    queryKey: sectionKey
+      ? ["mio-products-section", store.id, sectionKey, limit]
+      : ["mio-products-tag-raw", store.id, tag, limit],
+    queryFn: () =>
+      sectionKey
+        ? fetchProductsByHomepageSection(store.id, sectionKey, limit)
+        : fetchProductsByTag(store.id, tag, limit),
     staleTime: 60_000,
   });
   const products = (q.data ?? []) as ProductCardData[];
@@ -240,44 +248,22 @@ export function ProductsByTagRender({ cfg, defaultTag }: { cfg: ProductsTagCfg; 
   );
 }
 
-// ============== 4. Produtos novos (categoria) ==============
+function mapTagToSection(tag: string): ProductSectionKey | null {
+  const t = tag.toLowerCase();
+  if (["destaque", "destaques", "featured"].includes(t)) return "destaque";
+  if (["lancamento", "lançamento", "lancamentos", "lançamentos", "novos"].includes(t)) return "lancamento";
+  if (["promocao", "promoção", "oferta", "ofertas", "sale"].includes(t)) return "promocao";
+  if (["mais_vendido", "mais_vendidos", "mais vendidos", "best_seller"].includes(t)) return "mais_vendido";
+  return null;
+}
+
+// ============== 4. Produtos novos — STRICT by tag "lancamento" ==============
 export function ProductsByCategoryRender({ cfg }: { cfg: ProductsCategoryCfg }) {
   const { store } = useStorefront();
   const limit = cfg.limit ?? 8;
   const q = useQuery({
-    queryKey: ["mio-products-cat", store.id, cfg.category_id, limit],
-    queryFn: async () => {
-      let productIds: string[] | null = null;
-      if (cfg.category_id) {
-        const { data: links } = await supabase
-          .from("product_categories")
-          .select("product_id")
-          .eq("category_id", cfg.category_id);
-        productIds = Array.from(new Set((links ?? []).map((l: any) => l.product_id)));
-        if (productIds.length === 0) return [];
-      }
-      if (!cfg.category_id) return fetchProductsByHomepageSection(store.id, "lancamento", limit);
-
-      let sb = supabase
-        .from("products")
-        .select(`id, slug, title, brand, price, promo_price, tags,
-          product_images(url, position),
-          product_colors(id, name, hex),
-          product_stock(quantity)`)
-        .eq("store_id", store.id).eq("active", true)
-        .order("created_at", { ascending: false })
-        .limit(limit);
-      if (productIds) sb = sb.in("id", productIds);
-      const { data } = await sb;
-      return (data ?? []).map((p: any) => ({
-        id: p.id, slug: p.slug, title: p.title, brand: p.brand,
-        price: Number(p.price), promo_price: p.promo_price != null ? Number(p.promo_price) : null,
-        tags: p.tags ?? [],
-        images: (p.product_images ?? []).sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0)),
-        colors: p.product_colors ?? [],
-        totalStock: (p.product_stock ?? []).reduce((s: number, st: any) => s + (st.quantity ?? 0), 0),
-      })) as ProductCardData[];
-    },
+    queryKey: ["mio-products-section", store.id, "lancamento", limit],
+    queryFn: () => fetchProductsByHomepageSection(store.id, "lancamento", limit),
     staleTime: 60_000,
   });
   const products = q.data ?? [];
@@ -290,6 +276,102 @@ export function ProductsByCategoryRender({ cfg }: { cfg: ProductsCategoryCfg }) 
       </div>
       {mode === "carousel" ? <ProductsCarousel products={products} /> : <ProductsGrid products={products} />}
     </section>
+  );
+}
+
+// ============== Produto Principal — single product + countdown ==============
+export function ProdutoPrincipalRender({ cfg }: { cfg: ProdutoPrincipalCfg }) {
+  const { store } = useStorefront();
+  const productQ = useQuery({
+    queryKey: ["produto-principal", store.id, cfg.product_id],
+    enabled: !!cfg.product_id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("products")
+        .select(`id, slug, title, brand, brand_name, price, promo_price,
+                 product_images(url, position)`)
+        .eq("id", cfg.product_id!)
+        .eq("store_id", store.id)
+        .eq("active", true)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 60_000,
+  });
+
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!cfg.show_countdown || !cfg.promotion_ends_at) return;
+    const i = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(i);
+  }, [cfg.show_countdown, cfg.promotion_ends_at]);
+
+  if (!cfg.product_id) return null;
+  if (cfg.promotion_ends_at && new Date(cfg.promotion_ends_at).getTime() <= now) return null;
+  const product: any = productQ.data;
+  if (!product) return null;
+
+  const img = (product.product_images ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))[0]?.url ?? "";
+  const price = effectivePrice(Number(product.price), product.promo_price != null ? Number(product.promo_price) : null);
+  const pct = discountPct(Number(product.price), product.promo_price != null ? Number(product.promo_price) : null);
+
+  let timeLeft: { d: number; h: number; m: number; s: number } | null = null;
+  if (cfg.show_countdown && cfg.promotion_ends_at) {
+    const diff = new Date(cfg.promotion_ends_at).getTime() - now;
+    if (diff > 0) {
+      timeLeft = {
+        d: Math.floor(diff / 86400000),
+        h: Math.floor((diff % 86400000) / 3600000),
+        m: Math.floor((diff % 3600000) / 60000),
+        s: Math.floor((diff % 60000) / 1000),
+      };
+    }
+  }
+
+  return (
+    <section className="ts-section">
+      {cfg.title && <h2 className="ts-section-title mb-3">{cfg.title}</h2>}
+      <Link
+        to="/loja/$slug/produto/$productSlug"
+        params={{ slug: store.slug, productSlug: product.slug }}
+        className="block rounded-2xl bg-[#f7f7f7] p-4 transition hover:bg-[#f1f1f1]"
+      >
+        <div className="flex gap-4">
+          {img && <img src={img} alt={product.title} className="h-32 w-32 shrink-0 rounded-xl object-cover md:h-40 md:w-40" />}
+          <div className="min-w-0 flex-1">
+            {(product.brand_name ?? product.brand) && (
+              <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-[#888]">
+                {product.brand_name ?? product.brand}
+              </p>
+            )}
+            <h3 className="line-clamp-2 text-base font-semibold text-[#111] md:text-lg">{product.title}</h3>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-xl font-bold text-[var(--store-accent,#111)]">{formatBRL(price)}</span>
+              {pct > 0 && (
+                <span className="text-sm text-[#aaa] line-through">{formatBRL(Number(product.price))}</span>
+              )}
+            </div>
+            {timeLeft && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                <CountdownBox value={timeLeft.d} label="dias" />
+                <CountdownBox value={timeLeft.h} label="hrs" />
+                <CountdownBox value={timeLeft.m} label="min" />
+                <CountdownBox value={timeLeft.s} label="seg" />
+              </div>
+            )}
+          </div>
+        </div>
+      </Link>
+    </section>
+  );
+}
+
+function CountdownBox({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="grid min-w-[44px] place-items-center rounded-lg bg-[#111] px-2 py-1 text-white">
+      <div className="text-sm font-bold leading-none">{String(value).padStart(2, "0")}</div>
+      <div className="mt-0.5 text-[10px] uppercase tracking-wide text-[#bbb]">{label}</div>
+    </div>
   );
 }
 
