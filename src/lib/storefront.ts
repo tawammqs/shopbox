@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { effectivePrice } from "./format";
+import { hasProductSection, type ProductSectionKey } from "./product-sections";
 
 export type StoreRow = {
   id: string;
@@ -201,6 +202,8 @@ export type ProductCardData = {
   price: number;
   promo_price: number | null;
   tags: string[];
+  featured_sections?: string[] | null;
+  on_sale?: boolean | null;
   images: { url: string; position: number }[];
   colors: { id: string; name: string; hex: string }[];
   totalStock: number;
@@ -210,7 +213,7 @@ export async function fetchProductsByTag(storeId: string, tag: string, limit = 1
   const { data, error } = await supabase
     .from("products")
     .select(
-      `id, slug, title, brand, price, promo_price, tags,
+      `id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
        product_images(url, position),
        product_colors(id, name, hex),
        product_stock(quantity)`,
@@ -221,7 +224,54 @@ export async function fetchProductsByTag(storeId: string, tag: string, limit = 1
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return (data ?? []).map(normalizeProductCard);
+  const rows = data ?? [];
+  const mappedSection = sectionKeyFromTag(tag);
+  if (!mappedSection) return rows.map(normalizeProductCard);
+  if (rows.length >= limit) return rows.map(normalizeProductCard);
+  const byId = new Map(rows.map((row: any) => [row.id, row]));
+  const extra = await fetchProductsByHomepageSection(storeId, mappedSection, limit);
+  for (const product of extra) if (!byId.has(product.id)) byId.set(product.id, product);
+  return Array.from(byId.values()).slice(0, limit).map(normalizeProductCard);
+}
+
+function sectionKeyFromTag(tag: string): ProductSectionKey | null {
+  const t = tag.toLowerCase();
+  if (["destaque", "destaques"].includes(t)) return "destaque";
+  if (["lancamento", "lancamentos", "lançamentos", "novos"].includes(t)) return "lancamento";
+  if (["mais_vendido", "mais_vendidos", "mais-vendidos"].includes(t)) return "mais_vendido";
+  if (["promocao", "promoção", "oferta", "ofertas"].includes(t)) return "promocao";
+  return null;
+}
+
+export async function fetchProductsByHomepageSection(storeId: string, sectionKey: ProductSectionKey, limit = 12) {
+  let q = supabase
+    .from("products")
+    .select(
+      `id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
+       category:categories!products_category_id_fkey(name),
+       product_categories(category:categories(name)),
+       product_images(url, position),
+       product_colors(id, name, hex),
+       product_stock(quantity)`,
+    )
+    .eq("store_id", storeId)
+    .eq("active", true)
+    .order("created_at", { ascending: false })
+    .limit(80);
+  const { data, error } = await q;
+  if (error) throw error;
+  return (data ?? [])
+    .filter((p: any) => {
+      if (sectionKey === "promocao") return hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey) || p.on_sale === true || p.promo_price != null;
+      if (sectionKey === "lancamento") {
+        const direct = String(p.category?.name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === "lancamentos";
+        const linked = (p.product_categories ?? []).some((link: any) => String(link?.category?.name ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === "lancamentos");
+        return hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey) || direct || linked;
+      }
+      return hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey);
+    })
+    .slice(0, limit)
+    .map(normalizeProductCard);
 }
 
 export async function fetchProductsForCategory(
@@ -395,18 +445,18 @@ export async function searchProductsLive(storeId: string, term: string, limit = 
   const like = `%${term.trim()}%`;
   const { data, error } = await supabase
     .from("products")
-    .select(`id, slug, title, brand, price, promo_price,
+    .select(`id, slug, title, brand, brand_name, price, promo_price,
              product_images(url, position)`)
     .eq("store_id", storeId)
     .eq("active", true)
-    .or(`title.ilike.${like},brand.ilike.${like}`)
+    .or(`title.ilike.${like},brand.ilike.${like},brand_name.ilike.${like}`)
     .limit(limit);
   if (error) throw error;
   return (data ?? []).map((p) => ({
     id: p.id,
     slug: p.slug,
     title: p.title,
-    brand: p.brand,
+    brand: p.brand_name ?? p.brand,
     price: Number(p.price),
     promo_price: p.promo_price != null ? Number(p.promo_price) : null,
     image: (p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url) ?? null,
@@ -421,10 +471,12 @@ function normalizeProductCard(p: any): ProductCardData {
     id: p.id,
     slug: p.slug,
     title: p.title,
-    brand: p.brand,
+    brand: p.brand_name ?? p.brand,
     price: Number(p.price),
     promo_price: p.promo_price != null ? Number(p.promo_price) : null,
     tags: (p.tags ?? []) as string[],
+    featured_sections: (p.featured_sections ?? []) as string[],
+    on_sale: p.on_sale ?? false,
     images,
     colors,
     totalStock,

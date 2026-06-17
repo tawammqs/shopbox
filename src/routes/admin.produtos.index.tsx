@@ -1,16 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree } from "lucide-react";
+import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LockedButton } from "@/components/admin/PlanGate";
 import { formatBRL } from "@/lib/format";
 import { planAllows, PLAN_LIMITS } from "@/lib/plans";
+import { PRODUCT_LIST_FILTERS, PRODUCT_SECTION_ITEMS, type ProductListFilterKey, type ProductSectionKey, hasProductSection, productMatchesListFilter, toggleProductSection } from "@/lib/product-sections";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/produtos/")({
@@ -23,6 +25,7 @@ function ProductsListPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [sectionFilter, setSectionFilter] = useState<ProductListFilterKey>("todos");
 
   const planSlug = store?.plan?.slug as any;
   const maxProducts = store?.plan?.max_products ?? PLAN_LIMITS.inicial.maxProducts;
@@ -33,8 +36,9 @@ function ProductsListPage() {
     queryFn: async () => {
       let q = supabase
         .from("products")
-        .select(`id, title, price, promo_price, active, low_stock_threshold,
+        .select(`id, title, price, promo_price, active, low_stock_threshold, brand, brand_name, featured_sections, on_sale,
                  category:categories!products_category_id_fkey(name),
+                 product_categories(category:categories(name)),
                  product_images(url, position),
                  product_stock(quantity)`)
         .eq("store_id", store!.id)
@@ -46,8 +50,9 @@ function ProductsListPage() {
     },
   });
 
-  const products = productsQuery.data ?? [];
-  const productCount = products.length;
+  const allProducts = productsQuery.data ?? [];
+  const products = allProducts.filter((p: any) => productMatchesListFilter(p, sectionFilter));
+  const productCount = allProducts.length;
   const limitReached = productCount >= maxProducts;
   const limitWarning = productCount >= maxProducts - 5 && !limitReached;
 
@@ -97,6 +102,21 @@ function ProductsListPage() {
     },
   });
 
+  const toggleSection = useMutation({
+    mutationFn: async ({ product, sectionKey, checked }: { product: any; sectionKey: ProductSectionKey; checked: boolean }) => {
+      const featured_sections = toggleProductSection(product.featured_sections, sectionKey, checked);
+      const payload: Record<string, any> = { featured_sections };
+      if (sectionKey === "promocao") payload.on_sale = checked;
+      const { error } = await supabase.from("products").update(payload as any).eq("id", product.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Seções do produto atualizadas");
+      qc.invalidateQueries({ queryKey: ["admin-products"] });
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Erro ao atualizar seções"),
+  });
+
   const duplicateOne = useMutation({
     mutationFn: async (productId: string) => {
       if (limitReached) throw new Error("Limite de produtos atingido. Faça upgrade do plano.");
@@ -140,11 +160,13 @@ function ProductsListPage() {
           sku: src.sku ? `${src.sku}-COPIA` : null,
           price: src.price,
           promo_price: src.promo_price,
+          on_sale: src.on_sale,
           promo_starts_at: src.promo_starts_at,
           promo_ends_at: src.promo_ends_at,
           category_id: src.category_id,
           subcategory_id: src.subcategory_id,
           tags: src.tags,
+          featured_sections: src.featured_sections,
           active: false,
           low_stock_threshold: src.low_stock_threshold,
           meta_title: src.meta_title,
@@ -332,6 +354,24 @@ function ProductsListPage() {
         </div>
       </div>
 
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {PRODUCT_LIST_FILTERS.map((filter) => {
+          const activeFilter = sectionFilter === filter.key;
+          return (
+            <button
+              key={filter.key}
+              type="button"
+              onClick={() => setSectionFilter(filter.key)}
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
+                activeFilter ? "border-[#25d366] bg-[#25d366]/10 text-[#128c3b]" : "border-border bg-card text-muted-foreground hover:bg-muted/50"
+              }`}
+            >
+              {filter.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Bulk action bar */}
       {selected.size > 0 && (
         <div className="sticky top-14 z-10 flex flex-wrap items-center gap-2 rounded-lg border border-accent/30 bg-accent/10 p-3">
@@ -370,7 +410,7 @@ function ProductsListPage() {
               <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Carregando…</td></tr>
             )}
             {!productsQuery.isLoading && products.length === 0 && (
-              <tr><td colSpan={7} className="p-12 text-center text-muted-foreground">Nenhum produto cadastrado.</td></tr>
+              <tr><td colSpan={7} className="p-12 text-center text-muted-foreground">Nenhum produto encontrado para este filtro.</td></tr>
             )}
             {products.map((p: any) => {
               const img = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
@@ -412,6 +452,11 @@ function ProductsListPage() {
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-1">
+                      <QuickSectionsMenu
+                        product={p}
+                        pending={toggleSection.isPending}
+                        onToggle={(sectionKey, checked) => toggleSection.mutate({ product: p, sectionKey, checked })}
+                      />
                       <Button asChild size="icon" variant="ghost" title="Editar"><Link to="/admin/produtos/$id" params={{ id: p.id }}><Edit2 className="h-4 w-4" /></Link></Button>
                       <Button
                         size="icon"
@@ -438,6 +483,41 @@ function ProductsListPage() {
         </table>
       </div>
     </div>
+  );
+}
+
+function QuickSectionsMenu({
+  product,
+  pending,
+  onToggle,
+}: {
+  product: any;
+  pending?: boolean;
+  onToggle: (sectionKey: ProductSectionKey, checked: boolean) => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="icon" variant="ghost" title="Seções da home" disabled={pending}>
+          <Tag className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        {PRODUCT_SECTION_ITEMS.map((section) => {
+          const checked = hasProductSection(product.featured_sections, section.key) || (section.key === "promocao" && (product.on_sale || product.promo_price != null));
+          return (
+            <DropdownMenuCheckboxItem
+              key={section.key}
+              checked={checked}
+              onCheckedChange={(value) => onToggle(section.key, !!value)}
+              onSelect={(event) => event.preventDefault()}
+            >
+              {section.label}
+            </DropdownMenuCheckboxItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

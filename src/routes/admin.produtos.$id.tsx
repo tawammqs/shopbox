@@ -31,10 +31,10 @@ export const Route = createFileRoute("/admin/produtos/$id")({
 });
 
 const FEATURED_SECTIONS = [
-  { id: "ofertas", label: "Produtos em oferta" },
-  { id: "destaques", label: "Produtos em destaque" },
-  { id: "lancamentos", label: "Produtos novos" },
-  { id: "principal", label: "Vitrine principal" },
+  { id: "destaque", label: "⭐ Destaque" },
+  { id: "lancamento", label: "🆕 Lançamento" },
+  { id: "mais_vendido", label: "🔥 Mais vendido" },
+  { id: "promocao", label: "🎯 Promoção" },
 ] as const;
 
 type ColorRow = { id?: string; name: string; hex: string; position: number };
@@ -78,6 +78,7 @@ function ProductFormPage() {
   // Flags
   const [active, setActive] = useState(true);
   const [freeShipping, setFreeShipping] = useState(false);
+  const [onSale, setOnSale] = useState(false);
   const [lowStock, setLowStock] = useState("5");
 
   // Media
@@ -143,6 +144,7 @@ function ProductFormPage() {
       setSeoDesc(p.seo_description ?? p.meta_description ?? "");
       setActive(p.active);
       setFreeShipping(!!p.free_shipping);
+      setOnSale(!!p.on_sale || p.featured_sections?.includes("promocao") || p.featured_sections?.includes("ofertas") || p.promo_price != null);
       setLowStock(String(p.low_stock_threshold ?? 5));
       setProductVideoUrl(p.video_url ?? null);
       setProductVideoType((p.video_type ?? null) as VideoType | null);
@@ -245,6 +247,7 @@ function ProductFormPage() {
         store_id: store.id,
         title: title.trim(),
         slug: s,
+        brand: brand || null,
         brand_name: brand || null,
         description: description || null,
         price: Number(price) || 0,
@@ -256,7 +259,8 @@ function ProductFormPage() {
         stock_quantity: stockMode === "limited" && stockQuantity ? Number(stockQuantity) : null,
         category_id: categoryIds[0] ?? null,
         tags: tags as any,
-        featured_sections: featuredSections as any,
+        featured_sections: Array.from(new Set([...(featuredSections as string[]), ...(onSale ? ["promocao"] : [])])) as any,
+        on_sale: onSale,
         seo_title: seoTitle || null,
         seo_description: seoDesc || null,
         meta_title: seoTitle || null,
@@ -721,9 +725,10 @@ function ProductFormPage() {
                   >
                     <Checkbox
                       checked={checked}
-                      onCheckedChange={(v) =>
-                        setFeaturedSections(v ? [...featuredSections, s.id] : featuredSections.filter((x) => x !== s.id))
-                      }
+                      onCheckedChange={(v) => {
+                        setFeaturedSections(v ? [...featuredSections, s.id] : featuredSections.filter((x) => x !== s.id));
+                        if (s.id === "promocao") setOnSale(!!v);
+                      }}
                     />
                     {s.label}
                   </label>
@@ -791,14 +796,27 @@ function ProductFormPage() {
             <div className="flex items-center justify-between">
               <div className="text-sm">Destacar na página inicial</div>
               <Switch
-                checked={featuredSections.includes("destaques")}
+                checked={featuredSections.includes("destaque")}
                 onCheckedChange={(v) =>
                   setFeaturedSections(
                     v
-                      ? Array.from(new Set([...featuredSections, "destaques"]))
-                      : featuredSections.filter((x) => x !== "destaques"),
+                      ? Array.from(new Set([...featuredSections, "destaque"]))
+                      : featuredSections.filter((x) => x !== "destaque"),
                   )
                 }
+              />
+            </div>
+          </Section>
+
+          <Section title="Promoção">
+            <div className="flex items-center justify-between">
+              <div className="text-sm">Mostrar em vitrines de promoção</div>
+              <Switch
+                checked={onSale}
+                onCheckedChange={(v) => {
+                  setOnSale(v);
+                  setFeaturedSections(v ? Array.from(new Set([...featuredSections, "promocao"])) : featuredSections.filter((x) => x !== "promocao"));
+                }}
               />
             </div>
           </Section>
