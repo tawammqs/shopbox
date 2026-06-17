@@ -56,7 +56,34 @@ function ProductsListPage() {
   });
 
   const allProducts = productsQuery.data ?? [];
-  const products = allProducts.filter((p: any) => productMatchesListFilter(p, sectionFilter));
+  const activeSection = isSectionFilter(sectionFilter) ? sectionFilter : null;
+
+  // Positions for the active section filter (controls order in the home + admin list)
+  const positionsQuery = useQuery({
+    queryKey: ["admin-product-positions", store?.id, activeSection],
+    enabled: !!store && !!activeSection,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_section_positions")
+        .select("product_id, position")
+        .eq("store_id", store!.id)
+        .eq("section_key", activeSection!);
+      if (error) throw error;
+      return new Map<string, number>((data ?? []).map((r: any) => [r.product_id, r.position]));
+    },
+  });
+
+  const products = useMemo(() => {
+    const filtered = allProducts.filter((p: any) => productMatchesListFilter(p, sectionFilter));
+    if (!activeSection) return filtered;
+    const posMap = positionsQuery.data ?? new Map<string, number>();
+    return [...filtered].sort((a: any, b: any) => {
+      const pa = posMap.has(a.id) ? (posMap.get(a.id) as number) : 999_999;
+      const pb = posMap.has(b.id) ? (posMap.get(b.id) as number) : 999_999;
+      return pa - pb;
+    });
+  }, [allProducts, sectionFilter, activeSection, positionsQuery.data]);
+
   const productCount = allProducts.length;
   const limitReached = productCount >= maxProducts;
   const limitWarning = productCount >= maxProducts - 5 && !limitReached;
