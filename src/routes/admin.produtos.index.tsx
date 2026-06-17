@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree, Tag } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree, Tag, ArrowUp, ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,11 @@ import { formatBRL } from "@/lib/format";
 import { planAllows, PLAN_LIMITS } from "@/lib/plans";
 import { PRODUCT_LIST_FILTERS, PRODUCT_SECTION_ITEMS, type ProductListFilterKey, type ProductSectionKey, hasProductSection, productMatchesListFilter, toggleProductSection } from "@/lib/product-sections";
 import { toast } from "sonner";
+
+const SECTION_KEYS: ProductSectionKey[] = ["destaque", "lancamento", "mais_vendido", "promocao"];
+function isSectionFilter(k: ProductListFilterKey): k is ProductSectionKey {
+  return (SECTION_KEYS as string[]).includes(k as string);
+}
 
 export const Route = createFileRoute("/admin/produtos/")({
   component: ProductsListPage,
