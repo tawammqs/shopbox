@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { X, Lock } from "lucide-react";
-import { useCart } from "@/stores/cart";
+import { X, Lock, Tag } from "lucide-react";
+import { useCart, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront } from "../StoreContext";
 import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { formatBRL, effectivePrice, discountPct } from "@/lib/format";
-import { fetchBestSellersForStore, type ProductCardData } from "@/lib/storefront";
+import { fetchBestSellersForStore, fetchActiveCoupon, type ProductCardData } from "@/lib/storefront";
 
 import { CheckoutFormDialog } from "../CheckoutFormDialog";
 import { trackAddToCart, trackInitiateCheckout } from "@/lib/tracking";
@@ -37,7 +37,10 @@ export function TheShoesCartDrawer() {
   const removeItem = useCart((s) => s.removeItem);
   const addItem = useCart((s) => s.addItem);
   const coupon = useCart((s) => s.coupon);
+  const setCoupon = useCart((s) => s.setCoupon);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
 
   const { data: cust } = useStorefrontCustomizations(store.id);
   const cartCfg = cust?.cart ?? {};
@@ -96,6 +99,42 @@ export function TheShoesCartDrawer() {
       value: total,
     });
     setCheckoutOpen(true);
+  };
+
+  const applyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code) return;
+    setCouponBusy(true);
+    try {
+      const c = await fetchActiveCoupon(store.id, code);
+      if (!c) {
+        toast.error("Cupom inválido ou expirado");
+        return;
+      }
+      if (subtotal < Number(c.min_cart)) {
+        toast.error(`Cupom requer pedido mínimo de ${formatBRL(Number(c.min_cart))}`);
+        return;
+      }
+      if (c.max_uses && (c.uses_count ?? 0) >= c.max_uses) {
+        toast.error("Este cupom já atingiu o limite de uso");
+        return;
+      }
+      const value = Number(c.value);
+      const discount = c.type === "percent" ? subtotal * (value / 100) : value;
+      const applied: AppliedCoupon = {
+        code: c.code,
+        type: c.type as "percent" | "fixed",
+        value,
+        discount: Math.min(discount, subtotal),
+      };
+      setCoupon(applied);
+      setCouponCode("");
+      toast.success(`Cupom aplicado: -${formatBRL(applied.discount)}`);
+    } catch {
+      toast.error("Erro ao validar cupom");
+    } finally {
+      setCouponBusy(false);
+    }
   };
 
   return (
@@ -223,6 +262,43 @@ export function TheShoesCartDrawer() {
                 </div>
               )}
 
+              {/* Coupon */}
+              <div className="mt-4 rounded-lg border border-[#eee] p-3">
+                <label className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#666]">
+                  <Tag className="h-3 w-3" /> Cupom de desconto
+                </label>
+                {coupon ? (
+                  <div className="flex items-center justify-between rounded-md bg-green-50 px-3 py-2 text-[13px]">
+                    <span className="font-medium text-green-700">
+                      ✅ Cupom "{coupon.code.toUpperCase()}" aplicado (−{formatBRL(coupon.discount)})
+                    </span>
+                    <button
+                      onClick={() => setCoupon(null)}
+                      className="ml-2 text-[#aaa] hover:text-red-500"
+                      aria-label="Remover cupom"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="Código do cupom"
+                      className="h-9 flex-1 rounded-md border border-[#e0e0e0] bg-white px-3 text-sm uppercase outline-none focus:border-[#111]"
+                    />
+                    <button
+                      onClick={applyCoupon}
+                      disabled={couponBusy || !couponCode.trim()}
+                      className="rounded-md bg-[#111] px-4 text-sm font-semibold text-white disabled:opacity-50"
+                    >
+                      {couponBusy ? "..." : "Aplicar"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Shipping info note */}
               <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#f8f8f8] px-4 py-3">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full" style={{ background: "#dfdac8" }}>
@@ -254,9 +330,21 @@ export function TheShoesCartDrawer() {
                 </p>
               </div>
 
-              <div className="mb-3 flex items-center justify-between py-2">
-                <span className="text-[15px] font-semibold text-[#111]">Total</span>
-                <span className="text-[15px] font-bold text-[#111]">{formatBRL(total)}</span>
+              <div className="mb-3 space-y-1 py-2 text-[14px]">
+                <div className="flex items-center justify-between text-[#555]">
+                  <span>Subtotal</span>
+                  <span>{formatBRL(subtotal)}</span>
+                </div>
+                {coupon && (
+                  <div className="flex items-center justify-between text-green-600">
+                    <span>Desconto ({coupon.code.toUpperCase()})</span>
+                    <span>−{formatBRL(coupon.discount)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between border-t border-[#f0f0f0] pt-2 text-[15px] font-semibold text-[#111]">
+                  <span>Total</span>
+                  <span className="font-bold">{formatBRL(total)}</span>
+                </div>
               </div>
 
               <button onClick={checkout}

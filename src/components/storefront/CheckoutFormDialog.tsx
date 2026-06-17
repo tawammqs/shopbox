@@ -146,6 +146,26 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
 
       if (error) throw error;
 
+      // Increment coupon usage counter (best-effort, non-blocking)
+      if (coupon?.code) {
+        try {
+          const { data: c } = await supabase
+            .from("coupons")
+            .select("id, uses_count")
+            .eq("store_id", store.id)
+            .ilike("code", coupon.code)
+            .maybeSingle();
+          if (c?.id) {
+            await supabase
+              .from("coupons")
+              .update({ uses_count: (c.uses_count ?? 0) + 1 })
+              .eq("id", c.id);
+          }
+        } catch {
+          // ignore
+        }
+      }
+
       const customer: CustomerInfo = {
         name: form.name,
         whatsapp: form.whatsapp,
