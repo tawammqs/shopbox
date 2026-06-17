@@ -62,6 +62,12 @@ export type StorefrontCustomizations = {
     addAction?: string;
     suggestRelated?: boolean;
     shippingCalc?: boolean;
+    freeShippingMin?: number;
+    checkoutButtonBg?: string;
+    checkoutButtonText?: string;
+    suggestButtonBg?: string;
+    suggestButtonText?: string;
+    truckIconColor?: string;
   };
   footer?: {
     useCustomColors?: boolean;
