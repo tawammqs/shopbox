@@ -99,11 +99,13 @@ function SectionSwitch({ sectionKey, cust }: { sectionKey: HomepageSectionKey; c
     case "banners_rotativos":
       return <BannersRotativosRender cfg={cfg} />;
     case "produtos_oferta":
-      return <ProductsByTagRender cfg={cfg} defaultTag="ofertas" />;
+      return <ProductsByTagRender cfg={cfg} defaultTag="promocao" />;
     case "produtos_destaque":
-      return <ProductsByTagRender cfg={cfg} defaultTag="destaques" />;
+      return <ProductsByTagRender cfg={cfg} defaultTag="destaque" />;
     case "produtos_novos":
       return <ProductsByCategoryRender cfg={cfg} />;
+    case "produto_principal":
+      return <ProdutoPrincipalRender cfg={cfg} />;
     case "boas_vindas_marquee":
     case "anuncios_marquee":
       return <MarqueeRender cfg={cfg} />;
