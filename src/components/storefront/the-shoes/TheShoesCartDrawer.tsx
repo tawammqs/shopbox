@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, Lock } from "lucide-react";
 import { useCart } from "@/stores/cart";
 import { useStorefront } from "../StoreContext";
+import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { formatBRL, effectivePrice, discountPct } from "@/lib/format";
 import { fetchBestSellersForStore, type ProductCardData } from "@/lib/storefront";
 
@@ -13,12 +14,12 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 const ACCENT = "#111111";
-const FREE_SHIPPING_THRESHOLD = 599.99;
+const DEFAULT_FREE_SHIPPING_THRESHOLD = 599.99;
 
-function TruckIcon({ size = 20 }: { size?: number }) {
+function TruckIcon({ size = 20, color = "white" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-      stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="1" y="3" width="13" height="13" rx="1" />
       <path d="M14 8h4l3 5v3h-7V8z" />
       <circle cx="5.5" cy="18.5" r="2" />
@@ -37,6 +38,15 @@ export function TheShoesCartDrawer() {
   const addItem = useCart((s) => s.addItem);
   const coupon = useCart((s) => s.coupon);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  const { data: cust } = useStorefrontCustomizations(store.id);
+  const cartCfg = cust?.cart ?? {};
+  const FREE_SHIPPING_THRESHOLD = cartCfg.freeShippingMin ?? DEFAULT_FREE_SHIPPING_THRESHOLD;
+  const checkoutBg = cartCfg.checkoutButtonBg ?? "#d9f523";
+  const checkoutText = cartCfg.checkoutButtonText ?? "#111111";
+  const suggestBg = cartCfg.suggestButtonBg ?? "#f0f0f0";
+  const suggestText = cartCfg.suggestButtonText ?? "#333333";
+  const truckColor = cartCfg.truckIconColor ?? "#ffffff";
 
   const items = useMemo(() => allItems.filter((i) => i.storeId === store.id), [allItems, store.id]);
   const subtotal = useMemo(() => items.reduce((a, b) => a + b.unitPrice * b.quantity, 0), [items]);
@@ -201,7 +211,8 @@ export function TheShoesCartDrawer() {
                               )}
                             </div>
                             <button onClick={() => addCrossSell(p as ProductCardData)}
-                              className="mt-2 rounded-md bg-[#f0f0f0] px-3 py-1 text-[11px] font-semibold text-[#333] hover:bg-[#e0e0e0]">
+                              style={{ background: suggestBg, color: suggestText }}
+                              className="mt-2 rounded-md px-3 py-1 text-[11px] font-semibold hover:opacity-90">
                               Eu quero
                             </button>
                           </div>
@@ -215,7 +226,7 @@ export function TheShoesCartDrawer() {
               {/* Shipping info note */}
               <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#f8f8f8] px-4 py-3">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full" style={{ background: "#dfdac8" }}>
-                  <TruckIcon size={20} />
+                  <TruckIcon size={20} color={truckColor} />
                 </span>
                 <p className="text-[12px] text-[#666]">
                   O frete será combinado pelo WhatsApp após a finalização do pedido.
@@ -250,8 +261,8 @@ export function TheShoesCartDrawer() {
 
               <button onClick={checkout}
                 className="flex h-[52px] w-full items-center justify-center gap-[10px] rounded-lg text-[15px] font-bold hover:opacity-95"
-                style={{ background: "#d9f523", color: "#111111" }}>
-                <Lock className="h-4 w-4" style={{ color: "#111111" }} />
+                style={{ background: checkoutBg, color: checkoutText }}>
+                <Lock className="h-4 w-4" style={{ color: checkoutText }} />
                 Finalizar compra
               </button>
 
