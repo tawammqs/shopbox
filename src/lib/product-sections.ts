@@ -10,8 +10,9 @@ export const PRODUCT_SECTION_ITEMS: { key: ProductSectionKey; label: string }[] 
 
 export const PRODUCT_LIST_FILTERS: { key: ProductListFilterKey; label: string }[] = [
   { key: "todos", label: "Todos" },
-  ...PRODUCT_SECTION_ITEMS,
+  ...PRODUCT_SECTION_ITEMS.filter((item) => item.key !== "promocao"),
   { key: "marca", label: "🏷️ Marca" },
+  PRODUCT_SECTION_ITEMS.find((item) => item.key === "promocao")!,
 ];
 
 export const PRODUCT_SECTION_ALIASES: Record<ProductSectionKey, string[]> = {
