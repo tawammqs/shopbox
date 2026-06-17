@@ -394,7 +394,53 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
           <Loader2 className="h-6 w-6 animate-spin text-white" />
         </div>
       )}
+
+      <EditOrderDialog
+        order={editOrder}
+        onClose={() => setEditOrder(null)}
+        onSaved={({ id, items, subtotal, total }) => {
+          setOrders((cur) =>
+            cur.map((o) => (o.id === id ? { ...o, items, subtotal, total } : o)),
+          );
+        }}
+      />
+
+      <AlertDialog open={!!deleteOrderId} onOpenChange={(open) => !open && setDeleteOrderId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir esta venda?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O pedido será removido permanentemente do seu histórico de vendas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleting}
+              onClick={async (e) => {
+                e.preventDefault();
+                if (!deleteOrderId) return;
+                setDeleting(true);
+                const id = deleteOrderId;
+                const { error } = await supabase.from("orders").delete().eq("id", id);
+                setDeleting(false);
+                if (error) {
+                  toast.error("Erro ao excluir a venda.");
+                  return;
+                }
+                setOrders((cur) => cur.filter((o) => o.id !== id));
+                setDeleteOrderId(null);
+                toast.success("Venda excluída.");
+              }}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {deleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }
 
