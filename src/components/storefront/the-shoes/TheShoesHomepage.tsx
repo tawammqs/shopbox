@@ -55,6 +55,7 @@ import {
   FaqRender,
   DepoimentosRender,
   VideoSectionRender,
+  ProdutoPrincipalRender,
 } from "./HomepageSectionRenderers";
 import { MioVipSection } from "../MioAddonOverlays";
 
