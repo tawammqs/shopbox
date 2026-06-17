@@ -101,6 +101,42 @@ export function TheShoesCartDrawer() {
     setCheckoutOpen(true);
   };
 
+  const applyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code) return;
+    setCouponBusy(true);
+    try {
+      const c = await fetchActiveCoupon(store.id, code);
+      if (!c) {
+        toast.error("Cupom inválido ou expirado");
+        return;
+      }
+      if (subtotal < Number(c.min_cart)) {
+        toast.error(`Cupom requer pedido mínimo de ${formatBRL(Number(c.min_cart))}`);
+        return;
+      }
+      if (c.max_uses && (c.uses_count ?? 0) >= c.max_uses) {
+        toast.error("Este cupom já atingiu o limite de uso");
+        return;
+      }
+      const value = Number(c.value);
+      const discount = c.type === "percent" ? subtotal * (value / 100) : value;
+      const applied: AppliedCoupon = {
+        code: c.code,
+        type: c.type as "percent" | "fixed",
+        value,
+        discount: Math.min(discount, subtotal),
+      };
+      setCoupon(applied);
+      setCouponCode("");
+      toast.success(`Cupom aplicado: -${formatBRL(applied.discount)}`);
+    } catch {
+      toast.error("Erro ao validar cupom");
+    } finally {
+      setCouponBusy(false);
+    }
+  };
+
   return (
     <>
       <div onClick={close}
