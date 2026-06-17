@@ -37,7 +37,10 @@ export function TheShoesCartDrawer() {
   const removeItem = useCart((s) => s.removeItem);
   const addItem = useCart((s) => s.addItem);
   const coupon = useCart((s) => s.coupon);
+  const setCoupon = useCart((s) => s.setCoupon);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
 
   const { data: cust } = useStorefrontCustomizations(store.id);
   const cartCfg = cust?.cart ?? {};
