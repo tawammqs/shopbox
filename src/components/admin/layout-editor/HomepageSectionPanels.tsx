@@ -695,6 +695,8 @@ export function SectionEditor({
       return <DepoimentosPanel cfg={cfg} onChange={onChange} />;
     case "video":
       return <VideoSectionPanel cfg={cfg} onChange={onChange} />;
+    case "produto_principal":
+      return <ProdutoPrincipalPanel storeId={storeId} cfg={cfg} onChange={onChange} />;
     default:
       return (
         <p className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-[#6b7280]">
