@@ -157,7 +157,7 @@ export function MioVipSection() {
   };
 
   return (
-    <section style={{ position: "relative", width: "100%", padding: "48px 20px", overflow: "hidden", background: "#f3f3f3" }}>
+    <section id="grupo-vip" style={{ position: "relative", width: "100%", padding: "48px 20px", overflow: "hidden", background: "#f3f3f3" }}>
       <div style={{ position: "relative", zIndex: 1, maxWidth: 440, margin: "0 auto" }}>
         <div style={{
           background: "#fff", borderRadius: 18, padding: "32px 24px",

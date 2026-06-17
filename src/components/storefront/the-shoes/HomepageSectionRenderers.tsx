@@ -16,7 +16,7 @@ import {
   Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
+import { fetchProductsByHomepageSection, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { useStorefront } from "../StoreContext";
 import { cn } from "@/lib/utils";
 import type {
@@ -254,6 +254,8 @@ export function ProductsByCategoryRender({ cfg }: { cfg: ProductsCategoryCfg }) 
         productIds = Array.from(new Set((links ?? []).map((l: any) => l.product_id)));
         if (productIds.length === 0) return [];
       }
+      if (!cfg.category_id) return fetchProductsByHomepageSection(store.id, "lancamento", limit);
+
       let sb = supabase
         .from("products")
         .select(`id, slug, title, brand, price, promo_price, tags,

@@ -79,8 +79,10 @@ function MioCustomHomepage() {
     <div className="ts-root">
       {order.map((key) => {
         if (key === "addon:grupo_vip") return <MioVipSection key={key} />;
+        if (key === "addon:video_commerce") return <VideoSectionRender key={key} cfg={getSectionConfig(cust, "video")} />;
         if (!(key in {} || true)) return null; // keep flow simple
         const sk = key as HomepageSectionKey;
+        if (sk === "video" && order.includes("addon:video_commerce")) return null;
         if (!isSectionVisible(cust, sk)) return null;
         return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
       })}

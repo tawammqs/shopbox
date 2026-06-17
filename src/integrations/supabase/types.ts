@@ -1070,6 +1070,7 @@ export type Database = {
           low_stock_threshold: number
           meta_description: string | null
           meta_title: string | null
+          on_sale: boolean | null
           price: number
           product_type: string | null
           promo_ends_at: string | null
@@ -1109,6 +1110,7 @@ export type Database = {
           low_stock_threshold?: number
           meta_description?: string | null
           meta_title?: string | null
+          on_sale?: boolean | null
           price?: number
           product_type?: string | null
           promo_ends_at?: string | null
@@ -1148,6 +1150,7 @@ export type Database = {
           low_stock_threshold?: number
           meta_description?: string | null
           meta_title?: string | null
+          on_sale?: boolean | null
           price?: number
           product_type?: string | null
           promo_ends_at?: string | null
