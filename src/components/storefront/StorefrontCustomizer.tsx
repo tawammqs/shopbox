@@ -75,6 +75,8 @@ export type StorefrontCustomizations = {
     showContact?: boolean;
     phone?: string;
     email?: string;
+    store_name?: string;
+    about_text?: string;
   };
   customCss?: string;
 };
