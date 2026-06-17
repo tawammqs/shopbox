@@ -30,7 +30,9 @@ import type {
   FaqCfg,
   DepoimentosCfg,
   VideoSectionCfg,
+  ProdutoPrincipalCfg,
 } from "@/lib/homepage-sections";
+import type { ProductSectionKey } from "@/lib/product-sections";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   Truck, CreditCard, ShieldCheck, Tag, Package, Percent, Gift, Clock,
