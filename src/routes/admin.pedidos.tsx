@@ -96,6 +96,10 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
   const [openOrder, setOpenOrder] = useState<OrderDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [editOrder, setEditOrder] = useState<EditableOrder | null>(null);
+  const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
 
   const load = async () => {
     setLoading(true);
