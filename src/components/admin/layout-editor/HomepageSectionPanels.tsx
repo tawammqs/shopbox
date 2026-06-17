@@ -17,7 +17,10 @@ import {
   type FaqCfg,
   type DepoimentosCfg,
   type VideoSectionCfg,
+  type ProdutoPrincipalCfg,
 } from "@/lib/homepage-sections";
+import { hasProductSection } from "@/lib/product-sections";
+import { Link } from "@tanstack/react-router";
 
 // ---------------- shared mini UI ----------------
 function FieldLabel({ children }: { children: React.ReactNode }) {
