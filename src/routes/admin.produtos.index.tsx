@@ -462,6 +462,7 @@ function ProductsListPage() {
                   disabled={!planAllows(planSlug, "bulk_actions")}
                 />
               </th>
+              {activeSection && <th className="p-2 text-left w-10">Ordem</th>}
               <th className="p-3 text-left">Produto</th>
               <th className="p-3 text-left hidden md:table-cell">Categoria</th>
               <th className="p-3 text-left">Preço</th>
@@ -472,10 +473,10 @@ function ProductsListPage() {
           </thead>
           <tbody>
             {productsQuery.isLoading && (
-              <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Carregando…</td></tr>
+              <tr><td colSpan={activeSection ? 8 : 7} className="p-6 text-center text-muted-foreground">Carregando…</td></tr>
             )}
             {!productsQuery.isLoading && products.length === 0 && (
-              <tr><td colSpan={7} className="p-12 text-center text-muted-foreground">Nenhum produto encontrado para este filtro.</td></tr>
+              <tr><td colSpan={activeSection ? 8 : 7} className="p-12 text-center text-muted-foreground">Nenhum produto encontrado para este filtro.</td></tr>
             )}
             {products.map((p: any, idx: number) => {
               const img = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
