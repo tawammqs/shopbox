@@ -82,12 +82,22 @@ export function EditOrderDialog({
     let cancelled = false;
     setSearching(true);
     const t = setTimeout(async () => {
-      const { data } = await supabase
+      // Tolerant tokenizer: split by whitespace AND letter↔digit boundaries
+      // so "nb9060" matches "NB 9060 | ..." and "9060 nb" also works.
+      const tokens = q
+        .toLowerCase()
+        .replace(/([a-zà-ÿ])(\d)/g, "$1 $2")
+        .replace(/(\d)([a-zà-ÿ])/g, "$1 $2")
+        .split(/\s+/)
+        .filter((t) => t.length >= 1);
+      let query = supabase
         .from("products")
         .select("id, title, slug, price, promo_price, product_images(image_url, sort_order)")
-        .eq("store_id", order.store_id)
-        .ilike("title", `%${q}%`)
-        .limit(6);
+        .eq("store_id", order.store_id);
+      for (const tok of tokens) {
+        query = query.ilike("title", `%${tok}%`);
+      }
+      const { data } = await query.limit(6);
       if (cancelled) return;
       const hits: ProductHit[] = (data ?? []).map((p: any) => {
         const imgs = (p.product_images ?? []).slice().sort(
