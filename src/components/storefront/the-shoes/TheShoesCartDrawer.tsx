@@ -39,6 +39,15 @@ export function TheShoesCartDrawer() {
   const coupon = useCart((s) => s.coupon);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
+  const { data: cust } = useStorefrontCustomizations(store.id);
+  const cartCfg = cust?.cart ?? {};
+  const FREE_SHIPPING_THRESHOLD = cartCfg.freeShippingMin ?? DEFAULT_FREE_SHIPPING_THRESHOLD;
+  const checkoutBg = cartCfg.checkoutButtonBg ?? "#d9f523";
+  const checkoutText = cartCfg.checkoutButtonText ?? "#111111";
+  const suggestBg = cartCfg.suggestButtonBg ?? "#f0f0f0";
+  const suggestText = cartCfg.suggestButtonText ?? "#333333";
+  const truckColor = cartCfg.truckIconColor ?? "#ffffff";
+
   const items = useMemo(() => allItems.filter((i) => i.storeId === store.id), [allItems, store.id]);
   const subtotal = useMemo(() => items.reduce((a, b) => a + b.unitPrice * b.quantity, 0), [items]);
   const total = Math.max(0, subtotal - (coupon?.discount ?? 0));
