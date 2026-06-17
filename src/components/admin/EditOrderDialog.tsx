@@ -92,7 +92,7 @@ export function EditOrderDialog({
         .filter((t) => t.length >= 1);
       let query = supabase
         .from("products")
-        .select("id, title, slug, price, promo_price, product_images(image_url, sort_order)")
+        .select("id, title, slug, price, promo_price, product_images(url, position)")
         .eq("store_id", order.store_id);
       for (const tok of tokens) {
         query = query.ilike("title", `%${tok}%`);
@@ -101,7 +101,7 @@ export function EditOrderDialog({
       if (cancelled) return;
       const hits: ProductHit[] = (data ?? []).map((p: any) => {
         const imgs = (p.product_images ?? []).slice().sort(
-          (a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0),
+          (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0),
         );
         return {
           id: p.id,
@@ -109,7 +109,7 @@ export function EditOrderDialog({
           slug: p.slug,
           price: Number(p.price) || 0,
           promo_price: p.promo_price != null ? Number(p.promo_price) : null,
-          image: imgs[0]?.image_url ?? null,
+          image: imgs[0]?.url ?? null,
         };
       });
       setResults(hits);
