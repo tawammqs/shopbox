@@ -477,12 +477,38 @@ function ProductsListPage() {
             {!productsQuery.isLoading && products.length === 0 && (
               <tr><td colSpan={7} className="p-12 text-center text-muted-foreground">Nenhum produto encontrado para este filtro.</td></tr>
             )}
-            {products.map((p: any) => {
+            {products.map((p: any, idx: number) => {
               const img = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
               const stock = (p.product_stock ?? []).reduce((s: number, x: any) => s + (x.quantity ?? 0), 0);
               const lowStock = stock > 0 && stock <= (p.low_stock_threshold ?? 5);
               return (
                 <tr key={p.id} className="border-t border-border hover:bg-muted/30">
+                  {activeSection && (
+                    <td className="p-2 align-middle">
+                      <div className="flex flex-col gap-0.5">
+                        <button
+                          type="button"
+                          aria-label="Mover para cima"
+                          title="Mover para cima"
+                          disabled={idx === 0 || reorderSection.isPending}
+                          onClick={() => moveProduct(idx, -1)}
+                          className="grid h-6 w-6 place-items-center rounded border border-border bg-card text-muted-foreground hover:bg-muted disabled:opacity-30"
+                        >
+                          <ArrowUp className="h-3 w-3" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Mover para baixo"
+                          title="Mover para baixo"
+                          disabled={idx === products.length - 1 || reorderSection.isPending}
+                          onClick={() => moveProduct(idx, 1)}
+                          className="grid h-6 w-6 place-items-center rounded border border-border bg-card text-muted-foreground hover:bg-muted disabled:opacity-30"
+                        >
+                          <ArrowDown className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                   <td className="p-3">
                     <Checkbox
                       checked={selected.has(p.id)}
