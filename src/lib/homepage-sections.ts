@@ -132,6 +132,13 @@ export type DepoimentosCfg = { title: string; background: string; text_color?: s
 
 export type VideoSectionCfg = { title: string };
 
+export type ProdutoPrincipalCfg = {
+  title: string;
+  product_id: string | null;
+  promotion_ends_at: string | null; // ISO datetime
+  show_countdown: boolean;
+};
+
 export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   banners_rotativos: { items: [], interval_seconds: 5, autoplay: true } as BannerRotativoCfg,
   produtos_oferta: { title: "Ofertas", limit: 8, show_more_button: true, tag: "ofertas", display_mode: "carousel" } as ProductsTagCfg,
@@ -153,6 +160,7 @@ export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   faq: { title: "Perguntas Frequentes", subtitle: "", items: [], background: "#dfdac8", text_color: "#0f0f0f" } as FaqCfg,
   depoimentos: { title: "O que dizem nossos clientes", background: "#ffffff", text_color: "#111111", items: [] } as DepoimentosCfg,
   video: { title: "Veja mais detalhes em vídeo" } as VideoSectionCfg,
+  produto_principal: { title: "Oferta imperdível", product_id: null, promotion_ends_at: null, show_countdown: true } as ProdutoPrincipalCfg,
 };
 
 export function getHomepage(cust: any): HomepageConfig {
