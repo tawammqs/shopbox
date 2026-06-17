@@ -75,7 +75,6 @@ export function EditOrderDialog({
   useEffect(() => {
     if (!order) return;
     const q = search.trim();
-    console.log("[DEBUG] searchProduct:", search, "| store_id:", order?.store_id);
     if (q.length < 2) {
       setResults([]);
       return;
@@ -93,17 +92,16 @@ export function EditOrderDialog({
         .filter((t) => t.length >= 1);
       let query = supabase
         .from("products")
-        .select("id, title, slug, price, promo_price, product_images(image_url, sort_order)")
+        .select("id, title, slug, price, promo_price, product_images(url, position)")
         .eq("store_id", order.store_id);
       for (const tok of tokens) {
         query = query.ilike("title", `%${tok}%`);
       }
-      const { data, error } = await query.limit(6);
-      console.log("[DEBUG] resultado:", data, "| erro:", error);
+      const { data } = await query.limit(6);
       if (cancelled) return;
       const hits: ProductHit[] = (data ?? []).map((p: any) => {
         const imgs = (p.product_images ?? []).slice().sort(
-          (a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0),
+          (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0),
         );
         return {
           id: p.id,
@@ -111,7 +109,7 @@ export function EditOrderDialog({
           slug: p.slug,
           price: Number(p.price) || 0,
           promo_price: p.promo_price != null ? Number(p.promo_price) : null,
-          image: imgs[0]?.image_url ?? null,
+          image: imgs[0]?.url ?? null,
         };
       });
       setResults(hits);
@@ -276,9 +274,6 @@ export function EditOrderDialog({
               placeholder="Buscar produto para adicionar..."
               className="pl-9"
             />
-            <p className="mt-1 text-xs text-red-500">
-              DEBUG: buscando por "{search}" | {results.length} resultados
-            </p>
             {(results.length > 0 || searching) && (
               <div className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
                 {searching ? (
