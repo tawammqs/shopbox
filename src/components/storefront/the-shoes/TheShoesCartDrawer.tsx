@@ -262,6 +262,43 @@ export function TheShoesCartDrawer() {
                 </div>
               )}
 
+              {/* Coupon */}
+              <div className="mt-4 rounded-lg border border-[#eee] p-3">
+                <label className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#666]">
+                  <Tag className="h-3 w-3" /> Cupom de desconto
+                </label>
+                {coupon ? (
+                  <div className="flex items-center justify-between rounded-md bg-green-50 px-3 py-2 text-[13px]">
+                    <span className="font-medium text-green-700">
+                      ✅ Cupom "{coupon.code.toUpperCase()}" aplicado (−{formatBRL(coupon.discount)})
+                    </span>
+                    <button
+                      onClick={() => setCoupon(null)}
+                      className="ml-2 text-[#aaa] hover:text-red-500"
+                      aria-label="Remover cupom"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="Código do cupom"
+                      className="h-9 flex-1 rounded-md border border-[#e0e0e0] bg-white px-3 text-sm uppercase outline-none focus:border-[#111]"
+                    />
+                    <button
+                      onClick={applyCoupon}
+                      disabled={couponBusy || !couponCode.trim()}
+                      className="rounded-md bg-[#111] px-4 text-sm font-semibold text-white disabled:opacity-50"
+                    >
+                      {couponBusy ? "..." : "Aplicar"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Shipping info note */}
               <div className="mt-4 flex items-center gap-3 rounded-lg bg-[#f8f8f8] px-4 py-3">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full" style={{ background: "#dfdac8" }}>
