@@ -330,9 +330,21 @@ export function TheShoesCartDrawer() {
                 </p>
               </div>
 
-              <div className="mb-3 flex items-center justify-between py-2">
-                <span className="text-[15px] font-semibold text-[#111]">Total</span>
-                <span className="text-[15px] font-bold text-[#111]">{formatBRL(total)}</span>
+              <div className="mb-3 space-y-1 py-2 text-[14px]">
+                <div className="flex items-center justify-between text-[#555]">
+                  <span>Subtotal</span>
+                  <span>{formatBRL(subtotal)}</span>
+                </div>
+                {coupon && (
+                  <div className="flex items-center justify-between text-green-600">
+                    <span>Desconto ({coupon.code.toUpperCase()})</span>
+                    <span>−{formatBRL(coupon.discount)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between border-t border-[#f0f0f0] pt-2 text-[15px] font-semibold text-[#111]">
+                  <span>Total</span>
+                  <span className="font-bold">{formatBRL(total)}</span>
+                </div>
               </div>
 
               <button onClick={checkout}
