@@ -306,24 +306,53 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
                         </Select>
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                        {o.customer?.whatsapp ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                            className="border-[#25d366]/40 text-[#1a7a3e] hover:bg-[#25d366]/10"
-                          >
-                            <a
-                              href={`https://wa.me/${o.customer.whatsapp.replace(/\D/g, "")}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                        <div className="flex items-center justify-end gap-1">
+                          {o.customer?.whatsapp ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              asChild
+                              className="border-[#25d366]/40 text-[#1a7a3e] hover:bg-[#25d366]/10"
                             >
-                              <MessageCircle className="h-3.5 w-3.5" />
-                              WhatsApp
-                            </a>
-                          </Button>
-                        ) : null}
+                              <a
+                                href={`https://wa.me/${o.customer.whatsapp.replace(/\D/g, "")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <MessageCircle className="h-3.5 w-3.5" />
+                                WhatsApp
+                              </a>
+                            </Button>
+                          ) : null}
+                          <button
+                            onClick={() =>
+                              setEditOrder({
+                                id: o.id,
+                                store_id: storeId,
+                                order_number: o.order_number,
+                                items: o.items,
+                                subtotal: Number(o.subtotal ?? 0),
+                                discount_amount: Number(o.discount_amount ?? 0),
+                                total: Number(o.total ?? 0),
+                              })
+                            }
+                            className="rounded p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-600"
+                            aria-label="Editar venda"
+                            title="Editar venda"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteOrderId(o.id)}
+                            className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                            aria-label="Excluir venda"
+                            title="Excluir venda"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </td>
+
                     </tr>
                   );
                 })}
