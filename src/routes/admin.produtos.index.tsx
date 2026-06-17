@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree, Tag } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, Plus, Edit2, Trash2, AlertTriangle, Copy, Package, FolderTree, Tag, ArrowUp, ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,11 @@ import { formatBRL } from "@/lib/format";
 import { planAllows, PLAN_LIMITS } from "@/lib/plans";
 import { PRODUCT_LIST_FILTERS, PRODUCT_SECTION_ITEMS, type ProductListFilterKey, type ProductSectionKey, hasProductSection, productMatchesListFilter, toggleProductSection } from "@/lib/product-sections";
 import { toast } from "sonner";
+
+const SECTION_KEYS: ProductSectionKey[] = ["destaque", "lancamento", "mais_vendido", "promocao"];
+function isSectionFilter(k: ProductListFilterKey): k is ProductSectionKey {
+  return (SECTION_KEYS as string[]).includes(k as string);
+}
 
 export const Route = createFileRoute("/admin/produtos/")({
   component: ProductsListPage,
@@ -51,7 +56,34 @@ function ProductsListPage() {
   });
 
   const allProducts = productsQuery.data ?? [];
-  const products = allProducts.filter((p: any) => productMatchesListFilter(p, sectionFilter));
+  const activeSection = isSectionFilter(sectionFilter) ? sectionFilter : null;
+
+  // Positions for the active section filter (controls order in the home + admin list)
+  const positionsQuery = useQuery({
+    queryKey: ["admin-product-positions", store?.id, activeSection],
+    enabled: !!store && !!activeSection,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_section_positions")
+        .select("product_id, position")
+        .eq("store_id", store!.id)
+        .eq("section_key", activeSection!);
+      if (error) throw error;
+      return new Map<string, number>((data ?? []).map((r: any) => [r.product_id, r.position]));
+    },
+  });
+
+  const products = useMemo(() => {
+    const filtered = allProducts.filter((p: any) => productMatchesListFilter(p, sectionFilter));
+    if (!activeSection) return filtered;
+    const posMap = positionsQuery.data ?? new Map<string, number>();
+    return [...filtered].sort((a: any, b: any) => {
+      const pa = posMap.has(a.id) ? (posMap.get(a.id) as number) : 999_999;
+      const pb = posMap.has(b.id) ? (posMap.get(b.id) as number) : 999_999;
+      return pa - pb;
+    });
+  }, [allProducts, sectionFilter, activeSection, positionsQuery.data]);
+
   const productCount = allProducts.length;
   const limitReached = productCount >= maxProducts;
   const limitWarning = productCount >= maxProducts - 5 && !limitReached;
@@ -283,6 +315,39 @@ function ProductsListPage() {
     },
   });
 
+  const reorderSection = useMutation({
+    mutationFn: async ({ orderedIds }: { orderedIds: string[] }) => {
+      if (!activeSection || !store) return;
+      const rows = orderedIds.map((id, index) => ({
+        store_id: store.id,
+        product_id: id,
+        section_key: activeSection,
+        position: index,
+      }));
+      const { error } = await supabase
+        .from("product_section_positions")
+        .upsert(rows, { onConflict: "store_id,product_id,section_key" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-product-positions"] });
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Erro ao reordenar"),
+  });
+
+  function moveProduct(index: number, dir: -1 | 1) {
+    const swapIndex = index + dir;
+    if (swapIndex < 0 || swapIndex >= products.length) return;
+    const ids = products.map((p: any) => p.id);
+    [ids[index], ids[swapIndex]] = [ids[swapIndex], ids[index]];
+    // Optimistic cache update
+    qc.setQueryData(
+      ["admin-product-positions", store?.id, activeSection],
+      new Map<string, number>(ids.map((id, i) => [id, i])),
+    );
+    reorderSection.mutate({ orderedIds: ids });
+  }
+
   function toggleAll() {
     if (selected.size === products.length) setSelected(new Set());
     else setSelected(new Set(products.map((p) => p.id)));
@@ -397,6 +462,7 @@ function ProductsListPage() {
                   disabled={!planAllows(planSlug, "bulk_actions")}
                 />
               </th>
+              {activeSection && <th className="p-2 text-left w-10">Ordem</th>}
               <th className="p-3 text-left">Produto</th>
               <th className="p-3 text-left hidden md:table-cell">Categoria</th>
               <th className="p-3 text-left">Preço</th>
@@ -407,17 +473,43 @@ function ProductsListPage() {
           </thead>
           <tbody>
             {productsQuery.isLoading && (
-              <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Carregando…</td></tr>
+              <tr><td colSpan={activeSection ? 8 : 7} className="p-6 text-center text-muted-foreground">Carregando…</td></tr>
             )}
             {!productsQuery.isLoading && products.length === 0 && (
-              <tr><td colSpan={7} className="p-12 text-center text-muted-foreground">Nenhum produto encontrado para este filtro.</td></tr>
+              <tr><td colSpan={activeSection ? 8 : 7} className="p-12 text-center text-muted-foreground">Nenhum produto encontrado para este filtro.</td></tr>
             )}
-            {products.map((p: any) => {
+            {products.map((p: any, idx: number) => {
               const img = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
               const stock = (p.product_stock ?? []).reduce((s: number, x: any) => s + (x.quantity ?? 0), 0);
               const lowStock = stock > 0 && stock <= (p.low_stock_threshold ?? 5);
               return (
                 <tr key={p.id} className="border-t border-border hover:bg-muted/30">
+                  {activeSection && (
+                    <td className="p-2 align-middle">
+                      <div className="flex flex-col gap-0.5">
+                        <button
+                          type="button"
+                          aria-label="Mover para cima"
+                          title="Mover para cima"
+                          disabled={idx === 0 || reorderSection.isPending}
+                          onClick={() => moveProduct(idx, -1)}
+                          className="grid h-6 w-6 place-items-center rounded border border-border bg-card text-muted-foreground hover:bg-muted disabled:opacity-30"
+                        >
+                          <ArrowUp className="h-3 w-3" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Mover para baixo"
+                          title="Mover para baixo"
+                          disabled={idx === products.length - 1 || reorderSection.isPending}
+                          onClick={() => moveProduct(idx, 1)}
+                          className="grid h-6 w-6 place-items-center rounded border border-border bg-card text-muted-foreground hover:bg-muted disabled:opacity-30"
+                        >
+                          <ArrowDown className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                   <td className="p-3">
                     <Checkbox
                       checked={selected.has(p.id)}

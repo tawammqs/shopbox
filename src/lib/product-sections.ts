@@ -67,9 +67,9 @@ export function productHasBrand(product: any): boolean {
 }
 
 export function productIsInSection(product: any, key: ProductSectionKey): boolean {
-  // STRICT: only the explicit tag/featured_sections entry counts.
-  // No fallback via on_sale / promo_price / category name.
-  return hasProductSection(product?.featured_sections, key) || hasProductSection(product?.tags, key);
+  // STRICT: only featured_sections (the admin checkbox) is the source of truth.
+  // Legacy tag values were migrated into featured_sections via a one-time backfill.
+  return hasProductSection(product?.featured_sections, key);
 }
 
 export function productMatchesListFilter(product: any, filter: ProductListFilterKey): boolean {

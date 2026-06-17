@@ -240,24 +240,37 @@ function sectionKeyFromTag(tag: string): ProductSectionKey | null {
 }
 
 export async function fetchProductsByHomepageSection(storeId: string, sectionKey: ProductSectionKey, limit = 12) {
-  // STRICT filter — only products that explicitly carry the tag in featured_sections / tags.
-  // No fallback to on_sale, promo_price, or category names: if no product has the tag, the
-  // section is empty (and the renderer must not display it).
-  const { data, error } = await supabase
-    .from("products")
-    .select(
-      `id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
-       product_images(url, position),
-       product_colors(id, name, hex),
-       product_stock(quantity)`,
-    )
-    .eq("store_id", storeId)
-    .eq("active", true)
-    .order("created_at", { ascending: false })
-    .limit(80);
+  // STRICT filter — only products that explicitly carry the canonical section
+  // in featured_sections (the admin checkbox). Legacy tag values were migrated
+  // into featured_sections. No fallback to tags / on_sale / promo_price / category.
+  const [{ data, error }, { data: positions }] = await Promise.all([
+    supabase
+      .from("products")
+      .select(
+        `id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
+         product_images(url, position),
+         product_colors(id, name, hex),
+         product_stock(quantity)`,
+      )
+      .eq("store_id", storeId)
+      .eq("active", true)
+      .order("created_at", { ascending: false })
+      .limit(80),
+    supabase
+      .from("product_section_positions")
+      .select("product_id, position")
+      .eq("store_id", storeId)
+      .eq("section_key", sectionKey),
+  ]);
   if (error) throw error;
+  const posMap = new Map<string, number>((positions ?? []).map((p: any) => [p.product_id, p.position]));
   return (data ?? [])
-    .filter((p: any) => hasProductSection(p.featured_sections, sectionKey) || hasProductSection(p.tags, sectionKey))
+    .filter((p: any) => hasProductSection(p.featured_sections, sectionKey))
+    .sort((a: any, b: any) => {
+      const pa = posMap.has(a.id) ? (posMap.get(a.id) as number) : 999_999;
+      const pb = posMap.has(b.id) ? (posMap.get(b.id) as number) : 999_999;
+      return pa - pb;
+    })
     .slice(0, limit)
     .map(normalizeProductCard);
 }
