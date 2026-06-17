@@ -315,6 +315,39 @@ function ProductsListPage() {
     },
   });
 
+  const reorderSection = useMutation({
+    mutationFn: async ({ orderedIds }: { orderedIds: string[] }) => {
+      if (!activeSection || !store) return;
+      const rows = orderedIds.map((id, index) => ({
+        store_id: store.id,
+        product_id: id,
+        section_key: activeSection,
+        position: index,
+      }));
+      const { error } = await supabase
+        .from("product_section_positions")
+        .upsert(rows, { onConflict: "store_id,product_id,section_key" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-product-positions"] });
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Erro ao reordenar"),
+  });
+
+  function moveProduct(index: number, dir: -1 | 1) {
+    const swapIndex = index + dir;
+    if (swapIndex < 0 || swapIndex >= products.length) return;
+    const ids = products.map((p: any) => p.id);
+    [ids[index], ids[swapIndex]] = [ids[swapIndex], ids[index]];
+    // Optimistic cache update
+    qc.setQueryData(
+      ["admin-product-positions", store?.id, activeSection],
+      new Map<string, number>(ids.map((id, i) => [id, i])),
+    );
+    reorderSection.mutate({ orderedIds: ids });
+  }
+
   function toggleAll() {
     if (selected.size === products.length) setSelected(new Set());
     else setSelected(new Set(products.map((p) => p.id)));
