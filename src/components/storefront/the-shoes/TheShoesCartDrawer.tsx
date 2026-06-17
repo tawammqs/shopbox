@@ -211,7 +211,8 @@ export function TheShoesCartDrawer() {
                               )}
                             </div>
                             <button onClick={() => addCrossSell(p as ProductCardData)}
-                              className="mt-2 rounded-md bg-[#f0f0f0] px-3 py-1 text-[11px] font-semibold text-[#333] hover:bg-[#e0e0e0]">
+                              style={{ background: suggestBg, color: suggestText }}
+                              className="mt-2 rounded-md px-3 py-1 text-[11px] font-semibold hover:opacity-90">
                               Eu quero
                             </button>
                           </div>
