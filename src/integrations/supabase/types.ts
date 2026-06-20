@@ -2019,6 +2019,7 @@ export type Database = {
           google_analytics_id: string | null
           id: string
           instagram: string | null
+          login_whatsapp: string | null
           logo_url: string | null
           name: string
           notify_stock_enabled: boolean
@@ -2053,6 +2054,7 @@ export type Database = {
           google_analytics_id?: string | null
           id?: string
           instagram?: string | null
+          login_whatsapp?: string | null
           logo_url?: string | null
           name: string
           notify_stock_enabled?: boolean
@@ -2087,6 +2089,7 @@ export type Database = {
           google_analytics_id?: string | null
           id?: string
           instagram?: string | null
+          login_whatsapp?: string | null
           logo_url?: string | null
           name?: string
           notify_stock_enabled?: boolean
