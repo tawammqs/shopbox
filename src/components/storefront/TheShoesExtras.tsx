@@ -109,7 +109,7 @@ export function TheShoesVipBanner({
         @keyframes shopbox-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
       `}</style>
 
-      {renderTrigger ? renderTrigger(() => setOpen(true)) : (
+      {renderTrigger ? renderTrigger(() => setOpen(true)) : isControlled ? null : (
         <button
           type="button"
           onClick={() => setOpen(true)}
