@@ -335,6 +335,10 @@ export function TheShoesHeader() {
           to { transform: translateX(0); }
         }
       `}</style>
+
+      {isLegacyTheShoes && (
+        <TheShoesVipBanner open={vipOpen} onOpenChange={setVipOpen} />
+      )}
     </header>
   );
 }
