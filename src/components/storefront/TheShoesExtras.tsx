@@ -36,10 +36,24 @@ function LockBig() {
   );
 }
 
-export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: () => void) => React.ReactNode } = {}) {
+export function TheShoesVipBanner({
+  renderTrigger,
+  open: controlledOpen,
+  onOpenChange,
+}: {
+  renderTrigger?: (open: () => void) => React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+} = {}) {
   const { store } = useStorefront();
   const isMio = useIsMioTheme();
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
+  const setOpen = (v: boolean) => {
+    if (!isControlled) setUncontrolledOpen(v);
+    onOpenChange?.(v);
+  };
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [invalid, setInvalid] = useState(false);
