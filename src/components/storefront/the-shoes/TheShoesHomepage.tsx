@@ -3,7 +3,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef, useEffect, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useStorefront } from "../StoreContext";
 import { fetchActiveBanners, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
@@ -583,47 +583,66 @@ function VideoTestimonialsSection({ storeId, storeSlug, section }: { storeId: st
         })}
       </div>
 
-      {active && (
-        <div
-          className="fixed inset-0 z-[100] grid place-items-center bg-black/90 p-4"
-          onClick={() => setActiveIdx(null)}
-          role="dialog"
-        >
-          <div
-            className="relative aspect-[9/16] w-full max-w-[420px] overflow-hidden rounded-2xl bg-black"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {active.video_url ? (
-              <video src={active.video_url} autoPlay controls playsInline className="h-full w-full object-contain" />
-            ) : null}
-
-            <button
-              type="button"
-              aria-label="Fechar"
-              onClick={() => setActiveIdx(null)}
-              className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white"
-            >
-              ✕
-            </button>
-
-            {activeProduct?.slug && (
-              <Link
-                to="/loja/$slug/produto/$productSlug"
-                params={{ slug: storeSlug, productSlug: activeProduct.slug }}
-                onClick={() => setActiveIdx(null)}
-                className="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-xl bg-white/95 px-3 py-2 shadow-lg backdrop-blur transition hover:bg-white"
-              >
-                {activeThumb && <img src={activeThumb} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" />}
-                <div className="min-w-0 flex-1">
-                  <p className="line-clamp-1 text-[13px] font-semibold text-[#111]">{activeProduct.title}</p>
-                  <p className="text-[12px] font-medium text-[#111]/70">Ver produto →</p>
-                </div>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
+      {active && <VideoPlayerModal video={active} product={activeProduct} thumb={activeThumb} storeSlug={storeSlug} onClose={() => setActiveIdx(null)} />}
     </section>
+  );
+}
+
+function VideoPlayerModal({
+  video, product, thumb, storeSlug, onClose,
+}: {
+  video: { video_url: string | null };
+  product: any;
+  thumb: string;
+  storeSlug: string;
+  onClose: () => void;
+}) {
+  const navigate = useNavigate();
+  const goToProduct = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!product?.slug) return;
+    onClose();
+    navigate({ to: "/loja/$slug/produto/$productSlug", params: { slug: storeSlug, productSlug: product.slug } });
+  };
+  return (
+    <div
+      className="fixed inset-0 z-[100] grid place-items-center bg-black/90 p-4"
+      onClick={onClose}
+      role="dialog"
+    >
+      <div
+        className="relative aspect-[9/16] w-full max-w-[420px] overflow-hidden rounded-2xl bg-black"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {video.video_url ? (
+          <video src={video.video_url} autoPlay controls playsInline className="h-full w-full object-contain" />
+        ) : null}
+
+        <button
+          type="button"
+          aria-label="Fechar"
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          className="absolute right-3 top-3 z-20 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white"
+        >
+          ✕
+        </button>
+
+        {product?.slug && (
+          <button
+            type="button"
+            onClick={goToProduct}
+            className="absolute inset-x-3 bottom-3 z-20 flex items-center gap-3 rounded-xl bg-white/95 px-3 py-2 text-left shadow-lg backdrop-blur transition hover:bg-white"
+          >
+            {thumb && <img src={thumb} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" />}
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-1 text-[13px] font-semibold text-[#111]">{product.title}</p>
+              <p className="text-[12px] font-medium text-[#111]/70">Ver produto →</p>
+            </div>
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 
