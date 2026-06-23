@@ -36,6 +36,7 @@ export function TheShoesHeader() {
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const [vipOpen, setVipOpen] = useState(false);
   const [openCatId, setOpenCatId] = useState<string | null>(null);
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -242,37 +243,33 @@ export function TheShoesHeader() {
               })}
               <div className="mt-4">
                 {isLegacyTheShoes ? (
-                  <TheShoesVipBanner
-                    renderTrigger={(openPopup) => (
-                      <button
-                        type="button"
-                        onClick={() => { setNavOpen(false); openPopup(); }}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          background: '#d9f523',
-                          borderRadius: '9999px',
-                          padding: '10px 20px',
-                          marginTop: '16px',
-                          fontFamily: 'DM Sans, sans-serif',
-                          fontSize: '15px',
-                          fontWeight: 700,
-                          color: '#111111',
-                          border: 'none',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                             stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                          <path d="M7 11V7a5 5 0 0110 0v4"/>
-                          <circle cx="12" cy="16" r="1" fill="#111"/>
-                        </svg>
-                        Ofertas Secretas
-                      </button>
-                    )}
-                  />
+                  <button
+                    type="button"
+                    onClick={() => { setNavOpen(false); setVipOpen(true); }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: '#d9f523',
+                      borderRadius: '9999px',
+                      padding: '10px 20px',
+                      marginTop: '16px',
+                      fontFamily: 'DM Sans, sans-serif',
+                      fontSize: '15px',
+                      fontWeight: 700,
+                      color: '#111111',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0110 0v4"/>
+                      <circle cx="12" cy="16" r="1" fill="#111"/>
+                    </svg>
+                    Ofertas Secretas
+                  </button>
                 ) : (
                   <MioVipMenuLink onNavigate={() => setNavOpen(false)} />
                 )}
@@ -338,6 +335,10 @@ export function TheShoesHeader() {
           to { transform: translateX(0); }
         }
       `}</style>
+
+      {isLegacyTheShoes && (
+        <TheShoesVipBanner open={vipOpen} onOpenChange={setVipOpen} />
+      )}
     </header>
   );
 }
