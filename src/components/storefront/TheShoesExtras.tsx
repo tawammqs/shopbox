@@ -187,18 +187,19 @@ export function TheShoesVipBanner({ renderTrigger }: { renderTrigger?: (open: ()
             <button
               type="button"
               onClick={onSubmit}
-              disabled={submitting}
+              disabled={submitting || value.replace(/\D/g, "").length < 10}
               style={{
                 width: "100%",
                 height: 52,
-                background: "#25D366",
-                color: "#fff",
+                background: value.replace(/\D/g, "").length >= 10 ? "#25D366" : "#e5e7eb",
+                color: value.replace(/\D/g, "").length >= 10 ? "#fff" : "#9ca3af",
                 border: "none",
                 borderRadius: 10,
                 fontSize: 16,
                 fontWeight: 700,
-                cursor: "pointer",
+                cursor: value.replace(/\D/g, "").length >= 10 && !submitting ? "pointer" : "not-allowed",
                 opacity: submitting ? 0.7 : 1,
+                transition: "background 0.15s, color 0.15s",
               }}
             >
               {submitting ? "Enviando..." : "Desbloquear e ver ofertas"}
