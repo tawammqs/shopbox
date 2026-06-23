@@ -525,8 +525,13 @@ function VideoTestimonialsSection({ storeId, storeSlug, section }: { storeId: st
     staleTime: 60_000,
   });
 
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
   if (videos.length === 0) return null;
   const productsById = new Map<string, any>((q.data ?? []).map((p: any) => [p.id, p]));
+  const active = activeIdx != null ? videos[activeIdx] : null;
+  const activeProduct = active?.product_id ? productsById.get(active.product_id) : null;
+  const activeImages = (activeProduct?.product_images ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+  const activeThumb = activeImages[0]?.url ?? "";
 
   return (
     <section className="ts-section">
@@ -540,8 +545,13 @@ function VideoTestimonialsSection({ storeId, storeSlug, section }: { storeId: st
           const thumb = images[0]?.url ?? "";
           const price = product ? Number(product.promo_price ?? product.price ?? 0) : 0;
           const original = product?.promo_price != null ? Number(product.price) : null;
-          const inner = (
-            <div className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[16px] bg-[#f5f5f5] md:w-[200px]">
+          return (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setActiveIdx(idx)}
+              className="relative block aspect-[9/16] w-[160px] shrink-0 overflow-hidden rounded-[16px] bg-[#f5f5f5] text-left md:w-[200px]"
+            >
               {v.video_url ? (
                 <video src={v.video_url} muted loop playsInline preload="metadata" className="h-full w-full object-cover" />
               ) : thumb ? (
@@ -568,17 +578,51 @@ function VideoTestimonialsSection({ storeId, storeSlug, section }: { storeId: st
                   </div>
                 </div>
               )}
-            </div>
-          );
-          return product?.slug ? (
-            <Link key={idx} to="/loja/$slug/produto/$productSlug" params={{ slug: storeSlug, productSlug: product.slug }}>
-              {inner}
-            </Link>
-          ) : (
-            <div key={idx}>{inner}</div>
+            </button>
           );
         })}
       </div>
+
+      {active && (
+        <div
+          className="fixed inset-0 z-[100] grid place-items-center bg-black/90 p-4"
+          onClick={() => setActiveIdx(null)}
+          role="dialog"
+        >
+          <div
+            className="relative aspect-[9/16] w-full max-w-[420px] overflow-hidden rounded-2xl bg-black"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {active.video_url ? (
+              <video src={active.video_url} autoPlay controls playsInline className="h-full w-full object-contain" />
+            ) : null}
+
+            <button
+              type="button"
+              aria-label="Fechar"
+              onClick={() => setActiveIdx(null)}
+              className="absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white"
+            >
+              ✕
+            </button>
+
+            {activeProduct?.slug && (
+              <Link
+                to="/loja/$slug/produto/$productSlug"
+                params={{ slug: storeSlug, productSlug: activeProduct.slug }}
+                onClick={() => setActiveIdx(null)}
+                className="absolute inset-x-3 bottom-3 flex items-center gap-3 rounded-xl bg-white/95 px-3 py-2 shadow-lg backdrop-blur transition hover:bg-white"
+              >
+                {activeThumb && <img src={activeThumb} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" />}
+                <div className="min-w-0 flex-1">
+                  <p className="line-clamp-1 text-[13px] font-semibold text-[#111]">{activeProduct.title}</p>
+                  <p className="text-[12px] font-medium text-[#111]/70">Ver produto →</p>
+                </div>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
