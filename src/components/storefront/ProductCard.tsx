@@ -86,7 +86,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   return (
     <Link
       to="/loja/$slug/produto/$productSlug"
-      params={{ slug: store.slug, productSlug: p.slug }}
+      params={{ slug: store.slug, productSlug: targetSlug }}
       className="group relative block"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
