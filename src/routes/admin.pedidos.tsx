@@ -124,7 +124,7 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
     setLoadingDetail(true);
     const { data, error } = await supabase
       .from("orders")
-      .select("id, order_number, total, subtotal, discount_amount, status, coupon_code, promotion_description, created_at, items, customer:customers(id, name, whatsapp, email, cpf, cep, address, city_state)")
+      .select("id, order_number, total, subtotal, discount_amount, status, coupon_code, promotion_description, created_at, items, delivery_status, tracking_code, tracking_url, delivery_notes, status_updated_at, customer:customers(id, name, whatsapp, email, cpf, cep, address, city_state)")
       .eq("id", id)
       .maybeSingle();
     setLoadingDetail(false);

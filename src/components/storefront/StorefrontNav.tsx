@@ -21,6 +21,14 @@ export function StorefrontNav() {
         >
           Início
         </Link>
+        <Link
+          to="/loja/$slug/rastreio"
+          params={{ slug: store.slug }}
+          className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:text-accent"
+          activeProps={{ className: "text-accent" }}
+        >
+          Rastrear pedido
+        </Link>
         {roots.map((cat) => {
           const subs = childrenOf(cat.id);
           return (
@@ -91,6 +99,14 @@ export function MobileNavDrawer({ open, onClose }: { open: boolean; onClose: () 
             className="block rounded-md px-3 py-3 text-sm font-medium hover:bg-muted"
           >
             Início
+          </Link>
+          <Link
+            to="/loja/$slug/rastreio"
+            params={{ slug: store.slug }}
+            onClick={onClose}
+            className="block rounded-md px-3 py-3 text-sm font-medium hover:bg-muted"
+          >
+            Rastrear pedido
           </Link>
           {roots.map((cat) => {
             const subs = childrenOf(cat.id);
