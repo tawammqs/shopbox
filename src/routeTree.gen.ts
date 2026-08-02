@@ -59,6 +59,7 @@ import { Route as AdminEstatisticasIndexRouteImport } from './routes/admin.estat
 import { Route as AdminConfiguracoesIndexRouteImport } from './routes/admin.configuracoes.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
+import { Route as LojaSlugSobreRouteImport } from './routes/loja.$slug.sobre'
 import { Route as LojaSlugRastreioRouteImport } from './routes/loja.$slug.rastreio'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
@@ -351,6 +352,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
 const LojaSlugWishlistRoute = LojaSlugWishlistRouteImport.update({
   id: '/wishlist',
   path: '/wishlist',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
+const LojaSlugSobreRoute = LojaSlugSobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
   getParentRoute: () => LojaSlugRoute,
 } as any)
 const LojaSlugRastreioRoute = LojaSlugRastreioRouteImport.update({
@@ -660,6 +666,7 @@ export interface FileRoutesByFullPath {
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
+  '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
@@ -748,6 +755,7 @@ export interface FileRoutesByTo {
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
+  '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes': typeof AdminConfiguracoesIndexRoute
@@ -843,6 +851,7 @@ export interface FileRoutesById {
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
+  '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
@@ -939,6 +948,7 @@ export interface FileRouteTypes {
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
+    | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
@@ -1027,6 +1037,7 @@ export interface FileRouteTypes {
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
+    | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
     | '/admin/configuracoes'
@@ -1121,6 +1132,7 @@ export interface FileRouteTypes {
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
+    | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
@@ -1524,6 +1536,13 @@ declare module '@tanstack/react-router' {
       path: '/wishlist'
       fullPath: '/loja/$slug/wishlist'
       preLoaderRoute: typeof LojaSlugWishlistRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
+    '/loja/$slug/sobre': {
+      id: '/loja/$slug/sobre'
+      path: '/sobre'
+      fullPath: '/loja/$slug/sobre'
+      preLoaderRoute: typeof LojaSlugSobreRouteImport
       parentRoute: typeof LojaSlugRoute
     }
     '/loja/$slug/rastreio': {
@@ -2013,6 +2032,7 @@ const SuperadminRouteWithChildren = SuperadminRoute._addFileChildren(
 interface LojaSlugRouteChildren {
   LojaSlugBuscaRoute: typeof LojaSlugBuscaRoute
   LojaSlugRastreioRoute: typeof LojaSlugRastreioRoute
+  LojaSlugSobreRoute: typeof LojaSlugSobreRoute
   LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
   LojaSlugIndexRoute: typeof LojaSlugIndexRoute
   LojaSlugCategoriaCategorySlugRoute: typeof LojaSlugCategoriaCategorySlugRoute
@@ -2023,6 +2043,7 @@ interface LojaSlugRouteChildren {
 const LojaSlugRouteChildren: LojaSlugRouteChildren = {
   LojaSlugBuscaRoute: LojaSlugBuscaRoute,
   LojaSlugRastreioRoute: LojaSlugRastreioRoute,
+  LojaSlugSobreRoute: LojaSlugSobreRoute,
   LojaSlugWishlistRoute: LojaSlugWishlistRoute,
   LojaSlugIndexRoute: LojaSlugIndexRoute,
   LojaSlugCategoriaCategorySlugRoute: LojaSlugCategoriaCategorySlugRoute,
