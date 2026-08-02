@@ -88,6 +88,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const selector = useSalesTeamSelector();
 
   if (!open) return null;
 
