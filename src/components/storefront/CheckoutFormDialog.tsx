@@ -177,7 +177,16 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         paymentMethod: requirePayment ? form.paymentMethod : undefined,
       };
 
+      // Meta Pixel / GA4 / CAPI — WhatsApp checkout has no payment callback,
+      // so the confirmed order is the closest equivalent to a Purchase.
+      void trackPurchase(store, {
+        ids: buyNow ? [buyNow.productSlug] : items.map((i) => i.productId),
+        numItems: buyNow ? buyNow.quantity : items.reduce((s, i) => s + i.quantity, 0),
+        value: total,
+      });
+
       if (buyNow) {
+
         // Buy-now: send single-product message and DO NOT clear cart
         const msg = buildBuyNowMessage({
           title: buyNow.productTitle,
