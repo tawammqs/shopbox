@@ -19,6 +19,7 @@ const GROUPS: Group[] = [
     items: [
       { to: "/admin/configuracoes/contato", label: "Informação de contato", icon: Phone },
       { to: "/admin/configuracoes/whatsapp", label: "Botão de WhatsApp", icon: MessageCircle },
+      { to: "/admin/configuracoes/equipe", label: "Equipe de vendas", icon: Users },
     ],
   },
   {
