@@ -156,7 +156,18 @@ function VipLanding() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#dfdac8] p-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-sm">
+      {pixelId && (
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+            alt=""
+          />
+        </noscript>
+      )}
+      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-sm">t
         {store.logo_url && (
           <img src={store.logo_url} alt={store.name} className="mx-auto mb-6 h-10 object-contain" />
         )}
