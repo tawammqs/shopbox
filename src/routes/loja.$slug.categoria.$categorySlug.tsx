@@ -483,10 +483,12 @@ function CategoryPage() {
         onClose={() => setMobileFiltersOpen(false)}
         sizes={allSizes}
         brands={allBrands}
+        colors={allColors}
         priceMin={priceMin}
         priceMax={priceMax}
         initialSizes={tamanhoArr}
         initialBrands={marcaArr}
+        initialColors={corArr}
         initialMinPrice={search.minPrice}
         initialMaxPrice={search.maxPrice}
         initialInStock={!!search.inStock}
@@ -495,6 +497,7 @@ function CategoryPage() {
           setSearch({
             tamanho: next.sizes,
             marca: next.brands,
+            cor: next.colors,
             minPrice: next.minPrice,
             maxPrice: next.maxPrice,
             inStock: next.inStock || undefined,
