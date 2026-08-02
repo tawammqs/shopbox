@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { ColorVariantsRow } from "@/components/storefront/ColorVariantsRow";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft, ChevronRight, Plus, Minus, ShoppingBag, Heart, Share2,
