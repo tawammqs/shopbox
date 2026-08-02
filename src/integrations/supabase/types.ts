@@ -1745,6 +1745,38 @@ export type Database = {
           },
         ]
       }
+      store_policies: {
+        Row: {
+          created_at: string
+          id: string
+          sobre_config: Json
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sobre_config?: Json
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sobre_config?: Json
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_policies_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_private_secrets: {
         Row: {
           meta_conversion_token: string | null
