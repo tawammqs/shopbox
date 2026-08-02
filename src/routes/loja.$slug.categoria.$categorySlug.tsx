@@ -354,6 +354,39 @@ function CategoryPage() {
             </FilterSection>
           )}
 
+          {allColors.length > 0 && (
+            <FilterSection label="Cor">
+              <div className="flex flex-wrap gap-2">
+                {allColors.map((c) => {
+                  const sel = corArr.includes(c.name);
+                  return (
+                    <button
+                      key={c.name}
+                      type="button"
+                      title={`${c.name} (${c.count})`}
+                      onClick={() => toggleArrayFilter("cor", c.name)}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition",
+                        sel
+                          ? "border-foreground bg-muted font-semibold"
+                          : "border-border hover:border-foreground/40",
+                      )}
+                    >
+                      <span
+                        className="inline-block h-3 w-3 shrink-0 rounded-full ring-1 ring-black/10"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                      {c.name}
+                      <span className="text-muted-foreground">({c.count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </FilterSection>
+          )}
+
+
+
           <FilterSection label="Faixa de preço">
             <Slider
               min={priceMin}
