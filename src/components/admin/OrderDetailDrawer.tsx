@@ -9,6 +9,11 @@ import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  DELIVERY_STATUS_CONFIG, DELIVERY_STATUS_KEYS, type DeliveryStatus,
+} from "@/lib/delivery-status";
 
 type OrderStatus = "aguardando" | "confirmado" | "enviado" | "entregue" | "cancelado";
 
