@@ -210,6 +210,7 @@ function ProductInner({ product }: { product: any }) {
             {product.brand && <p className="text-xs uppercase tracking-wide text-muted-foreground">{product.brand}</p>}
             <h1 className="break-words font-display text-xl font-bold sm:text-3xl">{product.title}</h1>
             {product.sku && <p className="mt-1 text-xs text-muted-foreground">SKU: {product.sku}</p>}
+            <ColorVariantsRow storeId={store.id} storeSlug={store.slug} productId={product.id} />
             {avgRating != null && (
               <div className="mt-2 flex items-center gap-1.5 text-sm">
                 <Stars value={avgRating} />
