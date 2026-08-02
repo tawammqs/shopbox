@@ -32,14 +32,14 @@ export function ProductRow({ title, products }: { title: string; products: Produ
 
       {/* Mobile */}
       <div className={cn("grid gap-2.5 md:hidden", mob)}>
-        {products.slice(0, 6).map((p) => (
+        {list.slice(0, 6).map((p) => (
           <ProductCard key={p.id} p={p} />
         ))}
       </div>
 
       {/* Desktop */}
       <div className={cn("hidden gap-5 md:grid", desk)}>
-        {products.slice(0, 8).map((p) => (
+        {list.slice(0, 8).map((p) => (
           <ProductCard key={p.id} p={p} />
         ))}
       </div>
