@@ -24,6 +24,21 @@ type Member = { id: string; name: string; whatsapp: string; photo_url: string | 
 function SobrePage() {
   const { store } = useStorefront();
 
+  // Source of truth: page edited by the merchant in Loja Online → Páginas.
+  const { data: customPage, isLoading: loadingPage } = useQuery({
+    queryKey: ["static-page", store.id, "sobre"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("static_pages")
+        .select("title, content_md")
+        .eq("store_id", store.id)
+        .eq("slug", "sobre")
+        .maybeSingle();
+      return data ?? null;
+    },
+    staleTime: 60_000,
+  });
+
   const { data: config } = useQuery({
     queryKey: ["sobre-config", store.id],
     queryFn: async (): Promise<SobreConfig> => {
