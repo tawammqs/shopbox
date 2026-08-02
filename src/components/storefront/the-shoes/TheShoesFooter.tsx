@@ -9,8 +9,22 @@ import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export function TheShoesFooter() {
-  const { store, menus, contactInfo } = useStorefront();
+  const { store, menus, contactInfo, pages } = useStorefront();
   const isLegacyTheShoes = store.slug === "the-shoes";
+
+  /** Ensure relative links always point to THIS store's pages. */
+  const resolveUrl = (url: string) => {
+    if (!url) return "#";
+    if (/^(https?:|mailto:|tel:|#)/i.test(url)) return url;
+    const path = url.startsWith("/") ? url : `/${url}`;
+    if (path.startsWith("/loja/")) return path;
+    const seg = path.replace(/^\/+/, "").split("/")[0];
+    if (!seg) return `/loja/${store.slug}`;
+    if (["sobre", "rastreio", "wishlist", "busca"].includes(seg)) return `/loja/${store.slug}/${seg}`;
+    if (pages.some((p) => p.slug === seg)) return `/loja/${store.slug}/pagina/${seg}`;
+    return `/loja/${store.slug}${path}`;
+  };
+
 
   // Legacy The Shoes: data comes from the_shoes_theme_settings.
   const settingsQ = useQuery({
@@ -119,7 +133,7 @@ export function TheShoesFooter() {
             <ul className="flex flex-col gap-3">
               {links.map((l, i) => (
                 <li key={i}>
-                  <a href={l.url} className="ts-footer-link" style={{ color: txt, opacity: 0.75 }}>{l.label}</a>
+                  <a href={resolveUrl(l.url)} className="ts-footer-link" style={{ color: txt, opacity: 0.75 }}>{l.label}</a>
                 </li>
               ))}
             </ul>
