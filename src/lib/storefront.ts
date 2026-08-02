@@ -362,7 +362,8 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
     .from("products")
     .select(
       `id, brand, price, promo_price,
-       product_sizes(id, label)`,
+       product_sizes(id, label),
+       product_colors(id, name, hex)`,
     )
     .eq("store_id", storeId)
     .eq("active", true);
