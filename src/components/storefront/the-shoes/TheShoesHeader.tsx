@@ -194,6 +194,10 @@ export function TheShoesHeader() {
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Início
               </Link>
+              <Link to="/loja/$slug/sobre" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
+                Quem somos
+              </Link>
               <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Rastrear pedido
