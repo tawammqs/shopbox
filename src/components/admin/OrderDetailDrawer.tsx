@@ -303,3 +303,74 @@ function Info({ label, children, full }: { label: string; children: React.ReactN
     </div>
   );
 }
+
+function DeliverySection({ order }: { order: OrderDetail }) {
+  const [status, setStatus] = useState<DeliveryStatus>(
+    (order.delivery_status as DeliveryStatus) || "aguardando_confirmacao",
+  );
+  const [code, setCode] = useState(order.tracking_code ?? "");
+  const [url, setUrl] = useState(order.tracking_url ?? "");
+  const [notes, setNotes] = useState(order.delivery_notes ?? "");
+  const [saving, setSaving] = useState(false);
+
+  const save = async (next?: Partial<{ delivery_status: DeliveryStatus }>) => {
+    setSaving(true);
+    const { error } = await supabase
+      .from("orders")
+      .update({
+        delivery_status: next?.delivery_status ?? status,
+        tracking_code: code.trim() || null,
+        tracking_url: url.trim() || null,
+        delivery_notes: notes.trim() || null,
+        status_updated_at: new Date().toISOString(),
+      } as any)
+      .eq("id", order.id);
+    setSaving(false);
+    if (error) toast.error("Erro ao salvar dados de entrega");
+    else toast.success("Dados de entrega atualizados");
+  };
+
+  return (
+    <section className="border-b border-border p-5">
+      <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Entrega e rastreio
+      </h3>
+      <div className="space-y-3">
+        <div>
+          <label className="text-[11px] uppercase tracking-wide text-muted-foreground">Status de entrega</label>
+          <Select
+            value={status}
+            onValueChange={(v) => { setStatus(v as DeliveryStatus); void save({ delivery_status: v as DeliveryStatus }); }}
+            disabled={saving}
+          >
+            <SelectTrigger className="mt-1 h-9"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {DELIVERY_STATUS_KEYS.map((k) => (
+                <SelectItem key={k} value={k}>
+                  {DELIVERY_STATUS_CONFIG[k].icon} {DELIVERY_STATUS_CONFIG[k].label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-[11px] uppercase tracking-wide text-muted-foreground">Código de rastreio</label>
+            <Input className="mt-1" value={code} onChange={(e) => setCode(e.target.value)} placeholder="BR123456789BR" />
+          </div>
+          <div>
+            <label className="text-[11px] uppercase tracking-wide text-muted-foreground">URL de rastreio</label>
+            <Input className="mt-1" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://rastreamento.correios.com.br/..." />
+          </div>
+        </div>
+        <div>
+          <label className="text-[11px] uppercase tracking-wide text-muted-foreground">Observação para o cliente</label>
+          <Textarea className="mt-1" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Ex: Produto entregue na portaria" />
+        </div>
+        <Button size="sm" onClick={() => void save()} disabled={saving}>
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Salvar entrega
+        </Button>
+      </div>
+    </section>
+  );
+}
