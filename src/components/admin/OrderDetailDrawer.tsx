@@ -23,6 +23,11 @@ export type OrderDetail = {
   promotion_description: string | null;
   created_at: string;
   items: any;
+  delivery_status?: string | null;
+  tracking_code?: string | null;
+  tracking_url?: string | null;
+  delivery_notes?: string | null;
+  status_updated_at?: string | null;
   customer: {
     id: string;
     name: string;
