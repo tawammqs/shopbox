@@ -2611,7 +2611,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      product_color_groups: {
+        Row: {
+          brand: string | null
+          colors: string[] | null
+          first_images: string[] | null
+          model_name: string | null
+          product_ids: string[] | null
+          product_slugs: string[] | null
+          store_id: string | null
+          variant_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       admin_list_users: {

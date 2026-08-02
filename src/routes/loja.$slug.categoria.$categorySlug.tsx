@@ -7,6 +7,7 @@ import { X, SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { fetchProductsForCategory, fetchCategoryFacets } from "@/lib/storefront";
 import { ProductCard } from "@/components/storefront/ProductCard";
+import { useColorGroups, dedupeByGroup } from "@/lib/color-groups";
 import { trackViewCategory } from "@/lib/tracking";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -164,9 +165,10 @@ function CategoryPage() {
     );
   }
 
+  const { map: colorGroupMap } = useColorGroups(store.id);
   const products = useMemo(
-    () => (q.data?.pages ?? []).flatMap((p) => p.products),
-    [q.data],
+    () => dedupeByGroup((q.data?.pages ?? []).flatMap((p) => p.products), colorGroupMap),
+    [q.data, colorGroupMap],
   );
   const total = q.data?.pages?.[0]?.total ?? 0;
   const hasMore = !!q.hasNextPage;
@@ -441,7 +443,7 @@ function CategoryPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-              {products.map((p) => (
+              {products.map((p: any) => (
                 <ProductCard key={p.id} p={p} />
               ))}
             </div>

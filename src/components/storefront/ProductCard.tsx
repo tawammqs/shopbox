@@ -10,6 +10,7 @@ import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
 import { getInstallment } from "@/lib/installments";
+import { useColorGroups, getColorHex, isLightSwatch } from "@/lib/color-groups";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
@@ -23,10 +24,19 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const addItem = useCart((s) => s.addItem);
 
   const [hover, setHover] = useState(false);
+  const { map: groupMap } = useColorGroups(store.id);
+  const group = groupMap[p.id];
+  const [variantIdx, setVariantIdx] = useState(() => Math.max(0, group?.product_ids?.indexOf(p.id) ?? 0));
+  const idx = group ? Math.min(variantIdx, (group.product_ids?.length ?? 1) - 1) : 0;
+  const isBaseVariant = !group || group.product_ids[idx] === p.id;
+  const targetSlug = group ? (group.product_slugs?.[idx] ?? p.slug) : p.slug;
+  const groupImage = group ? group.first_images?.[idx] || "" : "";
+
   const price = effectivePrice(p.price, p.promo_price);
   const pct = discountPct(p.price, p.promo_price);
-  const img1 = p.images[0]?.url ?? "";
-  const img2 = p.images[1]?.url ?? img1;
+  const img1 = (isBaseVariant ? p.images[0]?.url : groupImage) || groupImage || p.images[0]?.url || "";
+  const img2 = isBaseVariant ? (p.images[1]?.url ?? img1) : img1;
+
 
   const pixPrice =
     paymentSettings?.pix_enabled && paymentSettings.pix_discount_percent > 0
@@ -76,7 +86,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   return (
     <Link
       to="/loja/$slug/produto/$productSlug"
-      params={{ slug: store.slug, productSlug: p.slug }}
+      params={{ slug: store.slug, productSlug: targetSlug }}
       className="group relative block"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -156,7 +166,40 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
       <div className="mt-3 space-y-1">
         {p.brand && <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{p.brand}</p>}
-        <h3 className="line-clamp-2 text-sm font-medium text-foreground">{p.title}</h3>
+        <h3 className="line-clamp-2 text-sm font-medium text-foreground">{group ? group.model_name : p.title}</h3>
+
+        {group && group.colors.length > 1 && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            {group.colors.map((color, i) => {
+              const hex = getColorHex(color);
+              const active = i === idx;
+              return (
+                <button
+                  key={group.product_ids[i]}
+                  type="button"
+                  title={color}
+                  aria-label={color}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setVariantIdx(i);
+                  }}
+                  onMouseEnter={() => setVariantIdx(i)}
+                  className={cn(
+                    "h-5 w-5 rounded-full border-2 transition-all",
+                    active ? "scale-110 border-foreground" : "border-transparent hover:border-muted-foreground",
+                  )}
+                  style={{
+                    backgroundColor: hex,
+                    boxShadow: isLightSwatch(hex) ? "inset 0 0 0 1px #e5e7eb" : "none",
+                  }}
+                />
+              );
+            })}
+            <span className="self-center text-xs text-muted-foreground">{group.colors.length} cores</span>
+          </div>
+        )}
+
 
         <div className="flex items-baseline gap-2">
           <span className="text-base font-bold text-foreground">{formatBRL(price)}</span>
