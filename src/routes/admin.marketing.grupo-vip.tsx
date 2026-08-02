@@ -70,9 +70,9 @@ function Tabs({ storeId }: { storeId: string }) {
         <LeadsTable
           storeId={storeId}
           table="vip_group_leads"
-          columns={["whatsapp", "created_at"]}
+          columns={["name", "whatsapp", "city", "source", "created_at"]}
           metrics={["total", "week"]}
-          searchPlaceholder="Buscar por WhatsApp"
+          searchPlaceholder="Buscar por nome ou WhatsApp"
           emptyTitle="Ainda não há leads capturados pelo Grupo VIP."
           emptySubtitle='Quando alguém deixar o WhatsApp na seção "Ofertas Secretas" da sua loja, aparecerá aqui.'
           csvFilenamePrefix="vip_leads"

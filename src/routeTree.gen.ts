@@ -26,6 +26,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TemasIndexRouteImport } from './routes/temas.index'
 import { Route as SuperadminIndexRouteImport } from './routes/superadmin.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as VipSlugRouteImport } from './routes/vip.$slug'
 import { Route as TemasSlugRouteImport } from './routes/temas.$slug'
 import { Route as SuperadminMetricasRouteImport } from './routes/superadmin.metricas'
 import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
@@ -183,6 +184,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const VipSlugRoute = VipSlugRouteImport.update({
+  id: '/vip/$slug',
+  path: '/vip/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TemasSlugRoute = TemasSlugRouteImport.update({
   id: '/temas/$slug',
@@ -606,6 +612,7 @@ export interface FileRoutesByFullPath {
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/temas/$slug': typeof TemasSlugRoute
+  '/vip/$slug': typeof VipSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
@@ -691,6 +698,7 @@ export interface FileRoutesByTo {
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/temas/$slug': typeof TemasSlugRoute
+  '/vip/$slug': typeof VipSlugRoute
   '/admin': typeof AdminIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
   '/temas': typeof TemasIndexRoute
@@ -783,6 +791,7 @@ export interface FileRoutesById {
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
   '/temas/$slug': typeof TemasSlugRoute
+  '/vip/$slug': typeof VipSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/temas/': typeof TemasIndexRoute
@@ -876,6 +885,7 @@ export interface FileRouteTypes {
     | '/superadmin/lojas'
     | '/superadmin/metricas'
     | '/temas/$slug'
+    | '/vip/$slug'
     | '/admin/'
     | '/superadmin/'
     | '/temas/'
@@ -961,6 +971,7 @@ export interface FileRouteTypes {
     | '/superadmin/lojas'
     | '/superadmin/metricas'
     | '/temas/$slug'
+    | '/vip/$slug'
     | '/admin'
     | '/superadmin'
     | '/temas'
@@ -1052,6 +1063,7 @@ export interface FileRouteTypes {
     | '/superadmin/lojas'
     | '/superadmin/metricas'
     | '/temas/$slug'
+    | '/vip/$slug'
     | '/admin/'
     | '/superadmin/'
     | '/temas/'
@@ -1125,6 +1137,7 @@ export interface RootRouteChildren {
   HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
   TemasSlugRoute: typeof TemasSlugRoute
+  VipSlugRoute: typeof VipSlugRoute
   TemasIndexRoute: typeof TemasIndexRoute
   FeedSlugMetaDotxmlRoute: typeof FeedSlugMetaDotxmlRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -1256,6 +1269,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/vip/$slug': {
+      id: '/vip/$slug'
+      path: '/vip/$slug'
+      fullPath: '/vip/$slug'
+      preLoaderRoute: typeof VipSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/temas/$slug': {
       id: '/temas/$slug'
@@ -1992,6 +2012,7 @@ const rootRouteChildren: RootRouteChildren = {
   HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
   TemasSlugRoute: TemasSlugRoute,
+  VipSlugRoute: VipSlugRoute,
   TemasIndexRoute: TemasIndexRoute,
   FeedSlugMetaDotxmlRoute: FeedSlugMetaDotxmlRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,

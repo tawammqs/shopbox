@@ -2479,6 +2479,7 @@ export type Database = {
       }
       vip_group_leads: {
         Row: {
+          city: string | null
           created_at: string
           id: string
           name: string | null
@@ -2488,6 +2489,7 @@ export type Database = {
           whatsapp: string
         }
         Insert: {
+          city?: string | null
           created_at?: string
           id?: string
           name?: string | null
@@ -2497,6 +2499,7 @@ export type Database = {
           whatsapp: string
         }
         Update: {
+          city?: string | null
           created_at?: string
           id?: string
           name?: string | null
