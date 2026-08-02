@@ -72,9 +72,17 @@ export function buildCheckoutMessage(
   return out.join("\n");
 }
 
-export function buildWhatsAppUrl(phone: string, message: string) {
-  const clean = phone.replace(/\D/g, "");
-  return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
+/** Normalizes any stored WhatsApp value into digits with the BR country code. */
+export function normalizeWhatsAppDigits(phone?: string | null): string {
+  let digits = (phone ?? "").replace(/\D/g, "");
+  if (digits.length === 10 || digits.length === 11) digits = `55${digits}`;
+  return digits;
+}
+
+export function buildWhatsAppUrl(phone?: string | null, message?: string) {
+  const digits = normalizeWhatsAppDigits(phone);
+  const base = `https://wa.me/${digits}`;
+  return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }
 
 export function openWhatsAppCheckout(

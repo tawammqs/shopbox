@@ -13,6 +13,7 @@ import { CustomerDetailDrawer, type CustomerRow } from "@/components/admin/Custo
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/admin/clientes")({
   head: () => ({ meta: [{ title: "Clientes — ShopBox" }] }),
@@ -289,7 +290,7 @@ function ClientesContent({ storeId, storeName }: { storeId: string; storeName: s
                       </td>
                       <td className="px-4 py-3">
                         <a
-                          href={`https://wa.me/${c.whatsapp.replace(/\D/g, "")}`}
+                          href={buildWhatsAppUrl(c.whatsapp)}
                           target="_blank" rel="noopener"
                           className="inline-flex items-center gap-1 text-accent hover:underline"
                         >

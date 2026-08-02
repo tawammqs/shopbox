@@ -3,6 +3,7 @@ import { Facebook, Instagram, Youtube, Music2 } from "lucide-react";
 import { useStorefront } from "./StoreContext";
 import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import shopboxLogo from "@/assets/shopbox-badge-logo.png";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export function StorefrontFooter() {
   const { store, menus, socialLinks, contactInfo, pages } = useStorefront();
@@ -157,7 +158,7 @@ export function StorefrontFooter() {
             )}
             <li>
               <a
-                href={`https://wa.me/${store.whatsapp.replace(/\D/g, "")}`}
+                href={buildWhatsAppUrl(store.whatsapp)}
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-accent"

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { markLeadsViewed } from "@/hooks/useUnreadCounts";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/admin/clientes/leads")({
   head: () => ({ meta: [{ title: "Leads — ShopBox" }] }),
@@ -61,8 +62,7 @@ function fmtDateTime(s: string): string {
   return `${date} ${time}`;
 }
 function waLink(whatsapp: string): string {
-  const digits = (whatsapp || "").replace(/\D/g, "");
-  return `https://wa.me/${digits.startsWith("55") ? digits : "55" + digits}`;
+  return buildWhatsAppUrl(whatsapp);
 }
 
 function Page() {
