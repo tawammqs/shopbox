@@ -866,15 +866,39 @@ function InstagramSection({ handle, images }: { handle: string; images: TheShoes
 
 /* -------------- Floating WhatsApp -------------- */
 function FloatingWhatsApp({ number }: { number: string }) {
+  const { store } = useStorefront();
+  const { data: team } = useSalesTeam(store.id);
+  const [selectorOpen, setSelectorOpen] = useState(false);
+  const hasTeam = (team?.length ?? 0) > 1;
+
+  const style: React.CSSProperties = {
+    position: "fixed", bottom: 24, right: 24, width: 56, height: 56, borderRadius: "50%",
+    backgroundColor: "#25D366", display: "flex", alignItems: "center", justifyContent: "center",
+    boxShadow: "0 4px 20px rgba(37,211,102,0.4)", zIndex: 9999, color: "#fff", border: "none", cursor: "pointer",
+  };
+
+  if (!hasTeam) {
+    return (
+      <a href={buildWhatsAppUrl(number)} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="ts-fab" style={style}>
+        <WhatsAppLogo size={32} />
+      </a>
+    );
+  }
+
   return (
-    <a href={buildWhatsAppUrl(number)} target="_blank" rel="noreferrer" aria-label="WhatsApp"
-      className="ts-fab" style={{
-        position: "fixed", bottom: 24, right: 24, width: 56, height: 56, borderRadius: "50%",
-        backgroundColor: "#25D366", display: "flex", alignItems: "center", justifyContent: "center",
-        boxShadow: "0 4px 20px rgba(37,211,102,0.4)", zIndex: 9999, color: "#fff",
-      }}>
-      <WhatsAppLogo size={32} />
-    </a>
+    <>
+      <button type="button" aria-label="WhatsApp" className="ts-fab" style={style} onClick={() => setSelectorOpen(true)}>
+        <WhatsAppLogo size={32} />
+      </button>
+      {selectorOpen && (
+        <SalesTeamSelector
+          storeId={store.id}
+          cartMessage={null}
+          fallbackNumber={number}
+          onClose={() => setSelectorOpen(false)}
+        />
+      )}
+    </>
   );
 }
 
