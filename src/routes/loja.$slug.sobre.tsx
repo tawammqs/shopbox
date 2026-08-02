@@ -64,6 +64,22 @@ function SobrePage() {
     },
   });
 
+  if (loadingPage) {
+    return <div className="mx-auto max-w-2xl px-4 py-12 text-sm text-muted-foreground">Carregando…</div>;
+  }
+
+  // Merchant-edited page wins over the legacy sobre_config content.
+  if (customPage && (customPage.content_md ?? "").trim()) {
+    return (
+      <article className="mx-auto max-w-2xl px-4 py-10">
+        <h1 className="mb-6 font-display text-2xl font-bold text-foreground">{customPage.title}</h1>
+        <div className="prose prose-sm max-w-none leading-relaxed text-foreground/80 prose-headings:font-display prose-a:text-accent">
+          <ReactMarkdown>{customPage.content_md ?? ""}</ReactMarkdown>
+        </div>
+      </article>
+    );
+  }
+
   if (!config) return null;
 
   return (
