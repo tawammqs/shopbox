@@ -34,6 +34,22 @@ type Cfg = {
 
 function VipLanding() {
   const { slug } = Route.useParams();
+  const pixelId = LANDING_PIXELS[slug] ?? null;
+
+  useEffect(() => {
+    if (!pixelId) return;
+    initPixel(pixelId);
+    try {
+      window.fbq?.("track", "ViewContent", {
+        content_name: "Landing Page Grupo VIP",
+        content_category: "VIP Group",
+      });
+    } catch {
+      /* pixel opcional */
+    }
+  }, [pixelId]);
+
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["vip-landing", slug],
