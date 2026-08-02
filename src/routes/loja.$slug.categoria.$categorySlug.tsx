@@ -26,7 +26,7 @@ const searchSchema = z.object({
   ).default("relevance"),
   minPrice: fallback(z.number().optional(), undefined).optional(),
   maxPrice: fallback(z.number().optional(), undefined).optional(),
-  inStock: fallback(z.boolean().optional(), undefined).optional(),
+  
   tamanho: fallback(z.string().optional(), undefined).optional(),
   marca: fallback(z.string().optional(), undefined).optional(),
   cor: fallback(z.string().optional(), undefined).optional(),
@@ -83,7 +83,7 @@ function CategoryPage() {
       search.sort,
       search.minPrice,
       search.maxPrice,
-      search.inStock,
+      
       tamanhoArr.join(","),
       marcaArr.join(","),
       corArr.join(","),
@@ -95,7 +95,7 @@ function CategoryPage() {
         sort: search.sort,
         minPrice: search.minPrice,
         maxPrice: search.maxPrice,
-        inStock: search.inStock,
+        
         sizes: tamanhoArr,
         brands: marcaArr,
         colorNames: corArr,
@@ -198,8 +198,7 @@ function CategoryPage() {
     marcaArr.length > 0 ||
     corArr.length > 0 ||
     search.minPrice != null ||
-    search.maxPrice != null ||
-    !!search.inStock;
+    search.maxPrice != null;
 
   const clearAll = () =>
     setSearch({
@@ -208,7 +207,7 @@ function CategoryPage() {
       cor: [],
       minPrice: undefined,
       maxPrice: undefined,
-      inStock: undefined,
+      
     });
 
   const chips: { label: string; clear: () => void }[] = [
@@ -229,9 +228,6 @@ function CategoryPage() {
       : []),
     ...(search.maxPrice != null
       ? [{ label: `Max R$ ${search.maxPrice}`, clear: () => setSearch({ maxPrice: undefined }) }]
-      : []),
-    ...(search.inStock
-      ? [{ label: "Em estoque", clear: () => setSearch({ inStock: undefined }) }]
       : []),
   ];
 
@@ -405,16 +401,6 @@ function CategoryPage() {
               R$ {priceRange[0]} — R$ {priceRange[1]}
             </p>
           </FilterSection>
-
-          <FilterSection label="Disponibilidade">
-            <label className="flex cursor-pointer items-center gap-2 text-[13px]">
-              <Checkbox
-                checked={!!search.inStock}
-                onCheckedChange={(v) => setSearch({ inStock: v ? true : undefined })}
-              />
-              Apenas em estoque
-            </label>
-          </FilterSection>
         </aside>
 
         <div>
@@ -491,7 +477,7 @@ function CategoryPage() {
         initialColors={corArr}
         initialMinPrice={search.minPrice}
         initialMaxPrice={search.maxPrice}
-        initialInStock={!!search.inStock}
+        
         productCount={total}
         onApply={(next) => {
           setSearch({
@@ -500,7 +486,7 @@ function CategoryPage() {
             cor: next.colors,
             minPrice: next.minPrice,
             maxPrice: next.maxPrice,
-            inStock: next.inStock || undefined,
+            
           });
           setMobileFiltersOpen(false);
           if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
@@ -601,7 +587,7 @@ function MobileFilterSheet({
   initialColors,
   initialMinPrice,
   initialMaxPrice,
-  initialInStock,
+  
   productCount,
   onApply,
   onClear,
@@ -618,7 +604,7 @@ function MobileFilterSheet({
   initialColors: string[];
   initialMinPrice: number | undefined;
   initialMaxPrice: number | undefined;
-  initialInStock: boolean;
+  
   productCount: number;
   onApply: (next: {
     sizes: string[];
@@ -626,7 +612,7 @@ function MobileFilterSheet({
     colors: string[];
     minPrice: number | undefined;
     maxPrice: number | undefined;
-    inStock: boolean;
+    
   }) => void;
   onClear: () => void;
 }) {
@@ -637,7 +623,7 @@ function MobileFilterSheet({
     initialMinPrice ?? priceMin,
     initialMaxPrice ?? priceMax,
   ]);
-  const [pendingInStock, setPendingInStock] = useState(initialInStock);
+  
   const [showAllSizes, setShowAllSizes] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
 
@@ -648,7 +634,7 @@ function MobileFilterSheet({
       setPendingBrands(initialBrands);
       setPendingColors(initialColors);
       setPendingRange([initialMinPrice ?? priceMin, initialMaxPrice ?? priceMax]);
-      setPendingInStock(initialInStock);
+      
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -661,8 +647,7 @@ function MobileFilterSheet({
     pendingBrands.length > 0 ||
     pendingColors.length > 0 ||
     pendingRange[0] > priceMin ||
-    pendingRange[1] < priceMax ||
-    pendingInStock;
+    pendingRange[1] < priceMax;
 
   const toggle = (arr: string[], v: string) =>
     arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
@@ -825,26 +810,6 @@ function MobileFilterSheet({
             </div>
           </section>
 
-          <section className="flex items-center justify-between py-5">
-            <span className="text-sm font-medium text-[#333]">Apenas em estoque</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={pendingInStock}
-              onClick={() => setPendingInStock((v) => !v)}
-              className={cn(
-                "relative h-6 w-11 rounded-full transition-colors",
-                pendingInStock ? "bg-[#25D366]" : "bg-[#e0e0e0]",
-              )}
-            >
-              <span
-                className={cn(
-                  "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform",
-                  pendingInStock ? "translate-x-[22px]" : "translate-x-0.5",
-                )}
-              />
-            </button>
-          </section>
         </div>
 
         <div className="flex shrink-0 gap-2.5 border-t border-[#e8e8e0] bg-white px-5 py-4">
@@ -868,7 +833,7 @@ function MobileFilterSheet({
                 colors: pendingColors,
                 minPrice: pendingRange[0] > priceMin ? pendingRange[0] : undefined,
                 maxPrice: pendingRange[1] < priceMax ? pendingRange[1] : undefined,
-                inStock: pendingInStock,
+                
               })
             }
             className="h-12 flex-[2] rounded-lg bg-[#1a1a1a] text-sm font-semibold text-white"
