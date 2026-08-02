@@ -19,10 +19,12 @@ const DESKTOP_GRID: Record<string, string> = {
 export function ProductRow({ title, products }: { title: string; products: ProductCardData[] }) {
   const { store } = useStorefront();
   const { data: cust } = useStorefrontCustomizations(store.id);
+  const { map: groupMap } = useColorGroups(store.id);
   const mob = MOBILE_GRID[cust?.productList?.mobilePerRow ?? "2"] ?? "grid-cols-2";
   const desk = DESKTOP_GRID[cust?.productList?.desktopPerRow ?? "4"] ?? "md:grid-cols-3 lg:grid-cols-4";
+  const list = dedupeByGroup(products, groupMap);
 
-  if (products.length === 0) return null;
+  if (list.length === 0) return null;
   return (
     <section className="mx-auto max-w-7xl px-4 py-10">
       <h2 className="mb-5 font-display text-2xl font-bold text-foreground md:text-3xl">{title}</h2>
