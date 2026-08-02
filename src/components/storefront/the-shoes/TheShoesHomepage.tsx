@@ -59,6 +59,7 @@ import {
 } from "./HomepageSectionRenderers";
 import { MioVipSection } from "../MioAddonOverlays";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { SalesTeamSelector, useSalesTeam } from "../SalesTeamSelector";
 
 export function TheShoesHomepage() {
   const { store } = useStorefront();
