@@ -142,6 +142,14 @@ export function MobileNavDrawer({ open, onClose }: { open: boolean; onClose: () 
               </div>
             );
           })}
+          <Link
+            to="/loja/$slug/rastreio"
+            params={{ slug: store.slug }}
+            onClick={onClose}
+            className="block rounded-md px-3 py-3 text-sm font-medium hover:bg-muted"
+          >
+            Rastrear pedido
+          </Link>
         </div>
       </aside>
     </>
