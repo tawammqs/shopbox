@@ -245,7 +245,45 @@ export async function trackAddToCart(
   });
 }
 
+export async function trackPurchase(
+  store: StoreLike,
+  payload: { ids: string[]; numItems: number; value: number },
+) {
+  const eventId = generateEventId("Purchase", {
+    items: [...payload.ids].sort().join(","),
+    value: payload.value,
+    ts: Math.floor(Date.now() / 30000), // 30s window dedup
+  });
+  if (firedEvents.has(eventId)) return;
+  firedEvents.add(eventId);
+
+  fbq(
+    "Purchase",
+    {
+      content_ids: payload.ids,
+      content_type: "product",
+      value: payload.value,
+      currency: "BRL",
+      num_items: payload.numItems,
+    },
+    { eventID: eventId },
+  );
+
+  gtag("purchase", {
+    currency: "BRL",
+    value: payload.value,
+    items: payload.ids.map((id) => ({ item_id: id })),
+  });
+
+  await fireCapi(store, "Purchase", eventId, {
+    value: payload.value,
+    content_ids: payload.ids,
+    num_items: payload.numItems,
+  });
+}
+
 export async function trackInitiateCheckout(
+
   store: StoreLike,
   payload: { ids: string[]; numItems: number; value: number },
 ) {

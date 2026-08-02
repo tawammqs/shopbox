@@ -12,6 +12,8 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { trackPurchase } from "@/lib/tracking";
+
 
 const schema = z.object({
   name: z.string().trim().min(2, "Informe seu nome").max(100),
@@ -177,7 +179,16 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         paymentMethod: requirePayment ? form.paymentMethod : undefined,
       };
 
+      // Meta Pixel / GA4 / CAPI — WhatsApp checkout has no payment callback,
+      // so the confirmed order is the closest equivalent to a Purchase.
+      void trackPurchase(store, {
+        ids: buyNow ? [buyNow.productSlug] : items.map((i) => i.productId),
+        numItems: buyNow ? buyNow.quantity : items.reduce((s, i) => s + i.quantity, 0),
+        value: total,
+      });
+
       if (buyNow) {
+
         // Buy-now: send single-product message and DO NOT clear cart
         const msg = buildBuyNowMessage({
           title: buyNow.productTitle,
