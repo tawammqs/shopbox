@@ -5,6 +5,7 @@ import { Heart, ShoppingBag, Share2, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront, useIsMioTheme } from "@/components/storefront/StoreContext";
 import { fetchProductFull, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
+import { ColorVariantsRow } from "@/components/storefront/ColorVariantsRow";
 import { supabase } from "@/integrations/supabase/client";
 import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { useCart } from "@/stores/cart";
