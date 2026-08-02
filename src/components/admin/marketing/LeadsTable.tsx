@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { maskPhoneBR, onlyDigits } from "@/lib/masks";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
-export type LeadColumn = "name" | "whatsapp" | "birthday" | "created_at";
+export type LeadColumn = "name" | "whatsapp" | "city" | "source" | "birthday" | "created_at";
 
 type Props = {
   storeId: string;
@@ -24,8 +24,18 @@ type Lead = {
   name?: string | null;
   whatsapp: string;
   birthday?: string | null;
+  city?: string | null;
+  source?: string | null;
   created_at: string;
 };
+
+const SOURCE_BADGES: Record<string, { label: string; className: string }> = {
+  meta_ads: { label: "📱 Meta Ads", className: "bg-purple-100 text-purple-700" },
+  menu: { label: "📋 Menu", className: "bg-blue-100 text-blue-700" },
+};
+
+const sourceBadge = (source?: string | null) =>
+  SOURCE_BADGES[source ?? ""] ?? { label: "🌐 Site", className: "bg-gray-100 text-gray-600" };
 
 const formatDate = (s: string) => {
   const d = new Date(s);
@@ -107,12 +117,16 @@ export function LeadsTable({ storeId, table, columns, searchPlaceholder, emptyTi
     const headers: string[] = [];
     if (columns.includes("name")) headers.push("Nome");
     if (columns.includes("whatsapp")) headers.push("WhatsApp");
+    if (columns.includes("city")) headers.push("Cidade");
+    if (columns.includes("source")) headers.push("Origem");
     if (columns.includes("birthday")) headers.push("Aniversário");
     if (columns.includes("created_at")) headers.push("Cadastrado em");
     const rows = filtered.map((l) => {
       const r: string[] = [];
       if (columns.includes("name")) r.push(l.name ?? "");
       if (columns.includes("whatsapp")) r.push(maskPhoneBR(l.whatsapp));
+      if (columns.includes("city")) r.push(l.city ?? "");
+      if (columns.includes("source")) r.push(sourceBadge(l.source).label.replace(/^\S+\s/, ""));
       if (columns.includes("birthday")) r.push(formatBirthday(l.birthday));
       if (columns.includes("created_at")) r.push(formatDate(l.created_at));
       return r;
@@ -178,6 +192,8 @@ export function LeadsTable({ storeId, table, columns, searchPlaceholder, emptyTi
               <tr>
                 {columns.includes("name") && <th className="px-4 py-3">Nome</th>}
                 {columns.includes("whatsapp") && <th className="px-4 py-3">WhatsApp</th>}
+                {columns.includes("city") && <th className="px-4 py-3">Cidade</th>}
+                {columns.includes("source") && <th className="px-4 py-3">Origem</th>}
                 {columns.includes("birthday") && <th className="px-4 py-3">Aniversário</th>}
                 {columns.includes("created_at") && <th className="px-4 py-3">Cadastrado em</th>}
                 <th className="px-4 py-3 text-right">Ações</th>
@@ -188,6 +204,14 @@ export function LeadsTable({ storeId, table, columns, searchPlaceholder, emptyTi
                 <tr key={l.id}>
                   {columns.includes("name") && <td className="px-4 py-3">{l.name || "—"}</td>}
                   {columns.includes("whatsapp") && <td className="px-4 py-3">{maskPhoneBR(l.whatsapp)}</td>}
+                  {columns.includes("city") && <td className="px-4 py-3">{l.city || "—"}</td>}
+                  {columns.includes("source") && (
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${sourceBadge(l.source).className}`}>
+                        {sourceBadge(l.source).label}
+                      </span>
+                    </td>
+                  )}
                   {columns.includes("birthday") && <td className="px-4 py-3">{formatBirthday(l.birthday)}</td>}
                   {columns.includes("created_at") && <td className="px-4 py-3 text-gray-500">{formatDate(l.created_at)}</td>}
                   <td className="px-4 py-3">
