@@ -73,6 +73,7 @@ function CategoryPage() {
 
   const tamanhoArr = splitCsv(search.tamanho);
   const marcaArr = splitCsv(search.marca);
+  const corArr = splitCsv(search.cor);
 
   const q = useInfiniteQuery({
     queryKey: [
@@ -85,6 +86,7 @@ function CategoryPage() {
       search.inStock,
       tamanhoArr.join(","),
       marcaArr.join(","),
+      corArr.join(","),
     ],
     queryFn: ({ pageParam = 0 }) =>
       fetchProductsForCategory(store.id, ids, {
@@ -96,6 +98,7 @@ function CategoryPage() {
         inStock: search.inStock,
         sizes: tamanhoArr,
         brands: marcaArr,
+        colorNames: corArr,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
@@ -114,16 +117,18 @@ function CategoryPage() {
         const next: any = { ...prev, ...patch };
         if (Array.isArray(next.tamanho)) next.tamanho = next.tamanho.length ? next.tamanho.join(",") : undefined;
         if (Array.isArray(next.marca)) next.marca = next.marca.length ? next.marca.join(",") : undefined;
+        if (Array.isArray(next.cor)) next.cor = next.cor.length ? next.cor.join(",") : undefined;
         if (patch.page == null) next.page = 1;
         return next;
       },
     });
 
-  const toggleArrayFilter = (key: "tamanho" | "marca", value: string) => {
-    const current = key === "tamanho" ? tamanhoArr : marcaArr;
+  const toggleArrayFilter = (key: "tamanho" | "marca" | "cor", value: string) => {
+    const current = key === "tamanho" ? tamanhoArr : key === "marca" ? marcaArr : corArr;
     const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
     setSearch({ [key]: next });
   };
+
 
   const priceMin = facets.data?.priceMin ?? 0;
   const priceMax = Math.max(facets.data?.priceMax ?? 1000, priceMin + 1);
