@@ -184,6 +184,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
             <h1 className="ts-h1 text-[24px] font-extrabold leading-tight text-[#111] md:text-[32px]"
               style={{ letterSpacing: "-0.5px" }}>{product.title}</h1>
             {product.sku && <p className="mt-1 text-[12px] text-[#aaa]">SKU: {product.sku}</p>}
+            <ColorVariantsRow storeId={store.id} storeSlug={store.slug} productId={product.id} />
             {avgRating != null && (
               <div className="mt-2 flex items-center gap-1.5 text-sm">
                 <Stars value={avgRating} />
