@@ -274,6 +274,10 @@ export function TheShoesHeader() {
                   <MioVipMenuLink onNavigate={() => setNavOpen(false)} />
                 )}
               </div>
+              <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
+                Rastrear Pedido
+              </Link>
             </div>
           </aside>
         </>
