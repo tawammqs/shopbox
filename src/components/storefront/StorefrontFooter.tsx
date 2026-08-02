@@ -126,6 +126,11 @@ export function StorefrontFooter() {
                 </Link>
               </li>
               <li>
+                <Link to="/loja/$slug/sobre" params={{ slug: store.slug }} className="hover:text-accent">
+                  Quem somos
+                </Link>
+              </li>
+              <li>
                 <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} className="hover:text-accent">
                   Rastrear pedido
                 </Link>
@@ -153,6 +158,11 @@ export function StorefrontFooter() {
         <div>
           <h4 className="mb-3 text-sm font-semibold">Atendimento</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
+            <li>
+              <Link to="/loja/$slug/sobre" params={{ slug: store.slug }} className="hover:text-accent">
+                Quem somos
+              </Link>
+            </li>
             <li>
               <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} className="hover:text-accent">
                 Rastrear pedido

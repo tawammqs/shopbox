@@ -59,6 +59,7 @@ import { Route as AdminEstatisticasIndexRouteImport } from './routes/admin.estat
 import { Route as AdminConfiguracoesIndexRouteImport } from './routes/admin.configuracoes.index'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
+import { Route as LojaSlugSobreRouteImport } from './routes/loja.$slug.sobre'
 import { Route as LojaSlugRastreioRouteImport } from './routes/loja.$slug.rastreio'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
@@ -84,6 +85,7 @@ import { Route as AdminDescontosFreteGratisRouteImport } from './routes/admin.de
 import { Route as AdminDescontosCuponsRouteImport } from './routes/admin.descontos.cupons'
 import { Route as AdminConfiguracoesWhatsappRouteImport } from './routes/admin.configuracoes.whatsapp'
 import { Route as AdminConfiguracoesUsuariosRouteImport } from './routes/admin.configuracoes.usuarios'
+import { Route as AdminConfiguracoesPoliticasRouteImport } from './routes/admin.configuracoes.politicas'
 import { Route as AdminConfiguracoesPagamentosRouteImport } from './routes/admin.configuracoes.pagamentos'
 import { Route as AdminConfiguracoesEquipeRouteImport } from './routes/admin.configuracoes.equipe'
 import { Route as AdminConfiguracoesDominiosRouteImport } from './routes/admin.configuracoes.dominios'
@@ -353,6 +355,11 @@ const LojaSlugWishlistRoute = LojaSlugWishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => LojaSlugRoute,
 } as any)
+const LojaSlugSobreRoute = LojaSlugSobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
 const LojaSlugRastreioRoute = LojaSlugRastreioRouteImport.update({
   id: '/rastreio',
   path: '/rastreio',
@@ -487,6 +494,12 @@ const AdminConfiguracoesUsuariosRoute =
   AdminConfiguracoesUsuariosRouteImport.update({
     id: '/usuarios',
     path: '/usuarios',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
+const AdminConfiguracoesPoliticasRoute =
+  AdminConfiguracoesPoliticasRouteImport.update({
+    id: '/politicas',
+    path: '/politicas',
     getParentRoute: () => AdminConfiguracoesRoute,
   } as any)
 const AdminConfiguracoesPagamentosRoute =
@@ -635,6 +648,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/equipe': typeof AdminConfiguracoesEquipeRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/politicas': typeof AdminConfiguracoesPoliticasRoute
   '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
@@ -660,6 +674,7 @@ export interface FileRoutesByFullPath {
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
+  '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
@@ -723,6 +738,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/equipe': typeof AdminConfiguracoesEquipeRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/politicas': typeof AdminConfiguracoesPoliticasRoute
   '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
@@ -748,6 +764,7 @@ export interface FileRoutesByTo {
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
+  '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes': typeof AdminConfiguracoesIndexRoute
@@ -818,6 +835,7 @@ export interface FileRoutesById {
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/equipe': typeof AdminConfiguracoesEquipeRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/politicas': typeof AdminConfiguracoesPoliticasRoute
   '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
@@ -843,6 +861,7 @@ export interface FileRoutesById {
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
+  '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/admin/configuracoes/': typeof AdminConfiguracoesIndexRoute
@@ -914,6 +933,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/equipe'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/politicas'
     | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
@@ -939,6 +959,7 @@ export interface FileRouteTypes {
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
+    | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
@@ -1002,6 +1023,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/equipe'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/politicas'
     | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
@@ -1027,6 +1049,7 @@ export interface FileRouteTypes {
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
+    | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
     | '/admin/configuracoes'
@@ -1096,6 +1119,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/equipe'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/politicas'
     | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
@@ -1121,6 +1145,7 @@ export interface FileRouteTypes {
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
+    | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
     | '/lovable/email/suppression'
     | '/admin/configuracoes/'
@@ -1526,6 +1551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojaSlugWishlistRouteImport
       parentRoute: typeof LojaSlugRoute
     }
+    '/loja/$slug/sobre': {
+      id: '/loja/$slug/sobre'
+      path: '/sobre'
+      fullPath: '/loja/$slug/sobre'
+      preLoaderRoute: typeof LojaSlugSobreRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
     '/loja/$slug/rastreio': {
       id: '/loja/$slug/rastreio'
       path: '/rastreio'
@@ -1701,6 +1733,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConfiguracoesUsuariosRouteImport
       parentRoute: typeof AdminConfiguracoesRoute
     }
+    '/admin/configuracoes/politicas': {
+      id: '/admin/configuracoes/politicas'
+      path: '/politicas'
+      fullPath: '/admin/configuracoes/politicas'
+      preLoaderRoute: typeof AdminConfiguracoesPoliticasRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
     '/admin/configuracoes/pagamentos': {
       id: '/admin/configuracoes/pagamentos'
       path: '/pagamentos'
@@ -1842,6 +1881,7 @@ interface AdminConfiguracoesRouteChildren {
   AdminConfiguracoesDominiosRoute: typeof AdminConfiguracoesDominiosRoute
   AdminConfiguracoesEquipeRoute: typeof AdminConfiguracoesEquipeRoute
   AdminConfiguracoesPagamentosRoute: typeof AdminConfiguracoesPagamentosRoute
+  AdminConfiguracoesPoliticasRoute: typeof AdminConfiguracoesPoliticasRoute
   AdminConfiguracoesUsuariosRoute: typeof AdminConfiguracoesUsuariosRoute
   AdminConfiguracoesWhatsappRoute: typeof AdminConfiguracoesWhatsappRoute
   AdminConfiguracoesIndexRoute: typeof AdminConfiguracoesIndexRoute
@@ -1852,6 +1892,7 @@ const AdminConfiguracoesRouteChildren: AdminConfiguracoesRouteChildren = {
   AdminConfiguracoesDominiosRoute: AdminConfiguracoesDominiosRoute,
   AdminConfiguracoesEquipeRoute: AdminConfiguracoesEquipeRoute,
   AdminConfiguracoesPagamentosRoute: AdminConfiguracoesPagamentosRoute,
+  AdminConfiguracoesPoliticasRoute: AdminConfiguracoesPoliticasRoute,
   AdminConfiguracoesUsuariosRoute: AdminConfiguracoesUsuariosRoute,
   AdminConfiguracoesWhatsappRoute: AdminConfiguracoesWhatsappRoute,
   AdminConfiguracoesIndexRoute: AdminConfiguracoesIndexRoute,
@@ -2013,6 +2054,7 @@ const SuperadminRouteWithChildren = SuperadminRoute._addFileChildren(
 interface LojaSlugRouteChildren {
   LojaSlugBuscaRoute: typeof LojaSlugBuscaRoute
   LojaSlugRastreioRoute: typeof LojaSlugRastreioRoute
+  LojaSlugSobreRoute: typeof LojaSlugSobreRoute
   LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
   LojaSlugIndexRoute: typeof LojaSlugIndexRoute
   LojaSlugCategoriaCategorySlugRoute: typeof LojaSlugCategoriaCategorySlugRoute
@@ -2023,6 +2065,7 @@ interface LojaSlugRouteChildren {
 const LojaSlugRouteChildren: LojaSlugRouteChildren = {
   LojaSlugBuscaRoute: LojaSlugBuscaRoute,
   LojaSlugRastreioRoute: LojaSlugRastreioRoute,
+  LojaSlugSobreRoute: LojaSlugSobreRoute,
   LojaSlugWishlistRoute: LojaSlugWishlistRoute,
   LojaSlugIndexRoute: LojaSlugIndexRoute,
   LojaSlugCategoriaCategorySlugRoute: LojaSlugCategoriaCategorySlugRoute,

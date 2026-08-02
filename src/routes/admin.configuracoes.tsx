@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, CreditCard, Phone, MessageCircle, Users, Globe } from "lucide-react";
+import { ArrowLeft, CreditCard, Phone, MessageCircle, Users, Globe, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/configuracoes")({
@@ -21,6 +21,10 @@ const GROUPS: Group[] = [
       { to: "/admin/configuracoes/whatsapp", label: "Botão de WhatsApp", icon: MessageCircle },
       { to: "/admin/configuracoes/equipe", label: "Equipe de vendas", icon: Users },
     ],
+  },
+  {
+    label: "CONTEÚDO",
+    items: [{ to: "/admin/configuracoes/politicas", label: "Políticas e Sobre a marca", icon: FileText }],
   },
   {
     label: "OUTROS",
