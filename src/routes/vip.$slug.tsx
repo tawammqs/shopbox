@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { maskPhoneBR, onlyDigits } from "@/lib/masks";
+import { initPixel } from "@/lib/tracking";
 
 export const Route = createFileRoute("/vip/$slug")({
   head: () => ({
@@ -20,6 +21,11 @@ export const Route = createFileRoute("/vip/$slug")({
   component: VipLanding,
 });
 
+// Pixel dedicado à página de captura (por slug de loja)
+const LANDING_PIXELS: Record<string, string> = {
+  "the-shoes": "27365664036430955",
+};
+
 type Cfg = {
   whatsapp_group_link?: string;
   section_title?: string;
@@ -29,6 +35,22 @@ type Cfg = {
 
 function VipLanding() {
   const { slug } = Route.useParams();
+  const pixelId = LANDING_PIXELS[slug] ?? null;
+
+  useEffect(() => {
+    if (!pixelId) return;
+    initPixel(pixelId);
+    try {
+      window.fbq?.("track", "ViewContent", {
+        content_name: "Landing Page Grupo VIP",
+        content_category: "VIP Group",
+      });
+    } catch {
+      /* pixel opcional */
+    }
+  }, [pixelId]);
+
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["vip-landing", slug],
@@ -98,6 +120,7 @@ function VipLanding() {
       (window as any).fbq?.("track", "Lead", {
         content_name: `Grupo VIP ${store.name}`,
         content_category: "VIP Group",
+        currency: "BRL",
       });
     } catch {
       /* pixel opcional */
@@ -133,6 +156,17 @@ function VipLanding() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#dfdac8] p-4">
+      {pixelId && (
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+            alt=""
+          />
+        </noscript>
+      )}
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-sm">
         {store.logo_url && (
           <img src={store.logo_url} alt={store.name} className="mx-auto mb-6 h-10 object-contain" />
