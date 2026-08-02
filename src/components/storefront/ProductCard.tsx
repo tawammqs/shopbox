@@ -10,6 +10,7 @@ import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
 import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
 import { getInstallment } from "@/lib/installments";
+import { useColorGroups, getColorHex, isLightSwatch } from "@/lib/color-groups";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
