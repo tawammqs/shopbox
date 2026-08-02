@@ -1756,6 +1756,50 @@ export type Database = {
           },
         ]
       }
+      store_sales_team: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          photo_url: string | null
+          position: number
+          store_id: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          photo_url?: string | null
+          position?: number
+          store_id: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          photo_url?: string | null
+          position?: number
+          store_id?: string
+          updated_at?: string
+          whatsapp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_sales_team_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_social_links: {
         Row: {
           blog_url: string | null
