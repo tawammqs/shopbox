@@ -29,6 +29,7 @@ const searchSchema = z.object({
   inStock: fallback(z.boolean().optional(), undefined).optional(),
   tamanho: fallback(z.string().optional(), undefined).optional(),
   marca: fallback(z.string().optional(), undefined).optional(),
+  cor: fallback(z.string().optional(), undefined).optional(),
   page: fallback(z.number().int().min(1).optional(), 1).default(1),
 });
 
