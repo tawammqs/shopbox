@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { maskPhoneBR, onlyDigits } from "@/lib/masks";
+import { initPixel } from "@/lib/tracking";
 
 export const Route = createFileRoute("/vip/$slug")({
   head: () => ({
