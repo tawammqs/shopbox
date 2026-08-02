@@ -865,6 +865,7 @@ function MobileFilterSheet({
               onApply({
                 sizes: pendingSizes,
                 brands: pendingBrands,
+                colors: pendingColors,
                 minPrice: pendingRange[0] > priceMin ? pendingRange[0] : undefined,
                 maxPrice: pendingRange[1] < priceMax ? pendingRange[1] : undefined,
                 inStock: pendingInStock,
