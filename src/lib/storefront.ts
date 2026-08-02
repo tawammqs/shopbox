@@ -449,9 +449,14 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
 
+  const colorArr = Array.from(colorCounts.entries())
+    .map(([name, v]) => ({ name, hex: v.hex, count: v.count }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return {
     sizes: sizeArr,
     brands: brandArr,
+    colors: colorArr,
     priceMin: Math.floor(priceMin),
     priceMax: Math.ceil(priceMax),
   };
