@@ -85,6 +85,7 @@ import { Route as AdminDescontosFreteGratisRouteImport } from './routes/admin.de
 import { Route as AdminDescontosCuponsRouteImport } from './routes/admin.descontos.cupons'
 import { Route as AdminConfiguracoesWhatsappRouteImport } from './routes/admin.configuracoes.whatsapp'
 import { Route as AdminConfiguracoesUsuariosRouteImport } from './routes/admin.configuracoes.usuarios'
+import { Route as AdminConfiguracoesPoliticasRouteImport } from './routes/admin.configuracoes.politicas'
 import { Route as AdminConfiguracoesPagamentosRouteImport } from './routes/admin.configuracoes.pagamentos'
 import { Route as AdminConfiguracoesEquipeRouteImport } from './routes/admin.configuracoes.equipe'
 import { Route as AdminConfiguracoesDominiosRouteImport } from './routes/admin.configuracoes.dominios'
@@ -495,6 +496,12 @@ const AdminConfiguracoesUsuariosRoute =
     path: '/usuarios',
     getParentRoute: () => AdminConfiguracoesRoute,
   } as any)
+const AdminConfiguracoesPoliticasRoute =
+  AdminConfiguracoesPoliticasRouteImport.update({
+    id: '/politicas',
+    path: '/politicas',
+    getParentRoute: () => AdminConfiguracoesRoute,
+  } as any)
 const AdminConfiguracoesPagamentosRoute =
   AdminConfiguracoesPagamentosRouteImport.update({
     id: '/pagamentos',
@@ -641,6 +648,7 @@ export interface FileRoutesByFullPath {
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/equipe': typeof AdminConfiguracoesEquipeRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/politicas': typeof AdminConfiguracoesPoliticasRoute
   '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
@@ -730,6 +738,7 @@ export interface FileRoutesByTo {
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/equipe': typeof AdminConfiguracoesEquipeRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/politicas': typeof AdminConfiguracoesPoliticasRoute
   '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
@@ -826,6 +835,7 @@ export interface FileRoutesById {
   '/admin/configuracoes/dominios': typeof AdminConfiguracoesDominiosRoute
   '/admin/configuracoes/equipe': typeof AdminConfiguracoesEquipeRoute
   '/admin/configuracoes/pagamentos': typeof AdminConfiguracoesPagamentosRoute
+  '/admin/configuracoes/politicas': typeof AdminConfiguracoesPoliticasRoute
   '/admin/configuracoes/usuarios': typeof AdminConfiguracoesUsuariosRoute
   '/admin/configuracoes/whatsapp': typeof AdminConfiguracoesWhatsappRoute
   '/admin/descontos/cupons': typeof AdminDescontosCuponsRoute
@@ -923,6 +933,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/equipe'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/politicas'
     | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
@@ -1012,6 +1023,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/equipe'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/politicas'
     | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
@@ -1107,6 +1119,7 @@ export interface FileRouteTypes {
     | '/admin/configuracoes/dominios'
     | '/admin/configuracoes/equipe'
     | '/admin/configuracoes/pagamentos'
+    | '/admin/configuracoes/politicas'
     | '/admin/configuracoes/usuarios'
     | '/admin/configuracoes/whatsapp'
     | '/admin/descontos/cupons'
@@ -1720,6 +1733,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminConfiguracoesUsuariosRouteImport
       parentRoute: typeof AdminConfiguracoesRoute
     }
+    '/admin/configuracoes/politicas': {
+      id: '/admin/configuracoes/politicas'
+      path: '/politicas'
+      fullPath: '/admin/configuracoes/politicas'
+      preLoaderRoute: typeof AdminConfiguracoesPoliticasRouteImport
+      parentRoute: typeof AdminConfiguracoesRoute
+    }
     '/admin/configuracoes/pagamentos': {
       id: '/admin/configuracoes/pagamentos'
       path: '/pagamentos'
@@ -1861,6 +1881,7 @@ interface AdminConfiguracoesRouteChildren {
   AdminConfiguracoesDominiosRoute: typeof AdminConfiguracoesDominiosRoute
   AdminConfiguracoesEquipeRoute: typeof AdminConfiguracoesEquipeRoute
   AdminConfiguracoesPagamentosRoute: typeof AdminConfiguracoesPagamentosRoute
+  AdminConfiguracoesPoliticasRoute: typeof AdminConfiguracoesPoliticasRoute
   AdminConfiguracoesUsuariosRoute: typeof AdminConfiguracoesUsuariosRoute
   AdminConfiguracoesWhatsappRoute: typeof AdminConfiguracoesWhatsappRoute
   AdminConfiguracoesIndexRoute: typeof AdminConfiguracoesIndexRoute
@@ -1871,6 +1892,7 @@ const AdminConfiguracoesRouteChildren: AdminConfiguracoesRouteChildren = {
   AdminConfiguracoesDominiosRoute: AdminConfiguracoesDominiosRoute,
   AdminConfiguracoesEquipeRoute: AdminConfiguracoesEquipeRoute,
   AdminConfiguracoesPagamentosRoute: AdminConfiguracoesPagamentosRoute,
+  AdminConfiguracoesPoliticasRoute: AdminConfiguracoesPoliticasRoute,
   AdminConfiguracoesUsuariosRoute: AdminConfiguracoesUsuariosRoute,
   AdminConfiguracoesWhatsappRoute: AdminConfiguracoesWhatsappRoute,
   AdminConfiguracoesIndexRoute: AdminConfiguracoesIndexRoute,
