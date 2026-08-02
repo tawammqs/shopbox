@@ -1,0 +1,1 @@
+ALTER TABLE public.vip_group_leads ADD COLUMN IF NOT EXISTS city text;
