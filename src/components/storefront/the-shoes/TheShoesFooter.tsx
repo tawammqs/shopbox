@@ -133,7 +133,7 @@ export function TheShoesFooter() {
             <ul className="flex flex-col gap-3">
               {links.map((l, i) => (
                 <li key={i}>
-                  <a href={l.url} className="ts-footer-link" style={{ color: txt, opacity: 0.75 }}>{l.label}</a>
+                  <a href={resolveUrl(l.url)} className="ts-footer-link" style={{ color: txt, opacity: 0.75 }}>{l.label}</a>
                 </li>
               ))}
             </ul>
