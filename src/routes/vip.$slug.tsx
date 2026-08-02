@@ -120,6 +120,7 @@ function VipLanding() {
       (window as any).fbq?.("track", "Lead", {
         content_name: `Grupo VIP ${store.name}`,
         content_category: "VIP Group",
+        currency: "BRL",
       });
     } catch {
       /* pixel opcional */
