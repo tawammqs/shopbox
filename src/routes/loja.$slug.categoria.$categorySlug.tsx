@@ -586,16 +586,19 @@ function MobileFilterBar({
 
 type SizeFacet = { label: string; count: number };
 type BrandFacet = { name: string; count: number };
+type ColorFacet = { name: string; hex: string; count: number };
 
 function MobileFilterSheet({
   open,
   onClose,
   sizes,
   brands,
+  colors,
   priceMin,
   priceMax,
   initialSizes,
   initialBrands,
+  initialColors,
   initialMinPrice,
   initialMaxPrice,
   initialInStock,
@@ -607,10 +610,12 @@ function MobileFilterSheet({
   onClose: () => void;
   sizes: SizeFacet[];
   brands: BrandFacet[];
+  colors: ColorFacet[];
   priceMin: number;
   priceMax: number;
   initialSizes: string[];
   initialBrands: string[];
+  initialColors: string[];
   initialMinPrice: number | undefined;
   initialMaxPrice: number | undefined;
   initialInStock: boolean;
@@ -618,6 +623,7 @@ function MobileFilterSheet({
   onApply: (next: {
     sizes: string[];
     brands: string[];
+    colors: string[];
     minPrice: number | undefined;
     maxPrice: number | undefined;
     inStock: boolean;
@@ -626,6 +632,7 @@ function MobileFilterSheet({
 }) {
   const [pendingSizes, setPendingSizes] = useState<string[]>(initialSizes);
   const [pendingBrands, setPendingBrands] = useState<string[]>(initialBrands);
+  const [pendingColors, setPendingColors] = useState<string[]>(initialColors);
   const [pendingRange, setPendingRange] = useState<[number, number]>([
     initialMinPrice ?? priceMin,
     initialMaxPrice ?? priceMax,
@@ -639,6 +646,7 @@ function MobileFilterSheet({
     if (open) {
       setPendingSizes(initialSizes);
       setPendingBrands(initialBrands);
+      setPendingColors(initialColors);
       setPendingRange([initialMinPrice ?? priceMin, initialMaxPrice ?? priceMax]);
       setPendingInStock(initialInStock);
     }
@@ -651,6 +659,7 @@ function MobileFilterSheet({
   const hasAny =
     pendingSizes.length > 0 ||
     pendingBrands.length > 0 ||
+    pendingColors.length > 0 ||
     pendingRange[0] > priceMin ||
     pendingRange[1] < priceMax ||
     pendingInStock;
