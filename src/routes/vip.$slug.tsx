@@ -167,7 +167,7 @@ function VipLanding() {
           />
         </noscript>
       )}
-      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-sm">t
+      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-sm">
         {store.logo_url && (
           <img src={store.logo_url} alt={store.name} className="mx-auto mb-6 h-10 object-contain" />
         )}
