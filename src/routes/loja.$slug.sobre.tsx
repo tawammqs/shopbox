@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import ReactMarkdown from "react-markdown";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { supabase } from "@/integrations/supabase/client";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
