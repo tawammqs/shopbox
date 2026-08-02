@@ -139,7 +139,7 @@ function SobrePage() {
           <Link
             to="/loja/$slug"
             params={{ slug: store.slug }}
-            className="rounded-xl bg-foreground px-6 py-2.5 text-sm font-semibold text-background"
+            className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground"
           >
             Ver produtos
           </Link>
