@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { maskPhoneBR, onlyDigits } from "@/lib/masks";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export type LeadColumn = "name" | "whatsapp" | "birthday" | "created_at";
 
@@ -192,7 +193,7 @@ export function LeadsTable({ storeId, table, columns, searchPlaceholder, emptyTi
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
                       <a
-                        href={`https://wa.me/55${onlyDigits(l.whatsapp)}`}
+                        href={buildWhatsAppUrl(l.whatsapp)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="rounded-md p-1.5 text-[#25d366] hover:bg-[#25d366]/10"

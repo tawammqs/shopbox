@@ -8,6 +8,7 @@ import {
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 type OrderStatus = "aguardando" | "confirmado" | "enviado" | "entregue" | "cancelado";
 
@@ -90,7 +91,7 @@ export function OrderDetailDrawer({
   const greeting = c
     ? `Olá, ${c.name.split(" ")[0]}! Tudo bem? Passando aqui da ${storeName} sobre o pedido #${String(order.order_number).padStart(3, "0")}.`
     : "";
-  const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(greeting)}` : "";
+  const waUrl = waNumber ? buildWhatsAppUrl(waNumber, greeting) : "";
 
   const updateStatus = async (status: OrderStatus) => {
     setBusy(true);

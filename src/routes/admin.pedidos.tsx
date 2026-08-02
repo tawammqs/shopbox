@@ -18,6 +18,7 @@ import { EditOrderDialog, type EditableOrder } from "@/components/admin/EditOrde
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 
 export const Route = createFileRoute("/admin/pedidos")({
@@ -315,7 +316,7 @@ function PedidosContent({ storeId, storeName }: { storeId: string; storeName: st
                               className="border-[#25d366]/40 text-[#1a7a3e] hover:bg-[#25d366]/10"
                             >
                               <a
-                                href={`https://wa.me/${o.customer.whatsapp.replace(/\D/g, "")}`}
+                                href={buildWhatsAppUrl(o.customer.whatsapp)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >

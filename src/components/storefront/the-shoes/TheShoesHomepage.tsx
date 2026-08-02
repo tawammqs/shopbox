@@ -58,6 +58,7 @@ import {
   ProdutoPrincipalRender,
 } from "./HomepageSectionRenderers";
 import { MioVipSection } from "../MioAddonOverlays";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export function TheShoesHomepage() {
   const { store } = useStorefront();
@@ -87,7 +88,7 @@ function MioCustomHomepage() {
         if (!isSectionVisible(cust, sk)) return null;
         return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
       })}
-      {whatsapp && <FloatingWhatsApp number={whatsapp.replace(/\D/g, "")} />}
+      {whatsapp && <FloatingWhatsApp number={whatsapp} />}
       <TheShoesStyles />
     </div>
   );
@@ -733,7 +734,7 @@ function FaqSection({ title, items, whatsapp }: { title: string; items: TheShoes
           </p>
           {whatsapp && (
             <div className="flex justify-center">
-              <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="ts-faq-cta">
+              <a href={buildWhatsAppUrl(whatsapp)} target="_blank" rel="noreferrer" className="ts-faq-cta">
                 <WhatsAppLogo size={20} />
                 Chamar no WhatsApp
               </a>
@@ -866,7 +867,7 @@ function InstagramSection({ handle, images }: { handle: string; images: TheShoes
 /* -------------- Floating WhatsApp -------------- */
 function FloatingWhatsApp({ number }: { number: string }) {
   return (
-    <a href={`https://wa.me/${number}`} target="_blank" rel="noreferrer" aria-label="WhatsApp"
+    <a href={buildWhatsAppUrl(number)} target="_blank" rel="noreferrer" aria-label="WhatsApp"
       className="ts-fab" style={{
         position: "fixed", bottom: 24, right: 24, width: 56, height: 56, borderRadius: "50%",
         backgroundColor: "#25D366", display: "flex", alignItems: "center", justifyContent: "center",

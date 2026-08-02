@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useStorefront } from "../StoreContext";
 import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export function TheShoesFooter() {
   const { store, menus, contactInfo } = useStorefront();
@@ -64,7 +65,7 @@ export function TheShoesFooter() {
         { label: "Quem somos", url: "/sobre" },
         { label: "Políticas de troca", url: "/politicas" },
         { label: "Contato", url: "/contato" },
-        { label: "WhatsApp", url: `https://wa.me/${store.whatsapp}` },
+        { label: "WhatsApp", url: buildWhatsAppUrl(store.whatsapp) },
       ];
 
   let customLinks: Lnk[] = [];
@@ -87,7 +88,7 @@ export function TheShoesFooter() {
       const mail = (fcfg.showContact && fcfg.email) || contactInfo?.store_email;
       customLinks = [
         { label: "Início", url: `/loja/${store.slug}` },
-        { label: "WhatsApp", url: `https://wa.me/${store.whatsapp.replace(/\D/g, "")}` },
+        { label: "WhatsApp", url: buildWhatsAppUrl(store.whatsapp) },
         ...(phone ? [{ label: phone, url: `tel:${phone}` }] : []),
         ...(mail ? [{ label: mail, url: `mailto:${mail}` }] : []),
       ];

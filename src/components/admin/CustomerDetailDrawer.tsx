@@ -8,6 +8,7 @@ import {
 import { formatBRL } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export type CustomerRow = {
   id: string;
@@ -115,7 +116,7 @@ export function CustomerDetailDrawer({
 
   const waNumber = customer.whatsapp.replace(/\D/g, "");
   const greeting = `Olá, ${customer.name.split(" ")[0]}! Tudo bem? Passando aqui da ${storeName}...`;
-  const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(greeting)}`;
+  const waUrl = buildWhatsAppUrl(waNumber, greeting);
 
   return (
     <>
