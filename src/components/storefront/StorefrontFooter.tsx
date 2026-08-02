@@ -158,11 +158,6 @@ export function StorefrontFooter() {
                 Quem somos
               </Link>
             </li>
-            <li>
-              <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} className="hover:text-accent">
-                Rastrear pedido
-              </Link>
-            </li>
             {phone && <li>📱 {phone}</li>}
             {email && (
               <li>
