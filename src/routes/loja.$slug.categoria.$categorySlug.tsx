@@ -757,6 +757,41 @@ function MobileFilterSheet({
             </section>
           )}
 
+          {colors.length > 0 && (
+            <section className="border-b border-[#f0f0ea] py-5">
+              <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#aaa]">
+                Cor
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((c) => {
+                  const sel = pendingColors.includes(c.name);
+                  return (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => setPendingColors((arr) => toggle(arr, c.name))}
+                      className={cn(
+                        "inline-flex min-h-[40px] items-center gap-2 rounded-full border px-3 py-2 text-[13px] transition",
+                        sel
+                          ? "border-[#1a1a1a] bg-[#f5f5f5] font-semibold text-[#1a1a1a]"
+                          : "border-[#e8e8e0] bg-white text-[#555]",
+                      )}
+                    >
+                      <span
+                        className="inline-block h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-black/10"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                      {c.name}
+                      <span className="text-[#aaa]">({c.count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+
+
           <section className="border-b border-[#f0f0ea] py-5">
             <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#aaa]">
               Faixa de preço
