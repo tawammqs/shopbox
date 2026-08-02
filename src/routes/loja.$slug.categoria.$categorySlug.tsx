@@ -189,12 +189,14 @@ function CategoryPage() {
 
   const allSizes = facets.data?.sizes ?? [];
   const allBrands = facets.data?.brands ?? [];
+  const allColors = facets.data?.colors ?? [];
   const visibleSizes = showAllSizes ? allSizes : allSizes.slice(0, 8);
   const visibleBrands = showAllBrands ? allBrands : allBrands.slice(0, 6);
 
   const hasAnyFilter =
     tamanhoArr.length > 0 ||
     marcaArr.length > 0 ||
+    corArr.length > 0 ||
     search.minPrice != null ||
     search.maxPrice != null ||
     !!search.inStock;
@@ -203,6 +205,7 @@ function CategoryPage() {
     setSearch({
       tamanho: [],
       marca: [],
+      cor: [],
       minPrice: undefined,
       maxPrice: undefined,
       inStock: undefined,
@@ -216,6 +219,10 @@ function CategoryPage() {
     ...marcaArr.map((b) => ({
       label: `Marca: ${b}`,
       clear: () => toggleArrayFilter("marca", b),
+    })),
+    ...corArr.map((c) => ({
+      label: `Cor: ${c}`,
+      clear: () => toggleArrayFilter("cor", c),
     })),
     ...(search.minPrice != null
       ? [{ label: `Min R$ ${search.minPrice}`, clear: () => setSearch({ minPrice: undefined }) }]
