@@ -24,10 +24,19 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const addItem = useCart((s) => s.addItem);
 
   const [hover, setHover] = useState(false);
+  const { map: groupMap } = useColorGroups(store.id);
+  const group = groupMap[p.id];
+  const [variantIdx, setVariantIdx] = useState(() => Math.max(0, group?.product_ids?.indexOf(p.id) ?? 0));
+  const idx = group ? Math.min(variantIdx, (group.product_ids?.length ?? 1) - 1) : 0;
+  const isBaseVariant = !group || group.product_ids[idx] === p.id;
+  const targetSlug = group ? (group.product_slugs?.[idx] ?? p.slug) : p.slug;
+  const groupImage = group ? group.first_images?.[idx] || "" : "";
+
   const price = effectivePrice(p.price, p.promo_price);
   const pct = discountPct(p.price, p.promo_price);
-  const img1 = p.images[0]?.url ?? "";
-  const img2 = p.images[1]?.url ?? img1;
+  const img1 = (isBaseVariant ? p.images[0]?.url : groupImage) || groupImage || p.images[0]?.url || "";
+  const img2 = isBaseVariant ? (p.images[1]?.url ?? img1) : img1;
+
 
   const pixPrice =
     paymentSettings?.pix_enabled && paymentSettings.pix_discount_percent > 0
