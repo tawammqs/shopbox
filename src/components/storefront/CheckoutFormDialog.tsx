@@ -12,6 +12,8 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { trackPurchase } from "@/lib/tracking";
+
 
 const schema = z.object({
   name: z.string().trim().min(2, "Informe seu nome").max(100),
