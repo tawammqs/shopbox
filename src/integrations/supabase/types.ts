@@ -632,15 +632,20 @@ export type Database = {
           coupon_code: string | null
           created_at: string
           customer_id: string | null
+          delivery_notes: string | null
+          delivery_status: string
           discount_amount: number
           id: string
           items: Json
           order_number: number
           promotion_description: string | null
           status: Database["public"]["Enums"]["order_status"]
+          status_updated_at: string
           store_id: string
           subtotal: number
           total: number
+          tracking_code: string | null
+          tracking_url: string | null
           updated_at: string
           viewed_at: string | null
         }
@@ -648,15 +653,20 @@ export type Database = {
           coupon_code?: string | null
           created_at?: string
           customer_id?: string | null
+          delivery_notes?: string | null
+          delivery_status?: string
           discount_amount?: number
           id?: string
           items?: Json
           order_number: number
           promotion_description?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          status_updated_at?: string
           store_id: string
           subtotal?: number
           total?: number
+          tracking_code?: string | null
+          tracking_url?: string | null
           updated_at?: string
           viewed_at?: string | null
         }
@@ -664,15 +674,20 @@ export type Database = {
           coupon_code?: string | null
           created_at?: string
           customer_id?: string | null
+          delivery_notes?: string | null
+          delivery_status?: string
           discount_amount?: number
           id?: string
           items?: Json
           order_number?: number
           promotion_description?: string | null
           status?: Database["public"]["Enums"]["order_status"]
+          status_updated_at?: string
           store_id?: string
           subtotal?: number
           total?: number
+          tracking_code?: string | null
+          tracking_url?: string | null
           updated_at?: string
           viewed_at?: string | null
         }
@@ -2651,6 +2666,20 @@ export type Database = {
         Returns: boolean
       }
       store_id_from_product: { Args: { _product_id: string }; Returns: string }
+      track_order: {
+        Args: { _order_number: number; _store_id: string; _whatsapp: string }
+        Returns: {
+          created_at: string
+          delivery_notes: string
+          delivery_status: string
+          items: Json
+          order_number: number
+          status_updated_at: string
+          total: number
+          tracking_code: string
+          tracking_url: string
+        }[]
+      }
     }
     Enums: {
       app_role: "platform_admin" | "user"
