@@ -166,7 +166,40 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
       <div className="mt-3 space-y-1">
         {p.brand && <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{p.brand}</p>}
-        <h3 className="line-clamp-2 text-sm font-medium text-foreground">{p.title}</h3>
+        <h3 className="line-clamp-2 text-sm font-medium text-foreground">{group ? group.model_name : p.title}</h3>
+
+        {group && group.colors.length > 1 && (
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            {group.colors.map((color, i) => {
+              const hex = getColorHex(color);
+              const active = i === idx;
+              return (
+                <button
+                  key={group.product_ids[i]}
+                  type="button"
+                  title={color}
+                  aria-label={color}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setVariantIdx(i);
+                  }}
+                  onMouseEnter={() => setVariantIdx(i)}
+                  className={cn(
+                    "h-5 w-5 rounded-full border-2 transition-all",
+                    active ? "scale-110 border-foreground" : "border-transparent hover:border-muted-foreground",
+                  )}
+                  style={{
+                    backgroundColor: hex,
+                    boxShadow: isLightSwatch(hex) ? "inset 0 0 0 1px #e5e7eb" : "none",
+                  }}
+                />
+              );
+            })}
+            <span className="self-center text-xs text-muted-foreground">{group.colors.length} cores</span>
+          </div>
+        )}
+
 
         <div className="flex items-baseline gap-2">
           <span className="text-base font-bold text-foreground">{formatBRL(price)}</span>
