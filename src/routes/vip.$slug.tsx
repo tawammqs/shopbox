@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +19,11 @@ export const Route = createFileRoute("/vip/$slug")({
   }),
   component: VipLanding,
 });
+
+// Pixel dedicado à página de captura (por slug de loja)
+const LANDING_PIXELS: Record<string, string> = {
+  "the-shoes": "27365664036430955",
+};
 
 type Cfg = {
   whatsapp_group_link?: string;
