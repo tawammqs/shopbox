@@ -360,6 +360,18 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
           </p>
         </form>
       </div>
+
+      {selector.pending && (
+        <SalesTeamSelector
+          storeId={store.id}
+          cartMessage={selector.pending.message}
+          fallbackNumber={store.whatsapp}
+          onClose={() => {
+            selector.close();
+            onClose();
+          }}
+        />
+      )}
     </div>
   );
 }
