@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCart, type CartItem, type AppliedCoupon } from "@/stores/cart";
 import { useStorefront, useIsMioTheme } from "./StoreContext";
-import { openWhatsAppCheckout, buildBuyNowMessage, buildWhatsAppUrl, type CustomerInfo } from "@/lib/whatsapp";
+import { buildCheckoutMessage, buildBuyNowMessage, type CustomerInfo } from "@/lib/whatsapp";
+import { SalesTeamSelector, useSalesTeamSelector } from "./SalesTeamSelector";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";
 import { toast } from "sonner";
@@ -87,6 +88,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
+  const selector = useSalesTeamSelector();
 
   if (!open) return null;
 
@@ -187,10 +189,10 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         value: total,
       });
 
+      let msg: string;
       if (buyNow) {
-
         // Buy-now: send single-product message and DO NOT clear cart
-        const msg = buildBuyNowMessage({
+        msg = buildBuyNowMessage({
           title: buyNow.productTitle,
           colorName: buyNow.colorName,
           sizeLabel: buyNow.sizeLabel,
@@ -200,14 +202,14 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
           greeting: store.whatsapp_greeting,
           customer,
         });
-        window.open(buildWhatsAppUrl(store.whatsapp, msg), "_blank");
       } else {
         // Cart checkout
-        openWhatsAppCheckout(store.whatsapp, items, subtotal, coupon, total, store.whatsapp_greeting, customer);
+        msg = buildCheckoutMessage(items, subtotal, coupon, total, store.whatsapp_greeting, customer);
         clearCart();
       }
-      onClose();
-      toast.success("Pedido registrado! Continue no WhatsApp.");
+      // The message is unchanged; only the destination number is picked by the customer.
+      selector.open(msg);
+      toast.success("Pedido registrado! Escolha com quem falar no WhatsApp.");
     } catch (err: any) {
       toast.error(err?.message ?? "Erro ao registrar pedido");
     } finally {
@@ -358,6 +360,18 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
           </p>
         </form>
       </div>
+
+      {selector.pending && (
+        <SalesTeamSelector
+          storeId={store.id}
+          cartMessage={selector.pending.message}
+          fallbackNumber={store.whatsapp}
+          onClose={() => {
+            selector.close();
+            onClose();
+          }}
+        />
+      )}
     </div>
   );
 }
