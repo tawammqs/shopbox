@@ -194,14 +194,6 @@ export function TheShoesHeader() {
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Início
               </Link>
-              <Link to="/loja/$slug/sobre" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
-                Quem somos
-              </Link>
-              <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
-                Rastrear pedido
-              </Link>
               {roots.map((c) => {
                 const subs = categories.filter((s) => s.parent_id === c.id);
                 if (subs.length === 0) {
@@ -282,6 +274,10 @@ export function TheShoesHeader() {
                   <MioVipMenuLink onNavigate={() => setNavOpen(false)} />
                 )}
               </div>
+              <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
+                Rastrear Pedido
+              </Link>
             </div>
           </aside>
         </>

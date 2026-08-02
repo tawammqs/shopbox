@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import ReactMarkdown from "react-markdown";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { supabase } from "@/integrations/supabase/client";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -23,6 +24,21 @@ type Member = { id: string; name: string; whatsapp: string; photo_url: string | 
 
 function SobrePage() {
   const { store } = useStorefront();
+
+  // Source of truth: page edited by the merchant in Loja Online → Páginas.
+  const { data: customPage, isLoading: loadingPage } = useQuery({
+    queryKey: ["static-page", store.id, "sobre"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("static_pages")
+        .select("title, content_md")
+        .eq("store_id", store.id)
+        .eq("slug", "sobre")
+        .maybeSingle();
+      return data ?? null;
+    },
+    staleTime: 60_000,
+  });
 
   const { data: config } = useQuery({
     queryKey: ["sobre-config", store.id],
@@ -48,6 +64,22 @@ function SobrePage() {
       return (data ?? []) as Member[];
     },
   });
+
+  if (loadingPage) {
+    return <div className="mx-auto max-w-2xl px-4 py-12 text-sm text-muted-foreground">Carregando…</div>;
+  }
+
+  // Merchant-edited page wins over the legacy sobre_config content.
+  if (customPage && (customPage.content_md ?? "").trim()) {
+    return (
+      <article className="mx-auto max-w-2xl px-4 py-10">
+        <h1 className="mb-6 font-display text-2xl font-bold text-foreground">{customPage.title}</h1>
+        <div className="prose prose-sm max-w-none leading-relaxed text-foreground/80 prose-headings:font-display prose-a:text-accent">
+          <ReactMarkdown>{customPage.content_md ?? ""}</ReactMarkdown>
+        </div>
+      </article>
+    );
+  }
 
   if (!config) return null;
 
