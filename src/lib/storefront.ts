@@ -375,7 +375,7 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
       .in("category_id", categoryIds);
     const productIds = Array.from(new Set((links ?? []).map((l: any) => l.product_id)));
     if (productIds.length === 0) {
-      return { sizes: [], brands: [], priceMin: 0, priceMax: 0 };
+      return { sizes: [], brands: [], colors: [], priceMin: 0, priceMax: 0 };
     }
     q = q.in("id", productIds);
   }
@@ -386,6 +386,7 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
   const rows = data ?? [];
   const sizeCounts = new Map<string, number>();
   const brandCounts = new Map<string, number>();
+  const colorCounts = new Map<string, { count: number; hex: string }>();
   let priceMin = Infinity;
   let priceMax = 0;
 
@@ -406,6 +407,20 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
     }
     for (const label of productSizeLabels) {
       sizeCounts.set(label, (sizeCounts.get(label) ?? 0) + 1);
+    }
+
+    const colors = (p.product_colors ?? []) as { name: string; hex: string }[];
+    const productColorNames = new Set<string>();
+    for (const c of colors) {
+      if (c.name && String(c.name).trim()) {
+        const name = String(c.name).trim();
+        productColorNames.add(name);
+        if (!colorCounts.has(name)) colorCounts.set(name, { count: 0, hex: c.hex || "#cccccc" });
+      }
+    }
+    for (const name of productColorNames) {
+      const entry = colorCounts.get(name)!;
+      entry.count += 1;
     }
   }
 
