@@ -164,9 +164,10 @@ function CategoryPage() {
     );
   }
 
+  const { map: colorGroupMap } = useColorGroups(store.id);
   const products = useMemo(
-    () => (q.data?.pages ?? []).flatMap((p) => p.products),
-    [q.data],
+    () => dedupeByGroup((q.data?.pages ?? []).flatMap((p) => p.products), colorGroupMap),
+    [q.data, colorGroupMap],
   );
   const total = q.data?.pages?.[0]?.total ?? 0;
   const hasMore = !!q.hasNextPage;
