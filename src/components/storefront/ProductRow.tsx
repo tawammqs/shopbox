@@ -2,6 +2,7 @@ import type { ProductCardData } from "@/lib/storefront";
 import { ProductCard } from "./ProductCard";
 import { useStorefront } from "./StoreContext";
 import { useStorefrontCustomizations } from "./StorefrontCustomizer";
+import { useColorGroups, dedupeByGroup } from "@/lib/color-groups";
 import { cn } from "@/lib/utils";
 
 const MOBILE_GRID: Record<string, string> = {
