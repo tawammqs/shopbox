@@ -29,6 +29,7 @@ const searchSchema = z.object({
   inStock: fallback(z.boolean().optional(), undefined).optional(),
   tamanho: fallback(z.string().optional(), undefined).optional(),
   marca: fallback(z.string().optional(), undefined).optional(),
+  cor: fallback(z.string().optional(), undefined).optional(),
   page: fallback(z.number().int().min(1).optional(), 1).default(1),
 });
 
@@ -72,6 +73,7 @@ function CategoryPage() {
 
   const tamanhoArr = splitCsv(search.tamanho);
   const marcaArr = splitCsv(search.marca);
+  const corArr = splitCsv(search.cor);
 
   const q = useInfiniteQuery({
     queryKey: [
@@ -84,6 +86,7 @@ function CategoryPage() {
       search.inStock,
       tamanhoArr.join(","),
       marcaArr.join(","),
+      corArr.join(","),
     ],
     queryFn: ({ pageParam = 0 }) =>
       fetchProductsForCategory(store.id, ids, {
@@ -95,6 +98,7 @@ function CategoryPage() {
         inStock: search.inStock,
         sizes: tamanhoArr,
         brands: marcaArr,
+        colorNames: corArr,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
@@ -113,16 +117,18 @@ function CategoryPage() {
         const next: any = { ...prev, ...patch };
         if (Array.isArray(next.tamanho)) next.tamanho = next.tamanho.length ? next.tamanho.join(",") : undefined;
         if (Array.isArray(next.marca)) next.marca = next.marca.length ? next.marca.join(",") : undefined;
+        if (Array.isArray(next.cor)) next.cor = next.cor.length ? next.cor.join(",") : undefined;
         if (patch.page == null) next.page = 1;
         return next;
       },
     });
 
-  const toggleArrayFilter = (key: "tamanho" | "marca", value: string) => {
-    const current = key === "tamanho" ? tamanhoArr : marcaArr;
+  const toggleArrayFilter = (key: "tamanho" | "marca" | "cor", value: string) => {
+    const current = key === "tamanho" ? tamanhoArr : key === "marca" ? marcaArr : corArr;
     const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
     setSearch({ [key]: next });
   };
+
 
   const priceMin = facets.data?.priceMin ?? 0;
   const priceMax = Math.max(facets.data?.priceMax ?? 1000, priceMin + 1);
@@ -183,12 +189,14 @@ function CategoryPage() {
 
   const allSizes = facets.data?.sizes ?? [];
   const allBrands = facets.data?.brands ?? [];
+  const allColors = facets.data?.colors ?? [];
   const visibleSizes = showAllSizes ? allSizes : allSizes.slice(0, 8);
   const visibleBrands = showAllBrands ? allBrands : allBrands.slice(0, 6);
 
   const hasAnyFilter =
     tamanhoArr.length > 0 ||
     marcaArr.length > 0 ||
+    corArr.length > 0 ||
     search.minPrice != null ||
     search.maxPrice != null ||
     !!search.inStock;
@@ -197,6 +205,7 @@ function CategoryPage() {
     setSearch({
       tamanho: [],
       marca: [],
+      cor: [],
       minPrice: undefined,
       maxPrice: undefined,
       inStock: undefined,
@@ -210,6 +219,10 @@ function CategoryPage() {
     ...marcaArr.map((b) => ({
       label: `Marca: ${b}`,
       clear: () => toggleArrayFilter("marca", b),
+    })),
+    ...corArr.map((c) => ({
+      label: `Cor: ${c}`,
+      clear: () => toggleArrayFilter("cor", c),
     })),
     ...(search.minPrice != null
       ? [{ label: `Min R$ ${search.minPrice}`, clear: () => setSearch({ minPrice: undefined }) }]
@@ -341,6 +354,39 @@ function CategoryPage() {
             </FilterSection>
           )}
 
+          {allColors.length > 0 && (
+            <FilterSection label="Cor">
+              <div className="flex flex-wrap gap-2">
+                {allColors.map((c) => {
+                  const sel = corArr.includes(c.name);
+                  return (
+                    <button
+                      key={c.name}
+                      type="button"
+                      title={`${c.name} (${c.count})`}
+                      onClick={() => toggleArrayFilter("cor", c.name)}
+                      className={cn(
+                        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition",
+                        sel
+                          ? "border-foreground bg-muted font-semibold"
+                          : "border-border hover:border-foreground/40",
+                      )}
+                    >
+                      <span
+                        className="inline-block h-3 w-3 shrink-0 rounded-full ring-1 ring-black/10"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                      {c.name}
+                      <span className="text-muted-foreground">({c.count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </FilterSection>
+          )}
+
+
+
           <FilterSection label="Faixa de preço">
             <Slider
               min={priceMin}
@@ -437,10 +483,12 @@ function CategoryPage() {
         onClose={() => setMobileFiltersOpen(false)}
         sizes={allSizes}
         brands={allBrands}
+        colors={allColors}
         priceMin={priceMin}
         priceMax={priceMax}
         initialSizes={tamanhoArr}
         initialBrands={marcaArr}
+        initialColors={corArr}
         initialMinPrice={search.minPrice}
         initialMaxPrice={search.maxPrice}
         initialInStock={!!search.inStock}
@@ -449,6 +497,7 @@ function CategoryPage() {
           setSearch({
             tamanho: next.sizes,
             marca: next.brands,
+            cor: next.colors,
             minPrice: next.minPrice,
             maxPrice: next.maxPrice,
             inStock: next.inStock || undefined,
@@ -537,16 +586,19 @@ function MobileFilterBar({
 
 type SizeFacet = { label: string; count: number };
 type BrandFacet = { name: string; count: number };
+type ColorFacet = { name: string; hex: string; count: number };
 
 function MobileFilterSheet({
   open,
   onClose,
   sizes,
   brands,
+  colors,
   priceMin,
   priceMax,
   initialSizes,
   initialBrands,
+  initialColors,
   initialMinPrice,
   initialMaxPrice,
   initialInStock,
@@ -558,10 +610,12 @@ function MobileFilterSheet({
   onClose: () => void;
   sizes: SizeFacet[];
   brands: BrandFacet[];
+  colors: ColorFacet[];
   priceMin: number;
   priceMax: number;
   initialSizes: string[];
   initialBrands: string[];
+  initialColors: string[];
   initialMinPrice: number | undefined;
   initialMaxPrice: number | undefined;
   initialInStock: boolean;
@@ -569,6 +623,7 @@ function MobileFilterSheet({
   onApply: (next: {
     sizes: string[];
     brands: string[];
+    colors: string[];
     minPrice: number | undefined;
     maxPrice: number | undefined;
     inStock: boolean;
@@ -577,6 +632,7 @@ function MobileFilterSheet({
 }) {
   const [pendingSizes, setPendingSizes] = useState<string[]>(initialSizes);
   const [pendingBrands, setPendingBrands] = useState<string[]>(initialBrands);
+  const [pendingColors, setPendingColors] = useState<string[]>(initialColors);
   const [pendingRange, setPendingRange] = useState<[number, number]>([
     initialMinPrice ?? priceMin,
     initialMaxPrice ?? priceMax,
@@ -590,6 +646,7 @@ function MobileFilterSheet({
     if (open) {
       setPendingSizes(initialSizes);
       setPendingBrands(initialBrands);
+      setPendingColors(initialColors);
       setPendingRange([initialMinPrice ?? priceMin, initialMaxPrice ?? priceMax]);
       setPendingInStock(initialInStock);
     }
@@ -602,6 +659,7 @@ function MobileFilterSheet({
   const hasAny =
     pendingSizes.length > 0 ||
     pendingBrands.length > 0 ||
+    pendingColors.length > 0 ||
     pendingRange[0] > priceMin ||
     pendingRange[1] < priceMax ||
     pendingInStock;
@@ -699,6 +757,41 @@ function MobileFilterSheet({
             </section>
           )}
 
+          {colors.length > 0 && (
+            <section className="border-b border-[#f0f0ea] py-5">
+              <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#aaa]">
+                Cor
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((c) => {
+                  const sel = pendingColors.includes(c.name);
+                  return (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => setPendingColors((arr) => toggle(arr, c.name))}
+                      className={cn(
+                        "inline-flex min-h-[40px] items-center gap-2 rounded-full border px-3 py-2 text-[13px] transition",
+                        sel
+                          ? "border-[#1a1a1a] bg-[#f5f5f5] font-semibold text-[#1a1a1a]"
+                          : "border-[#e8e8e0] bg-white text-[#555]",
+                      )}
+                    >
+                      <span
+                        className="inline-block h-3.5 w-3.5 shrink-0 rounded-full ring-1 ring-black/10"
+                        style={{ backgroundColor: c.hex }}
+                      />
+                      {c.name}
+                      <span className="text-[#aaa]">({c.count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+
+
           <section className="border-b border-[#f0f0ea] py-5">
             <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[#aaa]">
               Faixa de preço
@@ -772,6 +865,7 @@ function MobileFilterSheet({
               onApply({
                 sizes: pendingSizes,
                 brands: pendingBrands,
+                colors: pendingColors,
                 minPrice: pendingRange[0] > priceMin ? pendingRange[0] : undefined,
                 maxPrice: pendingRange[1] < priceMax ? pendingRange[1] : undefined,
                 inStock: pendingInStock,
