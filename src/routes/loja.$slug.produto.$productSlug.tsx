@@ -16,6 +16,8 @@ import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
 import { CheckoutFormDialog } from "@/components/storefront/CheckoutFormDialog";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { VirtualTryOn } from "@/components/storefront/VirtualTryOn";
+
 import { cn } from "@/lib/utils";
 import { VideoPreview } from "@/components/admin/VideoSourcePicker";
 import type { VideoType } from "@/lib/video";
@@ -326,9 +328,14 @@ function ProductInner({ product }: { product: any }) {
               <ShoppingBag className="h-4 w-4 shrink-0" /> <span className="truncate">Adicionar ao carrinho</span>
             </Button>
           </div>
-          <Button onClick={buyNow} disabled={isOut} className="h-12 w-full max-w-full bg-[#25d366] px-2 text-sm text-white hover:bg-[#20bd5a] sm:text-base">
+          <Button onClick={buyNow} disabled={isOut} data-buy-button className="h-12 w-full max-w-full bg-[#25d366] px-2 text-sm text-white hover:bg-[#20bd5a] sm:text-base">
             <WhatsAppIcon className="h-5 w-5 shrink-0" /> <span className="truncate">Comprar agora pelo WhatsApp</span>
           </Button>
+
+          {images[0]?.url && (
+            <VirtualTryOn productName={product.title} shoeImageUrl={images[0].url} />
+          )}
+
 
           <div className="flex w-full max-w-full gap-2 overflow-hidden">
             <button

@@ -36,6 +36,7 @@ import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cle
 import { Route as HooksCartRecoveryRouteImport } from './routes/hooks/cart-recovery'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as ApiVirtualTryOnRouteImport } from './routes/api/virtual-try-on'
 import { Route as AdminVendasRouteImport } from './routes/admin.vendas'
 import { Route as AdminTemasRouteImport } from './routes/admin.temas'
 import { Route as AdminPlanoRouteImport } from './routes/admin.plano'
@@ -238,6 +239,11 @@ const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVirtualTryOnRoute = ApiVirtualTryOnRouteImport.update({
+  id: '/api/virtual-try-on',
+  path: '/api/virtual-try-on',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminVendasRoute = AdminVendasRouteImport.update({
@@ -629,6 +635,7 @@ export interface FileRoutesByFullPath {
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
+  '/api/virtual-try-on': typeof ApiVirtualTryOnRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -720,6 +727,7 @@ export interface FileRoutesByTo {
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
+  '/api/virtual-try-on': typeof ApiVirtualTryOnRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -816,6 +824,7 @@ export interface FileRoutesById {
   '/admin/plano': typeof AdminPlanoRoute
   '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
+  '/api/virtual-try-on': typeof ApiVirtualTryOnRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
@@ -914,6 +923,7 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/admin/temas'
     | '/admin/vendas'
+    | '/api/virtual-try-on'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -1005,6 +1015,7 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/admin/temas'
     | '/admin/vendas'
+    | '/api/virtual-try-on'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -1100,6 +1111,7 @@ export interface FileRouteTypes {
     | '/admin/plano'
     | '/admin/temas'
     | '/admin/vendas'
+    | '/api/virtual-try-on'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
@@ -1181,6 +1193,7 @@ export interface RootRouteChildren {
   SuperadminRoute: typeof SuperadminRouteWithChildren
   TermosRoute: typeof TermosRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  ApiVirtualTryOnRoute: typeof ApiVirtualTryOnRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   HooksCartRecoveryRoute: typeof HooksCartRecoveryRoute
@@ -1388,6 +1401,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout/return'
       fullPath: '/checkout/return'
       preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/virtual-try-on': {
+      id: '/api/virtual-try-on'
+      path: '/api/virtual-try-on'
+      fullPath: '/api/virtual-try-on'
+      preLoaderRoute: typeof ApiVirtualTryOnRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/vendas': {
@@ -2092,6 +2112,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuperadminRoute: SuperadminRouteWithChildren,
   TermosRoute: TermosRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  ApiVirtualTryOnRoute: ApiVirtualTryOnRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   HooksCartRecoveryRoute: HooksCartRecoveryRoute,

@@ -19,6 +19,8 @@ import { buildShareProductMessage } from "@/lib/whatsapp";
 import { ProductRow } from "@/components/storefront/ProductRow";
 import { CheckoutFormDialog } from "@/components/storefront/CheckoutFormDialog";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { VirtualTryOn } from "@/components/storefront/VirtualTryOn";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -271,10 +273,15 @@ export function TheShoesProductPage({ product }: { product: any }) {
               <ShoppingBag className="h-4 w-4" /> Adicionar ao carrinho
             </button>
           </div>
-          <button onClick={buyNow}
+          <button onClick={buyNow} data-buy-button
             className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] text-sm font-semibold text-white hover:opacity-90">
             <WhatsAppIcon className="h-5 w-5" /> Comprar agora pelo WhatsApp
           </button>
+
+          {images[0]?.url && (
+            <VirtualTryOn productName={product.title} shoeImageUrl={images[0].url} />
+          )}
+
 
           <div className="flex gap-2">
             <button onClick={() => { toggleWish(product.id); toast.success(wished ? "Removido" : "Salvo na lista"); }}
