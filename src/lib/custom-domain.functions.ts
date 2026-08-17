@@ -38,6 +38,41 @@ function mapSslStatus(cf?: string) {
   return "error";
 }
 
+async function cfFindHostname(hostname: string) {
+  const res = await fetch(
+    `${CF_BASE}/zones/${zoneId()}/custom_hostnames?hostname=${encodeURIComponent(hostname)}`,
+    { headers: cfHeaders() },
+  );
+  const json: any = await res.json();
+  return json?.result?.[0] ?? null;
+}
+
+async function cfCreateHostname(hostname: string) {
+  const cfRes = await fetch(`${CF_BASE}/zones/${zoneId()}/custom_hostnames`, {
+    method: "POST",
+    headers: cfHeaders(),
+    body: JSON.stringify({
+      hostname,
+      ssl: {
+        method: "http",
+        type: "dv",
+        settings: { min_tls_version: "1.2", http2: "on" },
+      },
+    }),
+  });
+  const cfData: any = await cfRes.json();
+
+  if (cfData?.success && cfData.result) return cfData.result;
+
+  const alreadyExists = cfData?.errors?.some((e: any) => e.code === 1406);
+  if (alreadyExists) {
+    const existing = await cfFindHostname(hostname);
+    if (existing) return existing;
+  }
+  const msg = cfData?.errors?.[0]?.message || "Erro ao registrar domínio no Cloudflare.";
+  throw new Response(msg, { status: 400 });
+}
+
 // =================== ADD ===================
 export const addCustomDomain = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -59,29 +94,8 @@ export const addCustomDomain = createServerFn({ method: "POST" })
       throw new Response("Use o endereço padrão shopboxapp.com.br para subdomínios da ShopBox.", { status: 400 });
     }
 
-    const cfRes = await fetch(`${CF_BASE}/zones/${zoneId()}/custom_hostnames`, {
-      method: "POST",
-      headers: cfHeaders(),
-      body: JSON.stringify({
-        hostname: data.domain,
-        ssl: {
-          method: "http",
-          type: "dv",
-          settings: { min_tls_version: "1.2", http2: "on" },
-        },
-      }),
-    });
-    const cfData: any = await cfRes.json();
+    const result = await cfCreateHostname(data.domain);
 
-    if (!cfData.success) {
-      const alreadyExists = cfData.errors?.some((e: any) => e.code === 1406);
-      if (!alreadyExists) {
-        const msg = cfData.errors?.[0]?.message || "Erro ao registrar domínio no Cloudflare.";
-        throw new Response(msg, { status: 400 });
-      }
-    }
-
-    const result = cfData.result;
     const hostnameId: string | undefined = result?.id;
     const ov = result?.ownership_verification;
     const sslStatus = mapSslStatus(result?.ssl?.status);
@@ -131,6 +145,7 @@ export const addCustomDomain = createServerFn({ method: "POST" })
       },
     };
   });
+
 
 // =================== CHECK ===================
 export const checkDomainStatus = createServerFn({ method: "POST" })
