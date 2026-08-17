@@ -38,6 +38,41 @@ function mapSslStatus(cf?: string) {
   return "error";
 }
 
+async function cfFindHostname(hostname: string) {
+  const res = await fetch(
+    `${CF_BASE}/zones/${zoneId()}/custom_hostnames?hostname=${encodeURIComponent(hostname)}`,
+    { headers: cfHeaders() },
+  );
+  const json: any = await res.json();
+  return json?.result?.[0] ?? null;
+}
+
+async function cfCreateHostname(hostname: string) {
+  const cfRes = await fetch(`${CF_BASE}/zones/${zoneId()}/custom_hostnames`, {
+    method: "POST",
+    headers: cfHeaders(),
+    body: JSON.stringify({
+      hostname,
+      ssl: {
+        method: "http",
+        type: "dv",
+        settings: { min_tls_version: "1.2", http2: "on" },
+      },
+    }),
+  });
+  const cfData: any = await cfRes.json();
+
+  if (cfData?.success && cfData.result) return cfData.result;
+
+  const alreadyExists = cfData?.errors?.some((e: any) => e.code === 1406);
+  if (alreadyExists) {
+    const existing = await cfFindHostname(hostname);
+    if (existing) return existing;
+  }
+  const msg = cfData?.errors?.[0]?.message || "Erro ao registrar domínio no Cloudflare.";
+  throw new Response(msg, { status: 400 });
+}
+
 // =================== ADD ===================
 export const addCustomDomain = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -59,29 +94,8 @@ export const addCustomDomain = createServerFn({ method: "POST" })
       throw new Response("Use o endereço padrão shopboxapp.com.br para subdomínios da ShopBox.", { status: 400 });
     }
 
-    const cfRes = await fetch(`${CF_BASE}/zones/${zoneId()}/custom_hostnames`, {
-      method: "POST",
-      headers: cfHeaders(),
-      body: JSON.stringify({
-        hostname: data.domain,
-        ssl: {
-          method: "http",
-          type: "dv",
-          settings: { min_tls_version: "1.2", http2: "on" },
-        },
-      }),
-    });
-    const cfData: any = await cfRes.json();
+    const result = await cfCreateHostname(data.domain);
 
-    if (!cfData.success) {
-      const alreadyExists = cfData.errors?.some((e: any) => e.code === 1406);
-      if (!alreadyExists) {
-        const msg = cfData.errors?.[0]?.message || "Erro ao registrar domínio no Cloudflare.";
-        throw new Response(msg, { status: 400 });
-      }
-    }
-
-    const result = cfData.result;
     const hostnameId: string | undefined = result?.id;
     const ov = result?.ownership_verification;
     const sslStatus = mapSslStatus(result?.ssl?.status);
@@ -132,6 +146,7 @@ export const addCustomDomain = createServerFn({ method: "POST" })
     };
   });
 
+
 // =================== CHECK ===================
 export const checkDomainStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -143,28 +158,49 @@ export const checkDomainStatus = createServerFn({ method: "POST" })
 
     const { data: domain } = await supabase
       .from("store_domains")
-      .select("id, store_id, cloudflare_hostname_id")
+      .select("id, store_id, domain, cloudflare_hostname_id")
       .eq("id", data.storeDomainId)
       .maybeSingle();
     if (!domain) throw new Response("Domínio não encontrado", { status: 404 });
     await assertOwnsStore(supabase, userId, domain.store_id);
-    if (!domain.cloudflare_hostname_id) {
-      throw new Response("Domínio sem registro no Cloudflare", { status: 400 });
-    }
 
-    const cfRes = await fetch(
-      `${CF_BASE}/zones/${zoneId()}/custom_hostnames/${domain.cloudflare_hostname_id}`,
-      { headers: cfHeaders() },
-    );
-    const cfData: any = await cfRes.json();
-    const result = cfData.result;
+    let result: any = null;
+    let hostnameId: string | null = domain.cloudflare_hostname_id ?? null;
+
+    if (hostnameId) {
+      const cfRes = await fetch(
+        `${CF_BASE}/zones/${zoneId()}/custom_hostnames/${hostnameId}`,
+        { headers: cfHeaders() },
+      );
+      const cfData: any = await cfRes.json();
+      result = cfData?.success ? cfData.result : null;
+
+      const missing =
+        !cfData?.success &&
+        (cfData?.errors?.some((e: any) => e.code === 1436 || e.code === 1437) || cfRes.status === 404);
+      if (missing) {
+        // Hostname sumiu do Cloudflare — recria automaticamente
+        result = await cfCreateHostname(domain.domain);
+        hostnameId = result?.id ?? null;
+      }
+    } else {
+      result = await cfCreateHostname(domain.domain);
+      hostnameId = result?.id ?? null;
+    }
 
     const domainStatus = mapDomainStatus(result?.status);
     const sslStatus = mapSslStatus(result?.ssl?.status);
+    const ov = result?.ownership_verification;
 
     await supabase
       .from("store_domains")
-      .update({ status: domainStatus, ssl_status: sslStatus })
+      .update({
+        status: domainStatus,
+        ssl_status: sslStatus,
+        cloudflare_hostname_id: hostnameId,
+        ownership_verification_name: ov?.name ?? null,
+        ownership_verification_value: ov?.value ?? null,
+      })
       .eq("id", domain.id);
 
     return {
@@ -172,7 +208,9 @@ export const checkDomainStatus = createServerFn({ method: "POST" })
       ssl_status: sslStatus,
       cf_status: result?.status ?? null,
       cf_ssl_status: result?.ssl?.status ?? null,
+      recreated: hostnameId !== (domain.cloudflare_hostname_id ?? null),
     };
+
   });
 
 // =================== REMOVE ===================

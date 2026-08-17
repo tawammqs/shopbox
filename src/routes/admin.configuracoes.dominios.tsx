@@ -185,15 +185,14 @@ function DominiosPage() {
                       >
                         <Settings className="h-3.5 w-3.5" /> Ver instruções DNS
                       </button>
-                      {d.cloudflare_hostname_id && (
-                        <button
-                          onClick={() => check.mutate(d)}
-                          disabled={check.isPending}
-                          className="inline-flex items-center gap-1.5 rounded-md border border-[#25d366]/40 px-2.5 py-1.5 text-xs font-medium text-[#15803d] hover:bg-green-50 disabled:opacity-60"
-                        >
-                          <RefreshCw className={`h-3.5 w-3.5 ${check.isPending ? "animate-spin" : ""}`} /> Verificar status
-                        </button>
-                      )}
+                      <button
+                        onClick={() => check.mutate(d)}
+                        disabled={check.isPending}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-[#25d366]/40 px-2.5 py-1.5 text-xs font-medium text-[#15803d] hover:bg-green-50 disabled:opacity-60"
+                      >
+                        <RefreshCw className={`h-3.5 w-3.5 ${check.isPending ? "animate-spin" : ""}`} /> Verificar status
+                      </button>
+
                       {!d.is_primary && (
                         <button title="Tornar principal" onClick={() => setPrimary.mutate(d.id)} className="rounded-md p-1.5 text-[#6b7280] hover:bg-gray-100">
                           <Star className="h-4 w-4" />
