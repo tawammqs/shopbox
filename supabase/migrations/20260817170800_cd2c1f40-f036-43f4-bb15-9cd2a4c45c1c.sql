@@ -1,0 +1,1 @@
+DELETE FROM public.store_domains WHERE domain = 'usetheshoes.com.br';
