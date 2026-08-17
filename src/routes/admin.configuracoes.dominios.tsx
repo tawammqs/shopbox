@@ -178,20 +178,20 @@ function DominiosPage() {
                       d.ssl_status === "error" ? <Pill color="red">⚠️ SSL com erro</Pill> : <Pill color="amber">🔒 SSL pendente</Pill>}
                   </td>
                   <td className="px-5 py-3">
-                    <div className="flex items-center gap-2">
-                      {d.status !== "active" && d.cloudflare_hostname_id && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => showInstructionsFor(d)}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-2.5 py-1.5 text-xs font-medium text-[#374151] hover:bg-gray-50"
+                      >
+                        <Settings className="h-3.5 w-3.5" /> Ver instruções DNS
+                      </button>
+                      {d.cloudflare_hostname_id && (
                         <button
-                          title="Verificar status"
                           onClick={() => check.mutate(d)}
                           disabled={check.isPending}
-                          className="rounded-md p-1.5 text-[#25d366] hover:bg-green-50"
+                          className="inline-flex items-center gap-1.5 rounded-md border border-[#25d366]/40 px-2.5 py-1.5 text-xs font-medium text-[#15803d] hover:bg-green-50 disabled:opacity-60"
                         >
-                          <RefreshCw className={`h-4 w-4 ${check.isPending ? "animate-spin" : ""}`} />
-                        </button>
-                      )}
-                      {d.cloudflare_hostname_id && (
-                        <button title="Ver instruções DNS" onClick={() => showInstructionsFor(d)} className="rounded-md p-1.5 text-[#6b7280] hover:bg-gray-100">
-                          <Settings className="h-4 w-4" />
+                          <RefreshCw className={`h-3.5 w-3.5 ${check.isPending ? "animate-spin" : ""}`} /> Verificar status
                         </button>
                       )}
                       {!d.is_primary && (
@@ -199,11 +199,15 @@ function DominiosPage() {
                           <Star className="h-4 w-4" />
                         </button>
                       )}
-                      <button onClick={() => remove.mutate(d)} className="rounded-md p-1.5 text-[#ef4444] hover:bg-red-50">
-                        <Trash2 className="h-4 w-4" />
+                      <button
+                        onClick={() => { if (confirm(`Remover o domínio ${d.domain}?`)) remove.mutate(d); }}
+                        className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-[#ef4444] hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Remover
                       </button>
                     </div>
                   </td>
+
                 </tr>
               ))}
             </tbody>
