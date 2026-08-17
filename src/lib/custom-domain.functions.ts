@@ -250,12 +250,20 @@ export const resolveDomainSlug = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: rec } = await supabaseAdmin
+    const host = data.hostname.replace(/\.$/, "");
+    const candidates = Array.from(
+      new Set([host, host.startsWith("www.") ? host.slice(4) : `www.${host}`]),
+    );
+
+    const { data: rows } = await supabaseAdmin
       .from("store_domains")
-      .select("store_id, stores:store_id(slug, active)")
-      .eq("domain", data.hostname)
-      .eq("status", "active")
-      .maybeSingle();
+      .select("domain, status, store_id, stores:store_id(slug, active)")
+      .in("domain", candidates)
+      .in("status", ["active", "pending"]);
+
+    // Prefer an exact match, then the apex/www sibling.
+    const rec =
+      rows?.find((r: any) => r.domain === host) ?? rows?.[0] ?? null;
     const stores: any = (rec as any)?.stores;
     if (!rec || !stores?.active) return { slug: null as string | null };
     return { slug: stores.slug as string };
