@@ -64,6 +64,7 @@ import { Route as LojaSlugSobreRouteImport } from './routes/loja.$slug.sobre'
 import { Route as LojaSlugRastreioRouteImport } from './routes/loja.$slug.rastreio'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
+import { Route as ApiPublicHostDebugRouteImport } from './routes/api/public/host-debug'
 import { Route as AdminTemasSucessoRouteImport } from './routes/admin.temas.sucesso'
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
 import { Route as AdminProdutosCategoriasRouteImport } from './routes/admin.produtos.categorias'
@@ -381,6 +382,11 @@ const FeedSlugMetaDotxmlRoute = FeedSlugMetaDotxmlRouteImport.update({
   path: '/feed/$slug/meta.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHostDebugRoute = ApiPublicHostDebugRouteImport.update({
+  id: '/api/public/host-debug',
+  path: '/api/public/host-debug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTemasSucessoRoute = AdminTemasSucessoRouteImport.update({
   id: '/sucesso',
   path: '/sucesso',
@@ -678,6 +684,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
+  '/api/public/host-debug': typeof ApiPublicHostDebugRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
@@ -769,6 +776,7 @@ export interface FileRoutesByTo {
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
+  '/api/public/host-debug': typeof ApiPublicHostDebugRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
@@ -867,6 +875,7 @@ export interface FileRoutesById {
   '/admin/produtos/categorias': typeof AdminProdutosCategoriasRoute
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
+  '/api/public/host-debug': typeof ApiPublicHostDebugRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
@@ -966,6 +975,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
+    | '/api/public/host-debug'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
@@ -1057,6 +1067,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
+    | '/api/public/host-debug'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
@@ -1154,6 +1165,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/categorias'
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
+    | '/api/public/host-debug'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/rastreio'
@@ -1202,6 +1214,7 @@ export interface RootRouteChildren {
   TemasSlugRoute: typeof TemasSlugRoute
   VipSlugRoute: typeof VipSlugRoute
   TemasIndexRoute: typeof TemasIndexRoute
+  ApiPublicHostDebugRoute: typeof ApiPublicHostDebugRoute
   FeedSlugMetaDotxmlRoute: typeof FeedSlugMetaDotxmlRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -1597,6 +1610,13 @@ declare module '@tanstack/react-router' {
       path: '/feed/$slug/meta.xml'
       fullPath: '/feed/$slug/meta.xml'
       preLoaderRoute: typeof FeedSlugMetaDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/host-debug': {
+      id: '/api/public/host-debug'
+      path: '/api/public/host-debug'
+      fullPath: '/api/public/host-debug'
+      preLoaderRoute: typeof ApiPublicHostDebugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/temas/sucesso': {
@@ -2121,6 +2141,7 @@ const rootRouteChildren: RootRouteChildren = {
   TemasSlugRoute: TemasSlugRoute,
   VipSlugRoute: VipSlugRoute,
   TemasIndexRoute: TemasIndexRoute,
+  ApiPublicHostDebugRoute: ApiPublicHostDebugRoute,
   FeedSlugMetaDotxmlRoute: FeedSlugMetaDotxmlRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
