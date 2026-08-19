@@ -281,7 +281,6 @@ export const resolveCurrentHostSlug = createServerFn({ method: "GET" }).handler(
         ? headers.get("x-forwarded-host") || headers.get("host")
         : headers?.["x-forwarded-host"] || headers?.host) || "";
     const host = String(raw).split(",")[0].trim().toLowerCase().split(":")[0].replace(/\.$/, "");
-    console.log("[custom-domain] host header resolved:", host);
     if (!host) return { host: "", slug: null as string | null };
 
     const isShopBox =
@@ -303,7 +302,6 @@ export const resolveCurrentHostSlug = createServerFn({ method: "GET" }).handler(
       .in("domain", candidates)
       .in("status", ["active", "pending"]);
     const rec = rows?.find((r: any) => r.domain === host) ?? rows?.[0] ?? null;
-    console.log("[custom-domain] rows:", JSON.stringify(rows), "rec:", JSON.stringify(rec));
     const stores: any = (rec as any)?.stores;
     if (!rec || !stores?.active) return { host, slug: null as string | null };
     return { host, slug: stores.slug as string };
