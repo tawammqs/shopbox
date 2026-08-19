@@ -118,10 +118,15 @@ export const addCustomDomain = createServerFn({ method: "POST" })
       ssl_status: sslStatus,
     };
 
-    if (existing.data) {
-      await supabase.from("store_domains").update(row).eq("id", existing.data.id);
-    } else {
-      await supabase.from("store_domains").insert(row);
+    const saved = existing.data
+      ? await supabase.from("store_domains").update(row).eq("id", existing.data.id).select("id").maybeSingle()
+      : await supabase.from("store_domains").insert(row).select("id").maybeSingle();
+
+    if (saved.error || !saved.data) {
+      throw new Response(
+        saved.error?.message || "Não foi possível salvar o domínio na sua loja.",
+        { status: 400 },
+      );
     }
 
     return {
@@ -237,7 +242,14 @@ export const removeCustomDomain = createServerFn({ method: "POST" })
       ).catch(() => null);
     }
 
-    await supabase.from("store_domains").delete().eq("id", domain.id);
+    const del = await supabase
+      .from("store_domains")
+      .delete()
+      .eq("id", domain.id)
+      .select("id");
+    if (del.error || !del.data?.length) {
+      throw new Response(del.error?.message || "Não foi possível remover o domínio.", { status: 400 });
+    }
     return { success: true };
   });
 

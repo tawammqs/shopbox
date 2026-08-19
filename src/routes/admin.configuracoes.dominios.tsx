@@ -92,8 +92,7 @@ function DominiosPage() {
 
   const remove = useMutation({
     mutationFn: async (d: Domain) => {
-      if (d.cloudflare_hostname_id) await removeFn({ data: { storeDomainId: d.id } });
-      else await supabase.from("store_domains").delete().eq("id", d.id);
+      await removeFn({ data: { storeDomainId: d.id } });
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["store-domains"] }); toast.success("Domínio removido"); },
     onError: (e: any) => toast.error(e?.message || "Erro ao remover"),
