@@ -303,6 +303,7 @@ export const resolveCurrentHostSlug = createServerFn({ method: "GET" }).handler(
       .in("domain", candidates)
       .in("status", ["active", "pending"]);
     const rec = rows?.find((r: any) => r.domain === host) ?? rows?.[0] ?? null;
+    console.log("[custom-domain] rows:", JSON.stringify(rows), "rec:", JSON.stringify(rec));
     const stores: any = (rec as any)?.stores;
     if (!rec || !stores?.active) return { host, slug: null as string | null };
     return { host, slug: stores.slug as string };
