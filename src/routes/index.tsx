@@ -1,11 +1,11 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Palette, ClipboardList, CreditCard,
   Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
-import { resolveDomainSlug } from "@/lib/custom-domain.functions";
+import { resolveDomainSlug, resolveCurrentHostSlug } from "@/lib/custom-domain.functions";
 
 const SHOPBOX_HOSTS = ["shopboxapp.com.br", "www.shopboxapp.com.br", "shopbox.lovable.app", "localhost"];
 function isShopBoxHost(h: string) {
@@ -17,6 +17,20 @@ function isShopBoxHost(h: string) {
 }
 
 export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    // Server-side custom-domain routing: resolve the Host header before render
+    // so custom domains never flash the landing page.
+    if (typeof window !== "undefined") return;
+    try {
+      const r = await resolveCurrentHostSlug();
+      if (r?.slug) {
+        throw redirect({ to: "/loja/$slug", params: { slug: r.slug }, replace: true });
+      }
+    } catch (e: any) {
+      if (e?.isRedirect || e?.to || e?.href) throw e;
+    }
+  },
+
   head: () => ({
     meta: [
       { title: "ShopBox — Crie sua loja e venda pelo WhatsApp" },
