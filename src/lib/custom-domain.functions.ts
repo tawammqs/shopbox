@@ -268,3 +268,42 @@ export const resolveDomainSlug = createServerFn({ method: "POST" })
     if (!rec || !stores?.active) return { slug: null as string | null };
     return { slug: stores.slug as string };
   });
+
+// =================== RESOLVE CURRENT HOST (SSR) ===================
+// Reads the incoming request Host header on the server and resolves it to a
+// store slug. Used by the landing route to redirect custom domains during SSR.
+export const resolveCurrentHostSlug = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const { getRequestHeaders } = await import("@tanstack/react-start/server");
+    const headers: any = getRequestHeaders();
+    const raw =
+      (typeof headers?.get === "function"
+        ? headers.get("x-forwarded-host") || headers.get("host")
+        : headers?.["x-forwarded-host"] || headers?.host) || "";
+    const host = String(raw).split(",")[0].trim().toLowerCase().split(":")[0].replace(/\.$/, "");
+    if (!host) return { host: "", slug: null as string | null };
+
+    const isShopBox =
+      host === "localhost" ||
+      host.startsWith("127.") ||
+      host.endsWith(".lovable.app") ||
+      host.endsWith(".lovable.dev") ||
+      host === "shopboxapp.com.br" ||
+      host === "www.shopboxapp.com.br";
+    if (isShopBox) return { host, slug: null as string | null };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const candidates = Array.from(
+      new Set([host, host.startsWith("www.") ? host.slice(4) : `www.${host}`]),
+    );
+    const { data: rows } = await supabaseAdmin
+      .from("store_domains")
+      .select("domain, status, store_id, stores:store_id(slug, active)")
+      .in("domain", candidates)
+      .in("status", ["active", "pending"]);
+    const rec = rows?.find((r: any) => r.domain === host) ?? rows?.[0] ?? null;
+    const stores: any = (rec as any)?.stores;
+    if (!rec || !stores?.active) return { host, slug: null as string | null };
+    return { host, slug: stores.slug as string };
+  },
+);
