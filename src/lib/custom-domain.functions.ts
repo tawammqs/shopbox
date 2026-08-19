@@ -281,6 +281,7 @@ export const resolveCurrentHostSlug = createServerFn({ method: "GET" }).handler(
         ? headers.get("x-forwarded-host") || headers.get("host")
         : headers?.["x-forwarded-host"] || headers?.host) || "";
     const host = String(raw).split(",")[0].trim().toLowerCase().split(":")[0].replace(/\.$/, "");
+    console.log("[custom-domain] host header resolved:", host);
     if (!host) return { host: "", slug: null as string | null };
 
     const isShopBox =
