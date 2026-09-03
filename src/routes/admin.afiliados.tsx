@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatBRL } from "@/lib/format";
+import { AffiliatePageEditor } from "@/components/admin/AffiliatePageEditor";
 
 export const Route = createFileRoute("/admin/afiliados")({
   head: () => ({ meta: [{ title: "Afiliados — ShopBox" }] }),
@@ -25,7 +26,11 @@ type AffiliateRow = {
   created_at: string;
 };
 
-function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof useMyStore>["data"]> }) {
+function AffiliateSettings({
+  store,
+}: {
+  store: NonNullable<ReturnType<typeof useMyStore>["data"]>;
+}) {
   const qc = useQueryClient();
   const [settings, setSettings] = useState({
     affiliates_enabled: !!store.affiliates_enabled,
@@ -39,14 +44,21 @@ function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof use
       affiliate_commission_direct: Number(store.affiliate_commission_direct ?? 5),
       affiliate_commission_referrer: Number(store.affiliate_commission_referrer ?? 2.5),
     });
-  }, [store.id, store.affiliates_enabled, store.affiliate_commission_direct, store.affiliate_commission_referrer]);
+  }, [
+    store.id,
+    store.affiliates_enabled,
+    store.affiliate_commission_direct,
+    store.affiliate_commission_referrer,
+  ]);
 
   const save = useMutation({
     mutationFn: async () => {
       const direct = Number(settings.affiliate_commission_direct);
       const referrer = Number(settings.affiliate_commission_referrer);
-      if (!Number.isFinite(direct) || direct < 0 || direct > 50) throw new Error("Comissão direta deve estar entre 0% e 50%");
-      if (!Number.isFinite(referrer) || referrer < 0 || referrer > 20) throw new Error("Comissão de recrutador deve estar entre 0% e 20%");
+      if (!Number.isFinite(direct) || direct < 0 || direct > 50)
+        throw new Error("Comissão direta deve estar entre 0% e 50%");
+      if (!Number.isFinite(referrer) || referrer < 0 || referrer > 20)
+        throw new Error("Comissão de recrutador deve estar entre 0% e 20%");
       const { error } = await supabase
         .from("stores")
         .update({
@@ -74,12 +86,16 @@ function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof use
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium text-foreground">Programa de afiliados</p>
-            <p className="text-xs text-muted-foreground">Ativar ou desativar o programa para sua loja</p>
+            <p className="text-xs text-muted-foreground">
+              Ativar ou desativar o programa para sua loja
+            </p>
           </div>
           <button
             type="button"
             aria-label="Ativar programa de afiliados"
-            onClick={() => setSettings((s) => ({ ...s, affiliates_enabled: !s.affiliates_enabled }))}
+            onClick={() =>
+              setSettings((s) => ({ ...s, affiliates_enabled: !s.affiliates_enabled }))
+            }
             className={`flex h-6 w-12 shrink-0 items-center rounded-full transition-colors ${
               settings.affiliates_enabled ? "bg-[#25d366]" : "bg-muted"
             }`}
@@ -94,7 +110,9 @@ function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof use
 
         <div>
           <Label className="text-sm font-medium">Comissão direta (%)</Label>
-          <p className="mb-1 text-xs text-muted-foreground">% que o afiliado ganha por cada venda que indicar</p>
+          <p className="mb-1 text-xs text-muted-foreground">
+            % que o afiliado ganha por cada venda que indicar
+          </p>
           <div className="flex flex-wrap items-center gap-2">
             <Input
               type="number"
@@ -103,18 +121,27 @@ function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof use
               step={0.5}
               className="w-24 text-center"
               value={settings.affiliate_commission_direct}
-              onChange={(e) => setSettings((s) => ({ ...s, affiliate_commission_direct: e.target.value === "" ? 0 : parseFloat(e.target.value) }))}
+              onChange={(e) =>
+                setSettings((s) => ({
+                  ...s,
+                  affiliate_commission_direct:
+                    e.target.value === "" ? 0 : parseFloat(e.target.value),
+                }))
+              }
             />
             <span className="text-sm text-muted-foreground">%</span>
             <span className="text-xs text-muted-foreground">
-              Ex: venda de R$ 200 → afiliado recebe {formatBRL((200 * (settings.affiliate_commission_direct || 0)) / 100)}
+              Ex: venda de R$ 200 → afiliado recebe{" "}
+              {formatBRL((200 * (settings.affiliate_commission_direct || 0)) / 100)}
             </span>
           </div>
         </div>
 
         <div>
           <Label className="text-sm font-medium">Comissão de recrutador (%)</Label>
-          <p className="mb-1 text-xs text-muted-foreground">% que quem recrutou o afiliado ganha sobre as vendas dele</p>
+          <p className="mb-1 text-xs text-muted-foreground">
+            % que quem recrutou o afiliado ganha sobre as vendas dele
+          </p>
           <div className="flex flex-wrap items-center gap-2">
             <Input
               type="number"
@@ -123,16 +150,27 @@ function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof use
               step={0.5}
               className="w-24 text-center"
               value={settings.affiliate_commission_referrer}
-              onChange={(e) => setSettings((s) => ({ ...s, affiliate_commission_referrer: e.target.value === "" ? 0 : parseFloat(e.target.value) }))}
+              onChange={(e) =>
+                setSettings((s) => ({
+                  ...s,
+                  affiliate_commission_referrer:
+                    e.target.value === "" ? 0 : parseFloat(e.target.value),
+                }))
+              }
             />
             <span className="text-sm text-muted-foreground">%</span>
             <span className="text-xs text-muted-foreground">
-              Ex: venda de R$ 200 → recrutador recebe {formatBRL((200 * (settings.affiliate_commission_referrer || 0)) / 100)}
+              Ex: venda de R$ 200 → recrutador recebe{" "}
+              {formatBRL((200 * (settings.affiliate_commission_referrer || 0)) / 100)}
             </span>
           </div>
         </div>
 
-        <Button onClick={() => save.mutate()} disabled={save.isPending} className="bg-[#25d366] text-white hover:bg-[#1fb857]">
+        <Button
+          onClick={() => save.mutate()}
+          disabled={save.isPending}
+          className="bg-[#25d366] text-white hover:bg-[#1fb857]"
+        >
           {save.isPending ? "Salvando..." : "Salvar configurações"}
         </Button>
       </div>
@@ -142,6 +180,7 @@ function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof use
 
 function AffiliatesAdminPage() {
   const { data: store, isLoading: storeLoading } = useMyStore();
+  const [tab, setTab] = useState<"program" | "page">("program");
 
   const { data: affiliates = [], isLoading } = useQuery({
     queryKey: ["admin-affiliates", store?.id],
@@ -166,7 +205,11 @@ function AffiliatesAdminPage() {
         .select("affiliate_id, order_total, commission_amount")
         .eq("store_id", store!.id);
       if (error) throw error;
-      return (data ?? []) as { affiliate_id: string; order_total: number; commission_amount: number }[];
+      return (data ?? []) as {
+        affiliate_id: string;
+        order_total: number;
+        commission_amount: number;
+      }[];
     },
   });
 
@@ -200,7 +243,9 @@ function AffiliatesAdminPage() {
             type="button"
             onClick={() => setTab(key)}
             className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-              tab === key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              tab === key
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {label}
@@ -209,41 +254,50 @@ function AffiliatesAdminPage() {
       </div>
 
       {tab === "page" ? (
-        <AffiliatePageEditor storeId={store.id} storeSlug={store.slug} initial={store.affiliate_page_content} />
+        <AffiliatePageEditor
+          storeId={store.id}
+          storeSlug={store.slug}
+          initial={store.affiliate_page_content}
+        />
       ) : (
         <>
-      <AffiliateSettings store={store} />
+          <AffiliateSettings store={store} />
 
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="mb-4 flex items-center gap-2 font-bold text-foreground">
-          <Users className="h-4 w-4" /> Afiliados cadastrados ({affiliates.length})
-        </h3>
-        {isLoading ? (
-          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-        ) : affiliates.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum afiliado cadastrado ainda.</p>
-        ) : (
-          <div className="divide-y divide-border">
-            {affiliates.map((a) => {
-              const t = totals.get(a.id) ?? { sales: 0, commission: 0 };
-              return (
-                <div key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">{a.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {a.email} · /{a.affiliate_slug}
-                    </p>
-                  </div>
-                  <div className="text-right text-xs text-muted-foreground">
-                    <p>Vendas: {formatBRL(t.sales)}</p>
-                    <p>Comissão: {formatBRL(t.commission)}</p>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <h3 className="mb-4 flex items-center gap-2 font-bold text-foreground">
+              <Users className="h-4 w-4" /> Afiliados cadastrados ({affiliates.length})
+            </h3>
+            {isLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            ) : affiliates.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nenhum afiliado cadastrado ainda.</p>
+            ) : (
+              <div className="divide-y divide-border">
+                {affiliates.map((a) => {
+                  const t = totals.get(a.id) ?? { sales: 0, commission: 0 };
+                  return (
+                    <div
+                      key={a.id}
+                      className="flex flex-wrap items-center justify-between gap-2 py-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-foreground">{a.name}</p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {a.email} · /{a.affiliate_slug}
+                        </p>
+                      </div>
+                      <div className="text-right text-xs text-muted-foreground">
+                        <p>Vendas: {formatBRL(t.sales)}</p>
+                        <p>Comissão: {formatBRL(t.commission)}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
