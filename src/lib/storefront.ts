@@ -29,6 +29,8 @@ export type StoreRow = {
   subscription_status: string;
   trial_ends_at: string | null;
   affiliates_enabled: boolean;
+  affiliate_commission_direct: number;
+  affiliate_commission_referrer: number;
 };
 
 export type PaymentSettings = {
@@ -74,7 +76,7 @@ export async function fetchStoreBySlug(slug: string): Promise<StoreRow | null> {
   const { data, error } = await supabase
     .from("stores")
     .select(
-      "id, slug, name, tagline, logo_url, accent_color, whatsapp, whatsapp_greeting, instagram, facebook, tiktok, youtube, facebook_pixel_id, google_analytics_id, trust_badges, welcome_popup, active, subscription_status, trial_ends_at, affiliates_enabled",
+      "id, slug, name, tagline, logo_url, accent_color, whatsapp, whatsapp_greeting, instagram, facebook, tiktok, youtube, facebook_pixel_id, google_analytics_id, trust_badges, welcome_popup, active, subscription_status, trial_ends_at, affiliates_enabled, affiliate_commission_direct, affiliate_commission_referrer",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -85,6 +87,8 @@ export async function fetchStoreBySlug(slug: string): Promise<StoreRow | null> {
     trust_badges: Array.isArray(data.trust_badges) ? (data.trust_badges as string[]) : [],
     welcome_popup: (data.welcome_popup ?? {}) as StoreRow["welcome_popup"],
     affiliates_enabled: !!data.affiliates_enabled,
+    affiliate_commission_direct: Number((data as any).affiliate_commission_direct ?? 5),
+    affiliate_commission_referrer: Number((data as any).affiliate_commission_referrer ?? 2.5),
   };
 }
 

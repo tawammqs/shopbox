@@ -33,6 +33,9 @@ export type MyStore = {
   facebook_pixel_id: string | null;
   meta_conversion_token: string | null;
   google_analytics_id: string | null;
+  affiliates_enabled: boolean;
+  affiliate_commission_direct: number;
+  affiliate_commission_referrer: number;
   plan?: { id: string; slug: PlanSlug; name: string; max_products: number; price_cents: number; features: any } | null;
 };
 
@@ -94,6 +97,7 @@ export function useMyStore() {
           notify_stock_enabled, active, plan_id, subscription_status,
           trial_ends_at, current_period_end,
           facebook_pixel_id, google_analytics_id,
+          affiliates_enabled, affiliate_commission_direct, affiliate_commission_referrer,
           plan:plans!stores_plan_id_fkey(id, slug, name, max_products, price_cents, features)
         `)
         .eq("owner_user_id", user!.id)

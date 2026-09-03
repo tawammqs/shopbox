@@ -68,8 +68,14 @@ function AffiliateSignupPage() {
         {store.logo_url && <img src={store.logo_url} alt={store.name} className="mx-auto mb-4 h-10 object-contain" />}
         <h1 className="text-xl font-bold text-foreground">Seja um afiliado</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Compartilhe seus links e ganhe comissão em cada venda da {store.name}.
+          Ganhe <strong className="text-foreground">{store.affiliate_commission_direct}%</strong> de comissão por cada venda que
+          você indicar na {store.name}.
         </p>
+        {store.affiliate_commission_referrer > 0 && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            E mais {store.affiliate_commission_referrer}% sobre as vendas dos afiliados que você indicar.
+          </p>
+        )}
         {ref && <p className="mt-2 text-xs text-[#25d366]">Indicado por: {ref}</p>}
       </div>
 

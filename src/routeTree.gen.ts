@@ -53,6 +53,7 @@ import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configura
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as AdminBannersRouteImport } from './routes/admin.banners'
+import { Route as AdminAfiliadosRouteImport } from './routes/admin.afiliados'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
 import { Route as AdminMarketingIndexRouteImport } from './routes/admin.marketing.index'
@@ -329,6 +330,11 @@ const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
 const AdminBannersRoute = AdminBannersRouteImport.update({
   id: '/banners',
   path: '/banners',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAfiliadosRoute = AdminAfiliadosRouteImport.update({
+  id: '/afiliados',
+  path: '/afiliados',
   getParentRoute: () => AdminRoute,
 } as any)
 const LojaSlugIndexRoute = LojaSlugIndexRouteImport.update({
@@ -651,6 +657,7 @@ export interface FileRoutesByFullPath {
   '/superadmin': typeof SuperadminRouteWithChildren
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/afiliados': typeof AdminAfiliadosRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRouteWithChildren
@@ -751,6 +758,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/afiliados': typeof AdminAfiliadosRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRouteWithChildren
@@ -850,6 +858,7 @@ export interface FileRoutesById {
   '/superadmin': typeof SuperadminRouteWithChildren
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/admin/afiliados': typeof AdminAfiliadosRoute
   '/admin/banners': typeof AdminBannersRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/clientes': typeof AdminClientesRouteWithChildren
@@ -954,6 +963,7 @@ export interface FileRouteTypes {
     | '/superadmin'
     | '/termos'
     | '/unsubscribe'
+    | '/admin/afiliados'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/clientes'
@@ -1054,6 +1064,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/termos'
     | '/unsubscribe'
+    | '/admin/afiliados'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/clientes'
@@ -1152,6 +1163,7 @@ export interface FileRouteTypes {
     | '/superadmin'
     | '/termos'
     | '/unsubscribe'
+    | '/admin/afiliados'
     | '/admin/banners'
     | '/admin/categorias'
     | '/admin/clientes'
@@ -1583,6 +1595,13 @@ declare module '@tanstack/react-router' {
       path: '/banners'
       fullPath: '/admin/banners'
       preLoaderRoute: typeof AdminBannersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/afiliados': {
+      id: '/admin/afiliados'
+      path: '/afiliados'
+      fullPath: '/admin/afiliados'
+      preLoaderRoute: typeof AdminAfiliadosRouteImport
       parentRoute: typeof AdminRoute
     }
     '/loja/$slug/': {
@@ -2090,6 +2109,7 @@ const AdminTemasRouteWithChildren = AdminTemasRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminAfiliadosRoute: typeof AdminAfiliadosRoute
   AdminBannersRoute: typeof AdminBannersRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminClientesRoute: typeof AdminClientesRouteWithChildren
@@ -2120,6 +2140,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAfiliadosRoute: AdminAfiliadosRoute,
   AdminBannersRoute: AdminBannersRoute,
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminClientesRoute: AdminClientesRouteWithChildren,
