@@ -112,6 +112,17 @@ export function TheShoesHeader() {
           <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn">
             {hamburger}
           </button>
+          {store.affiliates_enabled && (
+            <Link
+              to="/loja/$slug/afiliados"
+              params={{ slug: store.slug }}
+              className="ts-desktop-only ts-aff-btn relative ml-2 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
+              style={{ background: "#111", color: "#fff" }}
+            >
+              <span className="absolute inset-0 animate-ping rounded-full opacity-60" style={{ background: "#111" }} />
+              <span className="relative">💰 Seja um afiliado</span>
+            </Link>
+          )}
         </div>
 
         {/* CENTER logo */}
@@ -278,6 +289,17 @@ export function TheShoesHeader() {
                 className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Rastrear Pedido
               </Link>
+              {store.affiliates_enabled && (
+                <Link to="/loja/$slug/afiliados" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                  className="mt-2 flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-bold"
+                  style={{ background: "#111", color: "#fff" }}>
+                  <span className="relative flex h-3 w-3">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: "#d9f523" }} />
+                    <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#d9f523" }} />
+                  </span>
+                  💰 Seja um afiliado
+                </Link>
+              )}
             </div>
           </aside>
         </>

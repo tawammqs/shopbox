@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_payments: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          paid_at: string
+          paid_by: string | null
+          pix_key: string | null
+          store_id: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          paid_by?: string | null
+          pix_key?: string | null
+          store_id: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          paid_by?: string | null
+          pix_key?: string | null
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_payments_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "store_affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_payments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_sales: {
         Row: {
           affiliate_id: string
@@ -1565,7 +1616,10 @@ export type Database = {
           email: string
           id: string
           name: string
+          paid_commission: number
           password_hash: string
+          pending_commission: number
+          pix_key: string | null
           referral_commission_percent: number
           referred_by: string | null
           session_token: string | null
@@ -1580,7 +1634,10 @@ export type Database = {
           email: string
           id?: string
           name: string
+          paid_commission?: number
           password_hash: string
+          pending_commission?: number
+          pix_key?: string | null
           referral_commission_percent?: number
           referred_by?: string | null
           session_token?: string | null
@@ -1595,7 +1652,10 @@ export type Database = {
           email?: string
           id?: string
           name?: string
+          paid_commission?: number
           password_hash?: string
+          pending_commission?: number
+          pix_key?: string | null
           referral_commission_percent?: number
           referred_by?: string | null
           session_token?: string | null
@@ -2800,6 +2860,10 @@ export type Database = {
         Args: { _a: Database["public"]["Tables"]["store_affiliates"]["Row"] }
         Returns: Json
       }
+      affiliate_set_pix_key: {
+        Args: { _pix_key: string; _token: string }
+        Returns: Json
+      }
       affiliate_slugify: { Args: { _name: string }; Returns: string }
       create_order_with_customer: {
         Args: {
@@ -2862,6 +2926,10 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      pay_affiliate: {
+        Args: { _affiliate_id: string; _notes?: string }
+        Returns: Json
       }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }

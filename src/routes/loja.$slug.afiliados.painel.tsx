@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Copy, LogOut, Users, Wallet, ShoppingBag, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
@@ -11,9 +11,12 @@ import {
   copyToClipboard,
   fetchAffiliateDashboard,
   readAffiliateSession,
+  saveAffiliateSession,
+  setAffiliatePixKey,
   useAffiliateSession,
   TS_LIME,
   type AffiliateSale,
+  type AffiliatePayment,
 } from "@/lib/affiliates";
 import { AffiliateUnavailable } from "@/components/storefront/AffiliateShare";
 import { formatBRL } from "@/lib/format";
@@ -36,8 +39,12 @@ export const Route = createFileRoute("/loja/$slug/afiliados/painel")({
 function AffiliateDashboardPage() {
   const { store } = useStorefront();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { affiliate } = useAffiliateSession(store.id);
   const [checked, setChecked] = useState(false);
+  const [editingPix, setEditingPix] = useState(false);
+  const [newPixKey, setNewPixKey] = useState("");
+  const [savingPix, setSavingPix] = useState(false);
 
   useEffect(() => {
     const a = readAffiliateSession();
@@ -67,11 +74,18 @@ function AffiliateDashboardPage() {
   if (!checked || !affiliate) return null;
 
   const data = q.data ?? null;
+  const live = data?.affiliate ?? affiliate;
   const sales: AffiliateSale[] = data?.sales ?? [];
+  const payments: AffiliatePayment[] = data?.payments ?? [];
   const totalSold = sales.filter((s) => s.level === 1).reduce((a, s) => a + Number(s.order_total), 0);
-  const pending = sales.filter((s) => s.status === "pending").reduce((a, s) => a + Number(s.commission_amount), 0);
-  const paid = sales.filter((s) => s.status === "paid").reduce((a, s) => a + Number(s.commission_amount), 0);
+  const pending = live.pending_commission != null
+    ? Number(live.pending_commission)
+    : sales.filter((s) => s.status === "pending" || s.status === "confirmed").reduce((a, s) => a + Number(s.commission_amount), 0);
+  const paid = live.paid_commission != null
+    ? Number(live.paid_commission)
+    : sales.filter((s) => s.status === "paid").reduce((a, s) => a + Number(s.commission_amount), 0);
   const referrals = data?.referrals ?? [];
+  const pixKey = live.pix_key ?? null;
 
   const copy = async (url: string) => {
     const ok = await copyToClipboard(url);
@@ -81,6 +95,24 @@ function AffiliateDashboardPage() {
   const logout = () => {
     clearAffiliateSession();
     navigate({ to: "/loja/$slug", params: { slug: store.slug } });
+  };
+
+  const savePixKey = async () => {
+    if (!affiliate.session_token) return;
+    if (!newPixKey.trim()) { toast.error("Informe a chave PIX"); return; }
+    setSavingPix(true);
+    try {
+      const updated = await setAffiliatePixKey(affiliate.session_token, newPixKey.trim());
+      if (!updated) throw new Error("Sessão expirada");
+      saveAffiliateSession({ ...affiliate, ...updated, session_token: affiliate.session_token });
+      qc.invalidateQueries({ queryKey: ["affiliate-dashboard"] });
+      toast.success("Chave PIX atualizada!");
+      setEditingPix(false);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Erro ao salvar chave PIX");
+    } finally {
+      setSavingPix(false);
+    }
   };
 
   return (
@@ -102,12 +134,76 @@ function AffiliateDashboardPage() {
         </button>
       </div>
 
+      {/* Balance card */}
+      <div className="mb-4 rounded-2xl p-5" style={{ background: "#111", color: "#fff" }}>
+        <p className="mb-1 text-xs opacity-60">Saldo a receber via PIX</p>
+        <p className="text-3xl font-bold" style={{ color: TS_LIME }}>{formatBRL(pending)}</p>
+        <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
+          <div className="min-w-0">
+            <p className="text-xs opacity-60">Chave PIX cadastrada</p>
+            <p className="mt-0.5 truncate font-mono text-sm">{pixKey || "Não cadastrada"}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => { setNewPixKey(pixKey ?? ""); setEditingPix(true); }}
+            className="shrink-0 rounded-lg border border-white/30 px-3 py-1.5 text-xs"
+          >
+            {pixKey ? "Alterar" : "Cadastrar"}
+          </button>
+        </div>
+      </div>
+
+      {editingPix && (
+        <div className="mb-4 rounded-xl border border-border bg-muted/40 p-4">
+          <p className="mb-2 text-sm font-medium text-foreground">Sua chave PIX</p>
+          <input
+            placeholder="CPF, e-mail, telefone ou chave aleatória"
+            value={newPixKey}
+            onChange={(e) => setNewPixKey(e.target.value)}
+            className="mb-2 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground"
+          />
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setEditingPix(false)} className="flex-1 rounded-lg border border-border py-2 text-sm text-foreground">
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={savePixKey}
+              disabled={savingPix}
+              className="flex-1 rounded-lg py-2 text-sm font-semibold disabled:opacity-50"
+              style={{ background: "#111", color: "#fff" }}
+            >
+              {savingPix ? "Salvando..." : "Salvar"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Metrics */}
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
         <Metric icon={<ShoppingBag className="h-4 w-4" />} label="Vendas" value={String(sales.filter((s) => s.level === 1).length)} />
         <Metric icon={<TrendingUp className="h-4 w-4" />} label="Total vendido" value={formatBRL(totalSold)} />
         <Metric icon={<Wallet className="h-4 w-4" />} label="Comissão pendente" value={formatBRL(pending)} accent />
         <Metric icon={<Users className="h-4 w-4" />} label="Comissão paga" value={formatBRL(paid)} />
+      </div>
+
+      {/* Payments history */}
+      <div className="mb-4 rounded-xl border border-border p-4">
+        <h3 className="mb-3 text-sm font-semibold text-foreground">Histórico de recebimentos</h3>
+        {payments.length === 0 ? (
+          <p className="py-3 text-center text-sm text-muted-foreground">Nenhum pagamento recebido ainda.</p>
+        ) : (
+          payments.map((p) => (
+            <div key={p.id} className="flex justify-between border-b border-border py-2 text-sm last:border-0">
+              <div>
+                <p className="font-medium text-foreground">PIX recebido</p>
+                <p className="text-xs text-muted-foreground">{new Date(p.paid_at).toLocaleDateString("pt-BR")}</p>
+                {p.notes && <p className="text-xs text-muted-foreground">{p.notes}</p>}
+              </div>
+              <span className="font-bold text-[#1fb857]">+ {formatBRL(Number(p.amount))}</span>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Links */}
