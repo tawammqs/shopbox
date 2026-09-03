@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { X } from "lucide-react";
+import { X, BadgeDollarSign } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
@@ -133,7 +133,10 @@ export function TheShoesHeader() {
               style={{ background: "#111", color: "#fff" }}
             >
               <span className="absolute inset-0 animate-ping rounded-full opacity-60" style={{ background: "#111" }} />
-              <span className="relative">💰 Seja um afiliado</span>
+              <span className="relative inline-flex items-center gap-1">
+                <BadgeDollarSign className="h-3.5 w-3.5" />
+                Seja um afiliado
+              </span>
             </Link>
           )}
         </div>
@@ -344,7 +347,8 @@ export function TheShoesHeader() {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: "#d9f523" }} />
                     <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#d9f523" }} />
                   </span>
-                  💰 Seja um afiliado
+                  <BadgeDollarSign className="h-4 w-4" />
+                  Seja um afiliado
                 </Link>
               )}
             </div>

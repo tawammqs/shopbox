@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BadgeDollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useStorefront } from "../StoreContext";
 import { useStorefrontCustomizations } from "../StorefrontCustomizer";
@@ -174,7 +174,10 @@ export function TheShoesFooter() {
               style={{ borderColor: txt, color: txt }}
             >
               <span className="absolute inset-0 animate-ping rounded-full border-2 opacity-50" style={{ borderColor: txt }} />
-              <span className="relative">💰 Seja um afiliado e ganhe comissão</span>
+              <span className="relative inline-flex items-center gap-1.5">
+                <BadgeDollarSign className="h-4 w-4" />
+                Seja um afiliado e ganhe comissão
+              </span>
             </a>
           </div>
         )}
