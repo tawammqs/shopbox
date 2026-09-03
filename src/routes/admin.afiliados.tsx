@@ -188,6 +188,30 @@ function AffiliatesAdminPage() {
 
   return (
     <div className="mx-auto max-w-3xl p-4 md:p-6">
+      <div className="mb-6 flex gap-1 rounded-xl bg-muted p-1">
+        {(
+          [
+            ["program", "Programa"],
+            ["page", "Página do programa"],
+          ] as const
+        ).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              tab === key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "page" ? (
+        <AffiliatePageEditor storeId={store.id} storeSlug={store.slug} initial={store.affiliate_page_content} />
+      ) : (
+        <>
       <AffiliateSettings store={store} />
 
       <div className="rounded-2xl border border-border bg-card p-5">
