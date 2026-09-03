@@ -129,14 +129,11 @@ export function TheShoesHeader() {
             <Link
               to="/loja/$slug/afiliados"
               params={{ slug: store.slug }}
-              className="ts-desktop-only ts-aff-btn relative ml-2 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
+              className="ts-desktop-only ts-aff-btn ml-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
               style={{ background: "#111", color: "#fff" }}
             >
-              <span className="absolute inset-0 animate-ping rounded-full opacity-60" style={{ background: "#111" }} />
-              <span className="relative inline-flex items-center gap-1">
-                <BadgeDollarSign className="h-3.5 w-3.5" />
-                Seja um afiliado
-              </span>
+              <BadgeDollarSign className="h-3.5 w-3.5" />
+              Seja um afiliado
             </Link>
           )}
         </div>
@@ -343,10 +340,6 @@ export function TheShoesHeader() {
                 <Link to="/loja/$slug/afiliados" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                   className="mt-2 flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-bold"
                   style={{ background: "#111", color: "#fff" }}>
-                  <span className="relative flex h-3 w-3">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: "#d9f523" }} />
-                    <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#d9f523" }} />
-                  </span>
                   <BadgeDollarSign className="h-4 w-4" />
                   Seja um afiliado
                 </Link>
