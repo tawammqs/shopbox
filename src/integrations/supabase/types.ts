@@ -2236,6 +2236,7 @@ export type Database = {
           active: boolean
           affiliate_commission_direct: number
           affiliate_commission_referrer: number
+          affiliate_page_content: Json
           affiliates_enabled: boolean
           created_at: string
           current_period_end: string | null
@@ -2274,6 +2275,7 @@ export type Database = {
           active?: boolean
           affiliate_commission_direct?: number
           affiliate_commission_referrer?: number
+          affiliate_page_content?: Json
           affiliates_enabled?: boolean
           created_at?: string
           current_period_end?: string | null
@@ -2312,6 +2314,7 @@ export type Database = {
           active?: boolean
           affiliate_commission_direct?: number
           affiliate_commission_referrer?: number
+          affiliate_page_content?: Json
           affiliates_enabled?: boolean
           created_at?: string
           current_period_end?: string | null
