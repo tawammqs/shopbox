@@ -13,6 +13,9 @@ export type AffiliateSession = {
   status: string;
   created_at: string;
   session_token: string | null;
+  pix_key?: string | null;
+  pending_commission?: number;
+  paid_commission?: number;
 };
 
 export type AffiliateSale = {
@@ -28,10 +31,19 @@ export type AffiliateSale = {
   source_name: string | null;
 };
 
+export type AffiliatePayment = {
+  id: string;
+  amount: number;
+  notes: string | null;
+  paid_at: string;
+  pix_key: string | null;
+};
+
 export type AffiliateDashboard = {
   affiliate: AffiliateSession;
   sales: AffiliateSale[];
   referrals: { id: string; name: string; affiliate_slug: string; created_at: string }[];
+  payments?: AffiliatePayment[];
 };
 
 const SESSION_KEY = "affiliate_logged";
@@ -187,6 +199,20 @@ export async function fetchAffiliateDashboard(token: string) {
   const { data, error } = await supabase.rpc("affiliate_dashboard", { _token: token });
   if (error) throw new Error(error.message);
   return (data as unknown as AffiliateDashboard | null) ?? null;
+}
+
+/** Affiliate updates its own PIX key (session-token authenticated). Returns updated session or null. */
+export async function setAffiliatePixKey(token: string, pixKey: string) {
+  const { data, error } = await supabase.rpc("affiliate_set_pix_key", { _token: token, _pix_key: pixKey });
+  if (error) throw new Error(error.message);
+  return (data as unknown as AffiliateSession | null) ?? null;
+}
+
+/** Store owner marks the affiliate's pending balance as paid via PIX. */
+export async function payAffiliate(affiliateId: string, notes?: string) {
+  const { data, error } = await supabase.rpc("pay_affiliate", { _affiliate_id: affiliateId, _notes: notes ?? undefined });
+  if (error) throw new Error(error.message);
+  return (data as unknown as { payment_id?: string; amount: number }) ?? { amount: 0 };
 }
 
 export async function fetchAffiliateName(storeId: string, slug: string) {

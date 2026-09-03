@@ -166,6 +166,18 @@ export function TheShoesFooter() {
             </form>
           </div>
         </div>
+        {store.affiliates_enabled && (
+          <div className="mt-8 border-t pt-6" style={{ borderColor: isDarkBg ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)" }}>
+            <a
+              href={`/loja/${store.slug}/afiliados`}
+              className="relative inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-bold"
+              style={{ borderColor: txt, color: txt }}
+            >
+              <span className="absolute inset-0 animate-ping rounded-full border-2 opacity-50" style={{ borderColor: txt }} />
+              <span className="relative">💰 Seja um afiliado e ganhe comissão</span>
+            </a>
+          </div>
+        )}
         <div className="ts-footer-bottom" style={{ color: txt, opacity: 0.65, borderColor: isDarkBg ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)" }}>
           © {new Date().getFullYear()}, {contactInfo?.company_name || store.name}
           {contactInfo?.tax_id ? ` — CNPJ ${contactInfo.tax_id}` : ""}
