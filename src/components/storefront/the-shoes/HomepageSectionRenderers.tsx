@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchProductsByHomepageSection, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { useStorefront } from "../StoreContext";
 import { cn } from "@/lib/utils";
+import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 import type {
   BannerRotativoCfg,
   ProductsTagCfg,
@@ -84,6 +85,7 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
           className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-[#333] shadow-sm hover:bg-white">
           <Heart className={cn("h-[14px] w-[14px]", wished && "fill-[#111] text-[#111]")} />
         </button>
+        <AffiliateShareButton productSlug={p.slug} />
         <button onClick={quickAdd}
           className="absolute inset-x-2 bottom-2 hidden items-center justify-center rounded-full bg-[var(--store-accent,#111)] py-2 text-[11px] font-semibold text-white opacity-0 shadow transition group-hover:opacity-100 md:flex">
           {p.colors.length > 0 ? "ESCOLHER OPÇÕES" : "ADICIONAR"}
@@ -91,7 +93,10 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
       </div>
       <div className="px-1 pt-3 pb-1">
         {p.brand && <p className="mb-[2px] text-[11px] font-medium uppercase text-[#aaa]" style={{ letterSpacing: "0.05em" }}>{p.brand}</p>}
-        <h3 className="line-clamp-2 text-[14px] font-semibold leading-snug text-[#111]" style={{ marginBottom: 6 }}>{p.title}</h3>
+        <div className="flex items-start justify-between gap-2" style={{ marginBottom: 6 }}>
+          <h3 className="line-clamp-2 flex-1 text-[14px] font-semibold leading-snug text-[#111]">{p.title}</h3>
+          <AffiliateShareButton productSlug={p.slug} variant="text" />
+        </div>
         <div className="flex items-baseline">
           {pct > 0 ? (
             <>

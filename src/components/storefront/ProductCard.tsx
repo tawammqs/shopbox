@@ -12,6 +12,7 @@ import type { ProductCardData } from "@/lib/storefront";
 import { getInstallment } from "@/lib/installments";
 import { useColorGroups, getColorHex, isLightSwatch } from "@/lib/color-groups";
 import { cn } from "@/lib/utils";
+import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { store, paymentSettings } = useStorefront();
@@ -144,6 +145,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         >
           <Heart className={cn("h-4 w-4", wished && "fill-destructive text-destructive")} />
         </button>
+        <AffiliateShareButton productSlug={targetSlug} />
 
         {/* quick add (desktop) */}
         {quickBuyEnabled && (
@@ -166,7 +168,10 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
       <div className="mt-3 space-y-1">
         {p.brand && <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{p.brand}</p>}
-        <h3 className="line-clamp-2 text-sm font-medium text-foreground">{group ? group.model_name : p.title}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="line-clamp-2 flex-1 text-sm font-medium text-foreground">{group ? group.model_name : p.title}</h3>
+          <AffiliateShareButton productSlug={targetSlug} variant="text" />
+        </div>
 
         {group && group.colors.length > 1 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">

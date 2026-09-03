@@ -14,6 +14,7 @@ import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { trackAddToCart } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
+import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 import { supabase } from "@/integrations/supabase/client";
 
 const VIP_GROUP_URL = "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r";
@@ -274,6 +275,7 @@ function TsProductCard({ p }: { p: ProductCardData }) {
           className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-[#333] shadow-sm hover:bg-white">
           <Heart className={cn("h-[14px] w-[14px]", wished && "fill-[#111] text-[#111]")} />
         </button>
+        <AffiliateShareButton productSlug={p.slug} />
         <button onClick={quickAdd}
           className="absolute inset-x-2 bottom-2 hidden items-center justify-center rounded-full py-2 text-[11px] font-semibold text-white opacity-0 shadow transition group-hover:opacity-100 md:flex"
           style={{ background: ACCENT }}>
@@ -286,9 +288,12 @@ function TsProductCard({ p }: { p: ProductCardData }) {
             {p.brand}
           </p>
         )}
-        <h3 className="line-clamp-2 text-[14px] font-semibold leading-snug text-[#111]" style={{ marginBottom: 6 }}>
-          {p.title}
-        </h3>
+        <div className="flex items-start justify-between gap-2" style={{ marginBottom: 6 }}>
+          <h3 className="line-clamp-2 flex-1 text-[14px] font-semibold leading-snug text-[#111]">
+            {p.title}
+          </h3>
+          <AffiliateShareButton productSlug={p.slug} variant="text" />
+        </div>
         <div className="flex items-baseline">
           {pct > 0 ? (
             <>

@@ -14,6 +14,76 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_sales: {
+        Row: {
+          affiliate_id: string
+          commission_amount: number
+          commission_percent: number
+          created_at: string
+          customer_name: string | null
+          id: string
+          items: Json
+          level: number
+          order_id: string | null
+          order_total: number
+          source_affiliate_id: string | null
+          status: string
+          store_id: string
+        }
+        Insert: {
+          affiliate_id: string
+          commission_amount?: number
+          commission_percent?: number
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          items?: Json
+          level?: number
+          order_id?: string | null
+          order_total?: number
+          source_affiliate_id?: string | null
+          status?: string
+          store_id: string
+        }
+        Update: {
+          affiliate_id?: string
+          commission_amount?: number
+          commission_percent?: number
+          created_at?: string
+          customer_name?: string | null
+          id?: string
+          items?: Json
+          level?: number
+          order_id?: string | null
+          order_total?: number
+          source_affiliate_id?: string | null
+          status?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_sales_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "store_affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_sales_source_affiliate_id_fkey"
+            columns: ["source_affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "store_affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       banners: {
         Row: {
           active: boolean
@@ -1487,6 +1557,69 @@ export type Database = {
           },
         ]
       }
+      store_affiliates: {
+        Row: {
+          affiliate_slug: string
+          commission_percent: number
+          created_at: string
+          email: string
+          id: string
+          name: string
+          password_hash: string
+          referral_commission_percent: number
+          referred_by: string | null
+          session_token: string | null
+          status: string
+          store_id: string
+          whatsapp: string | null
+        }
+        Insert: {
+          affiliate_slug: string
+          commission_percent?: number
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          password_hash: string
+          referral_commission_percent?: number
+          referred_by?: string | null
+          session_token?: string | null
+          status?: string
+          store_id: string
+          whatsapp?: string | null
+        }
+        Update: {
+          affiliate_slug?: string
+          commission_percent?: number
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          password_hash?: string
+          referral_commission_percent?: number
+          referred_by?: string | null
+          session_token?: string | null
+          status?: string
+          store_id?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_affiliates_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "store_affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_affiliates_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_contact_info: {
         Row: {
           address: string | null
@@ -2101,6 +2234,7 @@ export type Database = {
         Row: {
           accent_color: string
           active: boolean
+          affiliates_enabled: boolean
           created_at: string
           current_period_end: string | null
           custom_domain: string | null
@@ -2136,6 +2270,7 @@ export type Database = {
         Insert: {
           accent_color?: string
           active?: boolean
+          affiliates_enabled?: boolean
           created_at?: string
           current_period_end?: string | null
           custom_domain?: string | null
@@ -2171,6 +2306,7 @@ export type Database = {
         Update: {
           accent_color?: string
           active?: boolean
+          affiliates_enabled?: boolean
           created_at?: string
           current_period_end?: string | null
           custom_domain?: string | null
@@ -2642,6 +2778,20 @@ export type Database = {
           id: string
         }[]
       }
+      affiliate_dashboard: { Args: { _token: string }; Returns: Json }
+      affiliate_login: {
+        Args: { _email: string; _password: string; _store_id: string }
+        Returns: Json
+      }
+      affiliate_name_by_slug: {
+        Args: { _slug: string; _store_id: string }
+        Returns: string
+      }
+      affiliate_public_json: {
+        Args: { _a: Database["public"]["Tables"]["store_affiliates"]["Row"] }
+        Returns: Json
+      }
+      affiliate_slugify: { Args: { _name: string }; Returns: string }
       create_order_with_customer: {
         Args: {
           _address: string
@@ -2712,6 +2862,28 @@ export type Database = {
           read_ct: number
         }[]
       }
+      register_affiliate: {
+        Args: {
+          _email: string
+          _name: string
+          _password: string
+          _referred_by_slug?: string
+          _store_id: string
+          _whatsapp: string
+        }
+        Returns: Json
+      }
+      register_affiliate_sale: {
+        Args: {
+          _affiliate_slug: string
+          _customer_name: string
+          _items?: Json
+          _order_id: string
+          _order_total: number
+          _store_id: string
+        }
+        Returns: Json
+      }
       store_has_access: { Args: { p_user_id: string }; Returns: boolean }
       store_has_theme: {
         Args: { _store_id: string; _theme_id: string }
@@ -2731,6 +2903,10 @@ export type Database = {
           tracking_code: string
           tracking_url: string
         }[]
+      }
+      verify_affiliate_password: {
+        Args: { affiliate_id: string; password_input: string }
+        Returns: boolean
       }
     }
     Enums: {
@@ -2772,12 +2948,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2801,11 +2977,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2826,11 +3002,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2851,11 +3027,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -2868,11 +3044,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
