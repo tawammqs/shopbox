@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
-import { generateAffiliateSlug, registerAffiliate, saveAffiliateSession } from "@/lib/affiliates";
+import { generateAffiliateSlug, registerAffiliate, saveAffiliateSession, TS_LIME } from "@/lib/affiliates";
 import { maskPhoneBR } from "@/lib/masks";
 import { affiliateInputCls as inputCls, AffiliateUnavailable as Unavailable } from "@/components/storefront/AffiliateShare";
 
@@ -76,7 +76,7 @@ function AffiliateSignupPage() {
             E mais {store.affiliate_commission_referrer}% sobre as vendas dos afiliados que você indicar.
           </p>
         )}
-        {ref && <p className="mt-2 text-xs text-[#25d366]">Indicado por: {ref}</p>}
+        {ref && <p className="mt-2 text-xs font-semibold" style={{ color: TS_LIME }}>Indicado por: {ref}</p>}
       </div>
 
       <form onSubmit={submit} className="space-y-3">
@@ -93,7 +93,8 @@ function AffiliateSignupPage() {
         <button
           type="submit"
           disabled={loading || !form.name || !form.email || !form.password || !form.confirmPassword}
-          className="w-full rounded-xl bg-[#111] py-3 font-bold text-white disabled:opacity-40"
+          className="w-full rounded-xl py-3 font-bold text-[#111] disabled:opacity-40"
+          style={{ backgroundColor: TS_LIME }}
         >
           {loading ? "Cadastrando..." : "Criar minha conta de afiliado"}
         </button>
@@ -101,7 +102,7 @@ function AffiliateSignupPage() {
 
       <p className="mt-4 text-center text-sm text-muted-foreground">
         Já é afiliado?{" "}
-        <Link to="/loja/$slug/afiliados/login" params={{ slug: store.slug }} className="text-[#25d366]">
+        <Link to="/loja/$slug/afiliados/login" params={{ slug: store.slug }} style={{ color: TS_LIME }} className="font-semibold">
           Entrar
         </Link>
       </p>
