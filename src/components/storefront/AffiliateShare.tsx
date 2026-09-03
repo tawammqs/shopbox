@@ -6,6 +6,8 @@ import {
   affiliateProductUrl,
   clearAffiliateSession,
   copyToClipboard,
+  TS_BEIGE,
+  TS_LIME,
   useAffiliateSession,
 } from "@/lib/affiliates";
 import { cn } from "@/lib/utils";
