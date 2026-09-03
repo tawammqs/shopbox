@@ -95,6 +95,7 @@ import { Route as AdminConfiguracoesDominiosRouteImport } from './routes/admin.c
 import { Route as AdminConfiguracoesContatoRouteImport } from './routes/admin.configuracoes.contato'
 import { Route as AdminClientesLeadsRouteImport } from './routes/admin.clientes.leads'
 import { Route as AdminClientesAvaliacoesRouteImport } from './routes/admin.clientes.avaliacoes'
+import { Route as LojaSlugAfiliadosIndexRouteImport } from './routes/loja.$slug.afiliados.index'
 import { Route as AdminLojaLayoutIndexRouteImport } from './routes/admin.loja.layout.index'
 import { Route as LovableEmailTransactionalSendInternalRouteImport } from './routes/lovable/email/transactional/send-internal'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
@@ -558,6 +559,11 @@ const AdminClientesAvaliacoesRoute = AdminClientesAvaliacoesRouteImport.update({
   path: '/avaliacoes',
   getParentRoute: () => AdminClientesRoute,
 } as any)
+const LojaSlugAfiliadosIndexRoute = LojaSlugAfiliadosIndexRouteImport.update({
+  id: '/afiliados/',
+  path: '/afiliados/',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
 const AdminLojaLayoutIndexRoute = AdminLojaLayoutIndexRouteImport.update({
   id: '/loja/layout/',
   path: '/loja/layout/',
@@ -743,6 +749,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
   '/admin/loja/layout/': typeof AdminLojaLayoutIndexRoute
+  '/loja/$slug/afiliados/': typeof LojaSlugAfiliadosIndexRoute
   '/loja/$slug/produto/$productSlug/$affiliateSlug': typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 export interface FileRoutesByTo {
@@ -840,6 +847,7 @@ export interface FileRoutesByTo {
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
   '/admin/loja/layout': typeof AdminLojaLayoutIndexRoute
+  '/loja/$slug/afiliados': typeof LojaSlugAfiliadosIndexRoute
   '/loja/$slug/produto/$productSlug/$affiliateSlug': typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 export interface FileRoutesById {
@@ -944,6 +952,7 @@ export interface FileRoutesById {
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
   '/admin/loja/layout/': typeof AdminLojaLayoutIndexRoute
+  '/loja/$slug/afiliados/': typeof LojaSlugAfiliadosIndexRoute
   '/loja/$slug/produto_/$productSlug/$affiliateSlug': typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 export interface FileRouteTypes {
@@ -1049,6 +1058,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
     | '/admin/loja/layout/'
+    | '/loja/$slug/afiliados/'
     | '/loja/$slug/produto/$productSlug/$affiliateSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1146,6 +1156,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
     | '/admin/loja/layout'
+    | '/loja/$slug/afiliados'
     | '/loja/$slug/produto/$productSlug/$affiliateSlug'
   id:
     | '__root__'
@@ -1249,6 +1260,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
     | '/admin/loja/layout/'
+    | '/loja/$slug/afiliados/'
     | '/loja/$slug/produto_/$productSlug/$affiliateSlug'
   fileRoutesById: FileRoutesById
 }
@@ -1891,6 +1903,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesAvaliacoesRouteImport
       parentRoute: typeof AdminClientesRoute
     }
+    '/loja/$slug/afiliados/': {
+      id: '/loja/$slug/afiliados/'
+      path: '/afiliados'
+      fullPath: '/loja/$slug/afiliados/'
+      preLoaderRoute: typeof LojaSlugAfiliadosIndexRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
     '/admin/loja/layout/': {
       id: '/admin/loja/layout/'
       path: '/loja/layout'
@@ -2202,6 +2221,7 @@ interface LojaSlugRouteChildren {
   LojaSlugCategoriaCategorySlugRoute: typeof LojaSlugCategoriaCategorySlugRoute
   LojaSlugPaginaPageSlugRoute: typeof LojaSlugPaginaPageSlugRoute
   LojaSlugProdutoProductSlugRoute: typeof LojaSlugProdutoProductSlugRoute
+  LojaSlugAfiliadosIndexRoute: typeof LojaSlugAfiliadosIndexRoute
   LojaSlugProdutoProductSlugAffiliateSlugRoute: typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 
@@ -2217,6 +2237,7 @@ const LojaSlugRouteChildren: LojaSlugRouteChildren = {
   LojaSlugCategoriaCategorySlugRoute: LojaSlugCategoriaCategorySlugRoute,
   LojaSlugPaginaPageSlugRoute: LojaSlugPaginaPageSlugRoute,
   LojaSlugProdutoProductSlugRoute: LojaSlugProdutoProductSlugRoute,
+  LojaSlugAfiliadosIndexRoute: LojaSlugAfiliadosIndexRoute,
   LojaSlugProdutoProductSlugAffiliateSlugRoute:
     LojaSlugProdutoProductSlugAffiliateSlugRoute,
 }
