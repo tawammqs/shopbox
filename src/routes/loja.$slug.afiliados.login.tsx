@@ -70,7 +70,12 @@ function AffiliateLoginPage() {
 
       <p className="mt-4 text-center text-sm text-muted-foreground">
         Ainda não é afiliado?{" "}
-        <Link to="/loja/$slug/afiliados/cadastro" params={{ slug: store.slug }} style={{ color: TS_LIME }} className="font-semibold">
+        <Link
+          to="/loja/$slug/afiliados/cadastro"
+          params={{ slug: store.slug }}
+          className="font-semibold text-[#111] underline decoration-2 underline-offset-2"
+          style={{ textDecorationColor: TS_LIME }}
+        >
           Cadastre-se aqui
         </Link>
       </p>
