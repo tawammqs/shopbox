@@ -147,7 +147,12 @@ function AffiliateProgramPage() {
         </Link>
         <p className="mt-2 text-center text-xs text-muted-foreground">
           Já tem conta?{" "}
-          <Link to="/loja/$slug/afiliados/login" params={{ slug: store.slug }} style={{ color: TS_LIME }} className="font-semibold underline">
+          <Link
+            to="/loja/$slug/afiliados/login"
+            params={{ slug: store.slug }}
+            className="font-semibold text-[#111] underline decoration-2 underline-offset-2"
+            style={{ textDecorationColor: TS_LIME }}
+          >
             Faça login
           </Link>
         </p>
