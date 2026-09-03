@@ -2234,6 +2234,8 @@ export type Database = {
         Row: {
           accent_color: string
           active: boolean
+          affiliate_commission_direct: number
+          affiliate_commission_referrer: number
           affiliates_enabled: boolean
           created_at: string
           current_period_end: string | null
@@ -2270,6 +2272,8 @@ export type Database = {
         Insert: {
           accent_color?: string
           active?: boolean
+          affiliate_commission_direct?: number
+          affiliate_commission_referrer?: number
           affiliates_enabled?: boolean
           created_at?: string
           current_period_end?: string | null
@@ -2306,6 +2310,8 @@ export type Database = {
         Update: {
           accent_color?: string
           active?: boolean
+          affiliate_commission_direct?: number
+          affiliate_commission_referrer?: number
           affiliates_enabled?: boolean
           created_at?: string
           current_period_end?: string | null

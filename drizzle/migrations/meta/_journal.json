@@ -8,6 +8,13 @@
       "when": 1788461790914,
       "tag": "0000_affiliates_system",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788463162727,
+      "tag": "0001_affiliate_commission_settings",
+      "breakpoints": true
     }
   ]
 }
