@@ -117,7 +117,12 @@ function AffiliateDashboardPage() {
         <LinkRow label="Link para recrutar afiliados:" url={affiliateRecruitUrl(store.slug, affiliate.affiliate_slug)} onCopy={copy} />
         <p className="mt-3 text-xs text-muted-foreground">
           💡 Navegue pela{" "}
-          <Link to="/loja/$slug" params={{ slug: store.slug }} style={{ color: TS_LIME }} className="font-semibold underline">loja</Link>{" "}
+          <Link
+            to="/loja/$slug"
+            params={{ slug: store.slug }}
+            className="font-semibold text-[#111] underline decoration-2 underline-offset-2"
+            style={{ textDecorationColor: TS_LIME }}
+          >loja</Link>{" "}
           logado e use o botão <strong>Compartilhar</strong> em qualquer produto para copiar seu link personalizado.
         </p>
       </div>
