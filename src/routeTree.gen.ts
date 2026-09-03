@@ -63,6 +63,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as LojaSlugWishlistRouteImport } from './routes/loja.$slug.wishlist'
 import { Route as LojaSlugSobreRouteImport } from './routes/loja.$slug.sobre'
 import { Route as LojaSlugRastreioRouteImport } from './routes/loja.$slug.rastreio'
+import { Route as LojaSlugEntrarRouteImport } from './routes/loja.$slug.entrar'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
 import { Route as ApiPublicHostDebugRouteImport } from './routes/api/public/host-debug'
@@ -381,6 +382,11 @@ const LojaSlugSobreRoute = LojaSlugSobreRouteImport.update({
 const LojaSlugRastreioRoute = LojaSlugRastreioRouteImport.update({
   id: '/rastreio',
   path: '/rastreio',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
+const LojaSlugEntrarRoute = LojaSlugEntrarRouteImport.update({
+  id: '/entrar',
+  path: '/entrar',
   getParentRoute: () => LojaSlugRoute,
 } as any)
 const LojaSlugBuscaRoute = LojaSlugBuscaRouteImport.update({
@@ -726,6 +732,7 @@ export interface FileRoutesByFullPath {
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
+  '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
   '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -824,6 +831,7 @@ export interface FileRoutesByTo {
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
+  '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
   '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -929,6 +937,7 @@ export interface FileRoutesById {
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
+  '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
   '/loja/$slug/rastreio': typeof LojaSlugRastreioRoute
   '/loja/$slug/sobre': typeof LojaSlugSobreRoute
   '/loja/$slug/wishlist': typeof LojaSlugWishlistRoute
@@ -1035,6 +1044,7 @@ export interface FileRouteTypes {
     | '/api/public/host-debug'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
+    | '/loja/$slug/entrar'
     | '/loja/$slug/rastreio'
     | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
@@ -1133,6 +1143,7 @@ export interface FileRouteTypes {
     | '/api/public/host-debug'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
+    | '/loja/$slug/entrar'
     | '/loja/$slug/rastreio'
     | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
@@ -1237,6 +1248,7 @@ export interface FileRouteTypes {
     | '/api/public/host-debug'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
+    | '/loja/$slug/entrar'
     | '/loja/$slug/rastreio'
     | '/loja/$slug/sobre'
     | '/loja/$slug/wishlist'
@@ -1677,6 +1689,13 @@ declare module '@tanstack/react-router' {
       path: '/rastreio'
       fullPath: '/loja/$slug/rastreio'
       preLoaderRoute: typeof LojaSlugRastreioRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
+    '/loja/$slug/entrar': {
+      id: '/loja/$slug/entrar'
+      path: '/entrar'
+      fullPath: '/loja/$slug/entrar'
+      preLoaderRoute: typeof LojaSlugEntrarRouteImport
       parentRoute: typeof LojaSlugRoute
     }
     '/loja/$slug/busca': {
@@ -2211,6 +2230,7 @@ const SuperadminRouteWithChildren = SuperadminRoute._addFileChildren(
 
 interface LojaSlugRouteChildren {
   LojaSlugBuscaRoute: typeof LojaSlugBuscaRoute
+  LojaSlugEntrarRoute: typeof LojaSlugEntrarRoute
   LojaSlugRastreioRoute: typeof LojaSlugRastreioRoute
   LojaSlugSobreRoute: typeof LojaSlugSobreRoute
   LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
@@ -2227,6 +2247,7 @@ interface LojaSlugRouteChildren {
 
 const LojaSlugRouteChildren: LojaSlugRouteChildren = {
   LojaSlugBuscaRoute: LojaSlugBuscaRoute,
+  LojaSlugEntrarRoute: LojaSlugEntrarRoute,
   LojaSlugRastreioRoute: LojaSlugRastreioRoute,
   LojaSlugSobreRoute: LojaSlugSobreRoute,
   LojaSlugWishlistRoute: LojaSlugWishlistRoute,

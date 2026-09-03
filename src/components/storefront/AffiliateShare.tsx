@@ -45,10 +45,10 @@ export function AffiliateShareButton({ productSlug, variant = "icon", className 
       <button
         type="button"
         onClick={share}
-        className={cn("shrink-0 text-xs font-semibold text-[#111] underline decoration-2 underline-offset-2 hover:opacity-80", className)}
-        style={{ textDecorationColor: TS_LIME }}
+        className={cn("flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold", className)}
+        style={{ backgroundColor: TS_LIME, color: "#111827" }}
       >
-        Compartilhar
+        <Link2 className="h-3.5 w-3.5" /> Compartilhar
       </button>
     );
   }
@@ -59,12 +59,12 @@ export function AffiliateShareButton({ productSlug, variant = "icon", className 
         type="button"
         onClick={share}
         className={cn(
-          "flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold text-[#111] transition hover:opacity-90",
+          "flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition hover:opacity-90",
           className,
         )}
-        style={{ borderColor: TS_LIME, backgroundColor: TS_BEIGE }}
+        style={{ backgroundColor: TS_LIME, color: "#111827" }}
       >
-        <Link2 className="h-3.5 w-3.5" style={{ color: TS_LIME }} /> Meu link
+        <Link2 className="h-3.5 w-3.5" /> Compartilhar
       </button>
     );
   }
@@ -76,15 +76,16 @@ export function AffiliateShareButton({ productSlug, variant = "icon", className 
       title="Copiar meu link de afiliado"
       aria-label="Copiar meu link de afiliado"
       className={cn(
-        "absolute right-2 top-12 z-10 grid h-8 w-8 place-items-center rounded-full bg-white shadow-md transition hover:scale-105",
+        "absolute right-2 top-12 z-10 grid h-8 w-8 place-items-center rounded-full shadow-md transition hover:scale-105",
         className,
       )}
-      style={{ color: TS_LIME }}
+      style={{ backgroundColor: TS_LIME, color: "#111827" }}
     >
       <Link2 className="h-4 w-4" />
     </button>
   );
 }
+
 
 /** Slim bar shown on top of the storefront while an affiliate is logged in. */
 export function AffiliateBar() {
