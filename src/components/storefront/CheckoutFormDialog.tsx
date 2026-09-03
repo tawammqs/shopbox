@@ -14,6 +14,7 @@ import { maskPhoneBR, maskCPF, maskCEP, onlyDigits } from "@/lib/masks";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { trackPurchase } from "@/lib/tracking";
+import { clearPendingAffiliateRef, getPendingAffiliateRef, registerAffiliateSale } from "@/lib/affiliates";
 
 
 const schema = z.object({
@@ -131,7 +132,7 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
         line_total: i.unitPrice * i.quantity,
       }));
 
-      const { error } = await supabase.rpc("create_order_with_customer", {
+      const { data: orderRes, error } = await supabase.rpc("create_order_with_customer", {
         _store_id: store.id,
         _name: form.name.trim(),
         _whatsapp: onlyDigits(form.whatsapp),
@@ -149,6 +150,25 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
       });
 
       if (error) throw error;
+
+      // Affiliate attribution (link /produto/[slug]/[affiliate] or ?ref=) — best-effort
+      let affiliateName: string | null = null;
+      const affiliateSlug = store.affiliates_enabled ? getPendingAffiliateRef(store.slug) : null;
+      if (affiliateSlug) {
+        try {
+          const orderId = (Array.isArray(orderRes) ? orderRes[0]?.order_id : (orderRes as any)?.order_id) ?? null;
+          affiliateName = await registerAffiliateSale({
+            storeId: store.id,
+            affiliateSlug,
+            orderId,
+            orderTotal: total,
+            customerName: form.name.trim(),
+            items: itemsSnapshot,
+          });
+        } catch {
+          // ignore
+        }
+      }
 
       // Increment coupon usage counter (best-effort, non-blocking)
       if (coupon?.code) {
@@ -201,14 +221,16 @@ export function CheckoutFormDialog({ open, onClose, items, subtotal, coupon, tot
           productUrl: buyNow.productUrl,
           greeting: store.whatsapp_greeting,
           customer,
+          affiliateName,
         });
       } else {
         // Cart checkout
-        msg = buildCheckoutMessage(items, subtotal, coupon, total, store.whatsapp_greeting, customer);
+        msg = buildCheckoutMessage(items, subtotal, coupon, total, store.whatsapp_greeting, customer, affiliateName);
         clearCart();
       }
       // The message is unchanged; only the destination number is picked by the customer.
       selector.open(msg);
+      if (affiliateSlug) clearPendingAffiliateRef();
       toast.success("Pedido registrado! Escolha com quem falar no WhatsApp.");
     } catch (err: any) {
       toast.error(err?.message ?? "Erro ao registrar pedido");

@@ -19,6 +19,7 @@ import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { VirtualTryOn } from "@/components/storefront/VirtualTryOn";
 
 import { cn } from "@/lib/utils";
+import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 import { VideoPreview } from "@/components/admin/VideoSourcePicker";
 import type { VideoType } from "@/lib/video";
 import { TheShoesProductPage } from "@/components/storefront/the-shoes/TheShoesProductPage";
@@ -28,9 +29,14 @@ export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
 });
 
 function ProductPage() {
+  const { productSlug } = Route.useParams();
+  return <ProductPageContent productSlug={productSlug} />;
+}
+
+/** Shared product page body — also rendered by the affiliate-link route. */
+export function ProductPageContent({ productSlug }: { productSlug: string }) {
   const { store } = useStorefront();
   const isMio = useIsMioTheme();
-  const { productSlug } = Route.useParams();
 
   const { data, isLoading } = useQuery({
     queryKey: ["product", store.id, productSlug],
@@ -211,7 +217,10 @@ function ProductInner({ product }: { product: any }) {
         <div className="min-w-0 space-y-5">
           <div className="min-w-0">
             {product.brand && <p className="text-xs uppercase tracking-wide text-muted-foreground">{product.brand}</p>}
-            <h1 className="break-words font-display text-xl font-bold sm:text-3xl">{product.title}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="min-w-0 flex-1 break-words font-display text-xl font-bold sm:text-3xl">{product.title}</h1>
+              <AffiliateShareButton productSlug={product.slug} variant="button" />
+            </div>
             {product.sku && <p className="mt-1 text-xs text-muted-foreground">SKU: {product.sku}</p>}
             <ColorVariantsRow storeId={store.id} storeSlug={store.slug} productId={product.id} />
             {avgRating != null && (

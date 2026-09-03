@@ -104,7 +104,11 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as LojaSlugProdutoProductSlugRouteImport } from './routes/loja.$slug.produto.$productSlug'
 import { Route as LojaSlugPaginaPageSlugRouteImport } from './routes/loja.$slug.pagina.$pageSlug'
 import { Route as LojaSlugCategoriaCategorySlugRouteImport } from './routes/loja.$slug.categoria.$categorySlug'
+import { Route as LojaSlugAfiliadosPainelRouteImport } from './routes/loja.$slug.afiliados.painel'
+import { Route as LojaSlugAfiliadosLoginRouteImport } from './routes/loja.$slug.afiliados.login'
+import { Route as LojaSlugAfiliadosCadastroRouteImport } from './routes/loja.$slug.afiliados.cadastro'
 import { Route as AdminLojaLayoutEditarRouteImport } from './routes/admin.loja.layout.editar'
+import { Route as LojaSlugProdutoProductSlugAffiliateSlugRouteImport } from './routes/loja.$slug.produto_.$productSlug.$affiliateSlug'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -604,11 +608,33 @@ const LojaSlugCategoriaCategorySlugRoute =
     path: '/categoria/$categorySlug',
     getParentRoute: () => LojaSlugRoute,
   } as any)
+const LojaSlugAfiliadosPainelRoute = LojaSlugAfiliadosPainelRouteImport.update({
+  id: '/afiliados/painel',
+  path: '/afiliados/painel',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
+const LojaSlugAfiliadosLoginRoute = LojaSlugAfiliadosLoginRouteImport.update({
+  id: '/afiliados/login',
+  path: '/afiliados/login',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
+const LojaSlugAfiliadosCadastroRoute =
+  LojaSlugAfiliadosCadastroRouteImport.update({
+    id: '/afiliados/cadastro',
+    path: '/afiliados/cadastro',
+    getParentRoute: () => LojaSlugRoute,
+  } as any)
 const AdminLojaLayoutEditarRoute = AdminLojaLayoutEditarRouteImport.update({
   id: '/loja/layout/editar',
   path: '/loja/layout/editar',
   getParentRoute: () => AdminRoute,
 } as any)
+const LojaSlugProdutoProductSlugAffiliateSlugRoute =
+  LojaSlugProdutoProductSlugAffiliateSlugRouteImport.update({
+    id: '/produto_/$productSlug/$affiliateSlug',
+    path: '/produto/$productSlug/$affiliateSlug',
+    getParentRoute: () => LojaSlugRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -697,6 +723,9 @@ export interface FileRoutesByFullPath {
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
+  '/loja/$slug/afiliados/cadastro': typeof LojaSlugAfiliadosCadastroRoute
+  '/loja/$slug/afiliados/login': typeof LojaSlugAfiliadosLoginRoute
+  '/loja/$slug/afiliados/painel': typeof LojaSlugAfiliadosPainelRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/pagina/$pageSlug': typeof LojaSlugPaginaPageSlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
@@ -707,6 +736,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
   '/admin/loja/layout/': typeof AdminLojaLayoutIndexRoute
+  '/loja/$slug/produto/$productSlug/$affiliateSlug': typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -789,6 +819,9 @@ export interface FileRoutesByTo {
   '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
+  '/loja/$slug/afiliados/cadastro': typeof LojaSlugAfiliadosCadastroRoute
+  '/loja/$slug/afiliados/login': typeof LojaSlugAfiliadosLoginRoute
+  '/loja/$slug/afiliados/painel': typeof LojaSlugAfiliadosPainelRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/pagina/$pageSlug': typeof LojaSlugPaginaPageSlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
@@ -799,6 +832,7 @@ export interface FileRoutesByTo {
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
   '/admin/loja/layout': typeof AdminLojaLayoutIndexRoute
+  '/loja/$slug/produto/$productSlug/$affiliateSlug': typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -888,6 +922,9 @@ export interface FileRoutesById {
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/admin/loja/layout/editar': typeof AdminLojaLayoutEditarRoute
+  '/loja/$slug/afiliados/cadastro': typeof LojaSlugAfiliadosCadastroRoute
+  '/loja/$slug/afiliados/login': typeof LojaSlugAfiliadosLoginRoute
+  '/loja/$slug/afiliados/painel': typeof LojaSlugAfiliadosPainelRoute
   '/loja/$slug/categoria/$categorySlug': typeof LojaSlugCategoriaCategorySlugRoute
   '/loja/$slug/pagina/$pageSlug': typeof LojaSlugPaginaPageSlugRoute
   '/loja/$slug/produto/$productSlug': typeof LojaSlugProdutoProductSlugRoute
@@ -898,6 +935,7 @@ export interface FileRoutesById {
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/lovable/email/transactional/send-internal': typeof LovableEmailTransactionalSendInternalRoute
   '/admin/loja/layout/': typeof AdminLojaLayoutIndexRoute
+  '/loja/$slug/produto_/$productSlug/$affiliateSlug': typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -988,6 +1026,9 @@ export interface FileRouteTypes {
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
+    | '/loja/$slug/afiliados/cadastro'
+    | '/loja/$slug/afiliados/login'
+    | '/loja/$slug/afiliados/painel'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/pagina/$pageSlug'
     | '/loja/$slug/produto/$productSlug'
@@ -998,6 +1039,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
     | '/admin/loja/layout/'
+    | '/loja/$slug/produto/$productSlug/$affiliateSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1080,6 +1122,9 @@ export interface FileRouteTypes {
     | '/admin/produtos'
     | '/loja/$slug'
     | '/admin/loja/layout/editar'
+    | '/loja/$slug/afiliados/cadastro'
+    | '/loja/$slug/afiliados/login'
+    | '/loja/$slug/afiliados/painel'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/pagina/$pageSlug'
     | '/loja/$slug/produto/$productSlug'
@@ -1090,6 +1135,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
     | '/admin/loja/layout'
+    | '/loja/$slug/produto/$productSlug/$affiliateSlug'
   id:
     | '__root__'
     | '/'
@@ -1178,6 +1224,9 @@ export interface FileRouteTypes {
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/admin/loja/layout/editar'
+    | '/loja/$slug/afiliados/cadastro'
+    | '/loja/$slug/afiliados/login'
+    | '/loja/$slug/afiliados/painel'
     | '/loja/$slug/categoria/$categorySlug'
     | '/loja/$slug/pagina/$pageSlug'
     | '/loja/$slug/produto/$productSlug'
@@ -1188,6 +1237,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/send'
     | '/lovable/email/transactional/send-internal'
     | '/admin/loja/layout/'
+    | '/loja/$slug/produto_/$productSlug/$affiliateSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1892,12 +1942,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LojaSlugCategoriaCategorySlugRouteImport
       parentRoute: typeof LojaSlugRoute
     }
+    '/loja/$slug/afiliados/painel': {
+      id: '/loja/$slug/afiliados/painel'
+      path: '/afiliados/painel'
+      fullPath: '/loja/$slug/afiliados/painel'
+      preLoaderRoute: typeof LojaSlugAfiliadosPainelRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
+    '/loja/$slug/afiliados/login': {
+      id: '/loja/$slug/afiliados/login'
+      path: '/afiliados/login'
+      fullPath: '/loja/$slug/afiliados/login'
+      preLoaderRoute: typeof LojaSlugAfiliadosLoginRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
+    '/loja/$slug/afiliados/cadastro': {
+      id: '/loja/$slug/afiliados/cadastro'
+      path: '/afiliados/cadastro'
+      fullPath: '/loja/$slug/afiliados/cadastro'
+      preLoaderRoute: typeof LojaSlugAfiliadosCadastroRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
     '/admin/loja/layout/editar': {
       id: '/admin/loja/layout/editar'
       path: '/loja/layout/editar'
       fullPath: '/admin/loja/layout/editar'
       preLoaderRoute: typeof AdminLojaLayoutEditarRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/loja/$slug/produto_/$productSlug/$affiliateSlug': {
+      id: '/loja/$slug/produto_/$productSlug/$affiliateSlug'
+      path: '/produto/$productSlug/$affiliateSlug'
+      fullPath: '/loja/$slug/produto/$productSlug/$affiliateSlug'
+      preLoaderRoute: typeof LojaSlugProdutoProductSlugAffiliateSlugRouteImport
+      parentRoute: typeof LojaSlugRoute
     }
   }
 }
@@ -2097,9 +2175,13 @@ interface LojaSlugRouteChildren {
   LojaSlugSobreRoute: typeof LojaSlugSobreRoute
   LojaSlugWishlistRoute: typeof LojaSlugWishlistRoute
   LojaSlugIndexRoute: typeof LojaSlugIndexRoute
+  LojaSlugAfiliadosCadastroRoute: typeof LojaSlugAfiliadosCadastroRoute
+  LojaSlugAfiliadosLoginRoute: typeof LojaSlugAfiliadosLoginRoute
+  LojaSlugAfiliadosPainelRoute: typeof LojaSlugAfiliadosPainelRoute
   LojaSlugCategoriaCategorySlugRoute: typeof LojaSlugCategoriaCategorySlugRoute
   LojaSlugPaginaPageSlugRoute: typeof LojaSlugPaginaPageSlugRoute
   LojaSlugProdutoProductSlugRoute: typeof LojaSlugProdutoProductSlugRoute
+  LojaSlugProdutoProductSlugAffiliateSlugRoute: typeof LojaSlugProdutoProductSlugAffiliateSlugRoute
 }
 
 const LojaSlugRouteChildren: LojaSlugRouteChildren = {
@@ -2108,9 +2190,14 @@ const LojaSlugRouteChildren: LojaSlugRouteChildren = {
   LojaSlugSobreRoute: LojaSlugSobreRoute,
   LojaSlugWishlistRoute: LojaSlugWishlistRoute,
   LojaSlugIndexRoute: LojaSlugIndexRoute,
+  LojaSlugAfiliadosCadastroRoute: LojaSlugAfiliadosCadastroRoute,
+  LojaSlugAfiliadosLoginRoute: LojaSlugAfiliadosLoginRoute,
+  LojaSlugAfiliadosPainelRoute: LojaSlugAfiliadosPainelRoute,
   LojaSlugCategoriaCategorySlugRoute: LojaSlugCategoriaCategorySlugRoute,
   LojaSlugPaginaPageSlugRoute: LojaSlugPaginaPageSlugRoute,
   LojaSlugProdutoProductSlugRoute: LojaSlugProdutoProductSlugRoute,
+  LojaSlugProdutoProductSlugAffiliateSlugRoute:
+    LojaSlugProdutoProductSlugAffiliateSlugRoute,
 }
 
 const LojaSlugRouteWithChildren = LojaSlugRoute._addFileChildren(

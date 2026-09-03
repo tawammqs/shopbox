@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 
 export function TheShoesProductPage({ product }: { product: any }) {
   const { store } = useStorefront();
@@ -184,8 +185,11 @@ export function TheShoesProductPage({ product }: { product: any }) {
         <div className="min-w-0 space-y-5">
           <div>
             {product.brand && <p className="text-[12px] uppercase tracking-wide text-[#888]">{product.brand}</p>}
-            <h1 className="ts-h1 text-[24px] font-extrabold leading-tight text-[#111] md:text-[32px]"
-              style={{ letterSpacing: "-0.5px" }}>{product.title}</h1>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="ts-h1 min-w-0 flex-1 text-[24px] font-extrabold leading-tight text-[#111] md:text-[32px]"
+                style={{ letterSpacing: "-0.5px" }}>{product.title}</h1>
+              <AffiliateShareButton productSlug={product.slug} variant="button" />
+            </div>
             {product.sku && <p className="mt-1 text-[12px] text-[#aaa]">SKU: {product.sku}</p>}
             <ColorVariantsRow storeId={store.id} storeSlug={store.slug} productId={product.id} />
             {avgRating != null && (

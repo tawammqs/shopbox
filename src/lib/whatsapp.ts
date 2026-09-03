@@ -49,6 +49,7 @@ export function buildCheckoutMessage(
   total: number,
   greeting?: string | null,
   customer?: CustomerInfo | null,
+  affiliateName?: string | null,
 ) {
   const lines = items.map(
     (i) =>
@@ -68,6 +69,7 @@ export function buildCheckoutMessage(
   out.push(`💰 *Total: ${formatBRL(total)}*`);
   out.push(...buildPaymentBlock(customer?.paymentMethod, total));
   out.push(...buildCustomerBlock(customer));
+  if (affiliateName) out.push("", `🤝 *Indicado por:* ${affiliateName}`);
   out.push("", "Aguardo o retorno para confirmar pagamento e entrega! 🙏");
   return out.join("\n");
 }
@@ -107,6 +109,7 @@ export function buildBuyNowMessage(opts: {
   productUrl: string;
   greeting?: string | null;
   customer?: CustomerInfo | null;
+  affiliateName?: string | null;
 }) {
   const lines = [
     opts.greeting?.trim() ? opts.greeting.trim() : "Olá! Tenho interesse neste produto:",
@@ -120,7 +123,9 @@ export function buildBuyNowMessage(opts: {
     `Link: ${opts.productUrl}`,
     ...buildPaymentBlock(opts.customer?.paymentMethod, opts.unitPrice * opts.quantity),
     ...buildCustomerBlock(opts.customer),
-  ].filter(Boolean) as string[];
+    opts.affiliateName ? "" : null,
+    opts.affiliateName ? `🤝 *Indicado por:* ${opts.affiliateName}` : null,
+  ].filter((l) => l !== null) as string[];
   return lines.join("\n");
 }
 

@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, Link, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AffiliateBar } from "@/components/storefront/AffiliateShare";
+import { savePendingAffiliateRef } from "@/lib/affiliates";
 import {
   fetchStoreBySlug,
   fetchCategories,
@@ -81,6 +83,13 @@ function StorefrontLayout() {
     Route.useLoaderData();
   const [navOpen, setNavOpen] = useState(false);
 
+  // Store-wide affiliate link: /loja/[slug]?ref=[affiliate_slug]
+  useEffect(() => {
+    if (!store?.affiliates_enabled) return;
+    const ref = new URLSearchParams(window.location.search).get("ref");
+    if (ref) savePendingAffiliateRef(store.slug, ref);
+  }, [store?.slug, store?.affiliates_enabled]);
+
   if (!store) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
@@ -127,6 +136,7 @@ function StorefrontLayout() {
         style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
         {!isLegacyTheShoes && <StorefrontCustomizer storeId={store.id} />}
+        <AffiliateBar />
         {isTheShoes ? (
           <TheShoesHeader />
         ) : (
