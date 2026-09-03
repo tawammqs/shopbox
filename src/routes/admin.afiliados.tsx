@@ -59,7 +59,7 @@ function AffiliateSettings({ store }: { store: NonNullable<ReturnType<typeof use
     },
     onSuccess: () => {
       toast.success("Configurações salvas!");
-      qc.invalidateQueries({ queryKey: ["my-store"] });
+      qc.invalidateQueries({ queryKey: ["my-store-full"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Erro ao salvar."),
   });

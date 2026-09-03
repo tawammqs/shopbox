@@ -93,6 +93,7 @@ const SECTIONS: NavSection[] = [
           { label: "Captura de Leads", to: "/admin/marketing/captura-leads", addonKey: "captura_leads" },
           { label: "Compre Junto", to: "/admin/marketing/compre-junto", addonKey: "compre_junto" },
           { label: "Perguntas e Avaliações", to: "/admin/marketing/perguntas-avaliacoes", addonKey: "perguntas_avaliacoes" },
+          { label: "Afiliados", to: "/admin/afiliados" },
         ],
       },
     ],
@@ -161,6 +162,7 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/marketing/captura-leads": "Captura de Leads",
   "/admin/marketing/compre-junto": "Compre Junto",
   "/admin/marketing/perguntas-avaliacoes": "Perguntas e Avaliações",
+  "/admin/afiliados": "Afiliados",
 };
 
 function pageTitleFor(pathname: string): string {
