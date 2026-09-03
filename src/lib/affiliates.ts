@@ -39,6 +39,10 @@ const REF_SLUG_KEY = "affiliate_slug";
 const REF_STORE_KEY = "affiliate_store";
 const EVENT = "affiliate-session-change";
 
+/** The Shoes brand colors used for affiliate page highlights. */
+export const TS_BEIGE = "#dfdac8";
+export const TS_LIME = "#d9f523";
+
 /** "Tawam Marques" → "tawammarques" (mirrors the SQL affiliate_slugify). */
 export const generateAffiliateSlug = (name: string) =>
   name

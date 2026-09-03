@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
-import { loginAffiliate, saveAffiliateSession } from "@/lib/affiliates";
+import { loginAffiliate, saveAffiliateSession, TS_LIME } from "@/lib/affiliates";
 import { affiliateInputCls as inputCls, AffiliateUnavailable } from "@/components/storefront/AffiliateShare";
 
 export const Route = createFileRoute("/loja/$slug/afiliados/login")({
@@ -61,7 +61,8 @@ function AffiliateLoginPage() {
         <button
           type="submit"
           disabled={loading || !email || !password}
-          className="w-full rounded-xl bg-[#111] py-3 font-bold text-white disabled:opacity-40"
+          className="w-full rounded-xl py-3 font-bold text-[#111] disabled:opacity-40"
+          style={{ backgroundColor: TS_LIME }}
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>
@@ -69,7 +70,12 @@ function AffiliateLoginPage() {
 
       <p className="mt-4 text-center text-sm text-muted-foreground">
         Ainda não é afiliado?{" "}
-        <Link to="/loja/$slug/afiliados/cadastro" params={{ slug: store.slug }} className="text-[#25d366]">
+        <Link
+          to="/loja/$slug/afiliados/cadastro"
+          params={{ slug: store.slug }}
+          className="font-semibold text-[#111] underline decoration-2 underline-offset-2"
+          style={{ textDecorationColor: TS_LIME }}
+        >
           Cadastre-se aqui
         </Link>
       </p>

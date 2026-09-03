@@ -12,6 +12,7 @@ import {
   fetchAffiliateDashboard,
   readAffiliateSession,
   useAffiliateSession,
+  TS_LIME,
   type AffiliateSale,
 } from "@/lib/affiliates";
 import { AffiliateUnavailable } from "@/components/storefront/AffiliateShare";
@@ -116,7 +117,12 @@ function AffiliateDashboardPage() {
         <LinkRow label="Link para recrutar afiliados:" url={affiliateRecruitUrl(store.slug, affiliate.affiliate_slug)} onCopy={copy} />
         <p className="mt-3 text-xs text-muted-foreground">
           💡 Navegue pela{" "}
-          <Link to="/loja/$slug" params={{ slug: store.slug }} className="text-[#25d366] underline">loja</Link>{" "}
+          <Link
+            to="/loja/$slug"
+            params={{ slug: store.slug }}
+            className="font-semibold text-[#111] underline decoration-2 underline-offset-2"
+            style={{ textDecorationColor: TS_LIME }}
+          >loja</Link>{" "}
           logado e use o botão <strong>Compartilhar</strong> em qualquer produto para copiar seu link personalizado.
         </p>
       </div>
@@ -147,7 +153,7 @@ function AffiliateDashboardPage() {
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="font-bold text-[#25d366]">+{formatBRL(Number(s.commission_amount))}</p>
+                  <p className="font-bold" style={{ color: TS_LIME }}>+{formatBRL(Number(s.commission_amount))}</p>
                   <p className="text-[10px] uppercase text-muted-foreground">{s.status === "paid" ? "Paga" : s.status === "cancelled" ? "Cancelada" : "Pendente"}</p>
                 </div>
               </div>
@@ -180,7 +186,7 @@ function Metric({ icon, label, value, accent }: { icon: React.ReactNode; label: 
   return (
     <div className="rounded-xl border border-border p-3">
       <div className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">{icon}{label}</div>
-      <p className={accent ? "text-lg font-bold text-[#25d366]" : "text-lg font-bold text-foreground"}>{value}</p>
+      <p className={accent ? "text-lg font-bold" : "text-lg font-bold text-foreground"} style={accent ? { color: TS_LIME } : undefined}>{value}</p>
     </div>
   );
 }
@@ -191,7 +197,7 @@ function LinkRow({ label, url, onCopy }: { label: string; url: string; onCopy: (
       <p className="mb-1 text-xs text-muted-foreground">{label}</p>
       <div className="flex items-center justify-between gap-2">
         <code className="min-w-0 flex-1 truncate text-xs text-foreground">{url}</code>
-        <button onClick={() => onCopy(url)} className="flex shrink-0 items-center gap-1 text-xs font-medium text-[#25d366]">
+        <button onClick={() => onCopy(url)} className="flex shrink-0 items-center gap-1 text-xs font-semibold" style={{ color: TS_LIME }}>
           <Copy className="h-3 w-3" /> Copiar
         </button>
       </div>

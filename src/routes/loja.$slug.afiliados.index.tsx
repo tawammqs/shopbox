@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { AffiliateUnavailable as Unavailable } from "@/components/storefront/AffiliateShare";
-import { normalizeAffiliatePageContent } from "@/lib/affiliates";
+import { normalizeAffiliatePageContent, TS_BEIGE, TS_LIME } from "@/lib/affiliates";
 
 export const Route = createFileRoute("/loja/$slug/afiliados/")({
   head: () => ({
@@ -55,18 +55,27 @@ function AffiliateProgramPage() {
       <header className="mb-10 text-center">
         {store.logo_url && <img src={store.logo_url} alt={store.name} className="mx-auto mb-6 h-12 object-contain" />}
         <h1 className="mb-2 text-2xl font-bold text-foreground">{c.title}</h1>
-        {c.subtitle && <p className="text-lg font-semibold text-[#25d366]">{c.subtitle}</p>}
+        {c.subtitle && (
+          <span
+            className="inline-block rounded-full px-4 py-1.5 text-sm font-bold text-[#111]"
+            style={{ backgroundColor: TS_BEIGE }}
+          >
+            {c.subtitle}
+          </span>
+        )}
         {c.description && <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{c.description}</p>}
       </header>
 
       <div className="mb-8 grid grid-cols-2 gap-4">
-        <div className="rounded-2xl bg-[#111] p-5 text-center text-white">
-          <p className="text-4xl font-bold text-[#25d366]">{direct}%</p>
+        <div className="relative overflow-hidden rounded-2xl p-5 text-center text-[#111]" style={{ backgroundColor: TS_BEIGE }}>
+          <div className="absolute left-0 top-0 h-1 w-full" style={{ backgroundColor: TS_LIME }} />
+          <p className="text-4xl font-bold text-[#111]">{direct}%</p>
           <p className="mt-1 text-sm opacity-80">por venda direta</p>
         </div>
-        <div className="rounded-2xl bg-muted p-5 text-center">
-          <p className="text-4xl font-bold text-foreground">{referrer}%</p>
-          <p className="mt-1 text-sm text-muted-foreground">por venda da sua rede</p>
+        <div className="relative overflow-hidden rounded-2xl p-5 text-center text-[#111]" style={{ backgroundColor: `${TS_BEIGE}80` }}>
+          <div className="absolute left-0 top-0 h-1 w-full" style={{ backgroundColor: TS_BEIGE }} />
+          <p className="text-4xl font-bold text-[#111]">{referrer}%</p>
+          <p className="mt-1 text-sm text-[#111]/70">por venda da sua rede</p>
         </div>
       </div>
 
@@ -76,7 +85,10 @@ function AffiliateProgramPage() {
           <div className="space-y-4">
             {c.steps.map((step, i) => (
               <div key={i} className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#111] font-bold text-white">
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold text-[#111]"
+                  style={{ backgroundColor: TS_BEIGE }}
+                >
                   {step.number}
                 </div>
                 <div>
@@ -90,12 +102,12 @@ function AffiliateProgramPage() {
       )}
 
       {c.benefits.length > 0 && (
-        <section className="mb-6 rounded-2xl bg-[#25d366]/10 p-5">
+        <section className="mb-6 rounded-2xl p-5" style={{ backgroundColor: `${TS_BEIGE}40` }}>
           <h2 className="mb-3 text-base font-bold text-foreground">✅ Vantagens de ser afiliado</h2>
           <ul className="space-y-2">
             {c.benefits.map((b, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-                <span className="shrink-0 text-[#25d366]">✓</span>
+                <span className="shrink-0 font-bold" style={{ color: TS_LIME }}>✓</span>
                 {b}
               </li>
             ))}
@@ -128,13 +140,19 @@ function AffiliateProgramPage() {
         <Link
           to="/loja/$slug/afiliados/cadastro"
           params={{ slug: store.slug }}
-          className="block w-full rounded-2xl bg-[#25d366] py-4 text-center text-lg font-bold text-white shadow-lg"
+          className="block w-full rounded-2xl py-4 text-center text-lg font-bold text-[#111] shadow-lg"
+          style={{ backgroundColor: TS_LIME }}
         >
           {c.cta_button || "Quero ser afiliado"} →
         </Link>
         <p className="mt-2 text-center text-xs text-muted-foreground">
           Já tem conta?{" "}
-          <Link to="/loja/$slug/afiliados/login" params={{ slug: store.slug }} className="text-[#25d366]">
+          <Link
+            to="/loja/$slug/afiliados/login"
+            params={{ slug: store.slug }}
+            className="font-semibold text-[#111] underline decoration-2 underline-offset-2"
+            style={{ textDecorationColor: TS_LIME }}
+          >
             Faça login
           </Link>
         </p>
