@@ -45,7 +45,8 @@ export function AffiliateShareButton({ productSlug, variant = "icon", className 
       <button
         type="button"
         onClick={share}
-        className={cn("shrink-0 text-xs font-medium text-[#25d366] hover:underline", className)}
+        className={cn("shrink-0 text-xs font-semibold text-[#111] underline decoration-2 underline-offset-2 hover:opacity-80", className)}
+        style={{ textDecorationColor: TS_LIME }}
       >
         Compartilhar
       </button>
@@ -58,11 +59,12 @@ export function AffiliateShareButton({ productSlug, variant = "icon", className 
         type="button"
         onClick={share}
         className={cn(
-          "flex shrink-0 items-center gap-1.5 rounded-lg border border-[#25d366] px-3 py-1.5 text-xs font-semibold text-[#25d366] transition hover:bg-[#25d366]/10",
+          "flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold text-[#111] transition hover:opacity-90",
           className,
         )}
+        style={{ borderColor: TS_LIME, backgroundColor: TS_BEIGE }}
       >
-        <Link2 className="h-3.5 w-3.5" /> Meu link
+        <Link2 className="h-3.5 w-3.5" style={{ color: TS_LIME }} /> Meu link
       </button>
     );
   }
@@ -74,9 +76,10 @@ export function AffiliateShareButton({ productSlug, variant = "icon", className 
       title="Copiar meu link de afiliado"
       aria-label="Copiar meu link de afiliado"
       className={cn(
-        "absolute right-2 top-12 z-10 grid h-8 w-8 place-items-center rounded-full bg-white text-[#25d366] shadow-md transition hover:scale-105",
+        "absolute right-2 top-12 z-10 grid h-8 w-8 place-items-center rounded-full bg-white shadow-md transition hover:scale-105",
         className,
       )}
+      style={{ color: TS_LIME }}
     >
       <Link2 className="h-4 w-4" />
     </button>
