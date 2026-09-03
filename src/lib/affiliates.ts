@@ -211,3 +211,68 @@ export async function registerAffiliateSale(input: {
   const res = data as unknown as { name: string; affiliate_slug: string } | null;
   return res?.name ?? null;
 }
+
+// ── Página pública do programa ────────────────────────────────────────────
+export type AffiliatePageStep = { number: string; title: string; text: string };
+export type AffiliatePageContent = {
+  title: string;
+  subtitle: string;
+  description: string;
+  steps: AffiliatePageStep[];
+  benefits: string[];
+  rules: string[];
+  payment_text: string;
+  cta_button: string;
+};
+
+export const DEFAULT_AFFILIATE_PAGE_CONTENT: AffiliatePageContent = {
+  title: "Programa de Afiliados",
+  subtitle: "Ganhe comissão indicando nossos produtos",
+  description:
+    "Cadastre-se como afiliado e ganhe comissão por cada venda que você indicar divulgando nossos produtos para amigos e seguidores.",
+  steps: [
+    { number: "1", title: "Cadastre-se", text: "Preencha o formulário com seus dados. O acesso é liberado na hora, sem aprovação." },
+    {
+      number: "2",
+      title: "Faça login e compartilhe",
+      text: "Acesse sua conta, navegue pelos produtos e clique em Compartilhar para gerar seu link personalizado. Cada link é único e rastreia suas vendas automaticamente.",
+    },
+    {
+      number: "3",
+      title: "Ganhe comissão",
+      text: "A cada venda realizada pelo seu link, você ganha comissão sobre o valor total. Se você indicar outros afiliados, ganha comissão sobre as vendas deles também.",
+    },
+  ],
+  benefits: ["Link personalizado com seu nome", "Painel completo com suas vendas e comissões em tempo real", "Pagamento via PIX"],
+  rules: [
+    "É proibido divulgar seu link em comentários de publicações da loja",
+    "É proibido enviar seu link por mensagem privada para clientes da loja",
+    "Comportamentos fraudulentos ou inadequados resultam no cancelamento imediato do cadastro",
+  ],
+  payment_text: "As comissões são pagas via PIX. Certifique-se de cadastrar sua chave PIX corretamente.",
+  cta_button: "Quero ser afiliado",
+};
+
+export function normalizeAffiliatePageContent(raw: unknown): AffiliatePageContent {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Partial<Record<keyof AffiliatePageContent, unknown>>;
+  const str = (v: unknown, fallback: string) => (typeof v === "string" ? v : fallback);
+  const strList = (v: unknown, fallback: string[]) =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : fallback;
+  const steps = Array.isArray(r.steps)
+    ? (r.steps as any[]).map((s, i) => ({
+        number: str(s?.number, String(i + 1)),
+        title: str(s?.title, ""),
+        text: str(s?.text, ""),
+      }))
+    : DEFAULT_AFFILIATE_PAGE_CONTENT.steps;
+  return {
+    title: str(r.title, DEFAULT_AFFILIATE_PAGE_CONTENT.title),
+    subtitle: str(r.subtitle, DEFAULT_AFFILIATE_PAGE_CONTENT.subtitle),
+    description: str(r.description, DEFAULT_AFFILIATE_PAGE_CONTENT.description),
+    steps,
+    benefits: strList(r.benefits, DEFAULT_AFFILIATE_PAGE_CONTENT.benefits),
+    rules: strList(r.rules, DEFAULT_AFFILIATE_PAGE_CONTENT.rules),
+    payment_text: str(r.payment_text, DEFAULT_AFFILIATE_PAGE_CONTENT.payment_text),
+    cta_button: str(r.cta_button, DEFAULT_AFFILIATE_PAGE_CONTENT.cta_button),
+  };
+}
