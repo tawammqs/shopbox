@@ -92,12 +92,12 @@ export function AffiliateBar() {
   const affiliate = useStoreAffiliate();
   if (!affiliate) return null;
   return (
-    <div className="flex items-center justify-between gap-3 bg-[#111] px-4 py-2 text-xs text-white">
+    <div className="flex items-center justify-between gap-3 px-4 py-2 text-xs font-semibold text-[#111]" style={{ backgroundColor: TS_LIME }}>
       <span className="truncate">
         👋 Logado como afiliado: <strong>{affiliate.name}</strong>
       </span>
       <div className="flex shrink-0 items-center gap-3">
-        <Link to="/loja/$slug/afiliados/painel" params={{ slug: store.slug }} className="underline" style={{ color: "#fff" }}>
+        <Link to="/loja/$slug/afiliados/painel" params={{ slug: store.slug }} className="underline decoration-2 underline-offset-2" style={{ color: "#111", textDecorationColor: TS_BEIGE }}>
           Meu painel
         </Link>
         <button
@@ -123,7 +123,12 @@ export function AffiliateUnavailable({ slug }: { slug: string }) {
     <div className="mx-auto max-w-sm px-4 py-16 text-center">
       <h1 className="text-xl font-bold">Programa de afiliados indisponível</h1>
       <p className="mt-2 text-sm text-muted-foreground">Esta loja ainda não ativou o programa de afiliados.</p>
-      <Link to="/loja/$slug" params={{ slug }} className="mt-4 inline-block text-sm text-[#25d366] underline">
+      <Link
+        to="/loja/$slug"
+        params={{ slug }}
+        className="mt-4 inline-block text-sm font-semibold text-[#111] underline decoration-2 underline-offset-2"
+        style={{ textDecorationColor: TS_LIME }}
+      >
         Voltar para a loja
       </Link>
     </div>
