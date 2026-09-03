@@ -92,7 +92,7 @@ export function AffiliateBar() {
         👋 Logado como afiliado: <strong>{affiliate.name}</strong>
       </span>
       <div className="flex shrink-0 items-center gap-3">
-        <Link to="/loja/$slug/afiliados/painel" params={{ slug: store.slug }} className="underline">
+        <Link to="/loja/$slug/afiliados/painel" params={{ slug: store.slug }} className="underline" style={{ color: "#fff" }}>
           Meu painel
         </Link>
         <button
