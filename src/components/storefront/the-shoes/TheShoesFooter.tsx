@@ -170,14 +170,11 @@ export function TheShoesFooter() {
           <div className="mt-8 border-t pt-6" style={{ borderColor: isDarkBg ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)" }}>
             <a
               href={`/loja/${store.slug}/afiliados`}
-              className="relative inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-bold"
+              className="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-bold"
               style={{ borderColor: txt, color: txt }}
             >
-              <span className="absolute inset-0 animate-ping rounded-full border-2 opacity-50" style={{ borderColor: txt }} />
-              <span className="relative inline-flex items-center gap-1.5">
-                <BadgeDollarSign className="h-4 w-4" />
-                Seja um afiliado e ganhe comissão
-              </span>
+              <BadgeDollarSign className="h-4 w-4" />
+              Seja um afiliado e ganhe comissão
             </a>
           </div>
         )}
