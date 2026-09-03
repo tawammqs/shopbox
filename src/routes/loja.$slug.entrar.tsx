@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ShoppingBag, BadgeDollarSign } from "lucide-react";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { affiliateInputCls as inputCls } from "@/components/storefront/AffiliateShare";
 import { loginAffiliate, saveAffiliateSession, TS_LIME } from "@/lib/affiliates";
@@ -46,7 +47,9 @@ function StorefrontLoginPage() {
           onClick={() => setMode("client")}
           className="flex w-full items-center gap-4 rounded-2xl border-2 border-border p-4 text-left transition hover:border-foreground/30"
         >
-          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-muted text-2xl">🛍️</div>
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-muted">
+            <ShoppingBag className="h-6 w-6" />
+          </div>
           <div>
             <p className="font-semibold text-foreground">Sou cliente</p>
             <p className="text-xs text-muted-foreground">Acompanhe seus pedidos e favoritos</p>
@@ -59,8 +62,8 @@ function StorefrontLoginPage() {
             onClick={() => setMode("affiliate")}
             className="flex w-full items-center gap-4 rounded-2xl border-2 border-border p-4 text-left transition hover:border-foreground/30"
           >
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-2xl" style={{ backgroundColor: TS_LIME }}>
-              💰
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full" style={{ backgroundColor: TS_LIME }}>
+              <BadgeDollarSign className="h-6 w-6" style={{ color: "#111827" }} />
             </div>
             <div>
               <p className="font-semibold text-foreground">Sou afiliado</p>
