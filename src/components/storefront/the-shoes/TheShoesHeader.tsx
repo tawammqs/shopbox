@@ -4,6 +4,8 @@ import { X } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
+import { useStoreAffiliate } from "../AffiliateShare";
+import { clearAffiliateSession, TS_LIME } from "@/lib/affiliates";
 // (StorefrontCustomizer is mounted at the layout level for non-legacy Mio stores)
 import { useCart } from "@/stores/cart";
 import { searchProductsLive } from "@/lib/storefront";
@@ -15,6 +17,7 @@ export function TheShoesHeader() {
   const { store, categories } = useStorefront();
   const isLegacyTheShoes = store.slug === "the-shoes";
   const navigate = useNavigate();
+  const affiliate = useStoreAffiliate();
   const openCart = useCart((s) => s.open);
   const items = useCart((s) => s.items);
   const cartCount = useMemo(
@@ -112,7 +115,17 @@ export function TheShoesHeader() {
           <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn">
             {hamburger}
           </button>
-          {store.affiliates_enabled && (
+          {affiliate && (
+            <Link
+              to="/loja/$slug/afiliados/painel"
+              params={{ slug: store.slug }}
+              className="ts-desktop-only ml-3 items-center gap-1.5 pb-0.5 text-sm font-semibold text-[#111]"
+              style={{ borderBottom: `2px solid ${TS_LIME}` }}
+            >
+              📊 Painel
+            </Link>
+          )}
+          {store.affiliates_enabled && !affiliate && (
             <Link
               to="/loja/$slug/afiliados"
               params={{ slug: store.slug }}
@@ -137,8 +150,21 @@ export function TheShoesHeader() {
         {/* RIGHT icons */}
         <div className="ts-main-right">
           <button aria-label="Notificações" className="ts-icon-btn ts-desktop-only">{bellIcon}</button>
-          <Link to="/loja/$slug/wishlist" params={{ slug: store.slug }} aria-label="Conta"
-                className="ts-icon-btn ts-desktop-only">{userIcon}</Link>
+          {affiliate ? (
+            <Link to="/loja/$slug/afiliados/painel" params={{ slug: store.slug }}
+                  className="ts-desktop-only items-center gap-1.5 text-sm font-semibold text-[#111]">
+              <span className="grid h-7 w-7 place-items-center rounded-full text-xs font-bold"
+                    style={{ backgroundColor: TS_LIME, color: "#111827" }}>
+                {affiliate.name.charAt(0).toUpperCase()}
+              </span>
+              <span>{affiliate.name.split(" ")[0]}</span>
+            </Link>
+          ) : (
+            <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} aria-label="Entrar"
+                  className="ts-desktop-only items-center gap-1 text-sm text-[#555] hover:text-[#111]">
+              {userIcon}<span>Entrar</span>
+            </Link>
+          )}
           <button aria-label="Buscar" onClick={() => setSearchOpen((v) => !v)} className="ts-icon-btn">
             {searchIcon}
           </button>
@@ -285,11 +311,32 @@ export function TheShoesHeader() {
                   <MioVipMenuLink onNavigate={() => setNavOpen(false)} />
                 )}
               </div>
+              {!affiliate && (
+                <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                  className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
+                  Entrar
+                </Link>
+              )}
               <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Rastrear Pedido
               </Link>
-              {store.affiliates_enabled && (
+              {affiliate && (
+                <div className="mt-4 border-t border-[#f5f5f5]">
+                  <div className="bg-[#fafafa] px-2 py-2 text-xs font-semibold uppercase text-[#999]">Área do Afiliado</div>
+                  <Link to="/loja/$slug/afiliados/painel" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                    className="block border-b border-[#f5f5f5] py-3 text-[15px] font-semibold text-[#111]">
+                    📊 Meu Painel
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => { clearAffiliateSession(); setNavOpen(false); }}
+                    className="block w-full border-b border-[#f5f5f5] py-3 text-left text-[15px] text-[#e11d48]">
+                    Sair da conta de afiliado
+                  </button>
+                </div>
+              )}
+              {store.affiliates_enabled && !affiliate && (
                 <Link to="/loja/$slug/afiliados" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                   className="mt-2 flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-bold"
                   style={{ background: "#111", color: "#fff" }}>
