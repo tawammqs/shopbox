@@ -440,7 +440,7 @@ function AffiliatesAdminPage() {
     const inMonth = sales.filter((s) => (month === "all" ? true : monthKey(s.created_at) === month));
     const totalSales = inMonth.filter((s) => s.level === 1).reduce((a, s) => a + Number(s.order_total), 0);
     const totalCommissions = inMonth.filter((s) => s.status !== "cancelled").reduce((a, s) => a + Number(s.commission_amount), 0);
-    const pendingAmount = inMonth.filter((s) => s.status === "pending" || s.status === "confirmed").reduce((a, s) => a + Number(s.commission_amount), 0);
+    const pendingAmount = inMonth.filter((s) => s.status === "confirmed").reduce((a, s) => a + Number(s.commission_amount), 0);
     const paidAmount = inMonth.filter((s) => s.status === "paid").reduce((a, s) => a + Number(s.commission_amount), 0);
     return { totalSales, totalCommissions, pendingAmount, paidAmount };
   }, [sales, month]);
@@ -648,14 +648,14 @@ function AffiliatesAdminPage() {
                       <td className="py-2.5">
                         <span
                           className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                            r.sale.status === "paid"
+                            r.sale.status === "paid" || r.sale.status === "confirmed"
                               ? "bg-[#25d366]/15 text-[#1fb857]"
                               : r.sale.status === "cancelled"
                                 ? "bg-destructive/10 text-destructive"
                                 : "bg-amber-400/15 text-amber-700"
                           }`}
                         >
-                          {r.sale.status === "paid" ? "✅ " : r.sale.status === "pending" ? "⏳ " : ""}
+                          {r.sale.status === "paid" || r.sale.status === "confirmed" ? "✅ " : r.sale.status === "pending" ? "⏳ " : "❌ "}
                           {STATUS_LABEL[r.sale.status] ?? r.sale.status}
                         </span>
                       </td>
