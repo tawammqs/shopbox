@@ -141,8 +141,11 @@ function AffiliateDashboardPage() {
 
       {/* Balance card */}
       <div className="mb-4 rounded-2xl p-5" style={{ background: "#111", color: "#fff" }}>
-        <p className="mb-1 text-xs opacity-60">Saldo a receber via PIX</p>
+        <p className="mb-1 text-xs opacity-60">✅ A receber via PIX (vendas confirmadas)</p>
         <p className="text-3xl font-bold" style={{ color: TS_LIME }}>{formatBRL(pending)}</p>
+        <p className="mt-2 text-xs opacity-80">
+          ⏳ Pendente: <strong>{formatBRL(awaiting)}</strong> <span className="opacity-60">(aguardando aprovação do lojista)</span>
+        </p>
         <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div className="min-w-0">
             <p className="text-xs opacity-60">Chave PIX cadastrada</p>
