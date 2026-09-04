@@ -77,13 +77,18 @@ function AffiliateDashboardPage() {
   const live = data?.affiliate ?? affiliate;
   const sales: AffiliateSale[] = data?.sales ?? [];
   const payments: AffiliatePayment[] = data?.payments ?? [];
-  const totalSold = sales.filter((s) => s.level === 1).reduce((a, s) => a + Number(s.order_total), 0);
-  const pending = live.pending_commission != null
-    ? Number(live.pending_commission)
-    : sales.filter((s) => s.status === "pending" || s.status === "confirmed").reduce((a, s) => a + Number(s.commission_amount), 0);
-  const paid = live.paid_commission != null
-    ? Number(live.paid_commission)
-    : sales.filter((s) => s.status === "paid").reduce((a, s) => a + Number(s.commission_amount), 0);
+  const activeSales = sales.filter((s) => s.status !== "cancelled");
+  const totalSold = activeSales.filter((s) => s.level === 1).reduce((a, s) => a + Number(s.order_total), 0);
+  const sumBy = (st: string) => sales.filter((s) => s.status === st).reduce((a, s) => a + Number(s.commission_amount), 0);
+  const awaiting = sumBy("pending");
+  const pending = live.pending_commission != null ? Number(live.pending_commission) : sumBy("confirmed");
+  const paid = live.paid_commission != null ? Number(live.paid_commission) : sumBy("paid");
+  const STATUS_UI: Record<string, { label: string; color: string }> = {
+    pending: { label: "⏳ Pendente", color: "#b45309" },
+    confirmed: { label: "✅ Confirmada", color: "#15803d" },
+    paid: { label: "✅ Paga", color: "#15803d" },
+    cancelled: { label: "❌ Cancelada", color: "#b91c1c" },
+  };
   const referrals = data?.referrals ?? [];
   const pixKey = live.pix_key ?? null;
 
