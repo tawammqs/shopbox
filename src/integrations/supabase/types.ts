@@ -2865,6 +2865,10 @@ export type Database = {
         Returns: Json
       }
       affiliate_slugify: { Args: { _name: string }; Returns: string }
+      affiliate_status_for_order: {
+        Args: { _status: Database["public"]["Enums"]["order_status"] }
+        Returns: string
+      }
       create_order_with_customer: {
         Args: {
           _address: string
@@ -2938,6 +2942,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      recalc_affiliate_balance: {
+        Args: { _affiliate_id: string }
+        Returns: undefined
       }
       register_affiliate: {
         Args: {

@@ -29,6 +29,13 @@
       "when": 1788464856552,
       "tag": "0003_affiliate_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788554768408,
+      "tag": "0004_affiliate_commission_status_sync",
+      "breakpoints": true
     }
   ]
 }
