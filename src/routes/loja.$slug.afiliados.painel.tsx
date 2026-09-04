@@ -77,13 +77,18 @@ function AffiliateDashboardPage() {
   const live = data?.affiliate ?? affiliate;
   const sales: AffiliateSale[] = data?.sales ?? [];
   const payments: AffiliatePayment[] = data?.payments ?? [];
-  const totalSold = sales.filter((s) => s.level === 1).reduce((a, s) => a + Number(s.order_total), 0);
-  const pending = live.pending_commission != null
-    ? Number(live.pending_commission)
-    : sales.filter((s) => s.status === "pending" || s.status === "confirmed").reduce((a, s) => a + Number(s.commission_amount), 0);
-  const paid = live.paid_commission != null
-    ? Number(live.paid_commission)
-    : sales.filter((s) => s.status === "paid").reduce((a, s) => a + Number(s.commission_amount), 0);
+  const activeSales = sales.filter((s) => s.status !== "cancelled");
+  const totalSold = activeSales.filter((s) => s.level === 1).reduce((a, s) => a + Number(s.order_total), 0);
+  const sumBy = (st: string) => sales.filter((s) => s.status === st).reduce((a, s) => a + Number(s.commission_amount), 0);
+  const awaiting = sumBy("pending");
+  const pending = live.pending_commission != null ? Number(live.pending_commission) : sumBy("confirmed");
+  const paid = live.paid_commission != null ? Number(live.paid_commission) : sumBy("paid");
+  const STATUS_UI: Record<string, { label: string; color: string }> = {
+    pending: { label: "⏳ Pendente", color: "#b45309" },
+    confirmed: { label: "✅ Confirmada", color: "#15803d" },
+    paid: { label: "✅ Paga", color: "#15803d" },
+    cancelled: { label: "❌ Cancelada", color: "#b91c1c" },
+  };
   const referrals = data?.referrals ?? [];
   const pixKey = live.pix_key ?? null;
 
@@ -136,8 +141,11 @@ function AffiliateDashboardPage() {
 
       {/* Balance card */}
       <div className="mb-4 rounded-2xl p-5" style={{ background: "#111", color: "#fff" }}>
-        <p className="mb-1 text-xs opacity-60">Saldo a receber via PIX</p>
+        <p className="mb-1 text-xs opacity-60">✅ A receber via PIX (vendas confirmadas)</p>
         <p className="text-3xl font-bold" style={{ color: TS_LIME }}>{formatBRL(pending)}</p>
+        <p className="mt-2 text-xs opacity-80">
+          ⏳ Pendente: <strong>{formatBRL(awaiting)}</strong> <span className="opacity-60">(aguardando aprovação do lojista)</span>
+        </p>
         <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/10 pt-3">
           <div className="min-w-0">
             <p className="text-xs opacity-60">Chave PIX cadastrada</p>
@@ -181,9 +189,9 @@ function AffiliateDashboardPage() {
 
       {/* Metrics */}
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Metric icon={<ShoppingBag className="h-4 w-4" />} label="Vendas" value={String(sales.filter((s) => s.level === 1).length)} />
+        <Metric icon={<ShoppingBag className="h-4 w-4" />} label="Vendas" value={String(activeSales.filter((s) => s.level === 1).length)} />
         <Metric icon={<TrendingUp className="h-4 w-4" />} label="Total vendido" value={formatBRL(totalSold)} />
-        <Metric icon={<Wallet className="h-4 w-4" />} label="Comissão pendente" value={formatBRL(pending)} accent />
+        <Metric icon={<Wallet className="h-4 w-4" />} label="A receber" value={formatBRL(pending)} accent />
         <Metric icon={<Users className="h-4 w-4" />} label="Comissão paga" value={formatBRL(paid)} />
       </div>
 
@@ -249,8 +257,8 @@ function AffiliateDashboardPage() {
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="font-bold" style={{ color: TS_LIME }}>+{formatBRL(Number(s.commission_amount))}</p>
-                  <p className="text-[10px] uppercase text-muted-foreground">{s.status === "paid" ? "Paga" : s.status === "cancelled" ? "Cancelada" : "Pendente"}</p>
+                  <p className={s.status === "cancelled" ? "font-bold line-through text-muted-foreground" : "font-bold"} style={s.status === "cancelled" ? undefined : { color: TS_LIME }}>+{formatBRL(Number(s.commission_amount))}</p>
+                  <p className="text-[11px] font-semibold" style={{ color: (STATUS_UI[s.status] ?? STATUS_UI.pending).color }}>{(STATUS_UI[s.status] ?? STATUS_UI.pending).label}</p>
                 </div>
               </div>
             ))}
