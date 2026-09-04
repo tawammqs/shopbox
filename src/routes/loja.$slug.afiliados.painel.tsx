@@ -189,9 +189,9 @@ function AffiliateDashboardPage() {
 
       {/* Metrics */}
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Metric icon={<ShoppingBag className="h-4 w-4" />} label="Vendas" value={String(sales.filter((s) => s.level === 1).length)} />
+        <Metric icon={<ShoppingBag className="h-4 w-4" />} label="Vendas" value={String(activeSales.filter((s) => s.level === 1).length)} />
         <Metric icon={<TrendingUp className="h-4 w-4" />} label="Total vendido" value={formatBRL(totalSold)} />
-        <Metric icon={<Wallet className="h-4 w-4" />} label="Comissão pendente" value={formatBRL(pending)} accent />
+        <Metric icon={<Wallet className="h-4 w-4" />} label="A receber" value={formatBRL(pending)} accent />
         <Metric icon={<Users className="h-4 w-4" />} label="Comissão paga" value={formatBRL(paid)} />
       </div>
 
@@ -257,8 +257,8 @@ function AffiliateDashboardPage() {
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="font-bold" style={{ color: TS_LIME }}>+{formatBRL(Number(s.commission_amount))}</p>
-                  <p className="text-[10px] uppercase text-muted-foreground">{s.status === "paid" ? "Paga" : s.status === "cancelled" ? "Cancelada" : "Pendente"}</p>
+                  <p className={s.status === "cancelled" ? "font-bold line-through text-muted-foreground" : "font-bold"} style={s.status === "cancelled" ? undefined : { color: TS_LIME }}>+{formatBRL(Number(s.commission_amount))}</p>
+                  <p className="text-[11px] font-semibold" style={{ color: (STATUS_UI[s.status] ?? STATUS_UI.pending).color }}>{(STATUS_UI[s.status] ?? STATUS_UI.pending).label}</p>
                 </div>
               </div>
             ))}
