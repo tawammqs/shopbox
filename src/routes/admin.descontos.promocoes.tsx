@@ -159,6 +159,8 @@ function PromoForm({ editing, storeId, onDone }: { editing: any; storeId: string
     starts_at: editing ? toLocalInput(editing.starts_at) : toLocalInput(new Date().toISOString()),
     ends_at: toLocalInput(editing?.ends_at),
     timer_label: editing?.timer_label ?? "Oferta termina em:",
+    bg_color: editing?.bg_color ?? "#111827",
+    text_color: editing?.text_color ?? "#ffffff",
   });
   const [saving, setSaving] = useState(false);
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
