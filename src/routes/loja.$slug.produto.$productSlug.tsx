@@ -25,6 +25,7 @@ import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 import { VideoPreview } from "@/components/admin/VideoSourcePicker";
 import type { VideoType } from "@/lib/video";
 import { TheShoesProductPage } from "@/components/storefront/the-shoes/TheShoesProductPage";
+import { useModelReviews } from "@/lib/model-reviews";
 
 export const Route = createFileRoute("/loja/$slug/produto/$productSlug")({
   component: ProductPage,
