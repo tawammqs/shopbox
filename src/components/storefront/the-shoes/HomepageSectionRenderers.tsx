@@ -20,6 +20,10 @@ import { fetchProductsByHomepageSection, fetchProductsByTag, type ProductCardDat
 import { useStorefront } from "../StoreContext";
 import { cn } from "@/lib/utils";
 import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
+import { useColorGroups } from "@/lib/color-groups";
+import { ColorSwatches, CardRating } from "@/components/storefront/ProductCardVariants";
+import { PromoTimer } from "@/components/storefront/PromoTimer";
+
 import type {
   BannerRotativoCfg,
   ProductsTagCfg,
