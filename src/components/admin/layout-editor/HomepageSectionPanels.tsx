@@ -18,6 +18,7 @@ import {
   type DepoimentosCfg,
   type VideoSectionCfg,
   type ProdutoPrincipalCfg,
+  type CategoriasPrincipaisCfg,
 } from "@/lib/homepage-sections";
 import { hasProductSection } from "@/lib/product-sections";
 import { Link } from "@tanstack/react-router";
@@ -659,6 +660,57 @@ function ProdutoPrincipalPanel({ storeId, cfg, onChange }: { storeId: string; cf
   );
 }
 
+// ---------------- Categorias principais ----------------
+function CategoriasPrincipaisPanel({ storeId, cfg, onChange }: { storeId: string; cfg: CategoriasPrincipaisCfg; onChange: (c: CategoriasPrincipaisCfg) => void }) {
+  const cats = useQuery({
+    queryKey: ["editor-categories-full", storeId],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("id, name, image_url, parent_id").eq("store_id", storeId).order("display_order");
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+  const ids = cfg.category_ids ?? [];
+  const toggleCat = (id: string) =>
+    onChange({ ...cfg, category_ids: ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id] });
+  return (
+    <div className="space-y-3">
+      <div>
+        <FieldLabel>Título</FieldLabel>
+        <TextInput value={cfg.title ?? ""} onChange={(e) => onChange({ ...cfg, title: e.target.value })} />
+      </div>
+      <div>
+        <FieldLabel>Formato</FieldLabel>
+        <SelectInput value={cfg.display_mode ?? "carousel"} onChange={(e) => onChange({ ...cfg, display_mode: e.target.value as any })}>
+          <option value="carousel">Carrossel horizontal</option>
+          <option value="grid">Grade</option>
+        </SelectInput>
+      </div>
+      <div>
+        <FieldLabel>Máximo de categorias</FieldLabel>
+        <TextInput type="number" min={1} max={24} value={cfg.limit ?? 12} onChange={(e) => onChange({ ...cfg, limit: Number(e.target.value) || 12 })} />
+      </div>
+      <Toggle checked={!!cfg.only_with_image} onChange={(v) => onChange({ ...cfg, only_with_image: v })} label="Mostrar apenas categorias com foto" />
+      <div>
+        <FieldLabel>Categorias exibidas</FieldLabel>
+        <p className="mb-2 text-[11px] text-[#6b7280]">Nenhuma marcada = todas as categorias principais. Marque para escolher e ordenar (ordem de marcação).</p>
+        <div className="max-h-60 space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
+          {(cats.data ?? []).map((c: any) => (
+            <label key={c.id} className="flex items-center gap-2 rounded px-1 py-1 text-sm hover:bg-gray-50">
+              <input type="checkbox" checked={ids.includes(c.id)} onChange={() => toggleCat(c.id)} />
+              {c.image_url ? <img src={c.image_url} alt="" className="h-6 w-6 rounded object-cover" /> : <span className="grid h-6 w-6 place-items-center rounded bg-gray-100 text-[10px] text-[#9ca3af]">—</span>}
+              <span className={cn(c.parent_id && "text-[#6b7280]")}>{c.parent_id ? "↳ " : ""}{c.name}</span>
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-[#6b7280]">
+          As fotos das categorias são definidas em <Link to="/admin/categorias" className="font-medium text-[#25d366] underline">Categorias</Link>.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ---------------- Router ----------------
 export function SectionEditor({
   storeId,
@@ -697,6 +749,8 @@ export function SectionEditor({
       return <VideoSectionPanel cfg={cfg} onChange={onChange} />;
     case "produto_principal":
       return <ProdutoPrincipalPanel storeId={storeId} cfg={cfg} onChange={onChange} />;
+    case "categorias_principais":
+      return <CategoriasPrincipaisPanel storeId={storeId} cfg={cfg} onChange={onChange} />;
     default:
       return (
         <p className="rounded-lg border border-dashed border-gray-300 p-4 text-center text-sm text-[#6b7280]">
