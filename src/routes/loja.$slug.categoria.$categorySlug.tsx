@@ -170,7 +170,9 @@ function CategoryPage() {
     () => dedupeByGroup((q.data?.pages ?? []).flatMap((p) => p.products), colorGroupMap),
     [q.data, colorGroupMap],
   );
-  const total = q.data?.pages?.[0]?.total ?? 0;
+  // Counter reflects visible cards (models grouped by color variation), not raw rows.
+  const rawTotal = q.data?.pages?.[0]?.total ?? 0;
+  const total = q.hasNextPage ? Math.max(products.length, rawTotal) : products.length;
   const hasMore = !!q.hasNextPage;
 
   const loaderRef = useRef<HTMLDivElement>(null);
