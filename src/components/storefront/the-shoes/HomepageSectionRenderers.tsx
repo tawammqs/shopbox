@@ -784,10 +784,20 @@ export function CategoriasPrincipaisRender({ cfg }: { cfg: CategoriasPrincipaisC
   };
 
   const card = (it: (typeof items)[number]) => (
-    <a key={it.id} href={hrefFor(it)} className="ts-cat-item flex flex-col items-center text-center">
-      <div className="w-full overflow-hidden bg-[#dfdac8]" style={{ borderRadius: "50%", aspectRatio: "1 / 1" }}>
+    <a key={it.id} href={hrefFor(it)} className="ts-cat-item flex w-[80px] flex-col items-center text-center md:w-[100px]">
+      <div
+        className="h-[80px] w-[80px] overflow-hidden transition duration-300 hover:scale-105 md:h-[100px] md:w-[100px]"
+        style={{
+          borderRadius: "50%",
+          backgroundColor: "#ffffff",
+          border: "1px solid #e5e7eb",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         {it.image_url ? (
-          <img src={it.image_url} alt={it.title} loading="lazy" className="h-full w-full object-cover transition duration-300 hover:scale-105" style={{ borderRadius: "50%" }} />
+          <img src={it.image_url} alt={it.title} loading="lazy" style={{ width: "75%", height: "75%", objectFit: "contain" }} />
         ) : (
           <div className="grid h-full w-full place-items-center text-2xl font-bold uppercase text-[#111]">{(it.title || "?").slice(0, 1)}</div>
         )}
@@ -815,15 +825,13 @@ export function CategoriasPrincipaisRender({ cfg }: { cfg: CategoriasPrincipaisC
       </div>
       {cfg.display_mode === "grid" ? (
         <div className="mx-auto flex max-w-5xl flex-wrap justify-center gap-4 md:gap-6">
-          {items.map((it) => (
-            <div key={it.id} className="w-[28%] sm:w-[20%] md:w-[14%]">{card(it)}</div>
-          ))}
+          {items.map((it) => card(it))}
         </div>
       ) : (
         <div className="overflow-hidden" ref={emblaRef}>
           <div className={cn("flex gap-4 md:gap-6", items.length <= 6 && "md:justify-center")}>
             {items.map((it) => (
-              <div key={it.id} className="w-[28%] shrink-0 sm:w-[20%] md:w-[13%]">
+              <div key={it.id} className="shrink-0">
                 {card(it)}
               </div>
             ))}
