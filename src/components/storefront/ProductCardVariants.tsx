@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useColorGroups, getColorHex, isLightSwatch, type ColorGroup } from "@/lib/color-groups";
+import { useColorGroups, useDominantColor, type ColorGroup } from "@/lib/color-groups";
 import type { ProductCardData } from "@/lib/storefront";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,28 @@ export function useCardVariant(storeId: string, p: ProductCardData) {
   return { group, idx, setVariantIdx, targetSlug, img1, img2, title };
 }
 
+/** Single color circle: uses the dominant color extracted from the variant image. */
+export function VariantSwatch({
+  colorName, imageUrl, active, onSelect, className,
+}: { colorName: string; imageUrl?: string; active: boolean; onSelect?: () => void; className?: string }) {
+  const color = useDominantColor(imageUrl, colorName);
+  return (
+    <button
+      type="button"
+      title={colorName}
+      aria-label={colorName}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSelect?.(); }}
+      onMouseEnter={() => onSelect?.()}
+      className={cn(
+        "h-[18px] w-[18px] rounded-full border-2 transition-all",
+        active ? "scale-110 border-[#111]" : "border-transparent hover:border-[#9ca3af]",
+        className,
+      )}
+      style={{ backgroundColor: color, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
+    />
+  );
+}
+
 /** Color circles under a listing card. Shows at most `max` swatches plus a "+N" counter. */
 export function ColorSwatches({
   group, idx, onSelect, max = 3, className,
@@ -30,25 +52,15 @@ export function ColorSwatches({
   const rest = group.colors.length - visible.length;
   return (
     <div className={cn("flex items-center gap-1.5", className)}>
-      {visible.map((color, i) => {
-        const hex = getColorHex(color);
-        const active = i === idx;
-        return (
-          <button
-            key={group.product_ids[i]}
-            type="button"
-            title={color}
-            aria-label={color}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSelect(i); }}
-            onMouseEnter={() => onSelect(i)}
-            className={cn(
-              "h-[18px] w-[18px] rounded-full border-2 transition-all",
-              active ? "scale-110 border-[#111]" : "border-transparent hover:border-[#9ca3af]",
-            )}
-            style={{ backgroundColor: hex, boxShadow: isLightSwatch(hex) ? "inset 0 0 0 1px #e5e7eb" : "none" }}
-          />
-        );
-      })}
+      {visible.map((color, i) => (
+        <VariantSwatch
+          key={group.product_ids[i]}
+          colorName={color}
+          imageUrl={group.first_images?.[i]}
+          active={i === idx}
+          onSelect={() => onSelect(i)}
+        />
+      ))}
       {rest > 0 && <span className="text-[11px] text-[#6b7280]">+{rest}</span>}
     </div>
   );
