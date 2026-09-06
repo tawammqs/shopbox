@@ -203,38 +203,6 @@ function CouponDialog({ open, onOpenChange, editing, storeId, onSaved }: any) {
   );
 }
 
-function PromosTab({ storeId }: { storeId: string }) {
-  const qc = useQueryClient();
-  const list = useQuery({
-    queryKey: ["promos", storeId],
-    queryFn: async () => (await supabase.from("promotions").select("*").eq("store_id", storeId)).data ?? [],
-  });
-  return (
-    <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">Promoções por categoria/escopo aplicadas automaticamente.</p>
-      <div className="rounded-2xl border border-border bg-card">
-        {(list.data ?? []).length === 0 ? (
-          <p className="p-8 text-center text-sm text-muted-foreground">Nenhuma promoção. Em breve: criar promoções.</p>
-        ) : (
-          <ul className="divide-y divide-border">
-            {(list.data ?? []).map((p: any) => (
-              <li key={p.id} className="flex items-center justify-between p-3">
-                <div>
-                  <p className="font-medium">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">{p.type} · {p.value}{p.type === "percent" ? "%" : ""}</p>
-                </div>
-                <Button size="sm" variant="ghost" onClick={async () => { await supabase.from("promotions").delete().eq("id", p.id); qc.invalidateQueries({ queryKey: ["promos"] }); }}>
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function CombosTab({ storeId }: { storeId: string }) {
   const list = useQuery({
     queryKey: ["combos", storeId],
