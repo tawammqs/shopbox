@@ -42,7 +42,10 @@ export function TheShoesProductPage({ product }: { product: any }) {
     .slice().sort((a: any, b: any) => a.position - b.position);
   const sizes: { id: string; label: string }[] = (product.product_sizes ?? [])
     .slice().sort((a: any, b: any) => a.position - b.position);
-  const reviews = (product.product_reviews ?? []).filter((r: any) => r.status === "approved");
+  // Reviews are shared across every color variation of the same model.
+  const modelReviewsQ = useModelReviews(store.id, { id: product.id, title: product.title });
+  const reviews: any[] = modelReviewsQ.data ?? (product.product_reviews ?? []).filter((r: any) => r.status === "approved");
+
   const videos = (product.product_video_testimonials ?? [])
     .slice().sort((a: any, b: any) => a.position - b.position);
 
