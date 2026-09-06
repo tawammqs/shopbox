@@ -45,7 +45,10 @@ import {
   getSectionsOrder,
   isSectionVisible,
   getSectionConfig,
+  getLegacyOrder,
+  isLegacyBlockHidden,
   type HomepageSectionKey,
+  type LegacyBlockKey,
 } from "@/lib/homepage-sections";
 import {
   BannersRotativosRender,
@@ -59,6 +62,7 @@ import {
   DepoimentosRender,
   VideoSectionRender,
   ProdutoPrincipalRender,
+  CategoriasPrincipaisRender,
 } from "./HomepageSectionRenderers";
 import { MioVipSection } from "../MioAddonOverlays";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
