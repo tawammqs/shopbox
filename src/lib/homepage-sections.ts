@@ -132,12 +132,24 @@ export type DepoimentosCfg = { title: string; background: string; text_color?: s
 
 export type VideoSectionCfg = { title: string };
 
+export type CategoriaPrincipalItem = {
+  id: string;
+  title: string;
+  image_url: string;
+  link_type: "category" | "url";
+  category_id: string | null;
+  url: string;
+};
+
 export type CategoriasPrincipaisCfg = {
   title: string;
   display_mode: "grid" | "carousel";
-  limit: number;
-  only_with_image: boolean;
-  category_ids: string[]; // empty = all top-level categories
+  /** Manually curated items (image, title, link, order). */
+  items: CategoriaPrincipalItem[];
+  // legacy fields kept for backwards compatibility with older saved configs
+  limit?: number;
+  only_with_image?: boolean;
+  category_ids?: string[];
 };
 
 
@@ -170,7 +182,7 @@ export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   depoimentos: { title: "O que dizem nossos clientes", background: "#ffffff", text_color: "#111111", items: [] } as DepoimentosCfg,
   video: { title: "Veja mais detalhes em vídeo" } as VideoSectionCfg,
   produto_principal: { title: "Oferta imperdível", product_id: null, promotion_ends_at: null, show_countdown: true } as ProdutoPrincipalCfg,
-  categorias_principais: { title: "Navegue por categoria", display_mode: "carousel", limit: 12, only_with_image: false, category_ids: [] } as CategoriasPrincipaisCfg,
+  categorias_principais: { title: "Navegue por categoria", display_mode: "carousel", items: [] } as CategoriasPrincipaisCfg,
 };
 
 // ---------------------------------------------------------------------------
