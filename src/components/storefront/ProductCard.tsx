@@ -180,7 +180,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
         {group && group.colors.length > 1 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            {group.colors.map((color, i) => (
+            {group.colors.slice(0, 3).map((color, i) => (
               <VariantSwatch
                 key={group.product_ids[i]}
                 colorName={color}
@@ -190,9 +190,12 @@ export function ProductCard({ p }: { p: ProductCardData }) {
                 className="h-5 w-5"
               />
             ))}
-            <span className="self-center text-xs text-muted-foreground">{group.colors.length} cores</span>
+            {group.colors.length > 3 && (
+              <span className="self-center text-[10px] text-muted-foreground">+{group.colors.length - 3}</span>
+            )}
           </div>
         )}
+
 
 
         <div className="flex items-baseline gap-2">
