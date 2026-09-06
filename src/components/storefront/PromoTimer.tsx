@@ -52,15 +52,42 @@ export function PromoTimer({
 
   if (expired || !left) return null;
 
+  const parts: string[] = [];
+  if (left.d > 0) parts.push(`${left.d}d`);
+  if (left.d > 0 || left.h > 0) parts.push(pad(left.h));
+  parts.push(pad(left.m), pad(left.s));
+
+  if (compact) {
+    return (
+      <div className={cn("flex items-center gap-1", className)} aria-live="off">
+        {parts.map((v, i) => (
+          <span key={i} className="contents">
+            {i > 0 && <span style={{ color: "#9ca3af", margin: "0 1px" }}>:</span>}
+            <span
+              style={{
+                background: "#d9f523",
+                color: "#111827",
+                fontWeight: 700,
+                fontFamily: "monospace",
+                fontSize: 13,
+                padding: "2px 6px",
+                borderRadius: 4,
+              }}
+            >
+              {v}
+            </span>
+          </span>
+        ))}
+      </div>
+    );
+  }
+
   const box = cn(
     "rounded-md bg-gray-900 text-center font-mono text-white",
     size === "lg" ? "min-w-[40px] px-2 py-1 text-base" : "min-w-[28px] px-1.5 py-0.5 text-xs",
   );
   const sep = cn("font-bold text-gray-400", size === "lg" ? "text-base" : "text-xs");
-  const parts: string[] = [];
-  if (left.d > 0) parts.push(`${left.d}d`);
-  if (left.d > 0 || left.h > 0) parts.push(pad(left.h));
-  parts.push(pad(left.m), pad(left.s));
+
 
   return (
     <div className={cn("mt-1.5", className)} aria-live="off">
