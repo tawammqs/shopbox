@@ -32,6 +32,7 @@ import type {
   DepoimentosCfg,
   VideoSectionCfg,
   ProdutoPrincipalCfg,
+  CategoriasPrincipaisCfg,
 } from "@/lib/homepage-sections";
 import type { ProductSectionKey } from "@/lib/product-sections";
 
