@@ -102,6 +102,7 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
           <h3 className="line-clamp-2 flex-1 text-[14px] font-semibold leading-snug text-[#111]">{title}</h3>
           <AffiliateShareButton productSlug={targetSlug} variant="text" />
         </div>
+        <CardRating storeId={store.id} productId={p.id} productIds={group?.product_ids} className="mb-1.5" />
         <ColorSwatches group={group} idx={idx} onSelect={setVariantIdx} className="mb-1.5" />
         <div className="flex items-baseline">
           {pct > 0 ? (
@@ -121,7 +122,6 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
           if (!inst.show) return null;
           return <span style={{ display: "block", fontSize: 11, color: "#aaa", marginTop: 2 }}>3x de {inst.formatted} sem juros</span>;
         })()}
-        <CardRating storeId={store.id} productId={p.id} productIds={group?.product_ids} className="mt-1" />
       </div>
     </Link>
   );

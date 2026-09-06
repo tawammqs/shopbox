@@ -93,7 +93,7 @@ export function useProductRatings(storeId: string | undefined) {
   return q.data ?? {};
 }
 
-/** "★ 4.8 (12)" line for a listing card; renders nothing when the product has no approved reviews. */
+/** "★★★★☆ (23)" star line for a listing card; renders nothing when the product has no approved reviews. */
 export function CardRating({ storeId, productId, productIds, className }: { storeId: string; productId: string; productIds?: string[]; className?: string }) {
   const ratings = useProductRatings(storeId);
   // Aggregate across all color variants of the model so reviews of a sibling color still count.
@@ -104,12 +104,19 @@ export function CardRating({ storeId, productId, productIds, className }: { stor
     if (x && x.review_count > 0) { sum += x.avg_rating * x.review_count; count += x.review_count; }
   }
   if (count === 0) return null;
-  const r = { avg_rating: Math.round((sum / count) * 10) / 10, review_count: count };
+  const avg = sum / count;
+  const filledStars = Math.round(avg);
   return (
-    <div className={cn("flex items-center gap-1 text-[12px] text-[#6b7280]", className)} aria-label={`Avaliação ${r.avg_rating} de 5`}>
-      <Star className="h-[13px] w-[13px] fill-amber-400 text-amber-400" />
-      <span className="font-semibold text-[#111]">{r.avg_rating.toFixed(1)}</span>
-      <span>({r.review_count})</span>
+    <div className={cn("flex items-center gap-1", className)} aria-label={`Avaliação ${avg.toFixed(1)} de 5`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className="h-[11px] w-[11px]"
+          style={{ color: star <= filledStars ? "#f59e0b" : "#d1d5db" }}
+          fill={star <= filledStars ? "#f59e0b" : "#d1d5db"}
+        />
+      ))}
+      <span className="text-[11px] text-[#9ca3af]">({count})</span>
     </div>
   );
 }

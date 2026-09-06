@@ -176,6 +176,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <h3 className="line-clamp-2 flex-1 text-sm font-medium text-foreground">{group ? group.model_name : p.title}</h3>
           <AffiliateShareButton productSlug={targetSlug} variant="text" />
         </div>
+        <CardRating storeId={store.id} productId={p.id} productIds={group?.product_ids} />
 
         {group && group.colors.length > 1 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
