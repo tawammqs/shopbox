@@ -82,25 +82,37 @@ export function getDominantColor(imageUrl: string): Promise<string> {
     img.onload = () => {
       try {
         const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
+        const size = 100;
+        canvas.width = size;
+        canvas.height = size;
         const ctx = canvas.getContext("2d")!;
-        ctx.drawImage(img, 0, 0);
-        const data = ctx.getImageData(
-          Math.floor(img.width * 0.3),
-          Math.floor(img.height * 0.3),
-          Math.max(1, Math.floor(img.width * 0.4)),
-          Math.max(1, Math.floor(img.height * 0.4)),
-        ).data;
-        let r = 0, g = 0, b = 0, count = 0;
+        ctx.drawImage(img, 0, 0, size, size);
+
+        // Sample central 60% of the image (20% to 80%) where the product is.
+        const data = ctx.getImageData(20, 20, 60, 60).data;
+        let bestColor = { r: 200, g: 200, b: 200, saturation: 0 };
+
         for (let i = 0; i < data.length; i += 4) {
-          // Ignora fundo branco e pixels muito escuros
-          if (data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240) continue;
-          if (data[i] < 15 && data[i + 1] < 15 && data[i + 2] < 15) continue;
-          r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+
+          // Ignore light/white backgrounds
+          if (r > 220 && g > 220 && b > 220) continue;
+          // Ignore very dark/black pixels
+          if (r < 25 && g < 25 && b < 25) continue;
+
+          // Use HSL saturation to pick the most vibrant color.
+          const max = Math.max(r, g, b) / 255;
+          const min = Math.min(r, g, b) / 255;
+          const saturation = max === 0 ? 0 : (max - min) / max;
+
+          if (saturation > bestColor.saturation) {
+            bestColor = { r, g, b, saturation };
+          }
         }
-        if (count === 0) { done("#e5e7eb"); return; }
-        done(`rgb(${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)})`);
+
+        done(`rgb(${bestColor.r}, ${bestColor.g}, ${bestColor.b})`);
       } catch {
         done("#e5e7eb");
       }
