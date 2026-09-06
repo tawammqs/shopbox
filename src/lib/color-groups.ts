@@ -13,12 +13,10 @@ export type ColorGroup = {
 };
 
 export function extractModelAndColor(productName: string): { model: string; color: string | null } {
-  const separatorIndex = productName.lastIndexOf(" - ");
-  if (separatorIndex === -1) return { model: productName, color: null };
-  return {
-    model: productName.substring(0, separatorIndex).trim(),
-    color: productName.substring(separatorIndex + 3).trim(),
-  };
+  const norm = productName.replace(/\s+/g, " ");
+  const m = norm.match(/^(.*?)\s*(?:\||\s-\s)\s*(.+)$/);
+  if (!m) return { model: norm, color: null };
+  return { model: m[1].trim(), color: m[2].trim() };
 }
 
 export const COLOR_MAP: Record<string, string> = {
@@ -58,7 +56,7 @@ export const COLOR_MAP: Record<string, string> = {
 export function getColorHex(colorName: string): string {
   const normalized = (colorName ?? "").toLowerCase().trim();
   if (COLOR_MAP[normalized]) return COLOR_MAP[normalized];
-  const firstColor = normalized.split("/")[0].trim();
+  const firstColor = normalized.split(/[\/&,]/)[0].trim();
   if (COLOR_MAP[firstColor]) return COLOR_MAP[firstColor];
   return "#e5e7eb";
 }
