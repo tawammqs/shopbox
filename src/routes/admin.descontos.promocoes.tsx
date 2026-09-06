@@ -189,6 +189,8 @@ function PromoForm({ editing, storeId, onDone }: { editing: any; storeId: string
         starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : new Date().toISOString(),
         ends_at: new Date(form.ends_at).toISOString(),
         timer_label: form.timer_label.trim() || null,
+        bg_color: form.bg_color || "#111827",
+        text_color: form.text_color || "#ffffff",
         active: editing ? editing.active : true,
       };
       const { error } = editing
