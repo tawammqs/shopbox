@@ -218,7 +218,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         )}
         {isMio ? (
           (() => {
-            const inst = getInstallment(p.price, p.promo_price);
+            const inst = getInstallment(p.price, price);
             if (!inst.show) return null;
             return (
               <span style={{

@@ -311,7 +311,7 @@ function TsProductCard({ p }: { p: ProductCardData }) {
           <PromoTimer endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
         )}
         {(() => {
-          const inst = getInstallment(p.price, p.promo_price);
+          const inst = getInstallment(p.price, price);
           if (!inst.show) return null;
           return (
             <span style={{
