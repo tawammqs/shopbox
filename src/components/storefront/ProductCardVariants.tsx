@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useColorGroups, useDominantColor, type ColorGroup } from "@/lib/color-groups";
+import { useColorGroups, parseColorsFromName, isLightSwatch, type ColorGroup } from "@/lib/color-groups";
 import type { ProductCardData } from "@/lib/storefront";
 import { cn } from "@/lib/utils";
 
@@ -21,11 +21,12 @@ export function useCardVariant(storeId: string, p: ProductCardData) {
   return { group, idx, setVariantIdx, targetSlug, img1, img2, title };
 }
 
-/** Single color circle: uses the dominant color extracted from the variant image. */
+/** Single color circle: 1 or 2 colors parsed from the variant name (2 colors → diagonal split). */
 export function VariantSwatch({
-  colorName, imageUrl, active, onSelect, className,
+  colorName, active, onSelect, className,
 }: { colorName: string; imageUrl?: string; active: boolean; onSelect?: () => void; className?: string }) {
-  const color = useDominantColor(imageUrl, colorName);
+  const [c1, c2] = parseColorsFromName(colorName);
+  const light = isLightSwatch(c1);
   return (
     <button
       type="button"
@@ -34,11 +35,14 @@ export function VariantSwatch({
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSelect?.(); }}
       onMouseEnter={() => onSelect?.()}
       className={cn(
-        "h-[18px] w-[18px] rounded-full border-2 transition-all",
-        active ? "scale-110 border-[#111]" : "border-transparent hover:border-[#9ca3af]",
+        "h-[18px] w-[18px] shrink-0 overflow-hidden rounded-full transition-all",
+        active ? "scale-110 border-2 border-[#111]" : light ? "border border-[#d1d5db]" : "border border-transparent hover:border-[#9ca3af]",
         className,
       )}
-      style={{ backgroundColor: color, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }}
+      style={{
+        background: c2 ? `linear-gradient(135deg, ${c1} 50%, ${c2} 50%)` : c1,
+        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)",
+      }}
     />
   );
 }
