@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useActivePromotion } from "@/lib/promotions";
 import { PromoTimer } from "@/components/storefront/PromoTimer";
 
-/** Thin black bar pinned at the very top of the storefront while a timed promotion is running. */
+/** Thin bar pinned at the very top of the storefront while a timed promotion is running. */
 export function PromoTopBar({ storeId }: { storeId: string }) {
   const { data } = useActivePromotion(storeId);
   const qc = useQueryClient();
@@ -17,25 +17,30 @@ export function PromoTopBar({ storeId }: { storeId: string }) {
   return (
     <div
       style={{
-        backgroundColor: "#111827",
-        color: "#ffffff",
-        textAlign: "center",
-        padding: "8px 16px",
-        fontSize: 13,
+        backgroundColor: promo.bg_color || "#111827",
+        color: promo.text_color || "#ffffff",
+        padding: "10px 16px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        gap: 16,
         flexWrap: "wrap",
-        gap: 12,
+        fontSize: 13,
+        fontWeight: 500,
         width: "100%",
+        lineHeight: 1.3,
       }}
     >
-      <span>{promo.name}</span>
-      <span style={{ color: "#d9f523", fontWeight: 700 }}>
+      <span style={{ fontWeight: 800, fontSize: 15, whiteSpace: "nowrap" }}>
         {promo.type === "percent" ? `${promo.value}% OFF` : `R$${promo.value} OFF`}
       </span>
-      {promo.timer_label && <span style={{ color: "#9ca3af", fontSize: 12 }}>{promo.timer_label}</span>}
-      <PromoTimer endsAt={promo.ends_at} compact onExpire={onExpire} />
+
+      <span style={{ opacity: 0.4 }}>|</span>
+
+      <span style={{ display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
+        <span style={{ opacity: 0.8 }}>{promo.timer_label || "Oferta termina em:"}</span>
+        <PromoTimer endsAt={promo.ends_at} compact onExpire={onExpire} />
+      </span>
     </div>
   );
 }
