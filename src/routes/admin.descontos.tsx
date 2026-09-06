@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
@@ -23,6 +23,11 @@ export const Route = createFileRoute("/admin/descontos")({
 function DiscountsPage() {
   const { data: store, isLoading } = useMyStore();
   const planSlug = store?.plan?.slug as any;
+  const loc = useLocation();
+  const navigate = useNavigate();
+  const isChild = loc.pathname.replace(/\/$/, "") !== "/admin/descontos";
+
+  if (isChild) return <Outlet />;
 
   if (isLoading) {
     return (
@@ -71,7 +76,7 @@ function DiscountsPage() {
       </div>
 
       <PlanGate plan={planSlug} feature="discounts">
-        <Tabs defaultValue="coupons">
+        <Tabs defaultValue="coupons" onValueChange={(v) => { if (v === "promos") navigate({ to: "/admin/descontos/promocoes" }); }}>
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="coupons">Cupons</TabsTrigger>
             <TabsTrigger value="promos">Promoções</TabsTrigger>
@@ -79,7 +84,6 @@ function DiscountsPage() {
             <TabsTrigger value="popup">Popup</TabsTrigger>
           </TabsList>
           <TabsContent value="coupons"><CouponsTab storeId={store.id} /></TabsContent>
-          <TabsContent value="promos"><PromosTab storeId={store.id} /></TabsContent>
           <TabsContent value="combos"><CombosTab storeId={store.id} /></TabsContent>
           <TabsContent value="popup"><PopupTab /></TabsContent>
         </Tabs>
