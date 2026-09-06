@@ -191,7 +191,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
             <div className="flex items-start justify-between gap-3">
               <h1 className="ts-h1 min-w-0 flex-1 text-[24px] font-extrabold leading-tight text-[#111] md:text-[32px]"
                 style={{ letterSpacing: "-0.5px" }}>{product.title}</h1>
-              <AffiliateShareButton productSlug={product.slug} variant="button" />
+              <AffiliateShareButton productSlug={product.slug} variant="button" className="hidden md:flex" />
             </div>
             {product.sku && <p className="mt-1 text-[12px] text-[#aaa]">SKU: {product.sku}</p>}
             <ColorVariantsRow storeId={store.id} storeSlug={store.slug} productId={product.id} />
