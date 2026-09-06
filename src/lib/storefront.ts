@@ -406,7 +406,9 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
     if (eff > priceMax) priceMax = eff;
 
     if (p.brand && String(p.brand).trim()) {
-      const b = String(p.brand).trim();
+      const raw = String(p.brand).trim();
+      // Merge case variants ("OLYM" / "Olym") under the first spelling seen
+      const b = Array.from(brandCounts.keys()).find((k) => k.toLowerCase() === raw.toLowerCase()) ?? raw;
       brandCounts.set(b, (brandCounts.get(b) ?? 0) + 1);
     }
 
