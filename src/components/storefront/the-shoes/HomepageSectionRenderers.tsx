@@ -20,6 +20,7 @@ import { fetchProductsByHomepageSection, fetchProductsByTag, type ProductCardDat
 import { useStorefront } from "../StoreContext";
 import { cn } from "@/lib/utils";
 import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
+
 import type {
   BannerRotativoCfg,
   ProductsTagCfg,
@@ -354,40 +355,66 @@ export function ProdutoPrincipalRender({ cfg }: { cfg: ProdutoPrincipalCfg }) {
   return (
     <section className="ts-section">
       {cfg.title && <h2 className="ts-section-title mb-3">{cfg.title}</h2>}
-      <Link
-        to="/loja/$slug/produto/$productSlug"
-        params={{ slug: store.slug, productSlug: product.slug }}
-        className="block rounded-2xl bg-[#f7f7f7] p-4 transition hover:bg-[#f1f1f1]"
-      >
-        <div className="flex gap-4">
-          {img && <img src={img} alt={product.title} className="h-32 w-32 shrink-0 rounded-xl object-cover md:h-40 md:w-40" />}
-          <div className="min-w-0 flex-1">
-            {(product.brand_name ?? product.brand) && (
-              <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-[#888]">
-                {product.brand_name ?? product.brand}
-              </p>
-            )}
-            <h3 className="line-clamp-2 text-base font-semibold text-[#111] md:text-lg">{product.title}</h3>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-xl font-bold text-[var(--store-accent,#111)]">{formatBRL(price)}</span>
-              {pct > 0 && (
-                <span className="text-sm text-[#aaa] line-through">{formatBRL(Number(product.price))}</span>
-              )}
-            </div>
-            {timeLeft && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                <CountdownBox value={timeLeft.d} label="dias" />
-                <CountdownBox value={timeLeft.h} label="hrs" />
-                <CountdownBox value={timeLeft.m} label="min" />
-                <CountdownBox value={timeLeft.s} label="seg" />
-              </div>
-            )}
-          </div>
-        </div>
-      </Link>
+      <ProdutoPrincipalCard
+        product={product}
+        img={img}
+        price={price}
+        pct={pct}
+        endsAt={cfg.show_countdown && timeLeft ? cfg.promotion_ends_at! : null}
+      />
     </section>
   );
 }
+
+function ProdutoPrincipalCard({
+  product, img, price, pct, endsAt,
+}: { product: any; img: string; price: number; pct: number; endsAt: string | null }) {
+  const { store } = useStorefront();
+  const { map } = useColorGroups(store.id);
+  const group = map[product.id];
+  const [variantIdx, setVariantIdx] = useState(() => Math.max(0, group?.product_ids?.indexOf(product.id) ?? 0));
+  const idx = group ? Math.min(variantIdx, (group.product_ids?.length ?? 1) - 1) : 0;
+  const isBase = !group || group.product_ids[idx] === product.id;
+  const targetSlug = group ? (group.product_slugs?.[idx] ?? product.slug) : product.slug;
+  const image = (isBase ? img : group?.first_images?.[idx]) || img;
+  const brand = product.brand_name ?? product.brand;
+
+  return (
+    <Link
+      to="/loja/$slug/produto/$productSlug"
+      params={{ slug: store.slug, productSlug: targetSlug }}
+      className="block overflow-hidden rounded-2xl bg-[#f7f7f7] p-3 transition hover:bg-[#f1f1f1] md:p-4"
+    >
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:gap-5">
+        {image && (
+          <img
+            src={image}
+            alt={group ? group.model_name : product.title}
+            className="w-full shrink-0 rounded-xl bg-white object-cover md:w-56"
+            style={{ aspectRatio: "1 / 1" }}
+            loading="lazy"
+          />
+        )}
+        <div className="min-w-0 flex-1 space-y-1.5">
+          {brand && (
+            <p className="text-[10px] font-medium uppercase tracking-wide text-[#888]">{brand}</p>
+          )}
+          <h3 className="line-clamp-2 text-sm font-medium text-[#111] md:text-lg md:font-semibold">
+            {group ? group.model_name : product.title}
+          </h3>
+          <ColorSwatches group={group} idx={idx} onSelect={setVariantIdx} className="pt-0.5" />
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold text-[var(--store-accent,#111)] md:text-xl">{formatBRL(price)}</span>
+            {pct > 0 && <span className="text-xs text-[#aaa] line-through md:text-sm">{formatBRL(Number(product.price))}</span>}
+          </div>
+          {endsAt && <PromoTimer endsAt={endsAt} />}
+          <CardRating storeId={store.id} productId={product.id} productIds={group?.product_ids} />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 
 function CountdownBox({ value, label }: { value: number; label: string }) {
   return (
