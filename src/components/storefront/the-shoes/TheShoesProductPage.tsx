@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useModelReviews } from "@/lib/model-reviews";
 import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 
 export function TheShoesProductPage({ product }: { product: any }) {
