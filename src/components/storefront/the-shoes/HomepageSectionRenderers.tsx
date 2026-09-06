@@ -32,6 +32,7 @@ import type {
   DepoimentosCfg,
   VideoSectionCfg,
   ProdutoPrincipalCfg,
+  CategoriasPrincipaisCfg,
 } from "@/lib/homepage-sections";
 import type { ProductSectionKey } from "@/lib/product-sections";
 
@@ -748,5 +749,69 @@ function VideoSectionPlayerModal({
         )}
       </div>
     </div>
+  );
+}
+
+// ============== Categorias principais (grid / carrossel) ==============
+export function CategoriasPrincipaisRender({ cfg }: { cfg: CategoriasPrincipaisCfg }) {
+  const { store, categories } = useStorefront();
+  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true });
+  const selected = cfg.category_ids?.length ? cfg.category_ids : null;
+  let cats = categories.filter((c) => (selected ? selected.includes(c.id) : !c.parent_id));
+  if (selected) cats = [...cats].sort((a, b) => selected.indexOf(a.id) - selected.indexOf(b.id));
+  else cats = [...cats].sort((a, b) => a.display_order - b.display_order);
+  if (cfg.only_with_image) cats = cats.filter((c) => !!c.image_url);
+  cats = cats.slice(0, cfg.limit || 12);
+  if (cats.length === 0) return null;
+
+  const card = (c: (typeof cats)[number]) => (
+    <Link
+      key={c.id}
+      to="/loja/$slug/categoria/$categorySlug"
+      params={{ slug: store.slug, categorySlug: c.slug }}
+      className="group block text-center"
+    >
+      <div className="aspect-square w-full overflow-hidden rounded-2xl bg-[#dfdac8]">
+        {c.image_url ? (
+          <img src={c.image_url} alt={c.name} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+        ) : (
+          <div className="grid h-full w-full place-items-center text-2xl font-bold uppercase text-[#111]">{c.name.slice(0, 1)}</div>
+        )}
+      </div>
+      <p className="mt-2 text-[13px] font-semibold text-[#111]">{c.name}</p>
+    </Link>
+  );
+
+  return (
+    <section className="ts-section">
+      <div className="ts-section-head">
+        <div className="min-w-0">
+          <h2 className="ts-section-title">{cfg.title || "Categorias"}</h2>
+        </div>
+        {cfg.display_mode !== "grid" && (
+          <div className="hidden gap-2 md:flex">
+            <button onClick={() => emblaApi?.scrollPrev()} aria-label="Anterior" className="ts-circle-btn">
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button onClick={() => emblaApi?.scrollNext()} aria-label="Próximo" className="ts-circle-btn">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+      </div>
+      {cfg.display_mode === "grid" ? (
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-6">{cats.map(card)}</div>
+      ) : (
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex gap-3">
+            {cats.map((c) => (
+              <div key={c.id} className="w-[30%] shrink-0 md:w-[15.5%]">
+                {card(c)}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
   );
 }

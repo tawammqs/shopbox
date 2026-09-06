@@ -45,7 +45,10 @@ import {
   getSectionsOrder,
   isSectionVisible,
   getSectionConfig,
+  getLegacyOrder,
+  isLegacyBlockHidden,
   type HomepageSectionKey,
+  type LegacyBlockKey,
 } from "@/lib/homepage-sections";
 import {
   BannersRotativosRender,
@@ -59,6 +62,7 @@ import {
   DepoimentosRender,
   VideoSectionRender,
   ProdutoPrincipalRender,
+  CategoriasPrincipaisRender,
 } from "./HomepageSectionRenderers";
 import { MioVipSection } from "../MioAddonOverlays";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -126,6 +130,8 @@ function SectionSwitch({ sectionKey, cust }: { sectionKey: HomepageSectionKey; c
       return <DepoimentosRender cfg={cfg} />;
     case "video":
       return <VideoSectionRender cfg={cfg} />;
+    case "categorias_principais":
+      return <CategoriasPrincipaisRender cfg={cfg} />;
     default:
       return null;
   }
@@ -143,22 +149,49 @@ function LegacyTheShoesHomepage() {
     queryFn: () => fetchActiveBanners(store.id),
     staleTime: 60_000,
   });
+  const cust = useStorefrontCustomizations(store.id).data;
   const s = settingsQ.data;
   if (!s) return null;
+
+  // Original hardcoded blocks, now driven by an order list. With no stored
+  // order this reproduces the exact original layout.
+  const order = getLegacyOrder(cust);
+  const renderBlock = (key: LegacyBlockKey) => {
+    if (isLegacyBlockHidden(cust, key)) return null;
+    switch (key) {
+      case "banners_rotativos":
+        return <HeroCarousel key={key} banners={bannersQ.data ?? []} />;
+      case "produtos_destaque":
+        return <ProductCarouselSection key={key} storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag} />;
+      case "boas_vindas_marquee":
+        return <MarqueeBar key={key} cfg={s.marquee1} />;
+      case "legacy:promo_banner":
+        return <PromoBannerSection key={key} promo={s.promo_banner} />;
+      case "produtos_novos":
+        return <ProductCarouselSection key={key} storeId={store.id} title={s.section2_title} link={s.section2_subtitle} tag={s.section2_tag} description={s.section2_description} />;
+      case "frete_pagamento":
+        return <IconsBar key={key} items={s.icons_bar} />;
+      case "anuncios_marquee":
+        return <MarqueeBar key={key} cfg={s.marquee2} />;
+      case "legacy:achadinhos":
+        return <AchadinhosInline key={key} storeId={store.id} tag={s.section1_tag} />;
+      case "depoimentos":
+        return <TestimonialsSection key={key} title={s.testimonials_title} items={s.testimonials} />;
+      case "video":
+        return <VideoTestimonialsSection key={key} storeId={store.id} storeSlug={store.slug} section={s.video_section} />;
+      case "faq":
+        return <FaqSection key={key} title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />;
+      case "instagram":
+        return <InstagramSection key={key} handle={s.instagram_handle} images={s.instagram_images} />;
+      default:
+        // Sections added from the new editor (e.g. Categorias)
+        return <SectionSwitch key={key} sectionKey={key as HomepageSectionKey} cust={cust ?? {}} />;
+    }
+  };
+
   return (
     <div className="ts-root">
-      <HeroCarousel banners={bannersQ.data ?? []} />
-      <ProductCarouselSection storeId={store.id} title={s.section1_title} link={s.section1_subtitle} tag={s.section1_tag} />
-      <MarqueeBar cfg={s.marquee1} />
-      <PromoBannerSection promo={s.promo_banner} />
-      <ProductCarouselSection storeId={store.id} title={s.section2_title} link={s.section2_subtitle} tag={s.section2_tag} description={s.section2_description} />
-      <IconsBar items={s.icons_bar} />
-      <MarqueeBar cfg={s.marquee2} />
-      <AchadinhosInline storeId={store.id} tag={s.section1_tag} />
-      <TestimonialsSection title={s.testimonials_title} items={s.testimonials} />
-      <VideoTestimonialsSection storeId={store.id} storeSlug={store.slug} section={s.video_section} />
-      <FaqSection title={s.faq_title} items={s.faq_items} whatsapp={s.faq_whatsapp} />
-      <InstagramSection handle={s.instagram_handle} images={s.instagram_images} />
+      {order.map(renderBlock)}
       {s.whatsapp_button && <FloatingWhatsApp number={s.whatsapp_button} />}
       <TheShoesStyles />
     </div>

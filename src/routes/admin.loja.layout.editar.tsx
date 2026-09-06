@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronRight, ChevronLeft, X, Monitor, Smartphone, HelpCircle, ExternalLink, Eye, EyeOff, GripVertical, Upload } from "lucide-react";
+import { ChevronRight, ChevronLeft, X, Monitor, Smartphone, HelpCircle, ExternalLink, Eye, EyeOff, GripVertical, Upload, Plus, Trash2 } from "lucide-react";
 import { useMyStore } from "@/hooks/useMyStore";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,9 +17,18 @@ import {
   ADDON_HOMEPAGE_ITEMS,
   ADDON_ROW_KEYS,
   ADDON_ROW_KEY_TO_ITEM,
+  getLegacyOrder,
+  isLegacyBlockHidden,
+  setLegacyOrderPatch,
+  setLegacyHiddenPatch,
+  legacyLabel,
+  LEGACY_ADDABLE_SECTIONS,
   type HomepageSectionKey,
   type AddonHomepageItem,
 } from "@/lib/homepage-sections";
+import { DndContext, PointerSensor, KeyboardSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { SectionEditor } from "@/components/admin/layout-editor/HomepageSectionPanels";
 import {
   LegacySectionEditor,
@@ -330,10 +339,10 @@ function Panel({ section, setSection, store, customizations, update, isLegacyThe
           <button onClick={() => setSection("homepage")} className="mb-4 flex items-center gap-1 text-sm font-medium text-[#111827] hover:text-[#25d366]">
             <ChevronLeft className="h-4 w-4" /> Voltar
           </button>
-          <h2 className="mb-3 text-base font-semibold text-[#111827]">{SECTION_LABELS[key] ?? key}</h2>
+          <h2 className="mb-3 text-base font-semibold text-[#111827]">{legacyLabel(key)}</h2>
         </div>
         <div className="px-4 pb-6">
-          {isLegacyTheShoes && legacySettings ? (
+          {isLegacyTheShoes && legacySettings && !LEGACY_ADDABLE_SECTIONS.includes(key) ? (
             <LegacySectionEditor
               storeId={store?.id}
               sectionKey={key}
@@ -734,11 +743,12 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes, s
   const navigate = useNavigate();
   const addonStatusQ = useAllAddonStatus(store?.id);
   const activeAddons = addonStatusQ.data ?? {};
+  const [showAdd, setShowAdd] = useState(false);
 
   // Combine regular sections with addon rows (active addons only),
   // honoring sections_order positions for addon rows that have been placed.
-  const baseOrder = useMemo(
-    () => (isLegacyTheShoes ? DEFAULT_SECTION_ORDER : getSectionsOrder(customizations)),
+  const baseOrder = useMemo<string[]>(
+    () => (isLegacyTheShoes ? getLegacyOrder(customizations) : getSectionsOrder(customizations)),
     [customizations, isLegacyTheShoes],
   );
 
@@ -773,28 +783,76 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes, s
   }, [baseOrder, customizations, activeAddons, isLegacyTheShoes]);
 
   const persistOrder = (next: string[]) => {
-    update((prev: any) => ({ ...prev, ...setSectionsOrderPatch(prev, next as any) }));
+    if (isLegacyTheShoes) {
+      update((prev: any) => ({ ...prev, ...setLegacyOrderPatch(prev, next) }));
+    } else {
+      update((prev: any) => ({ ...prev, ...setSectionsOrderPatch(prev, next as any) }));
+    }
   };
 
-  const toggleSection = (key: HomepageSectionKey) => {
+  const isVisible = (key: string) =>
+    isLegacyTheShoes ? !isLegacyBlockHidden(customizations, key) : isSectionVisible(customizations, key as HomepageSectionKey);
+
+  const toggleSection = (key: string) => {
     if (isLegacyTheShoes) {
-      toast.info("Visibilidade não é editável nesta loja (layout legado).");
+      const hidden = isLegacyBlockHidden(customizations, key);
+      update((prev: any) => ({ ...prev, ...setLegacyHiddenPatch(prev, key, !hidden) }));
       return;
     }
-    const next = !isSectionVisible(customizations, key);
-    update((prev: any) => ({ ...prev, ...setSectionVisibilityPatch(prev, key, next) }));
+    const next = !isSectionVisible(customizations, key as HomepageSectionKey);
+    update((prev: any) => ({ ...prev, ...setSectionVisibilityPatch(prev, key as HomepageSectionKey, next) }));
   };
 
   const move = (idx: number, dir: -1 | 1) => {
-    if (isLegacyTheShoes) {
-      toast.info("Ordem das seções não é editável nesta loja (layout legado).");
-      return;
-    }
     const j = idx + dir;
     if (j < 0 || j >= combinedOrder.length) return;
     const next = [...combinedOrder];
     [next[idx], next[j]] = [next[j], next[idx]];
     persistOrder(next);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const onDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const from = combinedOrder.indexOf(String(active.id));
+    const to = combinedOrder.indexOf(String(over.id));
+    if (from < 0 || to < 0) return;
+    persistOrder(arrayMove(combinedOrder, from, to));
+  };
+
+  // "Adicionar seção": sections available but not present in the list
+  const addable: HomepageSectionKey[] = isLegacyTheShoes
+    ? LEGACY_ADDABLE_SECTIONS.filter((k) => !combinedOrder.includes(k))
+    : (Object.keys(SECTION_LABELS) as HomepageSectionKey[]).filter(
+        (k) => k !== "video" && !isSectionVisible(customizations, k),
+      );
+
+  const addSection = (key: HomepageSectionKey) => {
+    if (isLegacyTheShoes) {
+      // Insert right after the first block (banners) so it's easy to spot; user can drag afterwards.
+      const next = [...combinedOrder];
+      const anchor = next.indexOf("produtos_destaque");
+      next.splice(anchor >= 0 ? anchor : 1, 0, key);
+      update((prev: any) => ({
+        ...prev,
+        ...setLegacyOrderPatch(prev, next),
+        ...setLegacyHiddenPatch({ ...prev, ...setLegacyOrderPatch(prev, next) }, key, false),
+      }));
+    } else {
+      update((prev: any) => ({ ...prev, ...setSectionVisibilityPatch(prev, key, true) }));
+    }
+    setShowAdd(false);
+    toast.success(`Seção "${SECTION_LABELS[key]}" adicionada. Clique em Publicar para salvar.`);
+    setSection(`homepage:${key}`);
+  };
+
+  const removeSection = (key: string) => {
+    if (!isLegacyTheShoes) return;
+    persistOrder(combinedOrder.filter((k) => k !== key));
   };
 
   const popup = customizations.homepage?.popup ?? {};
@@ -805,62 +863,101 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes, s
     <div className="space-y-4 px-4 pb-6">
       <h2 className="text-base font-semibold text-[#111827]">Página inicial</h2>
       <p className="text-xs text-[#6b7280]">
-        {isLegacyTheShoes
-          ? "Edite o conteúdo de cada seção. A ordem e o visual desta loja são fixos."
-          : "Clique no nome de cada seção para configurar. Use o olho para mostrar/ocultar."}
+        Clique no nome de cada seção para configurar. Arraste para reordenar e use o olho para mostrar/ocultar.
       </p>
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        {combinedOrder.map((key, idx) => {
-          if (ADDON_ROW_KEYS.includes(key)) {
-            const item = ADDON_ROW_KEY_TO_ITEM[key];
-            return (
-              <AddonRow
-                key={key}
-                item={item}
-                storeId={store?.id}
-                isLegacyTheShoes={isLegacyTheShoes}
-                onMoveUp={() => move(idx, -1)}
-                onMoveDown={() => move(idx, 1)}
-                onNavigate={() => navigate({ to: `/admin/marketing/${item.urlSlug}` as any })}
-              />
-            );
-          }
-          const sectionKey = key as HomepageSectionKey;
-          const visible = isSectionVisible(customizations, sectionKey);
-          const label = SECTION_LABELS[sectionKey] ?? sectionKey;
-          const legacyEditable = LEGACY_EDITABLE_SECTIONS.includes(sectionKey);
-          return (
-            <div key={key} className="flex items-center gap-2 border-b border-gray-100 px-2 py-2 last:border-b-0">
-              {!isLegacyTheShoes && (
-                <>
-                  <div className="flex flex-col">
-                    <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
-                    <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
-                  </div>
-                  <GripVertical className="h-4 w-4 text-[#d1d5db]" />
-                  <button onClick={() => toggleSection(sectionKey)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
-                    {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
-                  </button>
-                </>
-              )}
-              <button
-                onClick={() => setSection(`homepage:${sectionKey}`)}
-                className={cn(
-                  "flex flex-1 items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm hover:bg-gray-50",
-                  isLegacyTheShoes && !legacyEditable ? "text-[#9ca3af]" : visible ? "text-[#111827]" : "text-[#9ca3af]",
-                )}
-              >
-                <span>{label}</span>
-                <div className="flex items-center gap-2">
-                  {isLegacyTheShoes && !legacyEditable && (
-                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-[#6b7280]">não editável</span>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={combinedOrder} strategy={verticalListSortingStrategy}>
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+            {combinedOrder.map((key, idx) => {
+              if (ADDON_ROW_KEYS.includes(key)) {
+                const item = ADDON_ROW_KEY_TO_ITEM[key];
+                return (
+                  <SortableRow key={key} id={key}>
+                    {(handle) => (
+                      <AddonRow
+                        item={item}
+                        storeId={store?.id}
+                        isLegacyTheShoes={isLegacyTheShoes}
+                        dragHandle={handle}
+                        onMoveUp={() => move(idx, -1)}
+                        onMoveDown={() => move(idx, 1)}
+                        onNavigate={() => navigate({ to: `/admin/marketing/${item.urlSlug}` as any })}
+                      />
+                    )}
+                  </SortableRow>
+                );
+              }
+              const sectionKey = key as HomepageSectionKey;
+              const visible = isVisible(key);
+              const label = legacyLabel(key);
+              const isAddedToLegacy = isLegacyTheShoes && LEGACY_ADDABLE_SECTIONS.includes(sectionKey);
+              const legacyEditable = !isLegacyTheShoes || isAddedToLegacy || LEGACY_EDITABLE_SECTIONS.includes(sectionKey);
+              return (
+                <SortableRow key={key} id={key}>
+                  {(handle) => (
+                    <div className="flex items-center gap-2 border-b border-gray-100 bg-white px-2 py-2 last:border-b-0">
+                      <div className="flex flex-col">
+                        <button onClick={() => move(idx, -1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
+                        <button onClick={() => move(idx, 1)} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
+                      </div>
+                      {handle}
+                      <button onClick={() => toggleSection(key)} className="shrink-0" aria-label={visible ? "Ocultar" : "Mostrar"}>
+                        {visible ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
+                      </button>
+                      <button
+                        onClick={() => setSection(`homepage:${sectionKey}`)}
+                        className={cn(
+                          "flex flex-1 items-center justify-between gap-2 rounded px-2 py-1 text-left text-sm hover:bg-gray-50",
+                          !legacyEditable ? "text-[#9ca3af]" : visible ? "text-[#111827]" : "text-[#9ca3af]",
+                        )}
+                      >
+                        <span>{label}</span>
+                        <div className="flex items-center gap-2">
+                          {!legacyEditable && (
+                            <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-[#6b7280]">não editável</span>
+                          )}
+                          <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
+                        </div>
+                      </button>
+                      {isAddedToLegacy && (
+                        <button onClick={() => removeSection(key)} className="shrink-0 text-[#9ca3af] hover:text-red-600" aria-label="Remover seção">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   )}
-                  <ChevronRight className="h-4 w-4 text-[#d1d5db]" />
-                </div>
-              </button>
-            </div>
-          );
-        })}
+                </SortableRow>
+              );
+            })}
+          </div>
+        </SortableContext>
+      </DndContext>
+
+      <div className="rounded-xl border border-dashed border-gray-300 bg-white">
+        <button
+          onClick={() => setShowAdd((v) => !v)}
+          className="flex w-full items-center justify-center gap-1 py-2.5 text-sm font-medium text-[#111827] hover:bg-gray-50"
+        >
+          <Plus className="h-4 w-4" /> Adicionar seção
+        </button>
+        {showAdd && (
+          <div className="border-t border-gray-200 p-2">
+            {addable.length === 0 ? (
+              <p className="px-2 py-1 text-xs text-[#6b7280]">Todas as seções disponíveis já estão na página.</p>
+            ) : (
+              addable.map((k) => (
+                <button
+                  key={k}
+                  onClick={() => addSection(k)}
+                  className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
+                >
+                  <span>{SECTION_LABELS[k]}</span>
+                  <Plus className="h-4 w-4 text-[#25d366]" />
+                </button>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       {!isLegacyTheShoes && (
@@ -890,12 +987,28 @@ function HomepagePanel({ customizations, update, setSection, isLegacyTheShoes, s
   );
 }
 
+function SortableRow({ id, children }: { id: string; children: (handle: React.ReactNode) => React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style: React.CSSProperties = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1, position: "relative", zIndex: isDragging ? 10 : undefined };
+  const handle = (
+    <button {...attributes} {...listeners} className="cursor-grab touch-none active:cursor-grabbing" aria-label="Arrastar para reordenar">
+      <GripVertical className="h-4 w-4 text-[#d1d5db]" />
+    </button>
+  );
+  return (
+    <div ref={setNodeRef} style={style}>
+      {children(handle)}
+    </div>
+  );
+}
+
 function AddonRow({
-  item, storeId, isLegacyTheShoes, onMoveUp, onMoveDown, onNavigate,
+  item, storeId, isLegacyTheShoes, dragHandle, onMoveUp, onMoveDown, onNavigate,
 }: {
   item: AddonHomepageItem;
   storeId: string | undefined;
   isLegacyTheShoes: boolean;
+  dragHandle?: React.ReactNode;
   onMoveUp: () => void;
   onMoveDown: () => void;
   onNavigate: () => void;
@@ -930,7 +1043,7 @@ function AddonRow({
             <button onClick={onMoveUp} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
             <button onClick={onMoveDown} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
           </div>
-          <GripVertical className="h-4 w-4 text-[#d1d5db]" />
+          {dragHandle ?? <GripVertical className="h-4 w-4 text-[#d1d5db]" />}
           <button onClick={toggle} className="shrink-0" aria-label={active ? "Ocultar" : "Mostrar"} disabled={saving}>
             {active ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
           </button>

@@ -132,6 +132,15 @@ export type DepoimentosCfg = { title: string; background: string; text_color?: s
 
 export type VideoSectionCfg = { title: string };
 
+export type CategoriasPrincipaisCfg = {
+  title: string;
+  display_mode: "grid" | "carousel";
+  limit: number;
+  only_with_image: boolean;
+  category_ids: string[]; // empty = all top-level categories
+};
+
+
 export type ProdutoPrincipalCfg = {
   title: string;
   product_id: string | null;
@@ -161,7 +170,78 @@ export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   depoimentos: { title: "O que dizem nossos clientes", background: "#ffffff", text_color: "#111111", items: [] } as DepoimentosCfg,
   video: { title: "Veja mais detalhes em vídeo" } as VideoSectionCfg,
   produto_principal: { title: "Oferta imperdível", product_id: null, promotion_ends_at: null, show_countdown: true } as ProdutoPrincipalCfg,
+  categorias_principais: { title: "Navegue por categoria", display_mode: "carousel", limit: 12, only_with_image: false, category_ids: [] } as CategoriasPrincipaisCfg,
 };
+
+// ---------------------------------------------------------------------------
+// The Shoes legacy layout: fixed hardcoded blocks, now orderable + extendable.
+// Stored at customizations.homepage.legacy_order / legacy_hidden. When absent,
+// LEGACY_DEFAULT_ORDER reproduces the original visual exactly.
+// ---------------------------------------------------------------------------
+export type LegacyBlockKey =
+  | HomepageSectionKey
+  | "legacy:promo_banner"
+  | "legacy:achadinhos";
+
+export const LEGACY_DEFAULT_ORDER: LegacyBlockKey[] = [
+  "banners_rotativos",
+  "produtos_destaque",
+  "boas_vindas_marquee",
+  "legacy:promo_banner",
+  "produtos_novos",
+  "frete_pagamento",
+  "anuncios_marquee",
+  "legacy:achadinhos",
+  "depoimentos",
+  "video",
+  "faq",
+  "instagram",
+];
+
+export const LEGACY_EXTRA_LABELS: Record<string, string> = {
+  "legacy:promo_banner": "Banner promocional",
+  "legacy:achadinhos": "Achadinhos",
+};
+
+/** Sections from the new schema that can be added to The Shoes homepage. */
+export const LEGACY_ADDABLE_SECTIONS: HomepageSectionKey[] = [
+  "categorias_principais",
+  "produto_principal",
+  "banners_categorias",
+];
+
+export function legacyLabel(key: string): string {
+  return LEGACY_EXTRA_LABELS[key] ?? SECTION_LABELS[key as HomepageSectionKey] ?? key;
+}
+
+export function getLegacyOrder(cust: any): LegacyBlockKey[] {
+  const hp = getHomepage(cust) as any;
+  const stored = Array.isArray(hp.legacy_order) ? (hp.legacy_order as string[]) : null;
+  if (!stored || stored.length === 0) return [...LEGACY_DEFAULT_ORDER];
+  const known = stored.filter(
+    (k) => (LEGACY_DEFAULT_ORDER as string[]).includes(k) || (LEGACY_ADDABLE_SECTIONS as string[]).includes(k),
+  ) as LegacyBlockKey[];
+  for (const k of LEGACY_DEFAULT_ORDER) if (!known.includes(k)) known.push(k);
+  return known;
+}
+
+export function isLegacyBlockHidden(cust: any, key: string): boolean {
+  const hp = getHomepage(cust) as any;
+  return Array.isArray(hp.legacy_hidden) && hp.legacy_hidden.includes(key);
+}
+
+export function setLegacyOrderPatch(cust: any, order: string[]) {
+  const hp = getHomepage(cust);
+  return { homepage: { ...hp, legacy_order: order } };
+}
+
+export function setLegacyHiddenPatch(cust: any, key: string, hidden: boolean) {
+  const hp = getHomepage(cust) as any;
+  const cur: string[] = Array.isArray(hp.legacy_hidden) ? hp.legacy_hidden : [];
+  const next = hidden ? Array.from(new Set([...cur, key])) : cur.filter((k) => k !== key);
+  return { homepage: { ...hp, legacy_hidden: next } };
+}
+
 
 export function getHomepage(cust: any): HomepageConfig {
   return (cust?.homepage ?? {}) as HomepageConfig;
