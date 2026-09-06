@@ -13,7 +13,7 @@ import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
 import { getInstallment } from "@/lib/installments";
 import { useColorGroups } from "@/lib/color-groups";
-import { VariantSwatch } from "@/components/storefront/ProductCardVariants";
+import { VariantSwatch, CardRating } from "@/components/storefront/ProductCardVariants";
 import { cn } from "@/lib/utils";
 import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 
