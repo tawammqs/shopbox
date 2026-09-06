@@ -15,15 +15,19 @@ export function PromoTimer({
   endsAt,
   label,
   size = "sm",
+  compact = false,
   onExpire,
   className,
 }: {
   endsAt: string;
   label?: string | null;
   size?: "sm" | "lg";
+  /** Top-bar version: only the numbers, lime chips, no label. */
+  compact?: boolean;
   onExpire?: () => void;
   className?: string;
 }) {
+
   const [left, setLeft] = useState<ReturnType<typeof split> | null>(null);
   const [expired, setExpired] = useState(false);
 
