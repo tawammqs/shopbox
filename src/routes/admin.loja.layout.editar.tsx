@@ -1003,11 +1003,12 @@ function SortableRow({ id, children }: { id: string; children: (handle: React.Re
 }
 
 function AddonRow({
-  item, storeId, isLegacyTheShoes, onMoveUp, onMoveDown, onNavigate,
+  item, storeId, isLegacyTheShoes, dragHandle, onMoveUp, onMoveDown, onNavigate,
 }: {
   item: AddonHomepageItem;
   storeId: string | undefined;
   isLegacyTheShoes: boolean;
+  dragHandle?: React.ReactNode;
   onMoveUp: () => void;
   onMoveDown: () => void;
   onNavigate: () => void;
@@ -1042,7 +1043,7 @@ function AddonRow({
             <button onClick={onMoveUp} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▲</button>
             <button onClick={onMoveDown} className="text-[10px] text-[#9ca3af] hover:text-[#111827]">▼</button>
           </div>
-          <GripVertical className="h-4 w-4 text-[#d1d5db]" />
+          {dragHandle ?? <GripVertical className="h-4 w-4 text-[#d1d5db]" />}
           <button onClick={toggle} className="shrink-0" aria-label={active ? "Ocultar" : "Mostrar"} disabled={saving}>
             {active ? <Eye className="h-4 w-4 text-[#25d366]" /> : <EyeOff className="h-4 w-4 text-[#9ca3af]" />}
           </button>
