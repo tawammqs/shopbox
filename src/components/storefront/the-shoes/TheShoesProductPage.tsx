@@ -220,11 +220,6 @@ export function TheShoesProductPage({ product }: { product: any }) {
             {pct > 0 && (
               <p className="mt-1 text-sm text-[#111]">Você economiza {formatBRL(Number(product.price) - price)}</p>
             )}
-            {promo.hasTimedPromo && promo.promotion?.ends_at && (
-              <div className="mt-3 inline-block rounded-xl bg-[#f7f7f7] p-3">
-                <PromoTimer size="lg" className="mt-0" endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
-              </div>
-            )}
             {price >= 9 && (
               <span style={{
                 display: 'block',
@@ -236,6 +231,11 @@ export function TheShoesProductPage({ product }: { product: any }) {
               }}>
                 ou 3x de {formatBRL(price / 3)} sem juros
               </span>
+            )}
+            {promo.hasTimedPromo && promo.promotion?.ends_at && (
+              <div className="mt-3 inline-block rounded-xl bg-[#f7f7f7] p-3">
+                <PromoTimer size="lg" className="mt-0" endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
+              </div>
             )}
           </div>
 
