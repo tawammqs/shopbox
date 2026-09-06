@@ -278,6 +278,38 @@ function PromoForm({ editing, storeId, onDone }: { editing: any; storeId: string
           <p className="mt-1 text-xs text-gray-400">Aparece embaixo de cada produto durante a promoção</p>
         </div>
 
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium">Cor de fundo da barra</label>
+            <div className="mt-1 flex items-center gap-2">
+              <input type="color" value={form.bg_color} onChange={(e) => set("bg_color", e.target.value)} className="h-10 w-14 cursor-pointer rounded-lg border border-gray-200" />
+              <input value={form.bg_color} onChange={(e) => set("bg_color", e.target.value)} className="h-10 w-full rounded-xl border border-gray-200 px-3 text-sm outline-none focus:border-[#25d366]" />
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Cor do texto</label>
+            <div className="mt-1 flex items-center gap-2">
+              <input type="color" value={form.text_color} onChange={(e) => set("text_color", e.target.value)} className="h-10 w-14 cursor-pointer rounded-lg border border-gray-200" />
+              <input value={form.text_color} onChange={(e) => set("text_color", e.target.value)} className="h-10 w-full rounded-xl border border-gray-200 px-3 text-sm outline-none focus:border-[#25d366]" />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl p-3" style={{ backgroundColor: form.bg_color, color: form.text_color }}>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-[13px] font-medium">
+            <span style={{ fontWeight: 800, fontSize: 15 }}>
+              {form.discount_type === "percent" ? `${form.discount_value || 0}% OFF` : `R$${form.discount_value || 0} OFF`}
+            </span>
+            <span style={{ opacity: 0.4 }}>|</span>
+            <span className="flex items-center gap-2">
+              <span style={{ opacity: 0.8 }}>{form.timer_label || "Oferta termina em:"}</span>
+              <span className="flex items-center gap-1 font-mono">00 : 23 : 45</span>
+            </span>
+          </div>
+        </div>
+
+
+
         <div className="rounded-xl bg-gray-50 p-4">
           <p className="mb-2 text-xs text-gray-400">Preview no produto:</p>
           <div className="flex flex-col">
