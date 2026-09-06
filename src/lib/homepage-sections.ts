@@ -132,6 +132,15 @@ export type DepoimentosCfg = { title: string; background: string; text_color?: s
 
 export type VideoSectionCfg = { title: string };
 
+export type CategoriasPrincipaisCfg = {
+  title: string;
+  display_mode: "grid" | "carousel";
+  limit: number;
+  only_with_image: boolean;
+  category_ids: string[]; // empty = all top-level categories
+};
+
+
 export type ProdutoPrincipalCfg = {
   title: string;
   product_id: string | null;
