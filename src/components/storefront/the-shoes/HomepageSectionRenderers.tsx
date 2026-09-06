@@ -784,10 +784,10 @@ export function CategoriasPrincipaisRender({ cfg }: { cfg: CategoriasPrincipaisC
   };
 
   const card = (it: (typeof items)[number]) => (
-    <a key={it.id} href={hrefFor(it)} className="group flex flex-col items-center text-center">
-      <div className="aspect-square w-full overflow-hidden bg-[#dfdac8]" style={{ borderRadius: "50%" }}>
+    <a key={it.id} href={hrefFor(it)} className="ts-cat-item flex flex-col items-center text-center">
+      <div className="w-full overflow-hidden bg-[#dfdac8]" style={{ borderRadius: "50%", aspectRatio: "1 / 1" }}>
         {it.image_url ? (
-          <img src={it.image_url} alt={it.title} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" style={{ borderRadius: "50%" }} />
+          <img src={it.image_url} alt={it.title} loading="lazy" className="h-full w-full object-cover transition duration-300 hover:scale-105" style={{ borderRadius: "50%" }} />
         ) : (
           <div className="grid h-full w-full place-items-center text-2xl font-bold uppercase text-[#111]">{(it.title || "?").slice(0, 1)}</div>
         )}
