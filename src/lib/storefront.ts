@@ -309,7 +309,11 @@ export async function fetchProductsForCategory(
     if (productIds.length === 0) return { products: [], total: 0 };
     q = q.in("id", productIds);
   }
-  if (opts.brands && opts.brands.length) q = q.in("brand", opts.brands);
+  if (opts.brands && opts.brands.length) {
+    // Case/whitespace-insensitive brand match ("THE SHOES" == "The Shoes" == " the shoes ")
+    const safe = opts.brands.map((b) => b.trim().replace(/[,()]/g, "")).filter(Boolean);
+    if (safe.length) q = q.or(safe.map((b) => `brand.ilike.${b}`).join(","));
+  }
 
   switch (opts.sort) {
     case "price_asc":

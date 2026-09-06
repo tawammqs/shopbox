@@ -203,7 +203,7 @@ function useDedupedProducts(products: ProductCardData[]) {
   return dedupeByGroup(products, map);
 }
 
-function ProductsGrid({ products: raw }: { products: ProductCardData[] }) {
+export function ProductsGrid({ products: raw }: { products: ProductCardData[] }) {
   const products = useDedupedProducts(raw);
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
@@ -263,7 +263,7 @@ export function ProductsByTagRender({ cfg, defaultTag }: { cfg: ProductsTagCfg; 
       <div className="ts-section-head">
         <h2 className="ts-section-title">{cfg.title || "Produtos"}</h2>
         {cfg.show_more_button !== false && (
-          <Link to="/loja/$slug" params={{ slug: store.slug }} className="text-sm font-medium text-[#666] hover:text-[#111]">Ver mais →</Link>
+          <Link to="/loja/$slug/produtos" params={{ slug: store.slug }} search={{ tag: sectionKey ?? tag }} className="text-sm font-medium text-[#666] hover:text-[#111]">Ver mais →</Link>
         )}
       </div>
       {mode === "carousel" ? <ProductsCarousel products={products} /> : <ProductsGrid products={products} />}

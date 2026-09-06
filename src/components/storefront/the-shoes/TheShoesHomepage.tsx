@@ -390,7 +390,7 @@ function ProductCarouselSection({
         <div className="min-w-0">
           {description && <p className="mb-1 text-[13px] text-[#888]">{description}</p>}
           <h2 className="ts-section-title">{title}</h2>
-          <Link to="/loja/$slug" params={{ slug: store.slug }}
+          <Link to="/loja/$slug/produtos" params={{ slug: store.slug }} search={{ tag }}
             className="mt-2 inline-flex items-center gap-1 text-[13px] font-medium text-[#aaa] hover:text-[#111]">
             {link}
             <span className="grid h-5 w-5 place-items-center rounded-full border border-[#ddd] text-[10px]">›</span>
@@ -751,8 +751,11 @@ function PillRow({ items, direction }: { items: TheShoesSettings["testimonials"]
 
 /* -------------- FAQ (cream box, Mio Capelli style) -------------- */
 function FaqSection({ title, items, whatsapp }: { title: string; items: TheShoesSettings["faq_items"]; whatsapp: string }) {
+  const { store } = useStorefront();
   const [open, setOpen] = useState<number | null>(null);
+  const [selectorOpen, setSelectorOpen] = useState(false);
   if (!items?.length) return null;
+  const fallbackNumber = store.whatsapp || whatsapp;
   return (
     <section className="ts-faq-section">
       <div className="ts-faq-wrap">
@@ -781,16 +784,24 @@ function FaqSection({ title, items, whatsapp }: { title: string; items: TheShoes
             Não encontrou a resposta para a sua pergunta?<br />
             Fale com o nosso time de atendimento.
           </p>
-          {whatsapp && (
+          {fallbackNumber && (
             <div className="flex justify-center">
-              <a href={buildWhatsAppUrl(whatsapp)} target="_blank" rel="noreferrer" className="ts-faq-cta">
+              <button type="button" onClick={() => setSelectorOpen(true)} className="ts-faq-cta">
                 <WhatsAppLogo size={20} />
                 Chamar no WhatsApp
-              </a>
+              </button>
             </div>
           )}
         </div>
       </div>
+      {selectorOpen && (
+        <SalesTeamSelector
+          storeId={store.id}
+          cartMessage={null}
+          fallbackNumber={fallbackNumber}
+          onClose={() => setSelectorOpen(false)}
+        />
+      )}
     </section>
   );
 }
