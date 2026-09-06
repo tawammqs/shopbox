@@ -28,6 +28,8 @@ import { Button } from "@/components/ui/button";
 import { VisitTracker } from "@/components/storefront/VisitTracker";
 import { StorefrontCustomizer } from "@/components/storefront/StorefrontCustomizer";
 import { MioVipPopupHost, MioCouponTab } from "@/components/storefront/MioAddonOverlays";
+import { PromoTopBar } from "@/components/storefront/PromoTopBar";
+
 
 export const Route = createFileRoute("/loja/$slug")({
   loader: async ({ params }) => {
