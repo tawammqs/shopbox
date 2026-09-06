@@ -121,7 +121,7 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
           if (!inst.show) return null;
           return <span style={{ display: "block", fontSize: 11, color: "#aaa", marginTop: 2 }}>3x de {inst.formatted} sem juros</span>;
         })()}
-        <CardRating storeId={store.id} productId={p.id} className="mt-1" />
+        <CardRating storeId={store.id} productId={p.id} productIds={group?.product_ids} className="mt-1" />
       </div>
     </Link>
   );

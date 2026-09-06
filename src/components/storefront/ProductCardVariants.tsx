@@ -82,10 +82,17 @@ export function useProductRatings(storeId: string | undefined) {
 }
 
 /** "★ 4.8 (12)" line for a listing card; renders nothing when the product has no approved reviews. */
-export function CardRating({ storeId, productId, className }: { storeId: string; productId: string; className?: string }) {
+export function CardRating({ storeId, productId, productIds, className }: { storeId: string; productId: string; productIds?: string[]; className?: string }) {
   const ratings = useProductRatings(storeId);
-  const r = ratings[productId];
-  if (!r || r.review_count === 0) return null;
+  // Aggregate across all color variants of the model so reviews of a sibling color still count.
+  const ids = productIds && productIds.length > 0 ? productIds : [productId];
+  let sum = 0, count = 0;
+  for (const id of ids) {
+    const x = ratings[id];
+    if (x && x.review_count > 0) { sum += x.avg_rating * x.review_count; count += x.review_count; }
+  }
+  if (count === 0) return null;
+  const r = { avg_rating: Math.round((sum / count) * 10) / 10, review_count: count };
   return (
     <div className={cn("flex items-center gap-1 text-[12px] text-[#6b7280]", className)} aria-label={`Avaliação ${r.avg_rating} de 5`}>
       <Star className="h-[13px] w-[13px] fill-amber-400 text-amber-400" />

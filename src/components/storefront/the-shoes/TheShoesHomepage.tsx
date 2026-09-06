@@ -362,7 +362,7 @@ function TsProductCard({ p }: { p: ProductCardData }) {
             </span>
           );
         })()}
-        <CardRating storeId={store.id} productId={p.id} className="mt-1" />
+        <CardRating storeId={store.id} productId={p.id} productIds={group?.product_ids} className="mt-1" />
       </div>
     </Link>
   );
