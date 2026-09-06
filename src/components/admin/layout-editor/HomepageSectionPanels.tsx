@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Trash2, Plus, Upload, X as XIcon } from "lucide-react";
+import { Trash2, Plus, Upload, X as XIcon, GripVertical } from "lucide-react";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -19,6 +22,7 @@ import {
   type VideoSectionCfg,
   type ProdutoPrincipalCfg,
   type CategoriasPrincipaisCfg,
+  type CategoriaPrincipalItem,
 } from "@/lib/homepage-sections";
 import { hasProductSection } from "@/lib/product-sections";
 import { Link } from "@tanstack/react-router";
@@ -661,6 +665,95 @@ function ProdutoPrincipalPanel({ storeId, cfg, onChange }: { storeId: string; cf
 }
 
 // ---------------- Categorias principais ----------------
+const newCatItem = (): CategoriaPrincipalItem => ({
+  id: `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+  title: "",
+  image_url: "",
+  link_type: "category",
+  category_id: null,
+  url: "",
+});
+
+function SortableCatItem({
+  item, index, storeId, cats, onChange, onRemove,
+}: {
+  item: CategoriaPrincipalItem;
+  index: number;
+  storeId: string;
+  cats: { id: string; name: string; parent_id: string | null }[];
+  onChange: (patch: Partial<CategoriaPrincipalItem>) => void;
+  onRemove: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
+  return (
+    <div ref={setNodeRef} style={style} className="space-y-2 rounded-lg border border-gray-200 bg-white p-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button type="button" {...attributes} {...listeners} className="cursor-grab text-[#9ca3af] hover:text-[#374151]" aria-label="Arrastar">
+            <GripVertical className="h-4 w-4" />
+          </button>
+          <p className="text-xs font-semibold">Categoria {index + 1}</p>
+        </div>
+        <button type="button" onClick={onRemove} className="text-red-500 hover:text-red-700" aria-label="Remover">
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <div className="flex items-start gap-3">
+        <div className="shrink-0">
+          {item.image_url ? (
+            <img src={item.image_url} alt="" className="h-14 w-14 rounded-full object-cover" />
+          ) : (
+            <div className="grid h-14 w-14 place-items-center rounded-full bg-[#dfdac8] text-sm font-bold uppercase text-[#111]">{(item.title || "?").slice(0, 1)}</div>
+          )}
+        </div>
+        <div className="min-w-0 flex-1 space-y-2">
+          <div>
+            <FieldLabel>Título</FieldLabel>
+            <TextInput value={item.title} onChange={(e) => onChange({ title: e.target.value })} placeholder="Ex.: Tênis" />
+          </div>
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Imagem (redonda)</FieldLabel>
+        <ImageUploadBox storeId={storeId} sectionKey="categorias_principais" value={item.image_url} onChange={(u) => onChange({ image_url: u })} hint="Recomendado: 400×400px (quadrada)" />
+        <TextInput className="mt-1.5" value={item.image_url} onChange={(e) => onChange({ image_url: e.target.value })} placeholder="ou cole a URL da imagem" />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <FieldLabel>Link</FieldLabel>
+          <SelectInput value={item.link_type} onChange={(e) => onChange({ link_type: e.target.value as any })}>
+            <option value="category">Categoria da loja</option>
+            <option value="url">Página / URL</option>
+          </SelectInput>
+        </div>
+        <div>
+          {item.link_type === "category" ? (
+            <>
+              <FieldLabel>Categoria</FieldLabel>
+              <SelectInput value={item.category_id ?? ""} onChange={(e) => {
+                const id = e.target.value || null;
+                const c = cats.find((x) => x.id === id);
+                onChange({ category_id: id, ...(c && !item.title ? { title: c.name } : {}) });
+              }}>
+                <option value="">— escolher —</option>
+                {cats.map((c) => (
+                  <option key={c.id} value={c.id}>{c.parent_id ? "↳ " : ""}{c.name}</option>
+                ))}
+              </SelectInput>
+            </>
+          ) : (
+            <>
+              <FieldLabel>URL</FieldLabel>
+              <TextInput value={item.url} onChange={(e) => onChange({ url: e.target.value })} placeholder="/sobre ou https://…" />
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CategoriasPrincipaisPanel({ storeId, cfg, onChange }: { storeId: string; cfg: CategoriasPrincipaisCfg; onChange: (c: CategoriasPrincipaisCfg) => void }) {
   const cats = useQuery({
     queryKey: ["editor-categories-full", storeId],
@@ -670,9 +763,26 @@ function CategoriasPrincipaisPanel({ storeId, cfg, onChange }: { storeId: string
     },
     staleTime: 60_000,
   });
-  const ids = cfg.category_ids ?? [];
-  const toggleCat = (id: string) =>
-    onChange({ ...cfg, category_ids: ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id] });
+  const items = cfg.items ?? [];
+  const setItems = (next: CategoriaPrincipalItem[]) => onChange({ ...cfg, items: next });
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
+  const onDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const from = items.findIndex((i) => i.id === active.id);
+    const to = items.findIndex((i) => i.id === over.id);
+    if (from < 0 || to < 0) return;
+    setItems(arrayMove(items, from, to));
+  };
+  const importFromStore = () => {
+    const top = (cats.data ?? []).filter((c: any) => !c.parent_id);
+    if (top.length === 0) return toast.error("Nenhuma categoria cadastrada");
+    setItems([
+      ...items,
+      ...top.map((c: any) => ({ ...newCatItem(), id: `c${c.id.slice(0, 8)}${Math.random().toString(36).slice(2, 5)}`, title: c.name, image_url: c.image_url ?? "", link_type: "category" as const, category_id: c.id })),
+    ]);
+  };
+
   return (
     <div className="space-y-3">
       <div>
@@ -683,29 +793,40 @@ function CategoriasPrincipaisPanel({ storeId, cfg, onChange }: { storeId: string
         <FieldLabel>Formato</FieldLabel>
         <SelectInput value={cfg.display_mode ?? "carousel"} onChange={(e) => onChange({ ...cfg, display_mode: e.target.value as any })}>
           <option value="carousel">Carrossel horizontal</option>
-          <option value="grid">Grade</option>
+          <option value="grid">Grade centralizada</option>
         </SelectInput>
       </div>
       <div>
-        <FieldLabel>Máximo de categorias</FieldLabel>
-        <TextInput type="number" min={1} max={24} value={cfg.limit ?? 12} onChange={(e) => onChange({ ...cfg, limit: Number(e.target.value) || 12 })} />
-      </div>
-      <Toggle checked={!!cfg.only_with_image} onChange={(v) => onChange({ ...cfg, only_with_image: v })} label="Mostrar apenas categorias com foto" />
-      <div>
         <FieldLabel>Categorias exibidas</FieldLabel>
-        <p className="mb-2 text-[11px] text-[#6b7280]">Nenhuma marcada = todas as categorias principais. Marque para escolher e ordenar (ordem de marcação).</p>
-        <div className="max-h-60 space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
-          {(cats.data ?? []).map((c: any) => (
-            <label key={c.id} className="flex items-center gap-2 rounded px-1 py-1 text-sm hover:bg-gray-50">
-              <input type="checkbox" checked={ids.includes(c.id)} onChange={() => toggleCat(c.id)} />
-              {c.image_url ? <img src={c.image_url} alt="" className="h-6 w-6 rounded object-cover" /> : <span className="grid h-6 w-6 place-items-center rounded bg-gray-100 text-[10px] text-[#9ca3af]">—</span>}
-              <span className={cn(c.parent_id && "text-[#6b7280]")}>{c.parent_id ? "↳ " : ""}{c.name}</span>
-            </label>
-          ))}
+        <p className="mb-2 text-[11px] text-[#6b7280]">Monte manualmente: imagem redonda, título e link de cada uma. Arraste pela alça para reordenar.</p>
+        {items.length === 0 && (
+          <p className="mb-2 rounded-lg border border-dashed border-gray-300 p-3 text-center text-xs text-[#6b7280]">Nenhuma categoria configurada. A seção não aparece na loja até adicionar ao menos uma.</p>
+        )}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+          <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2">
+              {items.map((it, i) => (
+                <SortableCatItem
+                  key={it.id}
+                  item={it}
+                  index={i}
+                  storeId={storeId}
+                  cats={(cats.data ?? []) as any}
+                  onChange={(patch) => setItems(items.map((x, k) => (k === i ? { ...x, ...patch } : x)))}
+                  onRemove={() => setItems(items.filter((_, k) => k !== i))}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+        <div className="mt-2 flex gap-2">
+          <button type="button" onClick={() => setItems([...items, newCatItem()])} className="flex flex-1 items-center justify-center gap-1 rounded-lg border border-dashed border-gray-300 py-2 text-sm font-medium hover:bg-gray-50">
+            <Plus className="h-4 w-4" /> Adicionar categoria
+          </button>
+          <button type="button" onClick={importFromStore} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium hover:bg-gray-50" title="Preenche com as categorias principais cadastradas">
+            Importar da loja
+          </button>
         </div>
-        <p className="mt-2 text-[11px] text-[#6b7280]">
-          As fotos das categorias são definidas em <Link to="/admin/categorias" className="font-medium text-[#25d366] underline">Categorias</Link>.
-        </p>
       </div>
     </div>
   );
