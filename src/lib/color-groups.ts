@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type ColorGroup = {
@@ -21,36 +20,74 @@ export function extractModelAndColor(productName: string): { model: string; colo
 }
 
 export const COLOR_MAP: Record<string, string> = {
-  preto: "#1a1a1a",
+  // Brancos e neutros
   branco: "#ffffff",
+  white: "#ffffff",
+  "off white": "#faf9f6",
+  "off-white": "#faf9f6",
+  creme: "#fffdd0",
+  bege: "#d4b896",
+  nude: "#e8c9a0",
+  areia: "#c2b280",
+  cru: "#f5f0e8",
+  // Pretos e cinzas
+  preto: "#1a1a1a",
+  black: "#1a1a1a",
   cinza: "#9ca3af",
+  gray: "#9ca3af",
   "cinza claro": "#d1d5db",
   "cinza escuro": "#4b5563",
-  bege: "#d4b896",
-  creme: "#fffdd0",
+  chumbo: "#374151",
+  // Marrons
   marrom: "#795548",
+  brown: "#795548",
+  café: "#6f4e37",
+  cafe: "#6f4e37",
   caramelo: "#c68642",
+  chocolate: "#3d1c02",
+  "dark coffee": "#2c1810",
+  coffee: "#6f4e37",
+  terra: "#8b4513",
+  tabaco: "#9b7653",
+  // Rosas e vermelhos
+  rose: "#f9a8d4",
+  rosa: "#f9a8d4",
+  pink: "#ec4899",
+  vermelho: "#ef4444",
+  vinho: "#722f37",
+  bordô: "#800020",
+  bordo: "#800020",
+  coral: "#ff6b6b",
+  salmão: "#fa8072",
+  salmao: "#fa8072",
+  // Azuis
   azul: "#3b82f6",
+  blue: "#3b82f6",
   "azul marinho": "#1e3a5f",
+  navy: "#1e3a5f",
   "azul royal": "#4169e1",
+  "azul claro": "#93c5fd",
   "azul celeste": "#87ceeb",
+  celeste: "#87ceeb",
+  índigo: "#4f46e5",
+  indigo: "#4f46e5",
+  // Verdes
   verde: "#22c55e",
+  green: "#22c55e",
   "verde militar": "#4a5240",
   "verde oliva": "#708238",
-  vermelho: "#ef4444",
-  laranja: "#f97316",
+  menta: "#98ff98",
+  sage: "#87ae73",
+  // Outros
   amarelo: "#eab308",
-  rosa: "#ec4899",
+  laranja: "#f97316",
   roxo: "#a855f7",
-  vinho: "#722f37",
-  "bordô": "#800020",
-  bordo: "#800020",
-  "off white": "#faf9f6",
-  cru: "#f5f0e8",
+  lilás: "#c8a2c8",
+  lilas: "#c8a2c8",
   prata: "#c0c0c0",
+  silver: "#c0c0c0",
   dourado: "#ffd700",
-  nude: "#e8c9a0",
-  coral: "#ff6b6b",
+  gold: "#ffd700",
   tiffany: "#81d8d0",
 };
 
@@ -66,76 +103,31 @@ export function isLightSwatch(hex: string) {
   return ["#ffffff", "#faf9f6", "#fffdd0", "#f5f0e8"].includes(hex.toLowerCase());
 }
 
-// ---- Dominant color extracted from the product image (cached in memory) ----
-const dominantCache = new Map<string, string>();
+/**
+ * Extrai 1 ou 2 cores hex a partir do nome (ex.: "NK V2K Run - Off White & Rose" → ["#faf9f6", "#f9a8d4"]).
+ * Aceita a parte de cor já isolada ("Off White & Rose") ou o nome completo do produto.
+ * Suporta separadores " - ", "│", "|" e cores compostas com "&", "/" ou "e".
+ */
+export function parseColorsFromName(name: string): string[] {
+  const norm = (name ?? "").replace(/[│|]/g, " - ").replace(/\s+/g, " ").trim();
+  const parts = norm.split(/\s-\s/);
+  const colorPart = (parts.length >= 2 ? parts[parts.length - 1] : norm).toLowerCase();
 
-export function getDominantColor(imageUrl: string): Promise<string> {
-  const cached = dominantCache.get(imageUrl);
-  if (cached) return Promise.resolve(cached);
-  return new Promise((resolve) => {
-    const done = (c: string) => {
-      dominantCache.set(imageUrl, c);
-      resolve(c);
-    };
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        const size = 100;
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext("2d")!;
-        ctx.drawImage(img, 0, 0, size, size);
+  const colorNames = colorPart
+    .split(/\s*(?:&|\/)\s*|\s+e\s+/)
+    .map((c) => c.trim())
+    .filter(Boolean);
 
-        // Sample central 60% of the image (20% to 80%) where the product is.
-        const data = ctx.getImageData(20, 20, 60, 60).data;
-        let bestColor = { r: 200, g: 200, b: 200, saturation: 0 };
+  const hexes = colorNames
+    .map((n) => {
+      if (COLOR_MAP[n]) return COLOR_MAP[n];
+      const found = Object.entries(COLOR_MAP).find(([key]) => n.includes(key) || key.includes(n));
+      return found ? found[1] : null;
+    })
+    .filter((c): c is string => !!c);
 
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-
-          // Ignore light/white backgrounds
-          if (r > 220 && g > 220 && b > 220) continue;
-          // Ignore very dark/black pixels
-          if (r < 25 && g < 25 && b < 25) continue;
-
-          // Use HSL saturation to pick the most vibrant color.
-          const max = Math.max(r, g, b) / 255;
-          const min = Math.min(r, g, b) / 255;
-          const saturation = max === 0 ? 0 : (max - min) / max;
-
-          if (saturation > bestColor.saturation) {
-            bestColor = { r, g, b, saturation };
-          }
-        }
-
-        done(`rgb(${bestColor.r}, ${bestColor.g}, ${bestColor.b})`);
-      } catch {
-        done("#e5e7eb");
-      }
-    };
-    img.onerror = () => done("#e5e7eb");
-    img.src = imageUrl;
-  });
-}
-
-/** Cor do círculo de variação: dominante da imagem do produto, com fallback no mapa de nomes. */
-export function useDominantColor(imageUrl: string | undefined, colorName: string): string {
-  const fallback = getColorHex(colorName);
-  const [color, setColor] = useState(() => (imageUrl && dominantCache.get(imageUrl)) || fallback);
-  useEffect(() => {
-    if (!imageUrl) { setColor(fallback); return; }
-    const cached = dominantCache.get(imageUrl);
-    if (cached) { setColor(cached); return; }
-    setColor(fallback);
-    let live = true;
-    void getDominantColor(imageUrl).then((c) => { if (live) setColor(c); });
-    return () => { live = false; };
-  }, [imageUrl, fallback]);
-  return color;
+  if (hexes.length === 0) return [getColorHex(colorPart)];
+  return hexes.slice(0, 2);
 }
 
 export async function fetchColorGroups(storeId: string): Promise<ColorGroup[]> {
