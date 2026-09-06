@@ -136,7 +136,9 @@ function StorefrontLayout() {
         style={{ ["--accent" as any]: isTheShoes ? "#111111" : store.accent_color }}
       >
         {!isLegacyTheShoes && <StorefrontCustomizer storeId={store.id} />}
+        <PromoTopBar storeId={store.id} />
         <AffiliateBar />
+
         {isTheShoes ? (
           <TheShoesHeader />
         ) : (
