@@ -7,7 +7,9 @@ import { useStorefront, useIsMioTheme } from "@/components/storefront/StoreConte
 import { fetchProductFull, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { ColorVariantsRow } from "@/components/storefront/ColorVariantsRow";
 import { supabase } from "@/integrations/supabase/client";
-import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
+import { discountPct, formatBRL } from "@/lib/format";
+import { useProductPromo } from "@/lib/promotions";
+import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
 import { trackViewContent, trackAddToCart } from "@/lib/tracking";
@@ -98,8 +100,9 @@ function ProductInner({ product }: { product: any }) {
   const isOut = false;
   const lowStock = false;
 
-  const price = effectivePrice(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
-  const pct = discountPct(Number(product.price), product.promo_price ? Number(product.promo_price) : null);
+  const promo = useProductPromo(store.id, product);
+  const price = promo.price;
+  const pct = discountPct(Number(product.price), price);
 
   const avgRating = useMemo(() => {
     if (reviews.length === 0) return null;
@@ -257,6 +260,11 @@ function ProductInner({ product }: { product: any }) {
               <p className="mt-1 text-sm text-accent">
                 Você economiza {formatBRL(Number(product.price) - price)}
               </p>
+            )}
+            {promo.hasTimedPromo && promo.promotion?.ends_at && (
+              <div className="mt-3 inline-block rounded-xl bg-muted/40 p-3">
+                <PromoTimer size="lg" className="mt-0" endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
+              </div>
             )}
           </div>
 

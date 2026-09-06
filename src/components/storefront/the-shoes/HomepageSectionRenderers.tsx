@@ -43,6 +43,8 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
 // Mirror of TsProductCard but extracted; keep visual identical.
 import { Heart } from "lucide-react";
 import { effectivePrice, discountPct, formatBRL } from "@/lib/format";
+import { useProductPromo } from "@/lib/promotions";
+import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { getInstallment } from "@/lib/installments";
 import { useCart } from "@/stores/cart";
 import { useWishlist } from "@/stores/wishlist";
@@ -54,8 +56,9 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
   const addItem = useCart((s) => s.addItem);
   const wished = useWishlist((s) => s.has(p.id));
   const toggleWish = useWishlist((s) => s.toggle);
-  const price = effectivePrice(p.price, p.promo_price);
-  const pct = discountPct(p.price, p.promo_price);
+  const promo = useProductPromo(store.id, p);
+  const price = promo.price;
+  const pct = discountPct(p.price, price);
   const img1 = p.images[0]?.url ?? "";
   const img2 = p.images[1]?.url ?? img1;
   const [hover, setHover] = useState(false);
@@ -107,6 +110,9 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
             <span className="text-[16px] font-semibold text-[#111]">{formatBRL(price)}</span>
           )}
         </div>
+        {promo.hasTimedPromo && promo.promotion?.ends_at && (
+          <PromoTimer endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
+        )}
         {(() => {
           const inst = getInstallment(p.price, p.promo_price);
           if (!inst.show) return null;
