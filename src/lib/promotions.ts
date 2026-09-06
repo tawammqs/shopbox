@@ -14,6 +14,8 @@ export type PromotionRow = {
   ends_at: string | null;
   active: boolean;
   timer_label: string | null;
+  bg_color: string | null;
+  text_color: string | null;
 };
 
 export type ActivePromotion = {

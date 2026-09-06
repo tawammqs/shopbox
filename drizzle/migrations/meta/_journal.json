@@ -50,6 +50,13 @@
       "when": 1788700866724,
       "tag": "0006_color_groups_pipe_separator_and_rating_summary",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788716257373,
+      "tag": "0007_promotions_bar_colors",
+      "breakpoints": true
     }
   ]
 }

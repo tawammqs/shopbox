@@ -1384,6 +1384,7 @@ export type Database = {
         Row: {
           active: boolean
           badge_label: string | null
+          bg_color: string | null
           created_at: string
           ends_at: string | null
           id: string
@@ -1392,6 +1393,7 @@ export type Database = {
           scope_type: Database["public"]["Enums"]["promo_scope"]
           starts_at: string | null
           store_id: string
+          text_color: string | null
           timer_label: string | null
           type: Database["public"]["Enums"]["coupon_type"]
           updated_at: string
@@ -1400,6 +1402,7 @@ export type Database = {
         Insert: {
           active?: boolean
           badge_label?: string | null
+          bg_color?: string | null
           created_at?: string
           ends_at?: string | null
           id?: string
@@ -1408,6 +1411,7 @@ export type Database = {
           scope_type?: Database["public"]["Enums"]["promo_scope"]
           starts_at?: string | null
           store_id: string
+          text_color?: string | null
           timer_label?: string | null
           type: Database["public"]["Enums"]["coupon_type"]
           updated_at?: string
@@ -1416,6 +1420,7 @@ export type Database = {
         Update: {
           active?: boolean
           badge_label?: string | null
+          bg_color?: string | null
           created_at?: string
           ends_at?: string | null
           id?: string
@@ -1424,6 +1429,7 @@ export type Database = {
           scope_type?: Database["public"]["Enums"]["promo_scope"]
           starts_at?: string | null
           store_id?: string
+          text_color?: string | null
           timer_label?: string | null
           type?: Database["public"]["Enums"]["coupon_type"]
           updated_at?: string
