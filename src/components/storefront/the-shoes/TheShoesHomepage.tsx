@@ -18,6 +18,8 @@ import { trackAddToCart } from "@/lib/tracking";
 import { cn } from "@/lib/utils";
 import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 import { supabase } from "@/integrations/supabase/client";
+import { useCardVariant, ColorSwatches, CardRating } from "@/components/storefront/ProductCardVariants";
+import { useColorGroups, dedupeByGroup } from "@/lib/color-groups";
 
 const VIP_GROUP_URL = "https://chat.whatsapp.com/CZ5lQvBM0kt9j1QRq7bU3r";
 
@@ -272,13 +274,12 @@ function TsProductCard({ p }: { p: ProductCardData }) {
   const promo = useProductPromo(store.id, p);
   const price = promo.price;
   const pct = discountPct(p.price, price);
-  const img1 = p.images[0]?.url ?? "";
-  const img2 = p.images[1]?.url ?? img1;
+  const { group, idx, setVariantIdx, targetSlug, img1, img2, title } = useCardVariant(store.id, p);
   const [hover, setHover] = useState(false);
 
   const quickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (p.colors.length > 0) { window.location.href = `/loja/${store.slug}/produto/${p.slug}`; return; }
+    if (p.colors.length > 0 || group) { window.location.href = `/loja/${store.slug}/produto/${targetSlug}`; return; }
     addItem({
       productId: p.id, slug: p.slug, title: p.title, image: img1,
       colorId: null, colorName: null, sizeId: null, sizeLabel: null,
@@ -289,7 +290,7 @@ function TsProductCard({ p }: { p: ProductCardData }) {
   };
 
   return (
-    <Link to="/loja/$slug/produto/$productSlug" params={{ slug: store.slug, productSlug: p.slug }}
+    <Link to="/loja/$slug/produto/$productSlug" params={{ slug: store.slug, productSlug: targetSlug }}
       className="group block" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[12px] bg-[#f7f7f7]">
         {img1 && (
@@ -311,11 +312,11 @@ function TsProductCard({ p }: { p: ProductCardData }) {
           className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-[#333] shadow-sm hover:bg-white">
           <Heart className={cn("h-[14px] w-[14px]", wished && "fill-[#111] text-[#111]")} />
         </button>
-        <AffiliateShareButton productSlug={p.slug} />
+        <AffiliateShareButton productSlug={targetSlug} />
         <button onClick={quickAdd}
           className="absolute inset-x-2 bottom-2 hidden items-center justify-center rounded-full py-2 text-[11px] font-semibold text-white opacity-0 shadow transition group-hover:opacity-100 md:flex"
           style={{ background: ACCENT }}>
-          {p.colors.length > 0 ? "ESCOLHER OPÇÕES" : "ADICIONAR"}
+          {p.colors.length > 0 || group ? "ESCOLHER OPÇÕES" : "ADICIONAR"}
         </button>
       </div>
       <div className="px-1 pt-3 pb-1">
@@ -326,10 +327,11 @@ function TsProductCard({ p }: { p: ProductCardData }) {
         )}
         <div className="flex items-start justify-between gap-2" style={{ marginBottom: 6 }}>
           <h3 className="line-clamp-2 flex-1 text-[14px] font-semibold leading-snug text-[#111]">
-            {p.title}
+            {title}
           </h3>
-          <AffiliateShareButton productSlug={p.slug} variant="text" />
+          <AffiliateShareButton productSlug={targetSlug} variant="text" />
         </div>
+        <ColorSwatches group={group} idx={idx} onSelect={setVariantIdx} className="mb-1.5" />
         <div className="flex items-baseline">
           {pct > 0 ? (
             <>
@@ -360,6 +362,7 @@ function TsProductCard({ p }: { p: ProductCardData }) {
             </span>
           );
         })()}
+        <CardRating storeId={store.id} productId={p.id} className="mt-1" />
       </div>
     </Link>
   );
@@ -376,8 +379,9 @@ function ProductCarouselSection({
     staleTime: 60_000,
   });
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps", dragFree: true });
+  const { map: groupMap } = useColorGroups(storeId);
 
-  const products = q.data ?? [];
+  const products = dedupeByGroup(q.data ?? [], groupMap);
   if (products.length === 0) return null;
 
   return (
