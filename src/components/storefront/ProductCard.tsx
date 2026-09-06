@@ -12,7 +12,8 @@ import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
 import { getInstallment } from "@/lib/installments";
-import { useColorGroups, getColorHex, isLightSwatch } from "@/lib/color-groups";
+import { useColorGroups } from "@/lib/color-groups";
+import { VariantSwatch } from "@/components/storefront/ProductCardVariants";
 import { cn } from "@/lib/utils";
 import { AffiliateShareButton } from "@/components/storefront/AffiliateShare";
 
@@ -178,32 +179,16 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
         {group && group.colors.length > 1 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            {group.colors.map((color, i) => {
-              const hex = getColorHex(color);
-              const active = i === idx;
-              return (
-                <button
-                  key={group.product_ids[i]}
-                  type="button"
-                  title={color}
-                  aria-label={color}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setVariantIdx(i);
-                  }}
-                  onMouseEnter={() => setVariantIdx(i)}
-                  className={cn(
-                    "h-5 w-5 rounded-full border-2 transition-all",
-                    active ? "scale-110 border-foreground" : "border-transparent hover:border-muted-foreground",
-                  )}
-                  style={{
-                    backgroundColor: hex,
-                    boxShadow: isLightSwatch(hex) ? "inset 0 0 0 1px #e5e7eb" : "none",
-                  }}
-                />
-              );
-            })}
+            {group.colors.map((color, i) => (
+              <VariantSwatch
+                key={group.product_ids[i]}
+                colorName={color}
+                imageUrl={group.first_images?.[i]}
+                active={i === idx}
+                onSelect={() => setVariantIdx(i)}
+                className="h-5 w-5"
+              />
+            ))}
             <span className="self-center text-xs text-muted-foreground">{group.colors.length} cores</span>
           </div>
         )}
