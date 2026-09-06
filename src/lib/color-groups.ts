@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type ColorGroup = {
@@ -63,6 +64,66 @@ export function getColorHex(colorName: string): string {
 
 export function isLightSwatch(hex: string) {
   return ["#ffffff", "#faf9f6", "#fffdd0", "#f5f0e8"].includes(hex.toLowerCase());
+}
+
+// ---- Dominant color extracted from the product image (cached in memory) ----
+const dominantCache = new Map<string, string>();
+
+export function getDominantColor(imageUrl: string): Promise<string> {
+  const cached = dominantCache.get(imageUrl);
+  if (cached) return Promise.resolve(cached);
+  return new Promise((resolve) => {
+    const done = (c: string) => {
+      dominantCache.set(imageUrl, c);
+      resolve(c);
+    };
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0);
+        const data = ctx.getImageData(
+          Math.floor(img.width * 0.3),
+          Math.floor(img.height * 0.3),
+          Math.max(1, Math.floor(img.width * 0.4)),
+          Math.max(1, Math.floor(img.height * 0.4)),
+        ).data;
+        let r = 0, g = 0, b = 0, count = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          // Ignora fundo branco e pixels muito escuros
+          if (data[i] > 240 && data[i + 1] > 240 && data[i + 2] > 240) continue;
+          if (data[i] < 15 && data[i + 1] < 15 && data[i + 2] < 15) continue;
+          r += data[i]; g += data[i + 1]; b += data[i + 2]; count++;
+        }
+        if (count === 0) { done("#e5e7eb"); return; }
+        done(`rgb(${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)})`);
+      } catch {
+        done("#e5e7eb");
+      }
+    };
+    img.onerror = () => done("#e5e7eb");
+    img.src = imageUrl;
+  });
+}
+
+/** Cor do círculo de variação: dominante da imagem do produto, com fallback no mapa de nomes. */
+export function useDominantColor(imageUrl: string | undefined, colorName: string): string {
+  const fallback = getColorHex(colorName);
+  const [color, setColor] = useState(() => (imageUrl && dominantCache.get(imageUrl)) || fallback);
+  useEffect(() => {
+    if (!imageUrl) { setColor(fallback); return; }
+    const cached = dominantCache.get(imageUrl);
+    if (cached) { setColor(cached); return; }
+    setColor(fallback);
+    let live = true;
+    void getDominantColor(imageUrl).then((c) => { if (live) setColor(c); });
+    return () => { live = false; };
+  }, [imageUrl, fallback]);
+  return color;
 }
 
 export async function fetchColorGroups(storeId: string): Promise<ColorGroup[]> {
