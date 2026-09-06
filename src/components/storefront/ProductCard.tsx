@@ -6,7 +6,9 @@ import { useStorefront, useIsMioTheme } from "./StoreContext";
 import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import { useWishlist } from "@/stores/wishlist";
 import { useCart } from "@/stores/cart";
-import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
+import { discountPct, formatBRL } from "@/lib/format";
+import { useProductPromo } from "@/lib/promotions";
+import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { trackAddToCart } from "@/lib/tracking";
 import type { ProductCardData } from "@/lib/storefront";
 import { getInstallment } from "@/lib/installments";
@@ -33,8 +35,9 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const targetSlug = group ? (group.product_slugs?.[idx] ?? p.slug) : p.slug;
   const groupImage = group ? group.first_images?.[idx] || "" : "";
 
-  const price = effectivePrice(p.price, p.promo_price);
-  const pct = discountPct(p.price, p.promo_price);
+  const promo = useProductPromo(store.id, p);
+  const price = promo.price;
+  const pct = discountPct(p.price, price);
   const img1 = (isBaseVariant ? p.images[0]?.url : groupImage) || groupImage || p.images[0]?.url || "";
   const img2 = isBaseVariant ? (p.images[1]?.url ?? img1) : img1;
 
@@ -207,12 +210,15 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
 
         <div className="flex items-baseline gap-2">
-          <span className="text-base font-bold text-foreground">{formatBRL(price)}</span>
+          <span className={cn("text-base font-bold", promo.hasTimedPromo ? "text-red-500" : "text-foreground")}>{formatBRL(price)}</span>
           {pct > 0 && <span className="text-xs text-muted-foreground line-through">{formatBRL(p.price)}</span>}
         </div>
+        {promo.hasTimedPromo && promo.promotion?.ends_at && (
+          <PromoTimer endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
+        )}
         {isMio ? (
           (() => {
-            const inst = getInstallment(p.price, p.promo_price);
+            const inst = getInstallment(p.price, price);
             if (!inst.show) return null;
             return (
               <span style={{

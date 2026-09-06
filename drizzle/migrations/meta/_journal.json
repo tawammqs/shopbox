@@ -36,6 +36,13 @@
       "when": 1788554768408,
       "tag": "0004_affiliate_commission_status_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788699490121,
+      "tag": "0005_promotions_timer_label",
+      "breakpoints": true
     }
   ]
 }

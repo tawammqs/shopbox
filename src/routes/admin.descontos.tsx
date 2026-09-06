@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
@@ -23,6 +23,11 @@ export const Route = createFileRoute("/admin/descontos")({
 function DiscountsPage() {
   const { data: store, isLoading } = useMyStore();
   const planSlug = store?.plan?.slug as any;
+  const loc = useLocation();
+  const navigate = useNavigate();
+  const isChild = loc.pathname.replace(/\/$/, "") !== "/admin/descontos";
+
+  if (isChild) return <Outlet />;
 
   if (isLoading) {
     return (
@@ -71,7 +76,7 @@ function DiscountsPage() {
       </div>
 
       <PlanGate plan={planSlug} feature="discounts">
-        <Tabs defaultValue="coupons">
+        <Tabs defaultValue="coupons" onValueChange={(v) => { if (v === "promos") navigate({ to: "/admin/descontos/promocoes" }); }}>
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="coupons">Cupons</TabsTrigger>
             <TabsTrigger value="promos">Promoções</TabsTrigger>
@@ -79,7 +84,6 @@ function DiscountsPage() {
             <TabsTrigger value="popup">Popup</TabsTrigger>
           </TabsList>
           <TabsContent value="coupons"><CouponsTab storeId={store.id} /></TabsContent>
-          <TabsContent value="promos"><PromosTab storeId={store.id} /></TabsContent>
           <TabsContent value="combos"><CombosTab storeId={store.id} /></TabsContent>
           <TabsContent value="popup"><PopupTab /></TabsContent>
         </Tabs>
@@ -196,38 +200,6 @@ function CouponDialog({ open, onOpenChange, editing, storeId, onSaved }: any) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function PromosTab({ storeId }: { storeId: string }) {
-  const qc = useQueryClient();
-  const list = useQuery({
-    queryKey: ["promos", storeId],
-    queryFn: async () => (await supabase.from("promotions").select("*").eq("store_id", storeId)).data ?? [],
-  });
-  return (
-    <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">Promoções por categoria/escopo aplicadas automaticamente.</p>
-      <div className="rounded-2xl border border-border bg-card">
-        {(list.data ?? []).length === 0 ? (
-          <p className="p-8 text-center text-sm text-muted-foreground">Nenhuma promoção. Em breve: criar promoções.</p>
-        ) : (
-          <ul className="divide-y divide-border">
-            {(list.data ?? []).map((p: any) => (
-              <li key={p.id} className="flex items-center justify-between p-3">
-                <div>
-                  <p className="font-medium">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">{p.type} · {p.value}{p.type === "percent" ? "%" : ""}</p>
-                </div>
-                <Button size="sm" variant="ghost" onClick={async () => { await supabase.from("promotions").delete().eq("id", p.id); qc.invalidateQueries({ queryKey: ["promos"] }); }}>
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
   );
 }
 

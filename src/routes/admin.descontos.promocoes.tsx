@@ -1,22 +1,30 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { CheckCircle, X, Eye, EyeOff, Trash2, Info } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Eye, EyeOff, Trash2, Info, Search, Store, FolderOpen, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { formatBRL } from "@/lib/format";
+import { promotionStatus } from "@/lib/promotions";
 
 export const Route = createFileRoute("/admin/descontos/promocoes")({
   head: () => ({ meta: [{ title: "Promoções — ShopBox" }] }),
   component: Page,
 });
 
+const STATUS_UI = {
+  active: { label: "🟢 Ativa", cls: "bg-[#f0fdf4] text-[#15803d]" },
+  scheduled: { label: "⏰ Agendada", cls: "bg-amber-50 text-amber-700" },
+  ended: { label: "🔴 Encerrada", cls: "bg-red-50 text-red-600" },
+  inactive: { label: "Desativada", cls: "bg-gray-100 text-[#6b7280]" },
+} as const;
+
 function Page() {
   const { data: store } = useMyStore();
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const [bannerOpen, setBannerOpen] = useState(true);
   const [editing, setEditing] = useState<any | null>(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -29,20 +37,23 @@ function Page() {
     },
   });
 
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["promotions"] });
+    qc.invalidateQueries({ queryKey: ["active-promotion"] });
+  };
+
   const toggle = useMutation({
-    mutationFn: async (p: any) => {
-      await supabase.from("promotions").update({ active: !p.active }).eq("id", p.id);
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["promotions"] }),
+    mutationFn: async (p: any) => { await supabase.from("promotions").update({ active: !p.active }).eq("id", p.id); },
+    onSuccess: invalidate,
   });
 
   const remove = useMutation({
     mutationFn: async (id: string) => { await supabase.from("promotions").delete().eq("id", id); },
-    onSuccess: () => { toast.success("Excluído"); qc.invalidateQueries({ queryKey: ["promotions"] }); },
+    onSuccess: () => { toast.success("Excluído"); invalidate(); },
   });
 
-  if (showForm) {
-    return <PromoForm editing={editing} storeId={store!.id} onDone={() => { setShowForm(false); setEditing(null); qc.invalidateQueries({ queryKey: ["promotions"] }); }} />;
+  if (showForm && store) {
+    return <PromoForm editing={editing} storeId={store.id} onDone={() => { setShowForm(false); setEditing(null); invalidate(); }} />;
   }
 
   const items = list.data ?? [];
@@ -53,7 +64,7 @@ function Page() {
         <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Promoções</h1>
         <div className="flex gap-2">
           <button onClick={() => navigate({ to: "/admin/descontos/cupons" })} className="h-10 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium hover:bg-gray-50">
-            Conhecer mais descontos
+            Cupons
           </button>
           <button onClick={() => { setEditing(null); setShowForm(true); }} className="h-10 rounded-lg bg-[#25d366] px-4 text-sm font-semibold text-white hover:bg-[#1fb959]">
             + Criar promoção
@@ -61,24 +72,20 @@ function Page() {
         </div>
       </header>
 
-      {bannerOpen && (
-        <div className="flex items-start gap-3 rounded-lg border-l-[3px] border-[#25d366] bg-[#f0fdf4] p-4">
-          <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#25d366]" />
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-[#111827]">Promoções mais inteligentes</p>
-            <p className="mt-0.5 text-sm text-[#374151]">Agora suas promoções combinam melhor e seus clientes sempre recebem o melhor desconto disponível.</p>
-            <a className="mt-1 inline-block text-sm font-medium text-[#25d366] hover:underline" href="#">Mais informações ↗</a>
-          </div>
-          <button onClick={() => setBannerOpen(false)} className="rounded p-1 text-gray-400 hover:bg-white/50"><X className="h-4 w-4" /></button>
-        </div>
-      )}
+      <div className="flex items-start gap-3 rounded-lg border-l-[3px] border-[#25d366] bg-[#f0fdf4] p-4">
+        <Info className="mt-0.5 h-5 w-5 shrink-0 text-[#25d366]" />
+        <p className="text-sm text-[#374151]">
+          Promoções com temporizador mostram o preço original riscado, o preço com desconto e uma contagem regressiva embaixo de cada produto.
+          Quando o tempo acaba, o desconto some automaticamente.
+        </p>
+      </div>
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 text-left text-xs font-medium uppercase tracking-wider text-[#6b7280]">
             <tr>
               <th className="px-4 py-3">Nome</th>
-              <th className="px-4 py-3">Tipo de desconto</th>
+              <th className="px-4 py-3">Desconto</th>
               <th className="px-4 py-3">Aplicar a</th>
               <th className="px-4 py-3">Vigência</th>
               <th className="px-4 py-3">Status</th>
@@ -89,84 +96,98 @@ function Page() {
             {items.length === 0 && (
               <tr><td colSpan={6} className="p-12 text-center text-sm text-[#6b7280]">Nenhuma promoção criada.</td></tr>
             )}
-            {items.map((p: any) => (
-              <tr key={p.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <button onClick={() => { setEditing(p); setShowForm(true); }} className="font-medium text-[#25d366] hover:underline">{p.name}</button>
-                </td>
-                <td className="px-4 py-3 text-[#374151]">{p.type === "percent" ? `${p.value}%` : `R$ ${p.value}`}</td>
-                <td className="px-4 py-3"><span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs text-[#374151]">{scopeLabel(p.scope_type)}</span></td>
-                <td className="px-4 py-3 text-[#6b7280]">{formatPeriod(p.starts_at, p.ends_at)}</td>
-                <td className="px-4 py-3">
-                  <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", p.active ? "bg-[#f0fdf4] text-[#25d366]" : "bg-gray-100 text-[#6b7280]")}>
-                    {p.active ? "Ativada" : "Desativada"}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex justify-end gap-1">
-                    <button onClick={() => toggle.mutate(p)} className="rounded p-1.5 text-gray-500 hover:bg-gray-100" title={p.active ? "Desativar" : "Ativar"}>
-                      {p.active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                    <button onClick={() => { if (confirm("Excluir?")) remove.mutate(p.id); }} className="rounded p-1.5 text-red-500 hover:bg-red-50">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {items.map((p: any) => {
+              const st = STATUS_UI[promotionStatus(p)];
+              return (
+                <tr key={p.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <button onClick={() => { setEditing(p); setShowForm(true); }} className="font-medium text-[#25d366] hover:underline">{p.name}</button>
+                  </td>
+                  <td className="px-4 py-3 text-[#374151]">{p.type === "percent" ? `${Number(p.value)}%` : formatBRL(Number(p.value))}</td>
+                  <td className="px-4 py-3"><span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs text-[#374151]">{scopeLabel(p.scope_type)}</span></td>
+                  <td className="px-4 py-3 text-[#6b7280]">{formatPeriod(p.starts_at, p.ends_at)}</td>
+                  <td className="px-4 py-3">
+                    <span className={cn("rounded-full px-2.5 py-1 text-xs font-medium", st.cls)}>{st.label}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <button onClick={() => toggle.mutate(p)} className="rounded p-1.5 text-gray-500 hover:bg-gray-100" title={p.active ? "Desativar" : "Ativar"}>
+                        {p.active ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                      <button onClick={() => { if (confirm("Excluir?")) remove.mutate(p.id); }} className="rounded p-1.5 text-red-500 hover:bg-red-50">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
-
-      {items.length > 0 && <p className="text-xs text-[#6b7280]">Mostrando 1-{items.length} de {items.length}</p>}
-      <a href="#" className="inline-flex items-center gap-1 text-sm text-[#25d366] hover:underline">
-        <Info className="h-3.5 w-3.5" /> Mais sobre promoções e descontos ↗
-      </a>
     </div>
   );
 }
 
 function scopeLabel(s: string) {
-  return s === "store" ? "Toda a loja" : s === "category" ? "Categorias" : "Produtos";
+  return s === "all" || s === "store" ? "Toda a loja" : s === "category" || s === "subcategory" ? "Categorias" : "Produtos";
 }
 function formatPeriod(s: string | null, e: string | null) {
   if (!s && !e) return "Ilimitada";
-  const f = (d: string | null) => d ? new Date(d).toLocaleDateString("pt-BR") : "—";
+  const f = (d: string | null) => d ? new Date(d).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "—";
   return `${f(s)} → ${f(e)}`;
 }
 
+function toLocalInput(iso: string | null | undefined) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const off = d.getTimezoneOffset();
+  return new Date(d.getTime() - off * 60_000).toISOString().slice(0, 16);
+}
+
+type Scope = "all" | "category" | "products";
+
 function PromoForm({ editing, storeId, onDone }: { editing: any; storeId: string; onDone: () => void }) {
-  const [name, setName] = useState(editing?.name ?? "");
-  const [kind, setKind] = useState<"buyxpayy" | "price" | "progressive">("price");
-  const [buyX, setBuyX] = useState("3");
-  const [payY, setPayY] = useState("2");
-  const [type, setType] = useState<"percent" | "fixed">(editing?.type ?? "percent");
-  const [value, setValue] = useState(editing?.value?.toString() ?? "10");
-  const [scope, setScope] = useState<"store" | "category" | "product">(editing?.scope_type ?? "store");
-  const [combine, setCombine] = useState({ price: false, shipping: false, cart: false, apps: false });
-  const [period, setPeriod] = useState<"ilimitada" | "periodo">(editing?.starts_at || editing?.ends_at ? "periodo" : "ilimitada");
-  const [startsAt, setStartsAt] = useState(editing?.starts_at?.slice(0, 10) ?? "");
-  const [endsAt, setEndsAt] = useState(editing?.ends_at?.slice(0, 10) ?? "");
+  const initialScope: Scope = editing?.scope_type === "category" || editing?.scope_type === "subcategory" ? "category" : editing?.scope_type === "products" ? "products" : "all";
+  const [form, setForm] = useState({
+    name: editing?.name ?? "",
+    discount_type: (editing?.type ?? "percent") as "percent" | "fixed",
+    discount_value: editing ? Number(editing.value) : 5,
+    applies_to: initialScope,
+    category_ids: (initialScope === "category" ? (editing?.scope_ids ?? []) : []) as string[],
+    product_ids: (initialScope === "products" ? (editing?.scope_ids ?? []) : []) as string[],
+    starts_at: editing ? toLocalInput(editing.starts_at) : toLocalInput(new Date().toISOString()),
+    ends_at: toLocalInput(editing?.ends_at),
+    timer_label: editing?.timer_label ?? "Oferta termina em:",
+  });
   const [saving, setSaving] = useState(false);
+  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }));
+
+  const previewPrice = form.discount_type === "percent"
+    ? 199.99 * (1 - (form.discount_value || 0) / 100)
+    : Math.max(0, 199.99 - (form.discount_value || 0));
 
   async function save() {
-    if (!name.trim()) return toast.error("Nome obrigatório");
+    if (!form.name.trim()) return toast.error("Nome obrigatório");
+    if (!(form.discount_value > 0)) return toast.error("Informe o valor do desconto");
+    if (form.discount_type === "percent" && form.discount_value > 100) return toast.error("Desconto máximo de 100%");
+    if (!form.ends_at) return toast.error("Informe a data de término");
+    if (form.starts_at && new Date(form.ends_at) <= new Date(form.starts_at)) return toast.error("O término deve ser depois do início");
+    if (form.applies_to === "category" && form.category_ids.length === 0) return toast.error("Selecione ao menos uma categoria");
+    if (form.applies_to === "products" && form.product_ids.length === 0) return toast.error("Selecione ao menos um produto");
     setSaving(true);
     try {
-      const finalType = kind === "buyxpayy" ? "percent" : type;
-      const finalValue = kind === "buyxpayy"
-        ? Math.round((1 - (Number(payY) / Number(buyX))) * 100)
-        : Number(value);
       const payload = {
         store_id: storeId,
-        name: name.trim(),
-        type: finalType as any,
-        value: finalValue,
-        scope_type: scope as any,
-        scope_ids: [] as any,
-        starts_at: period === "periodo" && startsAt ? new Date(startsAt).toISOString() : null,
-        ends_at: period === "periodo" && endsAt ? new Date(endsAt).toISOString() : null,
-        active: true,
+        name: form.name.trim(),
+        type: form.discount_type,
+        value: form.discount_value,
+        scope_type: form.applies_to,
+        scope_ids: (form.applies_to === "category" ? form.category_ids : form.applies_to === "products" ? form.product_ids : []) as any,
+        starts_at: form.starts_at ? new Date(form.starts_at).toISOString() : new Date().toISOString(),
+        ends_at: new Date(form.ends_at).toISOString(),
+        timer_label: form.timer_label.trim() || null,
+        active: editing ? editing.active : true,
       };
       const { error } = editing
         ? await supabase.from("promotions").update(payload).eq("id", editing.id)
@@ -181,77 +202,95 @@ function PromoForm({ editing, storeId, onDone }: { editing: any; storeId: string
     }
   }
 
+  const input = "mt-1 h-10 w-full rounded-xl border border-gray-200 px-3 text-sm outline-none focus:border-[#25d366]";
+
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <h1 className="text-2xl font-bold tracking-tight text-[#111827]">{editing ? "Editar" : "Criar"} promoção</h1>
 
-      <FormCard title="Nome">
-        <input value={name} onChange={(e) => setName(e.target.value)} className="h-10 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-[#25d366]" placeholder="Ex.: Promo de inverno" />
-        <p className="mt-1.5 text-xs text-[#6b7280]">Esse nome não será mostrado para seus clientes.</p>
-      </FormCard>
+      <div className="space-y-4 rounded-xl border border-gray-200 bg-white p-5">
+        <div>
+          <label className="text-sm font-medium">Nome da promoção</label>
+          <input placeholder="Ex: Black Friday, Liquidação de Verão..." value={form.name} onChange={(e) => set("name", e.target.value)} className={input} />
+        </div>
 
-      <FormCard title="Tipo de desconto">
-        <select value={kind} onChange={(e) => setKind(e.target.value as any)} className="h-10 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-[#25d366]">
-          <option value="buyxpayy">Compre X e pague Y</option>
-          <option value="price">Desconto sobre preços</option>
-          <option value="progressive">Desconto progressivo</option>
-        </select>
-        {kind === "buyxpayy" && (
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <label className="text-sm">Comprando<input type="number" value={buyX} onChange={(e) => setBuyX(e.target.value)} className="mt-1 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm" /></label>
-            <label className="text-sm">Pague<input type="number" value={payY} onChange={(e) => setPayY(e.target.value)} className="mt-1 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm" /></label>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium">Tipo de desconto</label>
+            <select value={form.discount_type} onChange={(e) => set("discount_type", e.target.value as any)} className={input}>
+              <option value="percent">Porcentagem (%)</option>
+              <option value="fixed">Valor fixo (R$)</option>
+            </select>
           </div>
+          <div>
+            <label className="text-sm font-medium">{form.discount_type === "percent" ? "Desconto (%)" : "Desconto (R$)"}</label>
+            <div className="flex items-center gap-2">
+              <input type="number" min={0} max={form.discount_type === "percent" ? 100 : undefined} step={0.5}
+                value={Number.isFinite(form.discount_value) ? form.discount_value : ""}
+                onChange={(e) => set("discount_value", parseFloat(e.target.value))} className={input} />
+              <span className="mt-1 shrink-0 text-sm text-gray-500">{form.discount_type === "percent" ? "%" : "R$"}</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Aplicar em</label>
+          <div className="mt-1 flex gap-2">
+            {([
+              { value: "all", label: "Toda a loja", Icon: Store },
+              { value: "category", label: "Categorias", Icon: FolderOpen },
+              { value: "products", label: "Produtos específicos", Icon: Package },
+            ] as const).map((opt) => (
+              <button key={opt.value} type="button" onClick={() => set("applies_to", opt.value)}
+                className={cn("flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-all",
+                  form.applies_to === opt.value ? "border-gray-900 bg-gray-900 text-white" : "border-gray-200 text-[#374151] hover:bg-gray-50")}>
+                <opt.Icon className="h-3.5 w-3.5" /> {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {form.applies_to === "category" && (
+          <CategoryMultiSelect storeId={storeId} selected={form.category_ids} onChange={(ids) => set("category_ids", ids)} />
         )}
-        {kind === "price" && (
-          <div className="mt-3 flex items-center gap-2">
-            <input type="number" value={value} onChange={(e) => setValue(e.target.value)} className="h-10 w-32 rounded-lg border border-gray-200 px-3 text-sm" />
-            <div className="inline-flex gap-1 rounded-full bg-gray-100 p-1">
-              {(["percent", "fixed"] as const).map((t) => (
-                <button key={t} onClick={() => setType(t)} className={cn("rounded-full px-3 py-1 text-xs font-medium", type === t ? "bg-[#25d366] text-white" : "text-[#374151]")}>{t === "percent" ? "%" : "R$"}</button>
+        {form.applies_to === "products" && (
+          <ProductMultiSelect storeId={storeId} selected={form.product_ids} onChange={(ids) => set("product_ids", ids)} />
+        )}
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium">Início</label>
+            <input type="datetime-local" value={form.starts_at} onChange={(e) => set("starts_at", e.target.value)} className={input} />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Término</label>
+            <input type="datetime-local" value={form.ends_at} onChange={(e) => set("ends_at", e.target.value)} className={input} />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Texto do temporizador</label>
+          <input placeholder="Ex: Oferta termina em:" value={form.timer_label} onChange={(e) => set("timer_label", e.target.value)} className={input} />
+          <p className="mt-1 text-xs text-gray-400">Aparece embaixo de cada produto durante a promoção</p>
+        </div>
+
+        <div className="rounded-xl bg-gray-50 p-4">
+          <p className="mb-2 text-xs text-gray-400">Preview no produto:</p>
+          <div className="flex flex-col">
+            <span className="text-sm text-gray-400 line-through">{formatBRL(199.99)}</span>
+            <span className="text-lg font-bold text-red-500">{formatBRL(previewPrice)}</span>
+            {form.timer_label && <div className="mt-2 text-xs text-gray-500">{form.timer_label}</div>}
+            <div className="mt-1 flex items-center gap-1">
+              {["08", "23", "45"].map((v, i) => (
+                <span key={i} className="contents">
+                  {i > 0 && <span className="text-xs font-bold text-gray-400">:</span>}
+                  <span className="min-w-[28px] rounded-md bg-gray-900 px-1.5 py-0.5 text-center font-mono text-xs text-white">{v}</span>
+                </span>
               ))}
             </div>
           </div>
-        )}
-        {kind === "progressive" && <p className="mt-2 text-sm text-[#6b7280]">Configure faixas de quantidade que ativam descontos crescentes.</p>}
-      </FormCard>
-
-      <FormCard title="Aplicar a">
-        <div className="inline-flex gap-1 rounded-full bg-gray-100 p-1">
-          {([["store", "Toda a loja"], ["category", "Categorias"], ["product", "Produtos"]] as const).map(([v, l]) => (
-            <button key={v} onClick={() => setScope(v as any)} className={cn("rounded-full px-3 py-1.5 text-xs font-medium", scope === v ? "bg-[#25d366] text-white" : "text-[#374151]")}>{l}</button>
-          ))}
         </div>
-        <p className="mt-2 text-xs text-[#6b7280]">{scope === "store" ? "A promoção será aplicada a todos os produtos." : scope === "category" ? "Selecione as categorias na próxima etapa." : "Selecione os produtos na próxima etapa."}</p>
-      </FormCard>
-
-      <FormCard title="Combinar com">
-        {[
-          ["price", "Descontos sobre preços"],
-          ["shipping", "Frete grátis"],
-          ["cart", "Descontos sobre o valor do carrinho"],
-          ["apps", "Descontos de aplicativos"],
-        ].map(([k, l]) => (
-          <label key={k} className="mt-2 flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={(combine as any)[k]} onChange={(e) => setCombine((c) => ({ ...c, [k]: e.target.checked }))} className="h-4 w-4 accent-[#25d366]" />
-            {l}
-          </label>
-        ))}
-      </FormCard>
-
-      <FormCard title="Limites de uso">
-        <p className="mb-1 text-xs font-medium text-[#6b7280]">Data</p>
-        <div className="inline-flex gap-1 rounded-full bg-gray-100 p-1">
-          {(["ilimitada", "periodo"] as const).map((p) => (
-            <button key={p} onClick={() => setPeriod(p)} className={cn("rounded-full px-3 py-1.5 text-xs font-medium", period === p ? "bg-[#25d366] text-white" : "text-[#374151]")}>{p === "ilimitada" ? "Ilimitada" : "Período"}</button>
-          ))}
-        </div>
-        {period === "periodo" && (
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <label className="text-xs text-[#6b7280]">Início<input type="date" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} className="mt-1 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm" /></label>
-            <label className="text-xs text-[#6b7280]">Fim<input type="date" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} className="mt-1 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm" /></label>
-          </div>
-        )}
-      </FormCard>
+      </div>
 
       <div className="flex justify-end gap-2">
         <button onClick={onDone} className="h-10 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium hover:bg-gray-50">Cancelar</button>
@@ -261,11 +300,74 @@ function PromoForm({ editing, storeId, onDone }: { editing: any; storeId: string
   );
 }
 
-function FormCard({ title, children }: { title: string; children: React.ReactNode }) {
+function CategoryMultiSelect({ storeId, selected, onChange }: { storeId: string; selected: string[]; onChange: (ids: string[]) => void }) {
+  const q = useQuery({
+    queryKey: ["admin-categories-select", storeId],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("id, name, parent_id").eq("store_id", storeId).order("display_order");
+      return data ?? [];
+    },
+  });
+  const cats = q.data ?? [];
+  const toggle = (id: string) => onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <h3 className="text-sm font-semibold text-[#111827]">{title}</h3>
-      <div className="mt-3">{children}</div>
+    <div className="rounded-xl border border-gray-200 p-3">
+      <p className="mb-2 text-xs font-medium text-[#6b7280]">Categorias ({selected.length} selecionadas)</p>
+      {cats.length === 0 && <p className="text-xs text-gray-400">Nenhuma categoria cadastrada.</p>}
+      <div className="flex flex-wrap gap-2">
+        {cats.map((c: any) => {
+          const parent = c.parent_id ? cats.find((x: any) => x.id === c.parent_id)?.name : null;
+          const on = selected.includes(c.id);
+          return (
+            <button key={c.id} type="button" onClick={() => toggle(c.id)}
+              className={cn("rounded-full border px-3 py-1 text-xs font-medium", on ? "border-[#25d366] bg-[#25d366]/10 text-[#15803d]" : "border-gray-200 text-[#374151]")}>
+              {parent ? `${parent} › ` : ""}{c.name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ProductMultiSelect({ storeId, selected, onChange }: { storeId: string; selected: string[]; onChange: (ids: string[]) => void }) {
+  const [term, setTerm] = useState("");
+  const q = useQuery({
+    queryKey: ["admin-products-select", storeId],
+    queryFn: async () => {
+      const { data } = await supabase.from("products").select("id, title, price, product_images(url, position)").eq("store_id", storeId).order("title");
+      return data ?? [];
+    },
+  });
+  const items = useMemo(() => {
+    const t = term.trim().toLowerCase();
+    return (q.data ?? []).filter((p: any) => !t || p.title.toLowerCase().includes(t));
+  }, [q.data, term]);
+  const toggle = (id: string) => onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
+  return (
+    <div className="rounded-xl border border-gray-200 p-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <p className="text-xs font-medium text-[#6b7280]">Produtos ({selected.length} selecionados)</p>
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+          <input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Buscar produto" className="h-8 rounded-lg border border-gray-200 pl-7 pr-2 text-xs outline-none focus:border-[#25d366]" />
+        </div>
+      </div>
+      <div className="max-h-64 space-y-1 overflow-y-auto">
+        {items.map((p: any) => {
+          const img = (p.product_images ?? []).slice().sort((a: any, b: any) => a.position - b.position)[0]?.url;
+          const on = selected.includes(p.id);
+          return (
+            <label key={p.id} className={cn("flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm", on ? "bg-[#25d366]/10" : "hover:bg-gray-50")}>
+              <input type="checkbox" checked={on} onChange={() => toggle(p.id)} className="h-4 w-4 accent-[#25d366]" />
+              {img ? <img src={img} alt="" className="h-8 w-8 rounded object-cover" /> : <div className="h-8 w-8 rounded bg-gray-100" />}
+              <span className="flex-1 truncate">{p.title}</span>
+              <span className="text-xs text-gray-500">{formatBRL(Number(p.price))}</span>
+            </label>
+          );
+        })}
+        {items.length === 0 && <p className="p-2 text-xs text-gray-400">Nenhum produto encontrado.</p>}
+      </div>
     </div>
   );
 }

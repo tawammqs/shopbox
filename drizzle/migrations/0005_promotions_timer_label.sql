@@ -1,0 +1,1 @@
+ALTER TABLE public.promotions ADD COLUMN IF NOT EXISTS timer_label text DEFAULT 'Oferta termina em:';

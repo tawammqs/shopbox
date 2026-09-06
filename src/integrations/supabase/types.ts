@@ -1392,6 +1392,7 @@ export type Database = {
           scope_type: Database["public"]["Enums"]["promo_scope"]
           starts_at: string | null
           store_id: string
+          timer_label: string | null
           type: Database["public"]["Enums"]["coupon_type"]
           updated_at: string
           value: number
@@ -1407,6 +1408,7 @@ export type Database = {
           scope_type?: Database["public"]["Enums"]["promo_scope"]
           starts_at?: string | null
           store_id: string
+          timer_label?: string | null
           type: Database["public"]["Enums"]["coupon_type"]
           updated_at?: string
           value: number
@@ -1422,6 +1424,7 @@ export type Database = {
           scope_type?: Database["public"]["Enums"]["promo_scope"]
           starts_at?: string | null
           store_id?: string
+          timer_label?: string | null
           type?: Database["public"]["Enums"]["coupon_type"]
           updated_at?: string
           value?: number
