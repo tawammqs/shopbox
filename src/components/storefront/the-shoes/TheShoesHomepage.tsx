@@ -762,7 +762,7 @@ function PillRow({ items, direction }: { items: TheShoesSettings["testimonials"]
               )}
               <span className="absolute -bottom-[2px] -right-[2px] grid h-[18px] w-[18px] place-items-center rounded-full text-[8px] font-bold text-white"
                 style={{ background: ACCENT }}>
-                5★
+                {t.rating ?? 5}★
               </span>
             </div>
             <p className="text-[13px] leading-tight text-[#333]" style={{ maxWidth: 180 }}>
