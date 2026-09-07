@@ -427,7 +427,6 @@ export function TheShoesHeader() {
         .ts-desktop-only { display: none; }
         @media (min-width: 768px) {
           .ts-main { height: 70px; padding: 0 40px; }
-          .ts-logo { height: 52px; max-width: 180px; }
           .ts-main-right { gap: 20px; }
           .ts-desktop-only { display: inline-flex; }
         }
