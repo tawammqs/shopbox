@@ -393,14 +393,6 @@ export function TheShoesHeader() {
                   </button>
                 </div>
               )}
-              {store.affiliates_enabled && !affiliate && (
-                <Link to="/loja/$slug/afiliados" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                  className="mt-2 flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-bold"
-                  style={{ background: "#111", color: "#fff" }}>
-                  <BadgeDollarSign className="h-4 w-4" />
-                  Seja um afiliado
-                </Link>
-              )}
             </div>
           </aside>
         </>
