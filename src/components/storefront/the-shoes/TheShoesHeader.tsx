@@ -360,10 +360,10 @@ export function TheShoesHeader() {
               <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="ts-drawer-tracking">
                 <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Package size={20} color="#6b7280" />
+                  <Package size={20} color="#ffffff" />
                   <span>Rastrear pedido</span>
                 </span>
-                <span style={{ color: "#d1d5db", fontSize: 16 }}>›</span>
+                <span style={{ color: "#ffffff", fontSize: 16 }}>›</span>
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
