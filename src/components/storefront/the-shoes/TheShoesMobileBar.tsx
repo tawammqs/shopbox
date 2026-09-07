@@ -51,6 +51,7 @@ export function TheShoesMobileBar() {
           borderTop: "0.5px solid #e5e7eb",
           display: "grid",
           gridTemplateColumns: "repeat(5, 1fr)",
+          alignItems: "center",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
