@@ -14,7 +14,7 @@ import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
 
 export function TheShoesHeader() {
-  const { store, categories } = useStorefront();
+  const { store, categories, menus } = useStorefront();
   const isLegacyTheShoes = store.slug === "the-shoes";
   const navigate = useNavigate();
   const affiliate = useStoreAffiliate();
@@ -36,6 +36,22 @@ export function TheShoesHeader() {
   const ab = isLegacyTheShoes ? settingsQ.data?.announcement_bar : undefined;
 
   const roots = categories.filter((c) => !c.parent_id);
+
+  /** Garante que links relativos apontem para as páginas DESTA loja. */
+  const resolveUrl = (url: string | null) => {
+    if (!url) return "#";
+    if (/^(https?:|mailto:|tel:|#)/i.test(url)) return url;
+    const path = url.startsWith("/") ? url : `/${url}`;
+    if (path.startsWith("/loja/")) return path;
+    return `/loja/${store.slug}${path}`;
+  };
+
+  // Menu horizontal do desktop: prefere menu com nome de header/topo/principal; senão, o primeiro.
+  const desktopMenu = useMemo(() => {
+    if (!menus?.length) return null;
+    return menus.find((m) => /header|topo|principal|main|nav/i.test(m.name)) ?? menus[0];
+  }, [menus]);
+  const desktopMenuItems = desktopMenu?.items ?? [];
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
