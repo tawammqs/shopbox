@@ -556,3 +556,142 @@ export function TheShoesHeader() {
     </header>
   );
 }
+
+function DesktopSaintGermainNav({
+  storeSlug,
+  brands,
+  onOpenVip,
+}: {
+  storeSlug: string;
+  brands: string[];
+  onOpenVip: () => void;
+}) {
+  const linkBase: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 500,
+    color: "#374151",
+    padding: "13px 0",
+    whiteSpace: "nowrap",
+    textDecoration: "none",
+    borderBottom: "2px solid transparent",
+    transition: "border-color 0.2s",
+  };
+
+  return (
+    <nav
+      className="hidden md:flex"
+      style={{
+        borderBottom: "0.5px solid #e5e7eb",
+        backgroundColor: "#ffffff",
+        padding: "0 40px",
+        alignItems: "center",
+        gap: 28,
+      }}
+      aria-label="Navegação principal"
+    >
+      <Link
+        to="/loja/$slug/produtos"
+        params={{ slug: storeSlug }}
+        search={{ tag: "mais-vendidos" }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Mais vendidos
+      </Link>
+      <Link
+        to="/loja/$slug/produtos"
+        params={{ slug: storeSlug }}
+        search={{ tag: "lancamento" }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Lançamentos
+      </Link>
+
+      {/* Marcas — dropdown com marcas reais da loja */}
+      <div className="group relative flex items-center" style={{ whiteSpace: "nowrap" }}>
+        <button
+          type="button"
+          style={{
+            ...linkBase,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          Marcas <ChevronDown className="h-3 w-3" />
+        </button>
+        {brands.length > 0 && (
+          <div className="invisible absolute left-0 top-full z-50 min-w-[180px] rounded-xl border border-[#e5e7eb] bg-white p-2 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">
+            {brands.map((brand) => (
+              <Link
+                key={brand}
+                to="/loja/$slug/categoria/$categorySlug"
+                params={{ slug: storeSlug, categorySlug: "theshoes" }}
+                search={{ marca: brand }}
+                className="block rounded-md px-3 py-2 text-sm text-[#374151] hover:bg-[#f5f5f5]"
+              >
+                {brand}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Link
+        to="/loja/$slug/categoria/$categorySlug"
+        params={{ slug: storeSlug, categorySlug: "theshoes" }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        The Shoes
+      </Link>
+      <Link
+        to="/loja/$slug/rastreio"
+        params={{ slug: storeSlug }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Rastrear Pedido
+      </Link>
+      <button
+        type="button"
+        onClick={onOpenVip}
+        style={{
+          ...linkBase,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Ofertas Secretas
+      </button>
+
+      <Link
+        to="/loja/$slug/afiliados"
+        params={{ slug: storeSlug }}
+        style={{
+          ...linkBase,
+          fontWeight: 700,
+          color: "#ffffff",
+          backgroundColor: "#111827",
+          padding: "6px 14px",
+          borderRadius: 20,
+          marginLeft: "auto",
+          borderBottom: "none",
+        }}
+      >
+        💰 Seja Afiliada
+      </Link>
+    </nav>
+  );
+}
