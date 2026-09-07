@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { X, BadgeDollarSign } from "lucide-react";
+import { X, BadgeDollarSign, Package } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
@@ -433,9 +433,47 @@ export function TheShoesHeader() {
           padding: 24px; overflow-y: auto;
           animation: tsDrawerIn 0.3s ease forwards;
         }
+        .ts-drawer-mobile-top { display: none; }
+        .ts-drawer-mobile-login { display: none; }
+        .ts-drawer-tracking {
+          display: flex; align-items: center; justify-content: space-between;
+          margin-top: 16px; border-top: 1px solid #f5f5f5;
+          padding: 16px 0; font-size: 16px; font-weight: 500; color: #111;
+        }
         @keyframes tsDrawerIn {
           from { transform: translateX(-100%); }
           to { transform: translateX(0); }
+        }
+        /* Mobile: menu sobrepõe a tela inteira */
+        @media (max-width: 767px) {
+          .ts-drawer {
+            width: 100%; max-width: 100vw;
+            padding: 0; overflow: hidden;
+            display: flex; flex-direction: column;
+          }
+          .ts-drawer-close-desktop { display: none; }
+          .ts-drawer-mobile-top {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
+          }
+          .ts-drawer-mobile-login {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
+            font-weight: 600; font-size: 15px; color: #111;
+          }
+          .ts-drawer-login-extra { display: none; }
+          .ts-drawer-body {
+            flex: 1; min-height: 0;
+            display: flex; flex-direction: column;
+            padding: 0 20px; overflow-y: auto;
+          }
+          .ts-drawer-tracking {
+            margin: 0 -20px;
+            padding: 16px 20px;
+            background: #f9fafb;
+            border-top: 0.5px solid #e5e7eb;
+            font-size: 15px;
+          }
         }
       `}</style>
 
