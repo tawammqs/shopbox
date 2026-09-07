@@ -59,6 +59,7 @@ export function TheShoesHeader() {
   const [openCatId, setOpenCatId] = useState<string | null>(null);
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -68,6 +69,10 @@ export function TheShoesHeader() {
       try { setResults(await searchProductsLive(store.id, term)); } catch { setResults([]); }
     }, 200);
   }, [term, store.id]);
+
+  useEffect(() => {
+    fetchStoreBrands(store.id).then(setBrands).catch(() => setBrands([]));
+  }, [store.id]);
 
   // A barra fixa mobile abre o modal do Grupo VIP via CustomEvent.
   useEffect(() => {
