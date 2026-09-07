@@ -357,13 +357,26 @@ export function TheShoesHeader() {
                 </Link>
               )}
               <div style={{ flex: 1, minHeight: 32 }} />
-              <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="ts-drawer-tracking">
-                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Link
+                to="/loja/$slug/rastreio"
+                params={{ slug: store.slug }}
+                onClick={() => setNavOpen(false)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "18px 20px",
+                  backgroundColor: "#111827",
+                  color: "#ffffff",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                <span style={{ display: "flex", alignItems: "center", gap: 10, color: "#ffffff" }}>
                   <Package size={20} color="#ffffff" />
-                  <span>Rastrear pedido</span>
+                  <span style={{ color: "#ffffff" }}>Rastrear pedido</span>
                 </span>
-                <span style={{ color: "#ffffff", fontSize: 16 }}>›</span>
+                <ChevronRight size={16} color="#ffffff" />
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
