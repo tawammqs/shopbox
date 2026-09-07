@@ -699,14 +699,40 @@ function VideoPlayerModal({
 
 /* -------------- Testimonials -------------- */
 function TestimonialsSection({ title, items }: { title: string; items: TheShoesSettings["testimonials"] }) {
-  if (!items?.length) return null;
+  const { store } = useStorefront();
+  // Real approved reviews replace the configured fictitious ones when there
+  // are at least 3; otherwise keep the configured items as fallback.
+  const reviewsQ = useQuery({
+    queryKey: ["home-testimonials", store.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("product_reviews")
+        .select("id, rating, text, customer_name, photo_url, products!inner(store_id, title)")
+        .eq("products.store_id", store.id)
+        .eq("status", "approved")
+        .not("text", "is", null)
+        .neq("text", "")
+        .order("created_at", { ascending: false })
+        .limit(12);
+      return (data ?? []).map((r: any) => ({
+        name: r.customer_name as string,
+        text: r.products?.title ? `Comprou: ${r.products.title} — ${r.text}` : (r.text as string),
+        rating: r.rating as number,
+        image_url: (r.photo_url as string | null) ?? "",
+      }));
+    },
+    staleTime: 60_000,
+  });
+  const real = reviewsQ.data ?? [];
+  const effective = real.length >= 3 ? real : items;
+  if (!effective?.length) return null;
   const parts = title.trim().split(" ");
   const last = parts.pop() ?? "";
   const head = parts.join(" ");
 
-  const half = Math.ceil(items.length / 2);
-  const row1 = items.slice(0, half);
-  const row2 = items.slice(half).length ? items.slice(half) : items;
+  const half = Math.ceil(effective.length / 2);
+  const row1 = effective.slice(0, half);
+  const row2 = effective.slice(half).length ? effective.slice(half) : effective;
 
   return (
     <section className="ts-section ts-testimonials">
@@ -736,7 +762,7 @@ function PillRow({ items, direction }: { items: TheShoesSettings["testimonials"]
               )}
               <span className="absolute -bottom-[2px] -right-[2px] grid h-[18px] w-[18px] place-items-center rounded-full text-[8px] font-bold text-white"
                 style={{ background: ACCENT }}>
-                5★
+                {t.rating ?? 5}★
               </span>
             </div>
             <p className="text-[13px] leading-tight text-[#333]" style={{ maxWidth: 180 }}>
