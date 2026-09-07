@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { X, BadgeDollarSign, Package, ChevronRight } from "lucide-react";
+import { X, Package, ChevronRight, ChevronDown } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
@@ -8,7 +8,7 @@ import { useStoreAffiliate } from "../AffiliateShare";
 import { clearAffiliateSession, TS_LIME } from "@/lib/affiliates";
 // (StorefrontCustomizer is mounted at the layout level for non-legacy Mio stores)
 import { useCart } from "@/stores/cart";
-import { searchProductsLive } from "@/lib/storefront";
+import { searchProductsLive, fetchStoreBrands } from "@/lib/storefront";
 import { effectivePrice, formatBRL } from "@/lib/format";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
