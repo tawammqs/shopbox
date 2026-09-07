@@ -237,7 +237,7 @@ export function TheShoesHeader() {
             {/* Mobile: topo com logo + fechar */}
             <div className="ts-drawer-mobile-top">
               {store.logo_url ? (
-                <img src={store.logo_url} alt={store.name} style={{ height: 32, width: "auto", objectFit: "contain" }} />
+                <img src={store.logo_url} alt={store.name} style={{ height: 44, width: "auto", objectFit: "contain" }} />
               ) : (
                 <span style={{ fontWeight: 800, fontSize: 18, color: "#111" }}>{store.name}</span>
               )}
@@ -251,6 +251,17 @@ export function TheShoesHeader() {
               <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="ts-drawer-mobile-login">
                 <span>Iniciar sessão ou criar conta</span>
+                <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
+              </Link>
+            )}
+            {/* Mobile: criar conta como afiliado */}
+            {!affiliate && store.affiliates_enabled && (
+              <Link to="/loja/$slug/afiliados/cadastro" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                className="ts-drawer-mobile-affiliate">
+                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <BadgeDollarSign size={20} color="#111827" />
+                  <span>Criar conta como afiliado</span>
+                </span>
                 <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
               </Link>
             )}
@@ -349,10 +360,10 @@ export function TheShoesHeader() {
               <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="ts-drawer-tracking">
                 <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Package size={20} color="#6b7280" />
+                  <Package size={20} color="#ffffff" />
                   <span>Rastrear pedido</span>
                 </span>
-                <span style={{ color: "#d1d5db", fontSize: 16 }}>›</span>
+                <span style={{ color: "#ffffff", fontSize: 16 }}>›</span>
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
@@ -396,6 +407,7 @@ export function TheShoesHeader() {
         .ts-main-center { justify-self: center; display: flex; align-items: center; }
         .ts-main-right { justify-self: end; display: flex; align-items: center; gap: 12px; }
         .ts-logo { height: 40px; width: auto; max-width: 160px; }
+        @media (min-width: 768px) { .ts-logo { height: 48px; } }
         .ts-icon-btn {
           background: transparent; border: none; cursor: pointer;
           color: #111; padding: 4px;
@@ -415,7 +427,6 @@ export function TheShoesHeader() {
         .ts-desktop-only { display: none; }
         @media (min-width: 768px) {
           .ts-main { height: 70px; padding: 0 40px; }
-          .ts-logo { height: 52px; max-width: 180px; }
           .ts-main-right { gap: 20px; }
           .ts-desktop-only { display: inline-flex; }
         }
@@ -435,6 +446,7 @@ export function TheShoesHeader() {
         }
         .ts-drawer-mobile-top { display: none; }
         .ts-drawer-mobile-login { display: none; }
+        .ts-drawer-mobile-affiliate { display: none; }
         .ts-drawer-tracking {
           display: flex; align-items: center; justify-content: space-between;
           margin-top: 16px; border-top: 1px solid #f5f5f5;
@@ -461,6 +473,11 @@ export function TheShoesHeader() {
             padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
             font-weight: 600; font-size: 15px; color: #111;
           }
+          .ts-drawer-mobile-affiliate {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
+            font-weight: 600; font-size: 15px; color: #111;
+          }
           .ts-drawer-login-extra { display: none; }
           .ts-drawer-body {
             flex: 1; min-height: 0;
@@ -469,10 +486,12 @@ export function TheShoesHeader() {
           }
           .ts-drawer-tracking {
             margin: 0 -20px;
-            padding: 16px 20px;
-            background: #f9fafb;
-            border-top: 0.5px solid #e5e7eb;
+            padding: 18px 20px;
+            background: #111827;
+            border-top: none;
             font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
           }
         }
       `}</style>

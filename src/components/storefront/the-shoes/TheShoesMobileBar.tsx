@@ -51,6 +51,7 @@ export function TheShoesMobileBar() {
           borderTop: "0.5px solid #e5e7eb",
           display: "grid",
           gridTemplateColumns: "repeat(5, 1fr)",
+          alignItems: "center",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
@@ -67,11 +68,37 @@ export function TheShoesMobileBar() {
         <button
           type="button"
           onClick={openVip}
-          style={{ ...btnStyle, backgroundColor: "#111827", color: "#ffffff", borderRadius: 0 }}
           aria-label="Grupo VIP"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 3,
+            padding: 4,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            position: "relative",
+            marginTop: -24,
+          }}
         >
-          <Lock size={22} color="#ffffff" />
-          <span style={{ ...labelStyle, color: "#ffffff" }}>VIP</span>
+          <div
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              backgroundColor: "#111827",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "3px solid #ffffff",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            }}
+          >
+            <Lock size={22} color="#ffffff" />
+          </div>
+          <span style={{ fontSize: 10, fontWeight: 600, color: "#111827" }}>VIP</span>
         </button>
 
         <Link to="/loja/$slug/afiliados" params={{ slug: store.slug }} style={btnStyle} aria-label="Afiliados">

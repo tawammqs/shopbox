@@ -389,7 +389,7 @@ export function TheShoesCouponTab() {
         }
         @media (max-width: 767px) {
           .ts-coupon-tab { display: none; }
-          .ts-coupon-gift { display: flex; bottom: 90px; }
+          .ts-coupon-gift { display: none !important; }
         }
         @keyframes tsGiftPulse {
           0%, 100% { transform: scale(1); }
