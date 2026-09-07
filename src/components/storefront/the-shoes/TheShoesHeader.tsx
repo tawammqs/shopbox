@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { X, BadgeDollarSign } from "lucide-react";
+import { X, BadgeDollarSign, Package } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
@@ -52,6 +52,13 @@ export function TheShoesHeader() {
       try { setResults(await searchProductsLive(store.id, term)); } catch { setResults([]); }
     }, 200);
   }, [term, store.id]);
+
+  // A barra fixa mobile abre o modal do Grupo VIP via CustomEvent.
+  useEffect(() => {
+    const h = () => setVipOpen(true);
+    window.addEventListener("ts:open-vip", h);
+    return () => window.removeEventListener("ts:open-vip", h);
+  }, []);
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -219,14 +226,35 @@ export function TheShoesHeader() {
         <>
           <div className="fixed inset-0 z-[200] bg-black/40" onClick={() => setNavOpen(false)} />
           <aside className="ts-drawer">
-            <div className="mb-8 flex items-center">
+            {/* Desktop: só botão fechar */}
+            <div className="ts-drawer-close-desktop mb-8 flex items-center">
               <button onClick={() => setNavOpen(false)} aria-label="Fechar"
                 className="grid h-9 w-9 place-items-center rounded-full border-[1.5px] border-[#e0e0e0] text-[#333]"
                 style={{ fontSize: 18 }}>
                 ×
               </button>
             </div>
-            <div className="overflow-y-auto">
+            {/* Mobile: topo com logo + fechar */}
+            <div className="ts-drawer-mobile-top">
+              {store.logo_url ? (
+                <img src={store.logo_url} alt={store.name} style={{ height: 32, width: "auto", objectFit: "contain" }} />
+              ) : (
+                <span style={{ fontWeight: 800, fontSize: 18, color: "#111" }}>{store.name}</span>
+              )}
+              <button onClick={() => setNavOpen(false)} aria-label="Fechar"
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#111", padding: 4 }}>
+                <X size={24} />
+              </button>
+            </div>
+            {/* Mobile: login / criar conta */}
+            {!affiliate && (
+              <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                className="ts-drawer-mobile-login">
+                <span>Iniciar sessão ou criar conta</span>
+                <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
+              </Link>
+            )}
+            <div className="ts-drawer-body overflow-y-auto">
               <Link to="/loja/$slug" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Início
@@ -313,13 +341,18 @@ export function TheShoesHeader() {
               </div>
               {!affiliate && (
                 <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                  className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
+                  className="ts-drawer-login-extra mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                   Entrar
                 </Link>
               )}
+              <div style={{ flex: 1, minHeight: 32 }} />
               <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
-                Rastrear Pedido
+                className="ts-drawer-tracking">
+                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Package size={20} color="#6b7280" />
+                  <span>Rastrear pedido</span>
+                </span>
+                <span style={{ color: "#d1d5db", fontSize: 16 }}>›</span>
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
@@ -400,9 +433,47 @@ export function TheShoesHeader() {
           padding: 24px; overflow-y: auto;
           animation: tsDrawerIn 0.3s ease forwards;
         }
+        .ts-drawer-mobile-top { display: none; }
+        .ts-drawer-mobile-login { display: none; }
+        .ts-drawer-tracking {
+          display: flex; align-items: center; justify-content: space-between;
+          margin-top: 16px; border-top: 1px solid #f5f5f5;
+          padding: 16px 0; font-size: 16px; font-weight: 500; color: #111;
+        }
         @keyframes tsDrawerIn {
           from { transform: translateX(-100%); }
           to { transform: translateX(0); }
+        }
+        /* Mobile: menu sobrepõe a tela inteira */
+        @media (max-width: 767px) {
+          .ts-drawer {
+            width: 100%; max-width: 100vw;
+            padding: 0; overflow: hidden;
+            display: flex; flex-direction: column;
+          }
+          .ts-drawer-close-desktop { display: none; }
+          .ts-drawer-mobile-top {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
+          }
+          .ts-drawer-mobile-login {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
+            font-weight: 600; font-size: 15px; color: #111;
+          }
+          .ts-drawer-login-extra { display: none; }
+          .ts-drawer-body {
+            flex: 1; min-height: 0;
+            display: flex; flex-direction: column;
+            padding: 0 20px; overflow-y: auto;
+          }
+          .ts-drawer-tracking {
+            margin: 0 -20px;
+            padding: 16px 20px;
+            background: #f9fafb;
+            border-top: 0.5px solid #e5e7eb;
+            font-size: 15px;
+          }
         }
       `}</style>
 
