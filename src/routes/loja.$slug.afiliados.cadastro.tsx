@@ -79,6 +79,56 @@ function AffiliateSignupPage() {
         {ref && <p className="mt-2 text-xs font-semibold" style={{ color: TS_LIME }}>Indicado por: {ref}</p>}
       </div>
 
+      {/* Como funciona a comissão (dois níveis) */}
+      <div style={{ backgroundColor: "#f9fafb", borderRadius: 16, padding: 20, marginBottom: 24, textAlign: "left" }}>
+        <h3 style={{ fontWeight: 700, fontSize: 15, marginBottom: 12, color: "#111827" }}>
+          💰 Como funciona sua comissão
+        </h3>
+
+        <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "#111827", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, flexShrink: 0, fontSize: 13 }}>
+            {store.affiliate_commission_direct}%
+          </div>
+          <div>
+            <p style={{ fontWeight: 600, fontSize: 14, margin: 0, color: "#111827" }}>Suas vendas diretas</p>
+            <p style={{ fontSize: 13, color: "#6b7280", margin: "2px 0 0" }}>
+              Você compartilha seu link, alguém compra → você ganha {store.affiliate_commission_direct}% do valor da venda via PIX
+            </p>
+          </div>
+        </div>
+
+        {store.affiliate_commission_referrer > 0 && (
+          <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: TS_LIME, color: "#111827", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, flexShrink: 0, fontSize: 13 }}>
+              {store.affiliate_commission_referrer}%
+            </div>
+            <div>
+              <p style={{ fontWeight: 600, fontSize: 14, margin: 0, color: "#111827" }}>Vendas da sua rede</p>
+              <p style={{ fontSize: 13, color: "#6b7280", margin: "2px 0 0" }}>
+                Você indica alguém para ser afiliado usando seu link → quando essa pessoa vende, você também ganha {store.affiliate_commission_referrer}% de cada venda dela, automaticamente
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div style={{ backgroundColor: "#fff", borderRadius: 12, padding: 14, border: "0.5px solid #e5e7eb" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "#9ca3af", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            Exemplo prático
+          </p>
+          <p style={{ fontSize: 13, color: "#374151", margin: "0 0 6px" }}>
+            🛍️ Você indica um tênis de <strong>R$300</strong> → ganha <strong>R$ {(300 * store.affiliate_commission_direct / 100).toFixed(2).replace(".", ",")}</strong>
+          </p>
+          {store.affiliate_commission_referrer > 0 && (
+            <p style={{ fontSize: 13, color: "#374151", margin: "0 0 6px" }}>
+              👥 Você recruta uma amiga como afiliada → ela vende um tênis de <strong>R$300</strong> → você ganha <strong>R$ {(300 * store.affiliate_commission_referrer / 100).toFixed(2).replace(".", ",")}</strong> automaticamente
+            </p>
+          )}
+          <p style={{ fontSize: 12, color: "#9ca3af", margin: 0 }}>
+            Pagamentos via PIX todo dia 20 do mês
+          </p>
+        </div>
+      </div>
+
       <form onSubmit={submit} className="space-y-3">
         <input className={inputCls} placeholder="Seu nome completo" value={form.name} onChange={set("name")} required />
         {slugPreview && (
