@@ -136,6 +136,93 @@ function AffiliateProgramPage() {
         </section>
       )}
 
+      <div style={{ backgroundColor: "#f9fafb", borderRadius: 16, padding: 20, marginBottom: 24 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 15, marginBottom: 12, color: "#111827" }}>
+          💰 Como funciona sua comissão
+        </h3>
+
+        <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              backgroundColor: "#111827",
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 700,
+              flexShrink: 0,
+              fontSize: 13,
+            }}
+          >
+            {direct}%
+          </div>
+          <div>
+            <p style={{ fontWeight: 600, fontSize: 14, margin: 0, color: "#111827" }}>Suas vendas diretas</p>
+            <p style={{ fontSize: 13, color: "#6b7280", margin: "2px 0 0" }}>
+              Você compartilha seu link, alguém compra → você ganha {direct}% do valor da venda via PIX
+            </p>
+          </div>
+        </div>
+
+        {referrer > 0 && (
+          <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                backgroundColor: TS_LIME,
+                color: "#111827",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                flexShrink: 0,
+                fontSize: 13,
+              }}
+            >
+              {referrer}%
+            </div>
+            <div>
+              <p style={{ fontWeight: 600, fontSize: 14, margin: 0, color: "#111827" }}>Vendas da sua rede</p>
+              <p style={{ fontSize: 13, color: "#6b7280", margin: "2px 0 0" }}>
+                Indique outras pessoas para serem afiliadas usando seu link de recrutamento → quando elas vendem,
+                você ganha {referrer}% de cada venda delas automaticamente, sem fazer nada
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div style={{ backgroundColor: "#fff", borderRadius: 12, padding: 14, border: "0.5px solid #e5e7eb" }}>
+          <p
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "#9ca3af",
+              marginBottom: 8,
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            Exemplo prático
+          </p>
+          <p style={{ fontSize: 13, color: "#374151", margin: "0 0 6px" }}>
+            🛍️ Você compartilha um tênis de <strong>R$300</strong> → ganha{" "}
+            <strong>R$ {(300 * direct / 100).toFixed(2).replace(".", ",")}</strong>
+          </p>
+          {referrer > 0 && (
+            <p style={{ fontSize: 13, color: "#374151", margin: "0 0 6px" }}>
+              👥 Você recruta uma amiga → ela vende um tênis de <strong>R$300</strong> → você ganha{" "}
+              <strong>R$ {(300 * referrer / 100).toFixed(2).replace(".", ",")}</strong> automaticamente
+            </p>
+          )}
+          <p style={{ fontSize: 12, color: "#9ca3af", margin: 0 }}>Pagamentos via PIX todo dia 20 do mês</p>
+        </div>
+      </div>
+
       <div className="sticky bottom-4">
         <Link
           to="/loja/$slug/afiliados/cadastro"

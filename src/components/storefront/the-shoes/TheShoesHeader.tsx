@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { X, BadgeDollarSign, Package } from "lucide-react";
+import { X, BadgeDollarSign, Package, ChevronRight } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
@@ -357,13 +357,26 @@ export function TheShoesHeader() {
                 </Link>
               )}
               <div style={{ flex: 1, minHeight: 32 }} />
-              <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="ts-drawer-tracking">
-                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Link
+                to="/loja/$slug/rastreio"
+                params={{ slug: store.slug }}
+                onClick={() => setNavOpen(false)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "18px 20px",
+                  backgroundColor: "#111827",
+                  color: "#ffffff",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                <span style={{ display: "flex", alignItems: "center", gap: 10, color: "#ffffff" }}>
                   <Package size={20} color="#ffffff" />
-                  <span>Rastrear pedido</span>
+                  <span style={{ color: "#ffffff" }}>Rastrear pedido</span>
                 </span>
-                <span style={{ color: "#ffffff", fontSize: 16 }}>›</span>
+                <ChevronRight size={16} color="#ffffff" />
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
@@ -379,14 +392,6 @@ export function TheShoesHeader() {
                     Sair da conta de afiliado
                   </button>
                 </div>
-              )}
-              {store.affiliates_enabled && !affiliate && (
-                <Link to="/loja/$slug/afiliados" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                  className="mt-2 flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-bold"
-                  style={{ background: "#111", color: "#fff" }}>
-                  <BadgeDollarSign className="h-4 w-4" />
-                  Seja um afiliado
-                </Link>
               )}
             </div>
           </aside>
