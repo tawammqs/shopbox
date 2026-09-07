@@ -182,6 +182,43 @@ export function TheShoesHeader() {
         </div>
       </div>
 
+      {/* Menu horizontal desktop (oculto no mobile) — itens de Loja Online → Menus */}
+      {desktopMenuItems.length > 0 && (
+        <nav
+          className="hidden md:flex"
+          style={{
+            borderBottom: "0.5px solid #e5e7eb",
+            backgroundColor: "#ffffff",
+            padding: "0 32px",
+            alignItems: "center",
+            gap: 32,
+            overflowX: "auto",
+          }}
+          aria-label="Navegação principal"
+        >
+          {desktopMenuItems.map((item) => (
+            <a
+              key={item.id}
+              href={resolveUrl(item.url)}
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: "#374151",
+                padding: "12px 0",
+                whiteSpace: "nowrap",
+                borderBottom: "2px solid transparent",
+                textDecoration: "none",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      )}
+
       {searchOpen && (
         <form onSubmit={submitSearch} className="border-b border-[#f0f0f0] bg-white px-4 py-3 md:px-10">
           <div className="relative mx-auto max-w-3xl">
