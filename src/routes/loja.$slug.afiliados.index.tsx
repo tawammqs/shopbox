@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { AffiliateUnavailable as Unavailable } from "@/components/storefront/AffiliateShare";
 import { normalizeAffiliatePageContent, TS_BEIGE, TS_LIME } from "@/lib/affiliates";
+import affiliateCommissionImg from "@/assets/affiliate-commission.png.asset.json";
 
 export const Route = createFileRoute("/loja/$slug/afiliados/")({
   head: () => ({
@@ -78,6 +79,12 @@ function AffiliateProgramPage() {
           <p className="mt-1 text-sm text-[#111]/70">por venda da sua rede</p>
         </div>
       </div>
+
+      <img
+        src={affiliateCommissionImg.url}
+        alt="Como funciona a comissão de afiliados"
+        className="mb-8 w-full rounded-2xl"
+      />
 
       {c.steps.length > 0 && (
         <section className="mb-8">
