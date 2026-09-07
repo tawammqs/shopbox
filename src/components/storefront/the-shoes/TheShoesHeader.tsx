@@ -399,22 +399,13 @@ export function TheShoesHeader() {
                 to="/loja/$slug/rastreio"
                 params={{ slug: store.slug }}
                 onClick={() => setNavOpen(false)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "18px 20px",
-                  backgroundColor: "#111827",
-                  color: "#ffffff",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
+                className="ts-drawer-tracking"
               >
-                <span style={{ display: "flex", alignItems: "center", gap: 10, color: "#ffffff" }}>
-                  <Package size={20} color="#ffffff" />
-                  <span style={{ color: "#ffffff" }}>Rastrear pedido</span>
+                <span className="ts-drawer-tracking-label">
+                  <Package size={20} />
+                  <span>Rastrear pedido</span>
                 </span>
-                <ChevronRight size={16} color="#ffffff" />
+                <ChevronRight size={16} />
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
