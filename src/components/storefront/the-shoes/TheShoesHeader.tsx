@@ -303,17 +303,6 @@ export function TheShoesHeader() {
                 <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
               </Link>
             )}
-            {/* Mobile: criar conta como afiliado */}
-            {!affiliate && store.affiliates_enabled && (
-              <Link to="/loja/$slug/afiliados/cadastro" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="ts-drawer-mobile-affiliate">
-                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <BadgeDollarSign size={20} color="#111827" />
-                  <span>Criar conta como afiliado</span>
-                </span>
-                <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
-              </Link>
-            )}
             <div className="ts-drawer-body overflow-y-auto">
               <Link to="/loja/$slug" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
