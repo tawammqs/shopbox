@@ -53,6 +53,13 @@ export function TheShoesHeader() {
     }, 200);
   }, [term, store.id]);
 
+  // A barra fixa mobile abre o modal do Grupo VIP via CustomEvent.
+  useEffect(() => {
+    const h = () => setVipOpen(true);
+    window.addEventListener("ts:open-vip", h);
+    return () => window.removeEventListener("ts:open-vip", h);
+  }, []);
+
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!term.trim()) return;
