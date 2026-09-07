@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { X, Package, ChevronRight, ChevronDown, BadgeDollarSign } from "lucide-react";
+import { X, Package, ChevronRight, ChevronDown } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
@@ -303,17 +303,6 @@ export function TheShoesHeader() {
                 <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
               </Link>
             )}
-            {/* Mobile: criar conta como afiliado */}
-            {!affiliate && store.affiliates_enabled && (
-              <Link to="/loja/$slug/afiliados/cadastro" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="ts-drawer-mobile-affiliate">
-                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <BadgeDollarSign size={20} color="#111827" />
-                  <span>Criar conta como afiliado</span>
-                </span>
-                <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
-              </Link>
-            )}
             <div className="ts-drawer-body overflow-y-auto">
               <Link to="/loja/$slug" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
@@ -410,22 +399,13 @@ export function TheShoesHeader() {
                 to="/loja/$slug/rastreio"
                 params={{ slug: store.slug }}
                 onClick={() => setNavOpen(false)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "18px 20px",
-                  backgroundColor: "#111827",
-                  color: "#ffffff",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
+                className="ts-drawer-tracking"
               >
-                <span style={{ display: "flex", alignItems: "center", gap: 10, color: "#ffffff" }}>
-                  <Package size={20} color="#ffffff" />
-                  <span style={{ color: "#ffffff" }}>Rastrear pedido</span>
+                <span className="ts-drawer-tracking-label">
+                  <Package size={20} />
+                  <span>Rastrear pedido</span>
                 </span>
-                <ChevronRight size={16} color="#ffffff" />
+                <ChevronRight size={16} />
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
@@ -507,6 +487,10 @@ export function TheShoesHeader() {
           display: flex; align-items: center; justify-content: space-between;
           margin-top: 16px; border-top: 1px solid #f5f5f5;
           padding: 16px 0; font-size: 16px; font-weight: 500; color: #111;
+          text-decoration: none;
+        }
+        .ts-drawer-tracking-label {
+          display: flex; align-items: center; gap: 10;
         }
         @keyframes tsDrawerIn {
           from { transform: translateX(-100%); }
@@ -549,6 +533,7 @@ export function TheShoesHeader() {
             font-weight: 600;
             color: #ffffff;
           }
+          .ts-drawer-tracking svg { stroke: #ffffff; }
         }
       `}</style>
 
