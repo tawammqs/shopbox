@@ -135,7 +135,7 @@ export function TheShoesHeader() {
       <div className="ts-main border-b border-[#f0f0f0]">
         {/* LEFT */}
         <div className="ts-main-left">
-          <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn">
+          <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn md:hidden">
             {hamburger}
           </button>
           {affiliate && (
@@ -146,17 +146,6 @@ export function TheShoesHeader() {
               style={{ borderBottom: `2px solid ${TS_LIME}` }}
             >
               📊 Painel
-            </Link>
-          )}
-          {store.affiliates_enabled && !affiliate && (
-            <Link
-              to="/loja/$slug/afiliados"
-              params={{ slug: store.slug }}
-              className="ts-desktop-only ts-aff-btn ml-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
-              style={{ background: "#111", color: "#fff" }}
-            >
-              <BadgeDollarSign className="h-3.5 w-3.5" />
-              Seja um afiliado
             </Link>
           )}
         </div>
