@@ -470,6 +470,8 @@ export function TheShoesHeader() {
           transition: color 0.15s;
         }
         .ts-icon-btn:hover { color: #555; }
+        .ts-hamburger-btn { display: inline-flex; }
+        @media (min-width: 768px) { .ts-hamburger-btn { display: none; } }
         .ts-cart-btn { position: relative; }
         .ts-cart-badge {
           position: absolute; top: 2px; right: 2px;
