@@ -487,6 +487,10 @@ export function TheShoesHeader() {
           display: flex; align-items: center; justify-content: space-between;
           margin-top: 16px; border-top: 1px solid #f5f5f5;
           padding: 16px 0; font-size: 16px; font-weight: 500; color: #111;
+          text-decoration: none;
+        }
+        .ts-drawer-tracking-label {
+          display: flex; align-items: center; gap: 10;
         }
         @keyframes tsDrawerIn {
           from { transform: translateX(-100%); }
