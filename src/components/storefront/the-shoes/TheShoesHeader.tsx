@@ -140,7 +140,7 @@ export function TheShoesHeader() {
       <div className="ts-main border-b border-[#f0f0f0]">
         {/* LEFT */}
         <div className="ts-main-left">
-          <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn md:hidden">
+          <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn ts-hamburger-btn md:hidden">
             {hamburger}
           </button>
           {affiliate && (
