@@ -718,7 +718,7 @@ function TestimonialsSection({ title, items }: { title: string; items: TheShoesS
         name: r.customer_name as string,
         text: r.products?.title ? `Comprou: ${r.products.title} — ${r.text}` : (r.text as string),
         rating: r.rating as number,
-        image_url: (r.photo_url as string | null) ?? undefined,
+        image_url: (r.photo_url as string | null) ?? "",
       }));
     },
     staleTime: 60_000,
