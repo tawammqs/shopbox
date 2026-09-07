@@ -56,6 +56,13 @@ export function TheShoesCouponTab() {
     return () => { document.body.style.overflow = prev; };
   }, [open]);
 
+  // A barra fixa mobile abre este mesmo modal via CustomEvent.
+  useEffect(() => {
+    const h = () => setOpen(true);
+    window.addEventListener("ts:open-coupon", h);
+    return () => window.removeEventListener("ts:open-coupon", h);
+  }, []);
+
   if (!cfg || !cfg.enabled) return null;
 
   const close = () => setOpen(false);
