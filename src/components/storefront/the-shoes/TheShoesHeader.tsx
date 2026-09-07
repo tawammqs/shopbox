@@ -341,13 +341,18 @@ export function TheShoesHeader() {
               </div>
               {!affiliate && (
                 <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                  className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
+                  className="ts-drawer-login-extra mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                   Entrar
                 </Link>
               )}
+              <div style={{ flex: 1, minHeight: 32 }} />
               <Link to="/loja/$slug/rastreio" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
-                className="mt-4 block border-t border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
-                Rastrear Pedido
+                className="ts-drawer-tracking">
+                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <Package size={20} color="#6b7280" />
+                  <span>Rastrear pedido</span>
+                </span>
+                <span style={{ color: "#d1d5db", fontSize: 16 }}>›</span>
               </Link>
               {affiliate && (
                 <div className="mt-4 border-t border-[#f5f5f5]">
