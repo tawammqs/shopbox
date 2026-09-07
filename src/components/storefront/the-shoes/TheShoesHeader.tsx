@@ -237,7 +237,7 @@ export function TheShoesHeader() {
             {/* Mobile: topo com logo + fechar */}
             <div className="ts-drawer-mobile-top">
               {store.logo_url ? (
-                <img src={store.logo_url} alt={store.name} style={{ height: 32, width: "auto", objectFit: "contain" }} />
+                <img src={store.logo_url} alt={store.name} style={{ height: 44, width: "auto", objectFit: "contain" }} />
               ) : (
                 <span style={{ fontWeight: 800, fontSize: 18, color: "#111" }}>{store.name}</span>
               )}
@@ -251,6 +251,17 @@ export function TheShoesHeader() {
               <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="ts-drawer-mobile-login">
                 <span>Iniciar sessão ou criar conta</span>
+                <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
+              </Link>
+            )}
+            {/* Mobile: criar conta como afiliado */}
+            {!affiliate && store.affiliates_enabled && (
+              <Link to="/loja/$slug/afiliados/cadastro" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                className="ts-drawer-mobile-affiliate">
+                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <BadgeDollarSign size={20} color="#111827" />
+                  <span>Criar conta como afiliado</span>
+                </span>
                 <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
               </Link>
             )}
