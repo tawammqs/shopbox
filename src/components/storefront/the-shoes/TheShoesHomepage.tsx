@@ -1152,6 +1152,9 @@ function TheShoesStyles() {
 
       /* Floating WhatsApp pulse */
       .ts-fab { animation: tsWhatsappPulse 2s infinite; }
+      @media (max-width: 767px) {
+        .ts-fab { bottom: 80px !important; right: 16px !important; }
+      }
       @keyframes tsWhatsappPulse {
         0% { box-shadow: 0 0 0 0 rgba(37,211,102,0.6); }
         70% { box-shadow: 0 0 0 18px rgba(37,211,102,0); }
