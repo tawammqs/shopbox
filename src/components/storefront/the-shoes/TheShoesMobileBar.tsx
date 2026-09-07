@@ -39,8 +39,9 @@ export function TheShoesMobileBar() {
 
   return (
     <>
+      {/* display vem das classes (grid / md:hidden) — inline display sobrescreveria o md:hidden */}
       <div
-        className="md:hidden"
+        className="grid grid-cols-5 items-center md:hidden"
         style={{
           position: "fixed",
           bottom: 0,
@@ -49,9 +50,6 @@ export function TheShoesMobileBar() {
           zIndex: 60,
           backgroundColor: "#ffffff",
           borderTop: "0.5px solid #e5e7eb",
-          display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
-          alignItems: "center",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
