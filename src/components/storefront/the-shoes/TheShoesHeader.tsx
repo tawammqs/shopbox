@@ -446,6 +446,7 @@ export function TheShoesHeader() {
         }
         .ts-drawer-mobile-top { display: none; }
         .ts-drawer-mobile-login { display: none; }
+        .ts-drawer-mobile-affiliate { display: none; }
         .ts-drawer-tracking {
           display: flex; align-items: center; justify-content: space-between;
           margin-top: 16px; border-top: 1px solid #f5f5f5;
