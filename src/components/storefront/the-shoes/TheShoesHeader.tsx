@@ -533,6 +533,7 @@ export function TheShoesHeader() {
             font-weight: 600;
             color: #ffffff;
           }
+          .ts-drawer-tracking svg { stroke: #ffffff; }
         }
       `}</style>
 
