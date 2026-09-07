@@ -473,6 +473,11 @@ export function TheShoesHeader() {
             padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
             font-weight: 600; font-size: 15px; color: #111;
           }
+          .ts-drawer-mobile-affiliate {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 0.5px solid #e5e7eb;
+            font-weight: 600; font-size: 15px; color: #111;
+          }
           .ts-drawer-login-extra { display: none; }
           .ts-drawer-body {
             flex: 1; min-height: 0;
@@ -481,10 +486,12 @@ export function TheShoesHeader() {
           }
           .ts-drawer-tracking {
             margin: 0 -20px;
-            padding: 16px 20px;
-            background: #f9fafb;
-            border-top: 0.5px solid #e5e7eb;
+            padding: 18px 20px;
+            background: #111827;
+            border-top: none;
             font-size: 15px;
+            font-weight: 600;
+            color: #ffffff;
           }
         }
       `}</style>
