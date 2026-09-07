@@ -192,8 +192,10 @@ export function TheShoesHeader() {
         </div>
       </div>
 
-      {/* Menu horizontal desktop (oculto no mobile) — itens de Loja Online → Menus */}
-      {desktopMenuItems.length > 0 && (
+      {/* Menu horizontal desktop (oculto no mobile) */}
+      {isLegacyTheShoes ? (
+        <DesktopSaintGermainNav storeSlug={store.slug} brands={brands} onOpenVip={() => setVipOpen(true)} />
+      ) : desktopMenuItems.length > 0 ? (
         <nav
           className="hidden md:flex"
           style={{
@@ -227,7 +229,7 @@ export function TheShoesHeader() {
             </a>
           ))}
         </nav>
-      )}
+      ) : null}
 
       {searchOpen && (
         <form onSubmit={submitSearch} className="border-b border-[#f0f0f0] bg-white px-4 py-3 md:px-10">
