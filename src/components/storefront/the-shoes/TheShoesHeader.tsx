@@ -226,14 +226,35 @@ export function TheShoesHeader() {
         <>
           <div className="fixed inset-0 z-[200] bg-black/40" onClick={() => setNavOpen(false)} />
           <aside className="ts-drawer">
-            <div className="mb-8 flex items-center">
+            {/* Desktop: só botão fechar */}
+            <div className="ts-drawer-close-desktop mb-8 flex items-center">
               <button onClick={() => setNavOpen(false)} aria-label="Fechar"
                 className="grid h-9 w-9 place-items-center rounded-full border-[1.5px] border-[#e0e0e0] text-[#333]"
                 style={{ fontSize: 18 }}>
                 ×
               </button>
             </div>
-            <div className="overflow-y-auto">
+            {/* Mobile: topo com logo + fechar */}
+            <div className="ts-drawer-mobile-top">
+              {store.logo_url ? (
+                <img src={store.logo_url} alt={store.name} style={{ height: 32, width: "auto", objectFit: "contain" }} />
+              ) : (
+                <span style={{ fontWeight: 800, fontSize: 18, color: "#111" }}>{store.name}</span>
+              )}
+              <button onClick={() => setNavOpen(false)} aria-label="Fechar"
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#111", padding: 4 }}>
+                <X size={24} />
+              </button>
+            </div>
+            {/* Mobile: login / criar conta */}
+            {!affiliate && (
+              <Link to="/loja/$slug/entrar" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
+                className="ts-drawer-mobile-login">
+                <span>Iniciar sessão ou criar conta</span>
+                <span style={{ color: "#9ca3af", fontSize: 18 }}>›</span>
+              </Link>
+            )}
+            <div className="ts-drawer-body overflow-y-auto">
               <Link to="/loja/$slug" params={{ slug: store.slug }} onClick={() => setNavOpen(false)}
                 className="block border-b border-[#f5f5f5] py-4 text-[16px] font-medium text-[#111]">
                 Início
