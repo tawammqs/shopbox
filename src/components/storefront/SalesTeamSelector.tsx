@@ -58,11 +58,11 @@ export function SalesTeamSelector({ storeId, cartMessage, fallbackNumber, onClos
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/50 p-4 md:items-center"
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-sm rounded-2xl bg-background p-6 shadow-2xl"
+        className="relative max-h-[80vh] w-full max-w-sm overflow-y-auto rounded-2xl bg-background p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
