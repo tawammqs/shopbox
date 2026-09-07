@@ -407,6 +407,7 @@ export function TheShoesHeader() {
         .ts-main-center { justify-self: center; display: flex; align-items: center; }
         .ts-main-right { justify-self: end; display: flex; align-items: center; gap: 12px; }
         .ts-logo { height: 40px; width: auto; max-width: 160px; }
+        @media (min-width: 768px) { .ts-logo { height: 48px; } }
         .ts-icon-btn {
           background: transparent; border: none; cursor: pointer;
           color: #111; padding: 4px;
