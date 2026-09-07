@@ -582,3 +582,22 @@ export async function fetchActiveCoupon(storeId: string, code: string) {
   if (data.max_uses != null && data.uses_count >= data.max_uses) return null;
   return data;
 }
+
+export async function fetchStoreBrands(storeId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("products")
+    .select("brand")
+    .eq("store_id", storeId)
+    .eq("active", true)
+    .not("brand", "is", null)
+    .neq("brand", "");
+  if (error) throw error;
+  const seen = new Map<string, string>();
+  (data ?? []).forEach((p: any) => {
+    const raw = String(p.brand).trim();
+    if (!raw) return;
+    const key = raw.toLowerCase();
+    if (!seen.has(key)) seen.set(key, raw);
+  });
+  return Array.from(seen.values()).sort((a, b) => a.localeCompare(b));
+}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { X, BadgeDollarSign, Package, ChevronRight } from "lucide-react";
+import { X, Package, ChevronRight, ChevronDown, BadgeDollarSign } from "lucide-react";
 import { TheShoesVipBanner } from "../TheShoesExtras";
 import { MioVipMenuLink } from "../MioAddonOverlays";
 import { useStorefront } from "../StoreContext";
@@ -8,7 +8,7 @@ import { useStoreAffiliate } from "../AffiliateShare";
 import { clearAffiliateSession, TS_LIME } from "@/lib/affiliates";
 // (StorefrontCustomizer is mounted at the layout level for non-legacy Mio stores)
 import { useCart } from "@/stores/cart";
-import { searchProductsLive } from "@/lib/storefront";
+import { searchProductsLive, fetchStoreBrands } from "@/lib/storefront";
 import { effectivePrice, formatBRL } from "@/lib/format";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
@@ -59,6 +59,7 @@ export function TheShoesHeader() {
   const [openCatId, setOpenCatId] = useState<string | null>(null);
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [brands, setBrands] = useState<string[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -68,6 +69,10 @@ export function TheShoesHeader() {
       try { setResults(await searchProductsLive(store.id, term)); } catch { setResults([]); }
     }, 200);
   }, [term, store.id]);
+
+  useEffect(() => {
+    fetchStoreBrands(store.id).then(setBrands).catch(() => setBrands([]));
+  }, [store.id]);
 
   // A barra fixa mobile abre o modal do Grupo VIP via CustomEvent.
   useEffect(() => {
@@ -135,7 +140,7 @@ export function TheShoesHeader() {
       <div className="ts-main border-b border-[#f0f0f0]">
         {/* LEFT */}
         <div className="ts-main-left">
-          <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn">
+          <button aria-label="Abrir menu" onClick={() => setNavOpen(true)} className="ts-icon-btn ts-hamburger-btn md:hidden">
             {hamburger}
           </button>
           {affiliate && (
@@ -146,17 +151,6 @@ export function TheShoesHeader() {
               style={{ borderBottom: `2px solid ${TS_LIME}` }}
             >
               📊 Painel
-            </Link>
-          )}
-          {store.affiliates_enabled && !affiliate && (
-            <Link
-              to="/loja/$slug/afiliados"
-              params={{ slug: store.slug }}
-              className="ts-desktop-only ts-aff-btn ml-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
-              style={{ background: "#111", color: "#fff" }}
-            >
-              <BadgeDollarSign className="h-3.5 w-3.5" />
-              Seja um afiliado
             </Link>
           )}
         </div>
@@ -198,8 +192,10 @@ export function TheShoesHeader() {
         </div>
       </div>
 
-      {/* Menu horizontal desktop (oculto no mobile) — itens de Loja Online → Menus */}
-      {desktopMenuItems.length > 0 && (
+      {/* Menu horizontal desktop (oculto no mobile) */}
+      {isLegacyTheShoes ? (
+        <DesktopSaintGermainNav storeSlug={store.slug} brands={brands} onOpenVip={() => setVipOpen(true)} />
+      ) : desktopMenuItems.length > 0 ? (
         <nav
           className="hidden md:flex"
           style={{
@@ -233,7 +229,7 @@ export function TheShoesHeader() {
             </a>
           ))}
         </nav>
-      )}
+      ) : null}
 
       {searchOpen && (
         <form onSubmit={submitSearch} className="border-b border-[#f0f0f0] bg-white px-4 py-3 md:px-10">
@@ -474,6 +470,8 @@ export function TheShoesHeader() {
           transition: color 0.15s;
         }
         .ts-icon-btn:hover { color: #555; }
+        .ts-hamburger-btn { display: inline-flex; }
+        @media (min-width: 768px) { .ts-hamburger-btn { display: none; } }
         .ts-cart-btn { position: relative; }
         .ts-cart-badge {
           position: absolute; top: 2px; right: 2px;
@@ -558,5 +556,144 @@ export function TheShoesHeader() {
         <TheShoesVipBanner open={vipOpen} onOpenChange={setVipOpen} />
       )}
     </header>
+  );
+}
+
+function DesktopSaintGermainNav({
+  storeSlug,
+  brands,
+  onOpenVip,
+}: {
+  storeSlug: string;
+  brands: string[];
+  onOpenVip: () => void;
+}) {
+  const linkBase: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 500,
+    color: "#374151",
+    padding: "13px 0",
+    whiteSpace: "nowrap",
+    textDecoration: "none",
+    borderBottom: "2px solid transparent",
+    transition: "border-color 0.2s",
+  };
+
+  return (
+    <nav
+      className="hidden md:flex"
+      style={{
+        borderBottom: "0.5px solid #e5e7eb",
+        backgroundColor: "#ffffff",
+        padding: "0 40px",
+        alignItems: "center",
+        gap: 28,
+      }}
+      aria-label="Navegação principal"
+    >
+      <Link
+        to="/loja/$slug/produtos"
+        params={{ slug: storeSlug }}
+        search={{ tag: "mais-vendidos" }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Mais vendidos
+      </Link>
+      <Link
+        to="/loja/$slug/produtos"
+        params={{ slug: storeSlug }}
+        search={{ tag: "lancamento" }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Lançamentos
+      </Link>
+
+      {/* Marcas — dropdown com marcas reais da loja */}
+      <div className="group relative flex items-center" style={{ whiteSpace: "nowrap" }}>
+        <button
+          type="button"
+          style={{
+            ...linkBase,
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          Marcas <ChevronDown className="h-3 w-3" />
+        </button>
+        {brands.length > 0 && (
+          <div className="invisible absolute left-0 top-full z-50 min-w-[180px] rounded-xl border border-[#e5e7eb] bg-white p-2 opacity-0 shadow-lg transition group-hover:visible group-hover:opacity-100">
+            {brands.map((brand) => (
+              <Link
+                key={brand}
+                to="/loja/$slug/categoria/$categorySlug"
+                params={{ slug: storeSlug, categorySlug: "theshoes" }}
+                search={{ marca: brand }}
+                className="block rounded-md px-3 py-2 text-sm text-[#374151] hover:bg-[#f5f5f5]"
+              >
+                {brand}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Link
+        to="/loja/$slug/categoria/$categorySlug"
+        params={{ slug: storeSlug, categorySlug: "theshoes" }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        The Shoes
+      </Link>
+      <Link
+        to="/loja/$slug/rastreio"
+        params={{ slug: storeSlug }}
+        style={linkBase}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Rastrear Pedido
+      </Link>
+      <button
+        type="button"
+        onClick={onOpenVip}
+        style={{
+          ...linkBase,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderBottomColor = "#111827")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderBottomColor = "transparent")}
+      >
+        Ofertas Secretas
+      </button>
+
+      <Link
+        to="/loja/$slug/afiliados"
+        params={{ slug: storeSlug }}
+        style={{
+          ...linkBase,
+          fontWeight: 700,
+          color: "#ffffff",
+          backgroundColor: "#111827",
+          padding: "6px 14px",
+          borderRadius: 20,
+          marginLeft: "auto",
+          borderBottom: "none",
+        }}
+      >
+        💰 Seja Afiliada
+      </Link>
+    </nav>
   );
 }
