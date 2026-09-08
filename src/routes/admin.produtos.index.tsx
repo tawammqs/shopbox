@@ -120,6 +120,7 @@ function ProductsListPage() {
     onSuccess: () => {
       toast.success("Produto atualizado");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["color-groups"] });
     },
   });
 
@@ -131,6 +132,7 @@ function ProductsListPage() {
     onSuccess: () => {
       toast.success("Produto excluído");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["color-groups"] });
     },
   });
 
@@ -145,6 +147,7 @@ function ProductsListPage() {
     onSuccess: () => {
       toast.success("Seções do produto atualizadas");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["color-groups"] });
     },
     onError: (err: any) => toast.error(err?.message ?? "Erro ao atualizar seções"),
   });
@@ -290,6 +293,7 @@ function ProductsListPage() {
     onSuccess: (newId) => {
       toast.success("Produto duplicado! Edite os detalhes do novo produto.");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["color-groups"] });
       navigate({ to: "/admin/produtos/$id", params: { id: newId } });
     },
     onError: (err: any) => {
@@ -312,6 +316,7 @@ function ProductsListPage() {
       toast.success("Ação aplicada");
       setSelected(new Set());
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["color-groups"] });
     },
   });
 

@@ -362,6 +362,7 @@ function ProductFormPage() {
     onSuccess: () => {
       toast.success(isNew ? "Produto criado!" : "Produto atualizado!");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
+      qc.invalidateQueries({ queryKey: ["color-groups"] });
       navigate({ to: "/admin/produtos" });
     },
     onError: (e: any) => toast.error(e.message),
