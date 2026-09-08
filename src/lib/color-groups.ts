@@ -167,7 +167,10 @@ export function useColorGroups(storeId: string | undefined) {
     queryKey: ["color-groups", storeId],
     queryFn: () => fetchColorGroups(storeId as string),
     enabled: !!storeId,
-    staleTime: 300_000,
+    // Keep grouping fresh so newly created "[Modelo] - [Cor]" products show up right away.
+    staleTime: 15_000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
   const groups = q.data ?? [];
   return { groups, map: buildGroupMap(groups) };
