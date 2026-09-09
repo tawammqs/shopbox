@@ -1015,7 +1015,7 @@ function TheShoesStyles() {
       .ts-circle-btn:hover { border-color: #111; color: #111; }
 
       .ts-carousel { display: flex; gap: 12px; }
-      .ts-carousel-item { flex: 0 0 calc(50% - 32px); min-width: 0; }
+      .ts-carousel-item { flex: 0 0 72%; min-width: 0; }
       .ts-mobile-scroll {
         scrollbar-width: none;
         -ms-overflow-style: none;
