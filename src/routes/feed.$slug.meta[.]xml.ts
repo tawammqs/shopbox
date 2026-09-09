@@ -62,27 +62,52 @@ export const Route = createFileRoute("/feed/$slug/meta.xml")({
           ? `https://${store.custom_domain}`
           : `${origin}/loja/${store.slug}`;
 
-        const from = (page - 1) * PAGE_SIZE;
-        const to = from + PAGE_SIZE - 1;
-
-        const { data: products, error: prodErr, count } = await supabaseAdmin
-          .from("products")
-          .select(
-            `id, slug, title, description, brand, price, promo_price,
+        const selectFields = `id, slug, title, description, brand, price, promo_price,
              promo_starts_at, promo_ends_at, category_id,
              product_images(url, position),
              product_colors(name),
              product_sizes(label),
-             product_stock(quantity)`,
-            { count: "exact" },
-          )
-          .eq("store_id", store.id)
-          .eq("active", true)
-          .order("updated_at", { ascending: false })
-          .range(from, to);
+             product_stock(quantity)`;
 
-        if (prodErr) {
-          return new Response(`Error: ${prodErr.message}`, { status: 500 });
+        let products: any[] = [];
+        let totalCount = 0;
+        let from = 0;
+
+        if (allPages) {
+          // Busca todos os produtos em lotes de 1000 (limite do servidor), sem paginação no XML
+          const FETCH_BATCH = 1000;
+          let batchFrom = 0;
+          while (true) {
+            const { data, error, count } = await supabaseAdmin
+              .from("products")
+              .select(selectFields, { count: "exact" })
+              .eq("store_id", store.id)
+              .eq("active", true)
+              .order("updated_at", { ascending: false })
+              .range(batchFrom, batchFrom + FETCH_BATCH - 1);
+            if (error) {
+              return new Response(`Error: ${error.message}`, { status: 500 });
+            }
+            if (count != null) totalCount = count;
+            if (!data || data.length === 0) break;
+            products = products.concat(data);
+            if (data.length < FETCH_BATCH) break;
+            batchFrom += FETCH_BATCH;
+          }
+        } else {
+          from = (page - 1) * PAGE_SIZE;
+          const { data, error: prodErr, count } = await supabaseAdmin
+            .from("products")
+            .select(selectFields, { count: "exact" })
+            .eq("store_id", store.id)
+            .eq("active", true)
+            .order("updated_at", { ascending: false })
+            .range(from, from + PAGE_SIZE - 1);
+          if (prodErr) {
+            return new Response(`Error: ${prodErr.message}`, { status: 500 });
+          }
+          products = data ?? [];
+          totalCount = count ?? 0;
         }
 
         const totalCount = count ?? 0;
