@@ -110,7 +110,6 @@ export const Route = createFileRoute("/feed/$slug/meta.xml")({
           totalCount = count ?? 0;
         }
 
-        const totalCount = count ?? 0;
         const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
         // Build category lookup for product_type
