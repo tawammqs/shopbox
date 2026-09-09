@@ -479,22 +479,19 @@ export async function searchProductsLive(storeId: string, term: string, limit = 
   const like = `%${term.trim()}%`;
   const { data, error } = await supabase
     .from("products")
-    .select(`id, slug, title, brand, brand_name, price, promo_price,
-             product_images(url, position)`)
+    .select(`id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
+             product_images(url, position),
+             product_colors(id, name, hex),
+             product_stock(quantity)`)
     .eq("store_id", storeId)
     .eq("active", true)
     .or(`title.ilike.${like},brand.ilike.${like},brand_name.ilike.${like}`)
     .limit(limit);
   if (error) throw error;
-  return (data ?? []).map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    brand: p.brand_name ?? p.brand,
-    price: Number(p.price),
-    promo_price: p.promo_price != null ? Number(p.promo_price) : null,
-    image: (p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url) ?? null,
-  }));
+  return (data ?? []).map((p) => {
+    const card = normalizeProductCard(p);
+    return { ...card, image: card.images[0]?.url ?? null };
+  });
 }
 
 function normalizeProductCard(p: any): ProductCardData {
