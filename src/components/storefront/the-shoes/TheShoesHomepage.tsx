@@ -1015,7 +1015,15 @@ function TheShoesStyles() {
       .ts-circle-btn:hover { border-color: #111; color: #111; }
 
       .ts-carousel { display: flex; gap: 12px; }
-      .ts-carousel-item { flex: 0 0 calc(50% - 6px); min-width: 0; }
+      .ts-carousel-item { flex: 0 0 calc(50% - 32px); min-width: 0; }
+      .ts-mobile-scroll {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .ts-mobile-scroll::-webkit-scrollbar { display: none; }
+      .ts-mobile-scroll > * { scroll-snap-align: start; }
       @media (min-width: 1024px) {
         .ts-carousel { gap: 16px; }
         .ts-carousel-item { flex: 0 0 calc(25% - 12px); }
