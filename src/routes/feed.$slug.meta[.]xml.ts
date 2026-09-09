@@ -39,7 +39,9 @@ export const Route = createFileRoute("/feed/$slug/meta.xml")({
         const slug = params.slug;
         const url = new URL(request.url);
         const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10) || 1);
+        const allPages = url.searchParams.get("page") == null; // default: sem paginação, exporta tudo
         const PAGE_SIZE = 100;
+
 
         const { data: store, error: storeErr } = await supabaseAdmin
           .from("stores")
