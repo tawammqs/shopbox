@@ -207,9 +207,9 @@ function useDedupedProducts(products: ProductCardData[]) {
 export function ProductsGrid({ products: raw }: { products: ProductCardData[] }) {
   const products = useDedupedProducts(raw);
   return (
-    <div className="ts-mobile-scroll -mx-4 flex gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0 md:pb-0">
+    <div className="ts-mobile-scroll -mx-4 flex gap-3 overflow-x-auto pl-4 pr-8 pb-1 md:mx-0 md:grid md:grid-cols-4 md:gap-4 md:overflow-visible md:px-0 md:pb-0">
       {products.map((p) => (
-        <div key={p.id} className="w-[calc(50%-32px)] shrink-0 md:w-auto">
+        <div key={p.id} className="w-[72%] shrink-0 md:w-auto">
           <ProductCardMio p={p} />
         </div>
       ))}
