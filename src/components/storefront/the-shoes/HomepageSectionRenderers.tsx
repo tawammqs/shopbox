@@ -316,7 +316,7 @@ export function ProdutoPrincipalRender({ cfg }: { cfg: ProdutoPrincipalCfg }) {
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select(`id, slug, title, brand, brand_name, price, promo_price,
+        .select(`id, slug, title, brand, brand_name, price, promo_price, original_price,
                  product_images(url, position)`)
         .eq("id", cfg.product_id!)
         .eq("store_id", store.id)
@@ -341,7 +341,7 @@ export function ProdutoPrincipalRender({ cfg }: { cfg: ProdutoPrincipalCfg }) {
 
   const img = (product.product_images ?? []).slice().sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0))[0]?.url ?? "";
   const price = effectivePrice(Number(product.price), product.promo_price != null ? Number(product.promo_price) : null);
-  const pct = discountPct(Number(product.price), product.promo_price != null ? Number(product.promo_price) : null);
+  const { struck } = comparePrice(product, price);
 
   let timeLeft: { d: number; h: number; m: number; s: number } | null = null;
   if (cfg.show_countdown && cfg.promotion_ends_at) {
@@ -363,7 +363,7 @@ export function ProdutoPrincipalRender({ cfg }: { cfg: ProdutoPrincipalCfg }) {
         product={product}
         img={img}
         price={price}
-        pct={pct}
+        struck={struck}
         endsAt={cfg.show_countdown && timeLeft ? cfg.promotion_ends_at! : null}
       />
     </section>
@@ -371,8 +371,8 @@ export function ProdutoPrincipalRender({ cfg }: { cfg: ProdutoPrincipalCfg }) {
 }
 
 function ProdutoPrincipalCard({
-  product, img, price, pct, endsAt,
-}: { product: any; img: string; price: number; pct: number; endsAt: string | null }) {
+  product, img, price, struck, endsAt,
+}: { product: any; img: string; price: number; struck: number | null; endsAt: string | null }) {
   const { store } = useStorefront();
   const { map } = useColorGroups(store.id);
   const group = map[product.id];
@@ -409,7 +409,7 @@ function ProdutoPrincipalCard({
           <ColorSwatches group={group} idx={idx} onSelect={setVariantIdx} className="pt-0.5" />
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold text-[var(--store-accent,#111)] md:text-xl">{formatBRL(price)}</span>
-            {pct > 0 && <span className="text-xs text-[#aaa] line-through md:text-sm">{formatBRL(Number(product.price))}</span>}
+            {struck && <span className="text-xs text-[#aaa] line-through md:text-sm">{formatBRL(struck)}</span>}
           </div>
           {endsAt && <PromoTimer endsAt={endsAt} />}
           <CardRating storeId={store.id} productId={product.id} productIds={group?.product_ids} />
