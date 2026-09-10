@@ -490,6 +490,27 @@ function ProductFormPage() {
                   <CurrencyInput value={promoPrice} onChange={setPromoPrice} />
                 </Field>
               </div>
+              <div>
+                <Field label="Preço original (riscado)">
+                  <CurrencyInput
+                    value={originalPrice}
+                    onChange={(v) => { setOriginalPriceManual(true); setOriginalPrice(v); }}
+                  />
+                </Field>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Calculado automaticamente como preço de venda × 3,5
+                  {autoOriginalPrice ? ` = ${formatBRL(Number(autoOriginalPrice))}` : ""}. Você pode ajustar manualmente.
+                  {originalPriceManual && (
+                    <button
+                      type="button"
+                      className="ml-2 underline"
+                      onClick={() => { setOriginalPriceManual(false); setOriginalPrice(autoOriginalPrice); }}
+                    >
+                      Voltar ao cálculo automático
+                    </button>
+                  )}
+                </p>
+              </div>
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox checked={showPrice} onCheckedChange={(v) => setShowPrice(!!v)} />
                 Exibir o preço na loja
