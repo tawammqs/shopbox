@@ -18,3 +18,17 @@ export const discountPct = (price: number, promo: number | null | undefined) => 
 
 export const effectivePrice = (price: number, promo: number | null | undefined) =>
   promo && promo < price ? promo : price;
+
+/**
+ * Preço riscado ("De") + percentual de desconto.
+ * Usa original_price quando o produto tiver, senão o preço cheio.
+ */
+export const comparePrice = (
+  product: { price: number; original_price?: number | null },
+  current: number,
+) => {
+  const orig = product.original_price != null ? Number(product.original_price) : null;
+  const base = Number(product.price);
+  const struck = orig && orig > current ? orig : base > current ? base : null;
+  return { struck, pct: struck ? Math.round(((struck - current) / struck) * 100) : 0 };
+};
