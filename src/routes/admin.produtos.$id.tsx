@@ -59,6 +59,8 @@ function ProductFormPage() {
   // Pricing
   const [price, setPrice] = useState<string>("");
   const [promoPrice, setPromoPrice] = useState<string>("");
+  const [originalPrice, setOriginalPrice] = useState<string>("");
+  const [originalPriceManual, setOriginalPriceManual] = useState(false);
   const [costPrice, setCostPrice] = useState<string>("");
   const [showPrice, setShowPrice] = useState(true);
 
@@ -132,6 +134,10 @@ function ProductFormPage() {
       setDescription(p.description ?? "");
       setPrice(String(p.price ?? ""));
       setPromoPrice(p.promo_price ? String(p.promo_price) : "");
+      if (p.original_price != null) {
+        setOriginalPrice(String(p.original_price));
+        setOriginalPriceManual(Math.abs(Number(p.original_price) - Number(p.price ?? 0) * 3.5) > 0.01);
+      }
       setCostPrice(p.cost_price ? String(p.cost_price) : "");
       setShowPrice(p.show_price !== false);
       setProductType((p.product_type === "digital" ? "digital" : "physical"));
