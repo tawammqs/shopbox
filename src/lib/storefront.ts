@@ -207,6 +207,7 @@ export type ProductCardData = {
   brand: string | null;
   price: number;
   promo_price: number | null;
+  original_price?: number | null;
   tags: string[];
   featured_sections?: string[] | null;
   on_sale?: boolean | null;
