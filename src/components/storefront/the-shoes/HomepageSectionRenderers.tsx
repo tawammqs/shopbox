@@ -44,7 +44,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string; size?: 
 // ============== Reused: product card from existing TheShoesHomepage ==============
 // Mirror of TsProductCard but extracted; keep visual identical.
 import { Heart } from "lucide-react";
-import { effectivePrice, discountPct, formatBRL } from "@/lib/format";
+import { effectivePrice, comparePrice, formatBRL } from "@/lib/format";
 import { useProductPromo } from "@/lib/promotions";
 import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { getInstallment } from "@/lib/installments";

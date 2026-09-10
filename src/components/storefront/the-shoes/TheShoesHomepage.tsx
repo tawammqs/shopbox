@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useStorefront } from "../StoreContext";
 import { fetchActiveBanners, fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { fetchTheShoesSettings, type TheShoesSettings } from "@/lib/the-shoes-theme";
-import { discountPct, effectivePrice, formatBRL } from "@/lib/format";
+import { comparePrice, effectivePrice, formatBRL } from "@/lib/format";
 import { useProductPromo } from "@/lib/promotions";
 import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { getInstallment } from "@/lib/installments";

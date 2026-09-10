@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { supabase } from "@/integrations/supabase/client";
-import { discountPct, formatBRL } from "@/lib/format";
+import { comparePrice, formatBRL } from "@/lib/format";
 import { useProductPromo } from "@/lib/promotions";
 import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { useCart } from "@/stores/cart";
