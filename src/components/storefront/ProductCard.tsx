@@ -198,10 +198,26 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
 
 
-        <div className="flex items-baseline gap-2">
-          <span className={cn("text-base font-bold", promo.hasTimedPromo ? "text-red-500" : "text-foreground")}>{formatBRL(price)}</span>
-          {struck && <span className="text-xs text-muted-foreground line-through">{formatBRL(struck)}</span>}
-        </div>
+        {store.slug === "the-shoes" ? (
+          <div className="space-y-0.5">
+            {struck && (
+              <span className="block text-xs text-muted-foreground line-through">{formatBRL(struck)}</span>
+            )}
+            <div className="flex flex-wrap items-center gap-1">
+              <span className={cn("text-base font-bold", promo.hasTimedPromo ? "text-red-500" : "text-foreground")}>
+                {formatBRL(price)}
+              </span>
+              {struck && pct > 0 && (
+                <span className="rounded bg-red-500 px-1 py-0.5 text-[10px] font-bold text-white">-{pct}% OFF</span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-baseline gap-2">
+            <span className={cn("text-base font-bold", promo.hasTimedPromo ? "text-red-500" : "text-foreground")}>{formatBRL(price)}</span>
+            {struck && <span className="text-xs text-muted-foreground line-through">{formatBRL(struck)}</span>}
+          </div>
+        )}
         {promo.hasTimedPromo && promo.promotion?.ends_at && (
           <PromoTimer endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
         )}

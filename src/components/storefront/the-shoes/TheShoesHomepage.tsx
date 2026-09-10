@@ -332,15 +332,16 @@ function TsProductCard({ p }: { p: ProductCardData }) {
           <AffiliateShareButton productSlug={targetSlug} variant="text" />
         </div>
         <ColorSwatches group={group} idx={idx} onSelect={setVariantIdx} className="mb-1.5" />
-        <div className="flex items-baseline">
-          {struck ? (
-            <>
-              <span className="text-[16px] font-bold" style={{ color: ACCENT }}>{formatBRL(price)}</span>
-              <span className="ml-2 text-[13px] font-normal text-[#aaa] line-through">{formatBRL(struck)}</span>
-            </>
-          ) : (
-            <span className="text-[16px] font-semibold text-[#111]">{formatBRL(price)}</span>
+        <div className="space-y-0.5">
+          {struck && (
+            <span className="block text-[13px] font-normal text-[#aaa] line-through">{formatBRL(struck)}</span>
           )}
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="text-[16px] font-bold" style={{ color: ACCENT }}>{formatBRL(price)}</span>
+            {struck && pct > 0 && (
+              <span className="rounded bg-red-500 px-1 py-0.5 text-[10px] font-bold text-white">-{pct}% OFF</span>
+            )}
+          </div>
         </div>
         {promo.hasTimedPromo && promo.promotion?.ends_at && (
           <PromoTimer endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />
