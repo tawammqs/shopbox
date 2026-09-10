@@ -506,6 +506,7 @@ function normalizeProductCard(p: any): ProductCardData {
     brand: p.brand_name ?? p.brand,
     price: Number(p.price),
     promo_price: p.promo_price != null ? Number(p.promo_price) : null,
+    original_price: p.original_price != null ? Number(p.original_price) : null,
     tags: (p.tags ?? []) as string[],
     featured_sections: (p.featured_sections ?? []) as string[],
     on_sale: p.on_sale ?? false,

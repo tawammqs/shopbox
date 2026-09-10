@@ -136,7 +136,7 @@ function ProductFormPage() {
       setPromoPrice(p.promo_price ? String(p.promo_price) : "");
       if (p.original_price != null) {
         setOriginalPrice(String(p.original_price));
-        setOriginalPriceManual(Math.abs(Number(p.original_price) - Number(p.price ?? 0) * 3.5) > 0.01);
+        setOriginalPriceManual(Math.abs(Number(p.original_price) - Number(p.price ?? 0) * 2.5) > 0.01);
       }
       setCostPrice(p.cost_price ? String(p.cost_price) : "");
       setShowPrice(p.show_price !== false);
@@ -207,7 +207,7 @@ function ProductFormPage() {
 
   const autoOriginalPrice = useMemo(() => {
     const p = Number(price);
-    return p > 0 ? (p * 3.5).toFixed(2) : "";
+    return p > 0 ? (p * 2.5).toFixed(2) : "";
   }, [price]);
 
   useEffect(() => {
@@ -269,7 +269,7 @@ function ProductFormPage() {
         description: description || null,
         price: Number(price) || 0,
         promo_price: promoPrice ? Number(promoPrice) : null,
-        original_price: originalPrice ? Number(originalPrice) : (Number(price) ? Number((Number(price) * 3.5).toFixed(2)) : null),
+        original_price: originalPrice ? Number(originalPrice) : (Number(price) ? Number((Number(price) * 2.5).toFixed(2)) : null),
         cost_price: costPrice ? Number(costPrice) : null,
         show_price: showPrice,
         product_type: productType,
@@ -498,7 +498,7 @@ function ProductFormPage() {
                   />
                 </Field>
                 <p className="mt-1 text-[11px] text-muted-foreground">
-                  Calculado automaticamente como preço de venda × 3,5
+                  Calculado automaticamente como preço de venda × 2,5
                   {autoOriginalPrice ? ` = ${formatBRL(Number(autoOriginalPrice))}` : ""}. Você pode ajustar manualmente.
                   {originalPriceManual && (
                     <button
