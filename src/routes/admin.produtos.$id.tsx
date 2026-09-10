@@ -205,6 +205,15 @@ function ProductFormPage() {
     return `${base}-${Date.now().toString(36)}`;
   }
 
+  const autoOriginalPrice = useMemo(() => {
+    const p = Number(price);
+    return p > 0 ? (p * 3.5).toFixed(2) : "";
+  }, [price]);
+
+  useEffect(() => {
+    if (!originalPriceManual) setOriginalPrice(autoOriginalPrice);
+  }, [autoOriginalPrice, originalPriceManual]);
+
   const margin = useMemo(() => {
     const p = Number(price);
     const c = Number(costPrice);
@@ -260,6 +269,7 @@ function ProductFormPage() {
         description: description || null,
         price: Number(price) || 0,
         promo_price: promoPrice ? Number(promoPrice) : null,
+        original_price: originalPrice ? Number(originalPrice) : (Number(price) ? Number((Number(price) * 3.5).toFixed(2)) : null),
         cost_price: costPrice ? Number(costPrice) : null,
         show_price: showPrice,
         product_type: productType,
