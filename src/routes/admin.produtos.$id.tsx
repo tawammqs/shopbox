@@ -21,7 +21,7 @@ import { PlanGate } from "@/components/admin/PlanGate";
 import { VariationsBuilder } from "@/components/admin/VariationsBuilder";
 import { VideoSourcePicker } from "@/components/admin/VideoSourcePicker";
 import type { VideoType } from "@/lib/video";
-import { slugify } from "@/lib/format";
+import { slugify, formatBRL } from "@/lib/format";
 import { hasProductSection, normalizeProductSections } from "@/lib/product-sections";
 import { generateProductContent } from "@/lib/ai-product.functions";
 import { toast } from "sonner";
