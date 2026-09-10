@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useStorefront } from "@/components/storefront/StoreContext";
 import { fetchProductsByTag, type ProductCardData } from "@/lib/storefront";
 import { supabase } from "@/integrations/supabase/client";
-import { discountPct, formatBRL } from "@/lib/format";
+import { comparePrice, formatBRL } from "@/lib/format";
 import { useProductPromo } from "@/lib/promotions";
 import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { useCart } from "@/stores/cart";
@@ -84,7 +84,7 @@ export function TheShoesProductPage({ product }: { product: any }) {
 
   const promo = useProductPromo(store.id, product);
   const price = promo.price;
-  const pct = discountPct(Number(product.price), price);
+  const { struck, pct } = comparePrice(product as any, price);
   const colorName = colors.find((c) => c.id === colorId)?.name ?? null;
   const sizeLabel = sizes.find((s) => s.id === sizeId)?.label ?? null;
 
@@ -210,15 +210,15 @@ export function TheShoesProductPage({ product }: { product: any }) {
           <div>
             <div className="flex items-baseline gap-3">
               <span className="text-[30px] font-extrabold text-[#111]">{formatBRL(price)}</span>
-              {pct > 0 && (
+              {struck && (
                 <>
-                  <span className="text-base text-[#aaa] line-through">{formatBRL(Number(product.price))}</span>
+                  <span className="text-base text-[#aaa] line-through">{formatBRL(struck)}</span>
                   <span className="rounded-md bg-[#111] px-2 py-0.5 text-xs font-bold text-white">-{pct}%</span>
                 </>
               )}
             </div>
-            {pct > 0 && (
-              <p className="mt-1 text-sm text-[#111]">Você economiza {formatBRL(Number(product.price) - price)}</p>
+            {struck && (
+              <p className="mt-1 text-sm text-[#111]">Você economiza {formatBRL(struck - price)}</p>
             )}
             {price >= 9 && (
               <span style={{

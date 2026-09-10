@@ -207,6 +207,7 @@ export type ProductCardData = {
   brand: string | null;
   price: number;
   promo_price: number | null;
+  original_price?: number | null;
   tags: string[];
   featured_sections?: string[] | null;
   on_sale?: boolean | null;
@@ -222,7 +223,7 @@ export async function fetchProductsByTag(storeId: string, tag: string, limit = 1
   const { data, error } = await supabase
     .from("products")
     .select(
-      `id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
+      `id, slug, title, brand, brand_name, price, promo_price, original_price, tags, featured_sections, on_sale,
        product_images(url, position),
        product_colors(id, name, hex),
        product_stock(quantity)`,
@@ -253,7 +254,7 @@ export async function fetchProductsByHomepageSection(storeId: string, sectionKey
     supabase
       .from("products")
       .select(
-        `id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
+        `id, slug, title, brand, brand_name, price, promo_price, original_price, tags, featured_sections, on_sale,
          product_images(url, position),
          product_colors(id, name, hex),
          product_stock(quantity)`,
@@ -289,7 +290,7 @@ export async function fetchProductsForCategory(
   let q = supabase
     .from("products")
     .select(
-      `id, slug, title, brand, price, promo_price, tags, created_at,
+      `id, slug, title, brand, price, promo_price, original_price, tags, created_at,
        product_images(url, position),
        product_colors(id, name, hex),
        product_sizes(id, label),
@@ -371,7 +372,7 @@ export async function fetchCategoryFacets(storeId: string, categoryIds: string[]
   let q = supabase
     .from("products")
     .select(
-      `id, brand, price, promo_price,
+      `id, brand, price, promo_price, original_price,
        product_sizes(id, label),
        product_colors(id, name, hex)`,
     )
@@ -479,7 +480,7 @@ export async function searchProductsLive(storeId: string, term: string, limit = 
   const like = `%${term.trim()}%`;
   const { data, error } = await supabase
     .from("products")
-    .select(`id, slug, title, brand, brand_name, price, promo_price, tags, featured_sections, on_sale,
+    .select(`id, slug, title, brand, brand_name, price, promo_price, original_price, tags, featured_sections, on_sale,
              product_images(url, position),
              product_colors(id, name, hex),
              product_stock(quantity)`)
@@ -518,7 +519,7 @@ export async function fetchProductFull(storeId: string, slug: string) {
   const { data, error } = await supabase
     .from("products")
     .select(
-      `id, slug, title, brand, sku, description, price, promo_price, tags, low_stock_threshold,
+      `id, slug, title, brand, sku, description, price, promo_price, original_price, tags, low_stock_threshold,
        category_id,
        product_images(id, url, position),
        product_colors(id, name, hex, position),
@@ -539,7 +540,7 @@ export async function fetchBestSellersForStore(storeId: string, limit = 8) {
   const { data, error } = await supabase
     .from("products")
     .select(
-      `id, slug, title, brand, price, promo_price, tags,
+      `id, slug, title, brand, price, promo_price, original_price, tags,
        product_images(url, position),
        product_colors(id, name, hex),
        product_stock(quantity)`,
@@ -556,7 +557,7 @@ export async function fetchStoreVideoTestimonials(storeId: string, limit = 8) {
   const { data, error } = await supabase
     .from("product_video_testimonials")
     .select(`id, video_url, kind, customer_name, quote, position,
-             products!inner(id, slug, title, price, promo_price, store_id, product_images(url, position))`)
+             products!inner(id, slug, title, price, promo_price, original_price, store_id, product_images(url, position))`)
     .eq("products.store_id", storeId)
     .not("video_url", "is", null)
     .order("position", { ascending: true })

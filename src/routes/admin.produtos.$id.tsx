@@ -21,7 +21,7 @@ import { PlanGate } from "@/components/admin/PlanGate";
 import { VariationsBuilder } from "@/components/admin/VariationsBuilder";
 import { VideoSourcePicker } from "@/components/admin/VideoSourcePicker";
 import type { VideoType } from "@/lib/video";
-import { slugify } from "@/lib/format";
+import { slugify, formatBRL } from "@/lib/format";
 import { hasProductSection, normalizeProductSections } from "@/lib/product-sections";
 import { generateProductContent } from "@/lib/ai-product.functions";
 import { toast } from "sonner";
@@ -59,6 +59,8 @@ function ProductFormPage() {
   // Pricing
   const [price, setPrice] = useState<string>("");
   const [promoPrice, setPromoPrice] = useState<string>("");
+  const [originalPrice, setOriginalPrice] = useState<string>("");
+  const [originalPriceManual, setOriginalPriceManual] = useState(false);
   const [costPrice, setCostPrice] = useState<string>("");
   const [showPrice, setShowPrice] = useState(true);
 
@@ -132,6 +134,10 @@ function ProductFormPage() {
       setDescription(p.description ?? "");
       setPrice(String(p.price ?? ""));
       setPromoPrice(p.promo_price ? String(p.promo_price) : "");
+      if (p.original_price != null) {
+        setOriginalPrice(String(p.original_price));
+        setOriginalPriceManual(Math.abs(Number(p.original_price) - Number(p.price ?? 0) * 3.5) > 0.01);
+      }
       setCostPrice(p.cost_price ? String(p.cost_price) : "");
       setShowPrice(p.show_price !== false);
       setProductType((p.product_type === "digital" ? "digital" : "physical"));
@@ -199,6 +205,15 @@ function ProductFormPage() {
     return `${base}-${Date.now().toString(36)}`;
   }
 
+  const autoOriginalPrice = useMemo(() => {
+    const p = Number(price);
+    return p > 0 ? (p * 3.5).toFixed(2) : "";
+  }, [price]);
+
+  useEffect(() => {
+    if (!originalPriceManual) setOriginalPrice(autoOriginalPrice);
+  }, [autoOriginalPrice, originalPriceManual]);
+
   const margin = useMemo(() => {
     const p = Number(price);
     const c = Number(costPrice);
@@ -254,6 +269,7 @@ function ProductFormPage() {
         description: description || null,
         price: Number(price) || 0,
         promo_price: promoPrice ? Number(promoPrice) : null,
+        original_price: originalPrice ? Number(originalPrice) : (Number(price) ? Number((Number(price) * 3.5).toFixed(2)) : null),
         cost_price: costPrice ? Number(costPrice) : null,
         show_price: showPrice,
         product_type: productType,
@@ -473,6 +489,27 @@ function ProductFormPage() {
                 <Field label="Preço promocional">
                   <CurrencyInput value={promoPrice} onChange={setPromoPrice} />
                 </Field>
+              </div>
+              <div>
+                <Field label="Preço original (riscado)">
+                  <CurrencyInput
+                    value={originalPrice}
+                    onChange={(v) => { setOriginalPriceManual(true); setOriginalPrice(v); }}
+                  />
+                </Field>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Calculado automaticamente como preço de venda × 3,5
+                  {autoOriginalPrice ? ` = ${formatBRL(Number(autoOriginalPrice))}` : ""}. Você pode ajustar manualmente.
+                  {originalPriceManual && (
+                    <button
+                      type="button"
+                      className="ml-2 underline"
+                      onClick={() => { setOriginalPriceManual(false); setOriginalPrice(autoOriginalPrice); }}
+                    >
+                      Voltar ao cálculo automático
+                    </button>
+                  )}
+                </p>
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox checked={showPrice} onCheckedChange={(v) => setShowPrice(!!v)} />
