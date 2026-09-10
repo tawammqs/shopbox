@@ -57,6 +57,13 @@
       "when": 1788716257373,
       "tag": "0007_promotions_bar_colors",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789038344670,
+      "tag": "0008_add_original_price_to_products",
+      "breakpoints": true
     }
   ]
 }
