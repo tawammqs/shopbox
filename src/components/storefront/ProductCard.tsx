@@ -6,7 +6,7 @@ import { useStorefront, useIsMioTheme } from "./StoreContext";
 import { useStorefrontCustomizations } from "./StorefrontCustomizer";
 import { useWishlist } from "@/stores/wishlist";
 import { useCart } from "@/stores/cart";
-import { discountPct, formatBRL } from "@/lib/format";
+import { comparePrice, formatBRL } from "@/lib/format";
 import { useProductPromo } from "@/lib/promotions";
 import { PromoTimer } from "@/components/storefront/PromoTimer";
 import { trackAddToCart } from "@/lib/tracking";
@@ -38,7 +38,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
   const promo = useProductPromo(store.id, p);
   const price = promo.price;
-  const pct = discountPct(p.price, price);
+  const { struck, pct } = comparePrice(p, price);
   const img1 = (isBaseVariant ? p.images[0]?.url : groupImage) || groupImage || p.images[0]?.url || "";
   const img2 = isBaseVariant ? (p.images[1]?.url ?? img1) : img1;
 
@@ -200,7 +200,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
 
         <div className="flex items-baseline gap-2">
           <span className={cn("text-base font-bold", promo.hasTimedPromo ? "text-red-500" : "text-foreground")}>{formatBRL(price)}</span>
-          {pct > 0 && <span className="text-xs text-muted-foreground line-through">{formatBRL(p.price)}</span>}
+          {struck && <span className="text-xs text-muted-foreground line-through">{formatBRL(struck)}</span>}
         </div>
         {promo.hasTimedPromo && promo.promotion?.ends_at && (
           <PromoTimer endsAt={promo.promotion.ends_at} label={promo.promotion.timer_label} onExpire={promo.onExpire} />

@@ -62,7 +62,7 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
   const toggleWish = useWishlist((s) => s.toggle);
   const promo = useProductPromo(store.id, p);
   const price = promo.price;
-  const pct = discountPct(p.price, price);
+  const { struck, pct } = comparePrice(p, price);
   const { group, idx, setVariantIdx, targetSlug, img1, img2, title } = useCardVariant(store.id, p);
   const [hover, setHover] = useState(false);
   const quickAdd = (e: React.MouseEvent) => {
@@ -106,10 +106,10 @@ function ProductCardMio({ p }: { p: ProductCardData }) {
         <CardRating storeId={store.id} productId={p.id} productIds={group?.product_ids} className="mb-1.5" />
         <ColorSwatches group={group} idx={idx} onSelect={setVariantIdx} className="mb-1.5" />
         <div className="flex items-baseline">
-          {pct > 0 ? (
+          {struck ? (
             <>
               <span className="text-[16px] font-bold text-[var(--store-accent,#111)]">{formatBRL(price)}</span>
-              <span className="ml-2 text-[13px] font-normal text-[#aaa] line-through">{formatBRL(p.price)}</span>
+              <span className="ml-2 text-[13px] font-normal text-[#aaa] line-through">{formatBRL(struck)}</span>
             </>
           ) : (
             <span className="text-[16px] font-semibold text-[#111]">{formatBRL(price)}</span>
