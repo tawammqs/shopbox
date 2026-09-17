@@ -104,7 +104,7 @@ function MioCustomHomepage() {
   );
 }
 
-function SectionSwitch({ sectionKey, cust }: { sectionKey: HomepageSectionKey; cust: any }) {
+export function SectionSwitch({ sectionKey, cust }: { sectionKey: HomepageSectionKey; cust: any }) {
   const cfg = getSectionConfig(cust, sectionKey);
   switch (sectionKey) {
     case "banners_rotativos":
