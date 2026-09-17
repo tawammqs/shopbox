@@ -1,3 +1,4 @@
+<!-- # ShopBox — atualizado em setembro 2026 -->
 # Shopbox
 
 Build a complete professional e-commerce platform with two distinct areas:
