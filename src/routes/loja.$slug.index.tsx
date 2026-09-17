@@ -8,7 +8,7 @@ import { HomeVideoSection } from "@/components/storefront/HomeVideoSection";
 import { useStorefront, useIsMioTheme } from "@/components/storefront/StoreContext";
 import { useStorefrontHomepageSections, useStorefrontCustomizations } from "@/components/storefront/StorefrontCustomizer";
 import { getSectionsOrder, isSectionVisible, type HomepageSectionKey } from "@/lib/homepage-sections";
-import { SectionSwitch, TheShoesStyles } from "@/components/storefront/the-shoes/TheShoesHomepage";
+import { SectionSwitch, TheShoesStyles, FloatingWhatsApp } from "@/components/storefront/the-shoes/TheShoesHomepage";
 import { Fragment } from "react";
 import { TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
 import { TheShoesHomepage } from "@/components/storefront/the-shoes/TheShoesHomepage";
@@ -42,12 +42,22 @@ function HomePage() {
 }
 
 function DefaultHomePage({ storeId, storeSlug }: { storeId: string; storeSlug: string }) {
+  const { store } = useStorefront();
   const { data: cust } = useStorefrontCustomizations(storeId);
   const hp = (cust?.homepage ?? {}) as any;
   const usesNewSchema =
     !!hp.sections_order || !!hp.sections_visibility || !!hp.sections_config;
-  if (usesNewSchema) return <NewSchemaHomePage cust={cust} storeSlug={storeSlug} />;
-  return <LegacyDefaultHomePage storeId={storeId} />;
+  const whatsapp = (store as any).whatsapp as string | null | undefined;
+  return (
+    <>
+      {usesNewSchema ? (
+        <NewSchemaHomePage cust={cust} storeSlug={storeSlug} />
+      ) : (
+        <LegacyDefaultHomePage storeId={storeId} />
+      )}
+      {whatsapp && <FloatingWhatsApp number={whatsapp} />}
+    </>
+  );
 }
 
 function NewSchemaHomePage({ cust, storeSlug }: { cust: any; storeSlug: string }) {
