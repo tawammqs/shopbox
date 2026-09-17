@@ -20,7 +20,6 @@ export const Route = createFileRoute("/")({
   beforeLoad: async () => {
     // Server-side custom-domain routing: resolve the Host header before render
     // so custom domains never flash the landing page.
-    if (typeof window !== "undefined") return;
     let slug: string | null = null;
     try {
       const r = await resolveCurrentHostSlug();
