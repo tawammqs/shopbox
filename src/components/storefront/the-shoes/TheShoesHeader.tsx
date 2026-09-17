@@ -13,6 +13,7 @@ import { searchProductsLive, fetchStoreBrands } from "@/lib/storefront";
 import { effectivePrice, formatBRL } from "@/lib/format";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 
 export function TheShoesHeader() {
   const { store, categories, menus } = useStorefront();

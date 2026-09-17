@@ -38,10 +38,10 @@ function HomePage() {
   const { store } = useStorefront();
   const isMio = useIsMioTheme();
   if (isMio) return <TheShoesHomepage />;
-  return <DefaultHomePage storeId={store.id} />;
+  return <DefaultHomePage storeId={store.id} storeSlug={store.slug} />;
 }
 
-function DefaultHomePage({ storeId }: { storeId: string }) {
+function DefaultHomePage({ storeId, storeSlug }: { storeId: string; storeSlug: string }) {
   const { data: cust } = useStorefrontCustomizations(storeId);
   const hp = (cust?.homepage ?? {}) as any;
   const usesNewSchema =
