@@ -42,12 +42,22 @@ function HomePage() {
 }
 
 function DefaultHomePage({ storeId, storeSlug }: { storeId: string; storeSlug: string }) {
+  const { store } = useStorefront();
   const { data: cust } = useStorefrontCustomizations(storeId);
   const hp = (cust?.homepage ?? {}) as any;
   const usesNewSchema =
     !!hp.sections_order || !!hp.sections_visibility || !!hp.sections_config;
-  if (usesNewSchema) return <NewSchemaHomePage cust={cust} storeSlug={storeSlug} />;
-  return <LegacyDefaultHomePage storeId={storeId} />;
+  const whatsapp = (store as any).whatsapp as string | null | undefined;
+  return (
+    <>
+      {usesNewSchema ? (
+        <NewSchemaHomePage cust={cust} storeSlug={storeSlug} />
+      ) : (
+        <LegacyDefaultHomePage storeId={storeId} />
+      )}
+      {whatsapp && <FloatingWhatsApp number={whatsapp} />}
+    </>
+  );
 }
 
 function NewSchemaHomePage({ cust, storeSlug }: { cust: any; storeSlug: string }) {
