@@ -10,6 +10,7 @@
 
 export type HomepageSectionKey =
   | "banners_rotativos"
+  | "sobre_loja"
   | "produtos_oferta"
   | "produtos_destaque"
   | "produtos_novos"
@@ -41,6 +42,7 @@ export type HomepageConfig = {
 
 export const SECTION_LABELS: Record<HomepageSectionKey, string> = {
   banners_rotativos: "Banners rotativos",
+  sobre_loja: "Sobre a loja",
   produtos_oferta: "Produtos em oferta",
   produtos_destaque: "Produtos em destaque",
   produtos_novos: "Produtos novos",
@@ -64,6 +66,7 @@ export const SECTION_LABELS: Record<HomepageSectionKey, string> = {
 
 export const DEFAULT_SECTION_ORDER: HomepageSectionKey[] = [
   "banners_rotativos",
+  "sobre_loja",
   "produtos_oferta",
   "boas_vindas_marquee",
   "produtos_destaque",
@@ -87,6 +90,7 @@ export const DEFAULT_SECTION_ORDER: HomepageSectionKey[] = [
 
 export const DEFAULT_VISIBILITY: Record<HomepageSectionKey, boolean> = {
   banners_rotativos: true,
+  sobre_loja: false,
   produtos_oferta: true,
   produtos_destaque: true,
   produtos_novos: true,
@@ -152,6 +156,15 @@ export type CategoriasPrincipaisCfg = {
   category_ids?: string[];
 };
 
+export type SobreLojaCfg = {
+  title: string;
+  text: string;
+  image_url: string;
+  button_label?: string;
+  button_link?: string;
+  image_position?: "left" | "right";
+};
+
 
 export type ProdutoPrincipalCfg = {
   title: string;
@@ -162,6 +175,7 @@ export type ProdutoPrincipalCfg = {
 
 export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   banners_rotativos: { items: [], interval_seconds: 5, autoplay: true } as BannerRotativoCfg,
+  sobre_loja: { title: "Sobre a loja", text: "", image_url: "", button_label: "", button_link: "", image_position: "left" } as SobreLojaCfg,
   produtos_oferta: { title: "Ofertas", limit: 8, show_more_button: true, tag: "ofertas", display_mode: "carousel" } as ProductsTagCfg,
   produtos_destaque: { title: "Destaques", limit: 8, show_more_button: true, display_mode: "carousel" } as ProductsTagCfg,
   produtos_novos: { title: "Lançamentos", category_id: null, limit: 8, display_mode: "carousel" } as ProductsCategoryCfg,

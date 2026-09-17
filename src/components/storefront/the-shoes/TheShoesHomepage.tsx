@@ -65,6 +65,7 @@ import {
   VideoSectionRender,
   ProdutoPrincipalRender,
   CategoriasPrincipaisRender,
+  SobreLojaRender,
 } from "./HomepageSectionRenderers";
 import { MioVipSection } from "../MioAddonOverlays";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -109,6 +110,8 @@ export function SectionSwitch({ sectionKey, cust }: { sectionKey: HomepageSectio
   switch (sectionKey) {
     case "banners_rotativos":
       return <BannersRotativosRender cfg={cfg} />;
+    case "sobre_loja":
+      return <SobreLojaRender cfg={cfg} />;
     case "produtos_oferta":
       return <ProductsByTagRender cfg={cfg} defaultTag="promocao" />;
     case "produtos_destaque":
