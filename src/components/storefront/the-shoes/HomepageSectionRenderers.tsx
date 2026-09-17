@@ -55,6 +55,7 @@ import { toast } from "sonner";
 import { trackAddToCart } from "@/lib/tracking";
 import { useCardVariant, ColorSwatches, CardRating } from "@/components/storefront/ProductCardVariants";
 import { useColorGroups, dedupeByGroup } from "@/lib/color-groups";
+import { getEmbedUrl } from "@/lib/video";
 
 function ProductCardMio({ p }: { p: ProductCardData }) {
   const { store } = useStorefront();
@@ -218,13 +219,34 @@ export function SobreLojaRender({ cfg }: { cfg: SobreLojaCfg }) {
   const hasImage = !!cfg.image_url;
   const hasText = !!cfg.text?.trim();
   const hasTitle = !!cfg.title?.trim();
-  if (!hasImage && !hasText && !hasTitle) return null;
+  const uploadUrl = cfg.video_upload_url?.trim();
+  const videoUrl = cfg.video_url?.trim();
+  const hasVideo = !!(uploadUrl || videoUrl);
+  if (!hasImage && !hasText && !hasTitle && !hasVideo) return null;
+
+  const video = uploadUrl ? (
+    <video src={uploadUrl} controls playsInline className="w-full rounded-[12px] bg-black" />
+  ) : videoUrl ? (
+    <div className="relative h-0 w-full overflow-hidden rounded-[12px]" style={{ paddingBottom: "56.25%" }}>
+      <iframe
+        src={getEmbedUrl(videoUrl)}
+        title={cfg.title || store.name}
+        className="absolute left-0 top-0 h-full w-full rounded-[12px]"
+        frameBorder={0}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  ) : null;
 
   const media = hasImage ? (
     <div className="overflow-hidden rounded-[18px] bg-[#f7f7f7]">
       <img src={cfg.image_url} alt={cfg.title || store.name} className="aspect-[4/3] w-full object-cover" loading="lazy" />
     </div>
-  ) : null;
+  ) : (
+    video
+  );
+
 
   const content = (
     <div className="flex flex-col justify-center">
@@ -245,6 +267,7 @@ export function SobreLojaRender({ cfg }: { cfg: SobreLojaCfg }) {
         {imageFirst ? media : content}
         {imageFirst ? content : media}
       </div>
+      {hasImage && video && <div className="mt-6 md:mt-8">{video}</div>}
     </section>
   );
 }

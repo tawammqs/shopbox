@@ -163,6 +163,8 @@ export type SobreLojaCfg = {
   button_label?: string;
   button_link?: string;
   image_position?: "left" | "right";
+  video_url?: string;
+  video_upload_url?: string;
 };
 
 
@@ -175,7 +177,7 @@ export type ProdutoPrincipalCfg = {
 
 export const SECTION_DEFAULTS: Partial<Record<HomepageSectionKey, any>> = {
   banners_rotativos: { items: [], interval_seconds: 5, autoplay: true } as BannerRotativoCfg,
-  sobre_loja: { title: "Sobre a loja", text: "", image_url: "", button_label: "", button_link: "", image_position: "left" } as SobreLojaCfg,
+  sobre_loja: { title: "Sobre a loja", text: "", image_url: "", button_label: "", button_link: "", image_position: "left", video_url: "", video_upload_url: "" } as SobreLojaCfg,
   produtos_oferta: { title: "Ofertas", limit: 8, show_more_button: true, tag: "ofertas", display_mode: "carousel" } as ProductsTagCfg,
   produtos_destaque: { title: "Destaques", limit: 8, show_more_button: true, display_mode: "carousel" } as ProductsTagCfg,
   produtos_novos: { title: "Lançamentos", category_id: null, limit: 8, display_mode: "carousel" } as ProductsCategoryCfg,
