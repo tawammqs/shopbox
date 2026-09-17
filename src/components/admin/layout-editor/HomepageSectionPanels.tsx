@@ -294,22 +294,25 @@ function SobreLojaPanel({ storeId, cfg, onChange }: { storeId: string; cfg: Sobr
         <ImageUploadBox storeId={storeId} sectionKey="sobre_loja" value={cfg.image_url ?? ""} onChange={(u) => onChange({ ...cfg, image_url: u })} hint="Recomendado: imagem horizontal ou quadrada" />
         <TextInput className="mt-1.5" value={cfg.image_url ?? ""} onChange={(e) => onChange({ ...cfg, image_url: e.target.value })} placeholder="ou cole a URL da imagem" />
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <FieldLabel>Texto do botão</FieldLabel>
-          <TextInput value={cfg.button_label ?? ""} onChange={(e) => onChange({ ...cfg, button_label: e.target.value })} placeholder="Saiba mais" />
-        </div>
-        <div>
-          <FieldLabel>Link do botão</FieldLabel>
-          <TextInput value={cfg.button_link ?? ""} onChange={(e) => onChange({ ...cfg, button_link: e.target.value })} placeholder="/sobre" />
+      <div>
+        <FieldLabel>Texto do botão</FieldLabel>
+        <TextInput value={cfg.button_label ?? ""} onChange={(e) => onChange({ ...cfg, button_label: e.target.value })} placeholder="Ex: Compre pelo WhatsApp" />
+      </div>
+      <div>
+        <FieldLabel>Cor do botão</FieldLabel>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={cfg.button_color || "#25d366"}
+            onChange={(e) => onChange({ ...cfg, button_color: e.target.value })}
+            className="h-9 w-12 cursor-pointer rounded-md border border-gray-200"
+          />
+          <TextInput value={cfg.button_color ?? "#25d366"} onChange={(e) => onChange({ ...cfg, button_color: e.target.value })} placeholder="#25d366" />
         </div>
       </div>
       <div>
-        <FieldLabel>Posição da foto no desktop</FieldLabel>
-        <SelectInput value={cfg.image_position ?? "left"} onChange={(e) => onChange({ ...cfg, image_position: e.target.value as any })}>
-          <option value="left">Foto à esquerda</option>
-          <option value="right">Foto à direita</option>
-        </SelectInput>
+        <FieldLabel>Link do botão</FieldLabel>
+        <TextInput value={cfg.button_link ?? ""} onChange={(e) => onChange({ ...cfg, button_link: e.target.value })} placeholder="Ex: https://wa.me/5518... ou /loja/slug/produtos" />
       </div>
       <div>
         <FieldLabel>Link do vídeo</FieldLabel>
