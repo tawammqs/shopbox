@@ -8,7 +8,7 @@ import { HomeVideoSection } from "@/components/storefront/HomeVideoSection";
 import { useStorefront, useIsMioTheme } from "@/components/storefront/StoreContext";
 import { useStorefrontHomepageSections, useStorefrontCustomizations } from "@/components/storefront/StorefrontCustomizer";
 import { getSectionsOrder, isSectionVisible, type HomepageSectionKey } from "@/lib/homepage-sections";
-import { SectionSwitch } from "@/components/storefront/the-shoes/TheShoesHomepage";
+import { SectionSwitch, TheShoesStyles } from "@/components/storefront/the-shoes/TheShoesHomepage";
 import { Fragment } from "react";
 import { TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
 import { TheShoesHomepage } from "@/components/storefront/the-shoes/TheShoesHomepage";
@@ -53,14 +53,15 @@ function DefaultHomePage({ storeId }: { storeId: string }) {
 function NewSchemaHomePage({ cust }: { cust: any }) {
   const order = getSectionsOrder(cust);
   return (
-    <>
+    <div className="ts-root">
       {order.map((key) => {
         if (key.startsWith("addon:")) return null;
         const sk = key as HomepageSectionKey;
         if (!isSectionVisible(cust, sk)) return null;
         return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
       })}
-    </>
+      <TheShoesStyles />
+    </div>
   );
 }
 
