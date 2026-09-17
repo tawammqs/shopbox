@@ -17,20 +17,6 @@ function isShopBoxHost(h: string) {
 }
 
 export const Route = createFileRoute("/")({
-  beforeLoad: async () => {
-    // Server-side custom-domain routing: resolve the Host header before render
-    // so custom domains never flash the landing page.
-    let slug: string | null = null;
-    try {
-      const r = await resolveCurrentHostSlug();
-      slug = r?.slug ?? null;
-    } catch {
-      slug = null;
-    }
-    if (slug) {
-      throw redirect({ to: "/loja/$slug", params: { slug }, replace: true });
-    }
-  },
 
 
   head: () => ({
