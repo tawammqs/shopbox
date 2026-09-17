@@ -64,7 +64,61 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
   );
 }
 
-export const getRouter = () => {
+/** Paths that must never be rewritten into the storefront tree. */
+const NON_STORE_PREFIXES = [
+  "/loja",
+  "/api",
+  "/feed",
+  "/hooks",
+  "/email",
+  "/lovable",
+  "/admin",
+  "/superadmin",
+  "/painel",
+  "/login",
+  "/cadastro",
+  "/recuperar-senha",
+  "/reset-password",
+  "/checkout",
+  "/vip",
+  "/unsubscribe",
+];
+
+function isNonStorePath(pathname: string) {
+  return NON_STORE_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+/**
+ * On a merchant's own domain the storefront lives at the root of the URL, while
+ * internally the app keeps using the /loja/<slug> route tree.
+ */
+function buildRewrite(slug: string) {
+  const base = `/loja/${slug}`;
+  return {
+    input: ({ url }: { url: URL }) => {
+      if (url.pathname === base || url.pathname.startsWith(`${base}/`)) return undefined;
+      if (isNonStorePath(url.pathname)) return undefined;
+      const next = new URL(url);
+      next.pathname = url.pathname === "/" ? base : `${base}${url.pathname}`;
+      return next;
+    },
+    output: ({ url }: { url: URL }) => {
+      if (url.pathname !== base && !url.pathname.startsWith(`${base}/`)) return undefined;
+      const next = new URL(url);
+      next.pathname = url.pathname.slice(base.length) || "/";
+      return next;
+    },
+  };
+}
+
+function readClientHostSlug(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)sb_store_host_slug=([^;]*)/);
+  const value = match ? decodeURIComponent(match[1]) : "";
+  return value || null;
+}
+
+export const createAppRouter = (hostSlug: string | null) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -84,12 +138,24 @@ export const getRouter = () => {
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: DefaultErrorComponent,
+    ...(hostSlug ? { rewrite: buildRewrite(hostSlug) } : {}),
   });
   return router;
 };
 
+export const getRouter = async () => {
+  let hostSlug: string | null = null;
+  if (import.meta.env.SSR) {
+    const { resolveHostSlugForRequest } = await import("@/lib/host-slug.server");
+    hostSlug = await resolveHostSlugForRequest();
+  } else {
+    hostSlug = readClientHostSlug();
+  }
+  return createAppRouter(hostSlug);
+};
+
 declare module "@tanstack/react-router" {
   interface Register {
-    router: ReturnType<typeof getRouter>;
+    router: ReturnType<typeof createAppRouter>;
   }
 }

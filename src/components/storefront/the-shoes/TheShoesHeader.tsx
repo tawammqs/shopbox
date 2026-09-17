@@ -1,3 +1,4 @@
+import { useStoreHref } from "@/lib/store-href";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { X, Package, ChevronRight, ChevronDown } from "lucide-react";
@@ -37,13 +38,15 @@ export function TheShoesHeader() {
 
   const roots = categories.filter((c) => !c.parent_id);
 
+  const storeHref = useStoreHref();
+
   /** Garante que links relativos apontem para as páginas DESTA loja. */
   const resolveUrl = (url: string | null) => {
     if (!url) return "#";
     if (/^(https?:|mailto:|tel:|#)/i.test(url)) return url;
     const path = url.startsWith("/") ? url : `/${url}`;
-    if (path.startsWith("/loja/")) return path;
-    return `/loja/${store.slug}${path}`;
+    if (path.startsWith("/loja/")) return storeHref(path);
+    return storeHref(`/loja/${store.slug}${path}`);
   };
 
   // Menu horizontal do desktop: prefere menu com nome de header/topo/principal; senão, o primeiro.

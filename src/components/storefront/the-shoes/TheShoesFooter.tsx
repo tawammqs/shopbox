@@ -7,22 +7,25 @@ import { useStorefront } from "../StoreContext";
 import { useStorefrontCustomizations } from "../StorefrontCustomizer";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { useStoreHref } from "@/lib/store-href";
 
 export function TheShoesFooter() {
   const { store, menus, contactInfo, pages } = useStorefront();
   const isLegacyTheShoes = store.slug === "the-shoes";
+
+  const storeHref = useStoreHref();
 
   /** Ensure relative links always point to THIS store's pages. */
   const resolveUrl = (url: string) => {
     if (!url) return "#";
     if (/^(https?:|mailto:|tel:|#)/i.test(url)) return url;
     const path = url.startsWith("/") ? url : `/${url}`;
-    if (path.startsWith("/loja/")) return path;
+    if (path.startsWith("/loja/")) return storeHref(path);
     const seg = path.replace(/^\/+/, "").split("/")[0];
-    if (!seg) return `/loja/${store.slug}`;
-    if (["sobre", "rastreio", "wishlist", "busca"].includes(seg)) return `/loja/${store.slug}/${seg}`;
-    if (pages.some((p) => p.slug === seg)) return `/loja/${store.slug}/pagina/${seg}`;
-    return `/loja/${store.slug}${path}`;
+    if (!seg) return storeHref(`/loja/${store.slug}`);
+    if (["sobre", "rastreio", "wishlist", "busca"].includes(seg)) return storeHref(`/loja/${store.slug}/${seg}`);
+    if (pages.some((p) => p.slug === seg)) return storeHref(`/loja/${store.slug}/pagina/${seg}`);
+    return storeHref(`/loja/${store.slug}${path}`);
   };
 
 
@@ -169,7 +172,7 @@ export function TheShoesFooter() {
         {store.affiliates_enabled && (
           <div className="mt-8 border-t pt-6" style={{ borderColor: isDarkBg ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)" }}>
             <a
-              href={`/loja/${store.slug}/afiliados`}
+              href={storeHref(`/loja/${store.slug}/afiliados`)}
               className="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-bold"
               style={{ borderColor: txt, color: txt }}
             >
