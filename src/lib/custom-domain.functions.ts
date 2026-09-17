@@ -295,19 +295,18 @@ export const resolveCurrentHostSlug = createServerFn({ method: "GET" }).handler(
     const host = String(raw).split(",")[0].trim().toLowerCase().split(":")[0].replace(/\.$/, "");
     if (!host) return { host: "", slug: null as string | null };
 
-    const isShopBox =
-      host === "localhost" ||
-      host.startsWith("127.") ||
-      host.endsWith(".lovable.app") ||
-      host.endsWith(".lovable.dev") ||
-      host === "shopboxapp.com.br" ||
-      host === "www.shopboxapp.com.br";
-    if (isShopBox) return { host, slug: null as string | null };
-
+   const isShopBox =
+  host === "localhost" ||
+  host.startsWith("127.") ||
+  host.endsWith(".lovable.app") ||
+  host.endsWith(".lovable.dev") ||
+  host.endsWith(".vercel.app") ||
+  host.endsWith("shopboxapp.com.br");
+if (isShopBox) return { host, slug: null as string | null };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const candidates = Array.from(
-      new Set([host, host.startsWith("www.") ? host.slice(4) : `www.${host}`]),
-    );
+    const wwwHost = "www." + host;
+const bareHost = host.startsWith("www.") ? host.slice(4) : host;
+const candidates = Array.from(new Set([host, wwwHost, bareHost]));
     const { data: rows } = await supabaseAdmin
       .from("store_domains")
       .select("domain, status, store_id, stores:store_id(slug, active)")
