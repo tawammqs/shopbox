@@ -56,11 +56,13 @@ function DominiosPage() {
     queryKey: ["store-domains", store?.id],
     enabled: !!store?.id,
     queryFn: async () => {
-      const { data } = await supabase
+      if (!store?.id) return [];
+      const { data, error } = await supabase
         .from("store_domains")
         .select("*")
-        .eq("store_id", store!.id)
+        .eq("store_id", store.id)
         .order("created_at");
+      if (error) throw error;
       return (data ?? []) as Domain[];
     },
   });
@@ -80,7 +82,10 @@ function DominiosPage() {
       await qc.invalidateQueries({ queryKey: ["store-domains"] });
       await qc.refetchQueries({ queryKey: ["store-domains", store?.id] });
     },
-    onError: (e: any) => toast.error(e?.message || "Erro ao adicionar domínio"),
+    onError: (e: any) => {
+      const message = e instanceof Error ? e.message : "Não foi possível salvar o domínio.";
+      toast.error(message);
+    },
   });
 
   const setPrimary = useMutation({
