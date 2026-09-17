@@ -103,6 +103,10 @@ export const addCustomDomain = createServerFn({ method: "POST" })
       .eq("domain", data.domain)
       .maybeSingle();
 
+    if (existing.error) {
+      throw new Response(`Não foi possível consultar os domínios: ${existing.error.message}`, { status: 400 });
+    }
+
     let rowId = existing.data?.id as string | undefined;
 
     if (!rowId) {
@@ -141,7 +145,7 @@ export const addCustomDomain = createServerFn({ method: "POST" })
     const hostnameId: string | undefined = result?.id;
     const ov = result?.ownership_verification;
 
-    await supabase
+    const updated = await supabase
       .from("store_domains")
       .update({
         cloudflare_hostname_id: hostnameId ?? null,
@@ -151,6 +155,10 @@ export const addCustomDomain = createServerFn({ method: "POST" })
         ssl_status: result ? mapSslStatus(result?.ssl?.status) : "pending",
       })
       .eq("id", rowId);
+
+    if (updated.error) {
+      throw new Response(`O domínio foi salvo, mas não foi possível atualizar seu status: ${updated.error.message}`, { status: 400 });
+    }
 
     return {
       success: true,
