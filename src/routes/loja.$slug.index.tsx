@@ -40,6 +40,29 @@ function HomePage() {
 }
 
 function DefaultHomePage({ storeId }: { storeId: string }) {
+  const { data: cust } = useStorefrontCustomizations(storeId);
+  const hp = (cust?.homepage ?? {}) as any;
+  const usesNewSchema =
+    !!hp.sections_order || !!hp.sections_visibility || !!hp.sections_config;
+  if (usesNewSchema) return <NewSchemaHomePage cust={cust} />;
+  return <LegacyDefaultHomePage storeId={storeId} />;
+}
+
+function NewSchemaHomePage({ cust }: { cust: any }) {
+  const order = getSectionsOrder(cust);
+  return (
+    <>
+      {order.map((key) => {
+        if (key.startsWith("addon:")) return null;
+        const sk = key as HomepageSectionKey;
+        if (!isSectionVisible(cust, sk)) return null;
+        return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
+      })}
+    </>
+  );
+}
+
+function LegacyDefaultHomePage({ storeId }: { storeId: string }) {
   const banners = useQuery({
     queryKey: ["banners", storeId],
     queryFn: () => fetchActiveBanners(storeId),
