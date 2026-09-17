@@ -53,14 +53,15 @@ function DefaultHomePage({ storeId }: { storeId: string }) {
 function NewSchemaHomePage({ cust }: { cust: any }) {
   const order = getSectionsOrder(cust);
   return (
-    <>
+    <div className="ts-root">
       {order.map((key) => {
         if (key.startsWith("addon:")) return null;
         const sk = key as HomepageSectionKey;
         if (!isSectionVisible(cust, sk)) return null;
         return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
       })}
-    </>
+      <TheShoesStyles />
+    </div>
   );
 }
 
