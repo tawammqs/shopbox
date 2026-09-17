@@ -94,13 +94,8 @@ export const addCustomDomain = createServerFn({ method: "POST" })
       throw new Response("Use o endereço padrão shopboxapp.com.br para subdomínios da ShopBox.", { status: 400 });
     }
 
-    const result = await cfCreateHostname(data.domain);
-
-    const hostnameId: string | undefined = result?.id;
-    const ov = result?.ownership_verification;
-    const sslStatus = mapSslStatus(result?.ssl?.status);
-    const domainStatus = mapDomainStatus(result?.status);
-
+    // 1) Salva o domínio primeiro, para que ele apareça na lista mesmo que o
+    // registro no Cloudflare falhe (token ausente, domínio já em uso, etc).
     const existing = await supabase
       .from("store_domains")
       .select("id")
@@ -108,30 +103,59 @@ export const addCustomDomain = createServerFn({ method: "POST" })
       .eq("domain", data.domain)
       .maybeSingle();
 
-    const row = {
-      store_id: data.storeId,
-      domain: data.domain,
-      cloudflare_hostname_id: hostnameId ?? null,
-      ownership_verification_name: ov?.name ?? null,
-      ownership_verification_value: ov?.value ?? null,
-      status: domainStatus,
-      ssl_status: sslStatus,
-    };
+    let rowId = existing.data?.id as string | undefined;
 
-    const saved = existing.data
-      ? await supabase.from("store_domains").update(row).eq("id", existing.data.id).select("id").maybeSingle()
-      : await supabase.from("store_domains").insert(row).select("id").maybeSingle();
+    if (!rowId) {
+      const inserted = await supabase
+        .from("store_domains")
+        .insert({
+          store_id: data.storeId,
+          domain: data.domain,
+          status: "pending",
+          ssl_status: "pending",
+        })
+        .select("id")
+        .maybeSingle();
 
-    if (saved.error || !saved.data) {
-      throw new Response(
-        saved.error?.message || "Não foi possível salvar o domínio na sua loja.",
-        { status: 400 },
-      );
+      if (inserted.error || !inserted.data) {
+        throw new Response(
+          inserted.error?.message || "Não foi possível salvar o domínio na sua loja.",
+          { status: 400 },
+        );
+      }
+      rowId = inserted.data.id;
     }
+
+    // 2) Registra no Cloudflare (não derruba o salvamento se falhar).
+    let result: any = null;
+    let cfWarning: string | null = null;
+    try {
+      result = await cfCreateHostname(data.domain);
+    } catch (e: any) {
+      cfWarning =
+        typeof e?.text === "function"
+          ? "Não foi possível registrar o domínio no provedor agora. Ele ficará como pendente."
+          : e?.message || "Falha ao registrar o domínio no provedor.";
+    }
+
+    const hostnameId: string | undefined = result?.id;
+    const ov = result?.ownership_verification;
+
+    await supabase
+      .from("store_domains")
+      .update({
+        cloudflare_hostname_id: hostnameId ?? null,
+        ownership_verification_name: ov?.name ?? null,
+        ownership_verification_value: ov?.value ?? null,
+        status: result ? mapDomainStatus(result?.status) : "pending",
+        ssl_status: result ? mapSslStatus(result?.ssl?.status) : "pending",
+      })
+      .eq("id", rowId);
 
     return {
       success: true,
       hostname_id: hostnameId,
+      warning: cfWarning,
       instructions: {
         cname: {
           type: "CNAME",
