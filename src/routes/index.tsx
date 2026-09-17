@@ -5,7 +5,7 @@ import {
   Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
-import { resolveDomainSlug, resolveCurrentHostSlug } from "@/lib/custom-domain.functions";
+import { resolveDomainSlug } from "@/lib/custom-domain.functions";
 
 const SHOPBOX_HOSTS = ["shopboxapp.com.br", "www.shopboxapp.com.br", "shopbox.lovable.app", "localhost"];
 function isShopBoxHost(h: string) {
