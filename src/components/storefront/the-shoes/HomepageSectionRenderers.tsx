@@ -224,10 +224,10 @@ export function SobreLojaRender({ cfg }: { cfg: SobreLojaCfg }) {
   const hasVideo = !!(uploadUrl || videoUrl);
   if (!hasImage && !hasText && !hasTitle && !hasVideo) return null;
 
-  const video = uploadUrl ? (
-    <video src={uploadUrl} controls playsInline className="w-full rounded-[12px] bg-black" />
+  const media = uploadUrl ? (
+    <video src={uploadUrl} controls playsInline className="mx-auto w-full max-w-2xl rounded-[12px] bg-black" />
   ) : videoUrl ? (
-    <div className="relative h-0 w-full overflow-hidden rounded-[12px]" style={{ paddingBottom: "56.25%" }}>
+    <div className="relative mx-auto h-0 w-full max-w-2xl overflow-hidden rounded-[12px]" style={{ paddingBottom: "min(56.25%, 400px)" }}>
       <iframe
         src={getEmbedUrl(videoUrl)}
         title={cfg.title || store.name}
@@ -237,37 +237,36 @@ export function SobreLojaRender({ cfg }: { cfg: SobreLojaCfg }) {
         allowFullScreen
       />
     </div>
-  ) : null;
-
-  const media = hasImage ? (
-    <div className="overflow-hidden rounded-[18px] bg-[#f7f7f7]">
+  ) : hasImage ? (
+    <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-[18px] bg-[#f7f7f7]">
       <img src={cfg.image_url} alt={cfg.title || store.name} className="aspect-[4/3] w-full object-cover" loading="lazy" />
     </div>
-  ) : (
-    video
-  );
+  ) : null;
 
-
-  const content = (
-    <div className="flex flex-col justify-center">
-      {hasTitle && <h2 className="text-[26px] font-extrabold leading-tight text-[#111] md:text-[34px]">{cfg.title}</h2>}
-      {hasText && <p className="mt-4 whitespace-pre-line text-[15px] leading-7 text-[#4b5563] md:text-base">{cfg.text}</p>}
-      {cfg.button_label && cfg.button_link && (
-        <a href={cfg.button_link} className="mt-6 inline-flex w-fit items-center rounded-full bg-[#111827] px-5 py-3 text-sm font-bold text-white">
-          {cfg.button_label}
-        </a>
-      )}
-    </div>
-  );
-
-  const imageFirst = cfg.image_position !== "right";
   return (
     <section className="ts-section">
-      <div className="grid gap-6 md:grid-cols-2 md:items-center md:gap-10">
-        {imageFirst ? media : content}
-        {imageFirst ? content : media}
-      </div>
-      {hasImage && video && <div className="mt-6 md:mt-8">{video}</div>}
+      {(hasTitle || hasText) && (
+        <div className="mb-6 text-center">
+          {hasTitle && <h2 className="mb-3 text-2xl font-bold text-[#111]">{cfg.title}</h2>}
+          {hasText && (
+            <p className="mx-auto max-w-xl whitespace-pre-line text-[15px] leading-[1.8] text-[#555]">{cfg.text}</p>
+          )}
+        </div>
+      )}
+      {media}
+      {cfg.button_label && cfg.button_link && (
+        <div className="mt-6 text-center">
+          <a
+            href={cfg.button_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ backgroundColor: cfg.button_color || "#25d366" }}
+            className="inline-flex items-center gap-2 rounded-[12px] px-8 py-3.5 text-[15px] font-bold text-white no-underline"
+          >
+            {cfg.button_label}
+          </a>
+        </div>
+      )}
     </section>
   );
 }
