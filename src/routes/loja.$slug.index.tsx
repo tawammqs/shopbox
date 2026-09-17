@@ -38,26 +38,35 @@ function HomePage() {
   const { store } = useStorefront();
   const isMio = useIsMioTheme();
   if (isMio) return <TheShoesHomepage />;
-  return <DefaultHomePage storeId={store.id} />;
+  return <DefaultHomePage storeId={store.id} storeSlug={store.slug} />;
 }
 
-function DefaultHomePage({ storeId }: { storeId: string }) {
+function DefaultHomePage({ storeId, storeSlug }: { storeId: string; storeSlug: string }) {
   const { data: cust } = useStorefrontCustomizations(storeId);
   const hp = (cust?.homepage ?? {}) as any;
   const usesNewSchema =
     !!hp.sections_order || !!hp.sections_visibility || !!hp.sections_config;
-  if (usesNewSchema) return <NewSchemaHomePage cust={cust} />;
+  if (usesNewSchema) return <NewSchemaHomePage cust={cust} storeSlug={storeSlug} />;
   return <LegacyDefaultHomePage storeId={storeId} />;
 }
 
-function NewSchemaHomePage({ cust }: { cust: any }) {
+function NewSchemaHomePage({ cust, storeSlug }: { cust: any; storeSlug: string }) {
   const order = getSectionsOrder(cust);
+  const hp = (cust?.homepage ?? {}) as any;
+  const visibleMap = (hp.sections_visibility ?? {}) as Record<string, boolean>;
+  const configMap = (hp.sections_config ?? {}) as Record<string, any>;
+  const isLojaAranha = storeSlug === "loja-aranha";
+  const canRender = (key: HomepageSectionKey) => {
+    if (!isLojaAranha) return isSectionVisible(cust, key);
+    if (key in visibleMap) return !!visibleMap[key];
+    return key in configMap;
+  };
   return (
     <div className="ts-root">
       {order.map((key) => {
         if (key.startsWith("addon:")) return null;
         const sk = key as HomepageSectionKey;
-        if (!isSectionVisible(cust, sk)) return null;
+        if (!canRender(sk)) return null;
         return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
       })}
       <TheShoesStyles />

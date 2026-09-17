@@ -23,6 +23,7 @@ import {
   type ProdutoPrincipalCfg,
   type CategoriasPrincipaisCfg,
   type CategoriaPrincipalItem,
+  type SobreLojaCfg,
 } from "@/lib/homepage-sections";
 import { hasProductSection } from "@/lib/product-sections";
 import { Link } from "@tanstack/react-router";
@@ -227,6 +228,44 @@ function BannersRotativosPanel({ storeId, cfg, onChange }: { storeId: string; cf
         <Slider value={cfg.interval_seconds ?? 5} min={3} max={10} onChange={(v) => onChange({ ...cfg, interval_seconds: v })} />
       </div>
       <Toggle checked={!!cfg.autoplay} onChange={(v) => onChange({ ...cfg, autoplay: v })} label="Autoplay" />
+    </div>
+  );
+}
+
+// ---------------- Sobre a loja ----------------
+function SobreLojaPanel({ storeId, cfg, onChange }: { storeId: string; cfg: SobreLojaCfg; onChange: (c: SobreLojaCfg) => void }) {
+  return (
+    <div className="space-y-3">
+      <div>
+        <FieldLabel>Título</FieldLabel>
+        <TextInput value={cfg.title ?? ""} onChange={(e) => onChange({ ...cfg, title: e.target.value })} placeholder="Sobre a loja" />
+      </div>
+      <div>
+        <FieldLabel>Texto</FieldLabel>
+        <TextArea value={cfg.text ?? ""} onChange={(e) => onChange({ ...cfg, text: e.target.value })} placeholder="Conte a história da marca" />
+      </div>
+      <div>
+        <FieldLabel>Foto</FieldLabel>
+        <ImageUploadBox storeId={storeId} sectionKey="sobre_loja" value={cfg.image_url ?? ""} onChange={(u) => onChange({ ...cfg, image_url: u })} hint="Recomendado: imagem horizontal ou quadrada" />
+        <TextInput className="mt-1.5" value={cfg.image_url ?? ""} onChange={(e) => onChange({ ...cfg, image_url: e.target.value })} placeholder="ou cole a URL da imagem" />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <FieldLabel>Texto do botão</FieldLabel>
+          <TextInput value={cfg.button_label ?? ""} onChange={(e) => onChange({ ...cfg, button_label: e.target.value })} placeholder="Saiba mais" />
+        </div>
+        <div>
+          <FieldLabel>Link do botão</FieldLabel>
+          <TextInput value={cfg.button_link ?? ""} onChange={(e) => onChange({ ...cfg, button_link: e.target.value })} placeholder="/sobre" />
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Posição da foto no desktop</FieldLabel>
+        <SelectInput value={cfg.image_position ?? "left"} onChange={(e) => onChange({ ...cfg, image_position: e.target.value as any })}>
+          <option value="left">Foto à esquerda</option>
+          <option value="right">Foto à direita</option>
+        </SelectInput>
+      </div>
     </div>
   );
 }
@@ -847,6 +886,8 @@ export function SectionEditor({
   switch (sectionKey) {
     case "banners_rotativos":
       return <BannersRotativosPanel storeId={storeId} cfg={cfg} onChange={onChange} />;
+    case "sobre_loja":
+      return <SobreLojaPanel storeId={storeId} cfg={cfg} onChange={onChange} />;
     case "produtos_oferta":
       return <ProductsTagPanel cfg={cfg} onChange={onChange} fixedTag="ofertas" />;
     case "produtos_destaque":

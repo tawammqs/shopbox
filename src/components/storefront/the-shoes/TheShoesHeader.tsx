@@ -13,6 +13,7 @@ import { searchProductsLive, fetchStoreBrands } from "@/lib/storefront";
 import { effectivePrice, formatBRL } from "@/lib/format";
 import { fetchTheShoesSettings } from "@/lib/the-shoes-theme";
 import { useQuery } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 
 export function TheShoesHeader() {
   const { store, categories, menus } = useStorefront();
@@ -130,7 +131,7 @@ export function TheShoesHeader() {
   );
 
   return (
-    <header className="ts-header sticky top-0 z-40 bg-white">
+    <header className={cn("ts-header sticky top-0 z-40 bg-white", store.slug === "loja-aranha" && "ts-header-aranha")}>
       {ab?.enabled && ab.items?.length > 0 && (
         <div className="ts-ann" style={{ background: ab.bg_color, color: ab.text_color }}>
           <div className="ts-ann-track">
@@ -445,6 +446,11 @@ export function TheShoesHeader() {
         .ts-main-right { justify-self: end; display: flex; align-items: center; gap: 12px; }
         .ts-logo { height: 40px; width: auto; max-width: 160px; }
         @media (min-width: 768px) { .ts-logo { height: 48px; } }
+        @media (max-width: 767px) {
+          .ts-header-aranha .ts-main { grid-template-columns: 1fr auto 1fr; }
+          .ts-header-aranha .ts-main-center { justify-self: center; }
+          .ts-header-aranha .ts-logo { height: 48px; max-width: 190px; }
+        }
         .ts-icon-btn {
           background: transparent; border: none; cursor: pointer;
           color: #111; padding: 4px;
