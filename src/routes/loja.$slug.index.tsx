@@ -46,7 +46,7 @@ function DefaultHomePage({ storeId, storeSlug }: { storeId: string; storeSlug: s
   const hp = (cust?.homepage ?? {}) as any;
   const usesNewSchema =
     !!hp.sections_order || !!hp.sections_visibility || !!hp.sections_config;
-  if (usesNewSchema) return <NewSchemaHomePage cust={cust} storeSlug={store.slug} />;
+  if (usesNewSchema) return <NewSchemaHomePage cust={cust} storeSlug={storeSlug} />;
   return <LegacyDefaultHomePage storeId={storeId} />;
 }
 
