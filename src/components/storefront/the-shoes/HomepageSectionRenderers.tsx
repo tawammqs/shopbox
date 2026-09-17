@@ -55,6 +55,7 @@ import { toast } from "sonner";
 import { trackAddToCart } from "@/lib/tracking";
 import { useCardVariant, ColorSwatches, CardRating } from "@/components/storefront/ProductCardVariants";
 import { useColorGroups, dedupeByGroup } from "@/lib/color-groups";
+import { getEmbedUrl } from "@/lib/video";
 
 function ProductCardMio({ p }: { p: ProductCardData }) {
   const { store } = useStorefront();

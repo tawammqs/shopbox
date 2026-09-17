@@ -232,6 +232,51 @@ function BannersRotativosPanel({ storeId, cfg, onChange }: { storeId: string; cf
   );
 }
 
+function VideoUploadBox({ storeId, value, onChange }: { storeId: string; value: string; onChange: (url: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const onPick = async (f?: File) => {
+    if (!f) return;
+    if (f.size > 50 * 1024 * 1024) return toast.error("Vídeo maior que 50MB");
+    setBusy(true);
+    try {
+      const ext = (f.name.split(".").pop() || "mp4").toLowerCase().replace(/[^\w]/g, "") || "mp4";
+      const path = `${storeId}/homepage/sobre_loja/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage.from("banners").upload(path, f, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: f.type || "video/mp4",
+      });
+      if (error) throw error;
+      onChange(supabase.storage.from("banners").getPublicUrl(path).data.publicUrl);
+    } catch (e: any) {
+      toast.error(e.message || "Erro no upload do vídeo");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 p-2">
+        <button
+          type="button"
+          onClick={() => ref.current?.click()}
+          className="inline-flex items-center gap-1 rounded-md border border-gray-200 px-2 py-1 text-xs font-medium hover:bg-gray-50"
+        >
+          <Upload className="h-3 w-3" /> {busy ? "Enviando…" : value ? "Trocar vídeo" : "Enviar vídeo"}
+        </button>
+        {value && (
+          <button type="button" onClick={() => onChange("")} className="inline-flex items-center gap-1 text-xs text-red-600 hover:underline">
+            <XIcon className="h-3 w-3" /> Remover
+          </button>
+        )}
+        <input ref={ref} hidden type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(e) => onPick(e.target.files?.[0])} />
+      </div>
+      {value && <video src={value} controls className="w-full rounded-md bg-black" />}
+    </div>
+  );
+}
+
 // ---------------- Sobre a loja ----------------
 function SobreLojaPanel({ storeId, cfg, onChange }: { storeId: string; cfg: SobreLojaCfg; onChange: (c: SobreLojaCfg) => void }) {
   return (
