@@ -70,13 +70,15 @@ function DominiosPage() {
       if (!store?.id || !newDomain.trim()) return null;
       return await addFn({ data: { domain: newDomain.trim(), storeId: store.id } });
     },
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       if (!res) return;
       setNewDomain("");
       setOpen(false);
       setDnsInstructions(res.instructions);
-      toast.success("Domínio adicionado! Configure o DNS conforme as instruções.");
-      qc.invalidateQueries({ queryKey: ["store-domains"] });
+      if ((res as any).warning) toast.warning((res as any).warning);
+      else toast.success("Domínio adicionado! Configure o DNS conforme as instruções.");
+      await qc.invalidateQueries({ queryKey: ["store-domains"] });
+      await qc.refetchQueries({ queryKey: ["store-domains", store?.id] });
     },
     onError: (e: any) => toast.error(e?.message || "Erro ao adicionar domínio"),
   });
