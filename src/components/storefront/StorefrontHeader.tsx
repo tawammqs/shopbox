@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export function StorefrontHeader({ onOpenMobileNav }: { onOpenMobileNav: () => void }) {
   const { store } = useStorefront();
+  const isLojaAranha = store.slug === "loja-aranha";
   const navigate = useNavigate();
   const allItems = useCart((s) => s.items);
   const cartCount = useMemo(
@@ -55,7 +56,7 @@ export function StorefrontHeader({ onOpenMobileNav }: { onOpenMobileNav: () => v
       data-sf-header
       className="sticky top-0 z-40 border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 md:gap-6">
+      <div className={cn("mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 md:gap-6", isLojaAranha && "relative md:relative")}>
         <button
           aria-label="Abrir menu"
           className="rounded-md p-2 text-foreground hover:bg-muted md:hidden"
@@ -67,15 +68,18 @@ export function StorefrontHeader({ onOpenMobileNav }: { onOpenMobileNav: () => v
         <Link
           to="/loja/$slug"
           params={{ slug: store.slug }}
-          className="flex shrink-0 items-center gap-2"
-          style={{ height: "var(--store-logo-size, 36px)" }}
+          className={cn(
+            "flex shrink-0 items-center gap-2",
+            isLojaAranha && "absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0",
+          )}
+          style={{ height: isLojaAranha ? "44px" : "var(--store-logo-size, 36px)" }}
         >
           {store.logo_url ? (
             <img
               src={store.logo_url}
               alt={store.name}
-              className="w-auto max-w-[200px] object-contain"
-              style={{ height: "var(--store-logo-size, 36px)" }}
+              className={cn("w-auto object-contain", isLojaAranha ? "max-w-[120px] md:max-w-[200px]" : "max-w-[200px]")}
+              style={{ height: isLojaAranha ? "44px" : "var(--store-logo-size, 36px)" }}
             />
           ) : (
             <span className="font-display text-lg font-bold text-foreground md:text-xl">{store.name}</span>
