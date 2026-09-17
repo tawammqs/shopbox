@@ -964,7 +964,7 @@ function InstagramSection({ handle, images }: { handle: string; images: TheShoes
 }
 
 /* -------------- Floating WhatsApp -------------- */
-function FloatingWhatsApp({ number }: { number: string }) {
+export function FloatingWhatsApp({ number }: { number: string }) {
   const { store } = useStorefront();
   const { data: team } = useSalesTeam(store.id);
   const [selectorOpen, setSelectorOpen] = useState(false);
