@@ -1,4 +1,4 @@
-<!-- # ShopBox — atualizado em setembro 2026 --> 
+<!-- # ShopBox — sync forçado em 17/09/2026 às 14:10 UTC --> 
 # Shopbox
 
 Build a complete professional e-commerce platform with two distinct areas:
