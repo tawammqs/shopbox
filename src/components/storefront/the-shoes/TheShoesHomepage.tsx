@@ -87,6 +87,15 @@ function MioCustomHomepage() {
   const cust = useStorefrontCustomizations(store.id).data;
   if (!cust) return null;
   const order = getSectionsOrder(cust);
+  const hp = (cust?.homepage ?? {}) as any;
+  const visibleMap = (hp.sections_visibility ?? {}) as Record<string, boolean>;
+  const configMap = (hp.sections_config ?? {}) as Record<string, any>;
+  const isLojaAranha = store.slug === "loja-aranha";
+  const canRender = (key: HomepageSectionKey) => {
+    if (!isLojaAranha) return isSectionVisible(cust, key);
+    if (key in visibleMap) return !!visibleMap[key];
+    return key in configMap;
+  };
   const whatsapp = (store as any).whatsapp as string | null | undefined;
   return (
     <div className="ts-root">
@@ -96,7 +105,7 @@ function MioCustomHomepage() {
         if (!(key in {} || true)) return null; // keep flow simple
         const sk = key as HomepageSectionKey;
         if (sk === "video" && order.includes("addon:video_commerce")) return null;
-        if (!isSectionVisible(cust, sk)) return null;
+        if (!canRender(sk)) return null;
         return <SectionSwitch key={key} sectionKey={sk} cust={cust} />;
       })}
       {whatsapp && <FloatingWhatsApp number={whatsapp} />}
