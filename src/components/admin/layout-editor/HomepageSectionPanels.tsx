@@ -266,6 +266,18 @@ function SobreLojaPanel({ storeId, cfg, onChange }: { storeId: string; cfg: Sobr
           <option value="right">Foto à direita</option>
         </SelectInput>
       </div>
+      <div>
+        <FieldLabel>Link do vídeo</FieldLabel>
+        <TextInput
+          value={cfg.video_url ?? ""}
+          onChange={(e) => onChange({ ...cfg, video_url: e.target.value })}
+          placeholder="Cole o link do vídeo (YouTube, Instagram, Vimeo...)"
+        />
+      </div>
+      <div>
+        <FieldLabel>Ou envie um vídeo (MP4, até 50MB)</FieldLabel>
+        <VideoUploadBox storeId={storeId} value={cfg.video_upload_url ?? ""} onChange={(u) => onChange({ ...cfg, video_upload_url: u })} />
+      </div>
     </div>
   );
 }

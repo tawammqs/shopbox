@@ -266,6 +266,7 @@ export function SobreLojaRender({ cfg }: { cfg: SobreLojaCfg }) {
         {imageFirst ? media : content}
         {imageFirst ? content : media}
       </div>
+      {hasImage && video && <div className="mt-6 md:mt-8">{video}</div>}
     </section>
   );
 }
