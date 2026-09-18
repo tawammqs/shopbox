@@ -243,13 +243,7 @@ function CategoryDialog({ open, onOpenChange, editing, categories, storeId, onSa
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o) => {
-      if (o && editing) {
-        setName(editing.name); setSlug(editing.slug);
-        setParentId(editing.parent_id ?? ""); setImageUrl(editing.image_url ?? null);
-      } else if (o) { setName(""); setSlug(""); setParentId(""); setImageUrl(null); }
-      onOpenChange(o);
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editing ? "Editar" : "Nova"} categoria</DialogTitle>
