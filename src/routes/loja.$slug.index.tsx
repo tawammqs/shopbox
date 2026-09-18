@@ -11,6 +11,7 @@ import { getSectionsOrder, isSectionVisible, type HomepageSectionKey } from "@/l
 import { SectionSwitch, TheShoesStyles, FloatingWhatsApp } from "@/components/storefront/the-shoes/TheShoesHomepage";
 import { Fragment } from "react";
 import { TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
+import { MioVipSection } from "@/components/storefront/MioAddonOverlays";
 import { TheShoesHomepage } from "@/components/storefront/the-shoes/TheShoesHomepage";
 
 export const Route = createFileRoute("/loja/$slug/")({
