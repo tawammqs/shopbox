@@ -11,6 +11,7 @@ import { getSectionsOrder, isSectionVisible, type HomepageSectionKey } from "@/l
 import { SectionSwitch, TheShoesStyles, FloatingWhatsApp } from "@/components/storefront/the-shoes/TheShoesHomepage";
 import { Fragment } from "react";
 import { TheShoesVipBanner } from "@/components/storefront/TheShoesExtras";
+import { MioVipSection } from "@/components/storefront/MioAddonOverlays";
 import { TheShoesHomepage } from "@/components/storefront/the-shoes/TheShoesHomepage";
 
 export const Route = createFileRoute("/loja/$slug/")({
@@ -74,6 +75,7 @@ function NewSchemaHomePage({ cust, storeSlug }: { cust: any; storeSlug: string }
   return (
     <div className="ts-root">
       {order.map((key) => {
+        if (key === "addon:grupo_vip") return <MioVipSection key={key} />;
         if (key.startsWith("addon:")) return null;
         const sk = key as HomepageSectionKey;
         if (!canRender(sk)) return null;

@@ -28,7 +28,7 @@ import { TheShoesMobileBar } from "@/components/storefront/the-shoes/TheShoesMob
 import { Button } from "@/components/ui/button";
 import { VisitTracker } from "@/components/storefront/VisitTracker";
 import { StorefrontCustomizer } from "@/components/storefront/StorefrontCustomizer";
-import { MioVipPopupHost, MioCouponTab } from "@/components/storefront/MioAddonOverlays";
+import { MioVipPopupHost, MioVipMobileLock, MioCouponTab } from "@/components/storefront/MioAddonOverlays";
 import { PromoTopBar } from "@/components/storefront/PromoTopBar";
 
 
@@ -158,7 +158,8 @@ function StorefrontLayout() {
         {isTheShoes ? <TheShoesCartDrawer /> : <CartDrawer />}
         {isLegacyTheShoes && <TheShoesCouponTab />}
         {isLegacyTheShoes && <TheShoesMobileBar />}
-        {isTheShoes && !isLegacyTheShoes && <MioVipPopupHost />}
+        {!isLegacyTheShoes && <MioVipPopupHost />}
+        {!isTheShoes && <MioVipMobileLock />}
         {isTheShoes && !isLegacyTheShoes && <MioCouponTab />}
         {isTheShoes && <TheShoesGlobalStyles />}
         <WelcomePopup />

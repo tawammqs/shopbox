@@ -3,6 +3,7 @@ import { ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 import { useStorefront } from "./StoreContext";
 import { cn } from "@/lib/utils";
+import { MioVipMenuLink, MioVipNavButton } from "./MioAddonOverlays";
 
 export function StorefrontNav() {
   const { store, categories } = useStorefront();
@@ -59,6 +60,7 @@ export function StorefrontNav() {
         >
           Rastrear pedido
         </Link>
+        <MioVipNavButton />
       </div>
     </nav>
   );
@@ -150,6 +152,9 @@ export function MobileNavDrawer({ open, onClose }: { open: boolean; onClose: () 
           >
             Rastrear pedido
           </Link>
+          <div className="px-3">
+            <MioVipMenuLink onNavigate={onClose} />
+          </div>
         </div>
       </aside>
     </>

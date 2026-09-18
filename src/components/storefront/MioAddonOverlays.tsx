@@ -59,6 +59,11 @@ function GiftIcon({ color = "#fff", size = 22 }: { color?: string; size?: number
 type GrupoVipCfg = {
   active?: boolean;
   whatsapp_group_link?: string;
+  /** Segundo grupo (opcional). Quando preenchido, o cliente escolhe o grupo. */
+  whatsapp_group_link_2?: string;
+  two_groups?: boolean;
+  group_1_label?: string;
+  group_2_label?: string;
   section_title?: string;
   description?: string;
   button_text?: string;
@@ -66,13 +71,17 @@ type GrupoVipCfg = {
   icon_color?: string;
 };
 
+/** true quando a loja tem dois grupos configurados (passo de escolha). */
+function hasTwoGroups(cfg: GrupoVipCfg) {
+  return !!cfg.whatsapp_group_link_2 && cfg.two_groups !== false;
+}
+
 export function useMioVipConfig() {
   const { store } = useStorefront();
-  const isMio = useIsMioTheme();
   const isLegacy = store.slug === "the-shoes";
   return useQuery({
     queryKey: ["mio-vip-cfg", store.id],
-    enabled: isMio && !isLegacy,
+    enabled: !isLegacy,
     queryFn: async () => {
       const [statusRes, cfgRes] = await Promise.all([
         supabase.from("store_addons").select("status").eq("store_id", store.id).eq("addon_key", "grupo_vip").maybeSingle(),
@@ -117,6 +126,87 @@ export function MioVipMenuLink({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+/** Item de navegação desktop (nav genérico) — abre o popup de captura. */
+export function MioVipNavButton() {
+  const q = useMioVipConfig();
+  if (!q.data?.enabled) return null;
+  const cfg = q.data.cfg;
+  const title = cfg.section_title || "Ofertas Secretas";
+  return (
+    <button
+      type="button"
+      onClick={() => openVipPopup()}
+      className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:text-accent"
+    >
+      <LockIcon color="currentColor" size={14} />
+      {title}
+    </button>
+  );
+}
+
+/** Cadeado fixo no mobile — abre o popup de captura. */
+export function MioVipMobileLock() {
+  const q = useMioVipConfig();
+  if (!q.data?.enabled) return null;
+  const cfg = q.data.cfg;
+  const bg = cfg.background_color || "#111111";
+  const fg = cfg.icon_color || "#ffffff";
+  return (
+    <button
+      type="button"
+      aria-label={cfg.section_title || "Ofertas Secretas"}
+      onClick={() => openVipPopup()}
+      className="md:hidden"
+      style={{
+        position: "fixed", left: 16, bottom: 20, zIndex: 900,
+        width: 52, height: 52, borderRadius: "50%", background: bg,
+        border: "none", display: "grid", placeItems: "center",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.25)", cursor: "pointer",
+      }}
+    >
+      <LockIcon color={fg} size={24} />
+    </button>
+  );
+}
+
+/** Passo 2 — escolha do grupo (somente lojas com dois grupos configurados). */
+function VipGroupChoice({ cfg, phone, onBack, onDone }: {
+  cfg: GrupoVipCfg; phone: string; onBack: () => void; onDone: () => void;
+}) {
+  const label1 = cfg.group_1_label || "Grupo Feminino";
+  const label2 = cfg.group_2_label || "Grupo Masculino";
+  const linkStyle = (background: string): React.CSSProperties => ({
+    display: "block", background, color: "#fff", padding: "14px 24px",
+    borderRadius: 12, textAlign: "center", fontWeight: 700, fontSize: 15,
+    textDecoration: "none",
+  });
+  return (
+    <div>
+      <h3 style={{ fontWeight: 800, fontSize: 17, color: "#111", marginBottom: 6 }}>
+        Qual grupo você quer entrar?
+      </h3>
+      <p style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>
+        Escolha o grupo de ofertas da sua preferência:
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <a href={cfg.whatsapp_group_link} target="_blank" rel="noopener noreferrer"
+          style={linkStyle("#111827")} onClick={onDone}>
+          {label1}
+        </a>
+        <a href={cfg.whatsapp_group_link_2} target="_blank" rel="noopener noreferrer"
+          style={linkStyle("#25d366")} onClick={onDone}>
+          {label2}
+        </a>
+      </div>
+      <button type="button" onClick={onBack}
+        style={{ marginTop: 12, fontSize: 13, color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}>
+        ← Voltar
+      </button>
+      <p style={{ marginTop: 8, fontSize: 12, color: "#c0c0c0" }}>{phone}</p>
+    </div>
+  );
+}
+
 /** Seção inline da homepage — equivalente ao "Achadinhos / Ofertas Secretas" da The Shoes.
  *  Renderiza o input de WhatsApp INLINE (1 clique para submeter), sem abrir popup. */
 export function MioVipSection() {
@@ -126,6 +216,7 @@ export function MioVipSection() {
   const [submitting, setSubmitting] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
 
   if (!q.data?.enabled) return null;
   const cfg = q.data.cfg;
@@ -146,9 +237,13 @@ export function MioVipSection() {
       await supabase.from("vip_group_leads" as any).insert({
         store_id: store.id, whatsapp: digits, source: "mio_vip_section",
       });
-      window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
-      setSuccess(true);
-      setValue("");
+      if (hasTwoGroups(cfg)) {
+        setStep(2);
+      } else {
+        window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
+        setSuccess(true);
+        setValue("");
+      }
     } catch {
       toast.error("Não foi possível concluir. Tente novamente.");
     } finally {
@@ -169,6 +264,15 @@ export function MioVipSection() {
           <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
           <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{description}</p>
 
+          {step === 2 ? (
+            <VipGroupChoice
+              cfg={cfg}
+              phone={value}
+              onBack={() => setStep(1)}
+              onDone={() => { setStep(1); setSuccess(true); setValue(""); }}
+            />
+          ) : (
+          <>
           <input
             type="tel"
             inputMode="numeric"
@@ -204,6 +308,8 @@ export function MioVipSection() {
               {submitting ? "Enviando…" : buttonText}
             </button>
           )}
+          </>
+          )}
         </div>
       </div>
     </section>
@@ -218,9 +324,10 @@ export function MioVipPopupHost() {
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [invalid, setInvalid] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
 
   useEffect(() => {
-    const h = () => setOpen(true);
+    const h = () => { setStep(1); setOpen(true); };
     window.addEventListener(VIP_POPUP_EVENT, h);
     return () => window.removeEventListener(VIP_POPUP_EVENT, h);
   }, []);
@@ -248,10 +355,14 @@ export function MioVipPopupHost() {
       await supabase.from("vip_group_leads" as any).insert({
         store_id: store.id, whatsapp: digits, source: "mio_vip_section",
       });
-      toast.success("Redirecionando para o grupo VIP! 🎉");
-      window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
-      setValue("");
-      setOpen(false);
+      if (hasTwoGroups(cfg)) {
+        setStep(2);
+      } else {
+        toast.success("Redirecionando para o grupo VIP! 🎉");
+        window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
+        setValue("");
+        setOpen(false);
+      }
     } catch {
       toast.error("Não foi possível concluir. Tente novamente.");
     } finally {
@@ -282,24 +393,36 @@ export function MioVipPopupHost() {
         </div>
         <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
         <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{description}</p>
-        <input
-          type="tel" inputMode="numeric" value={value}
-          onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
-          placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD) XXXXX-XXXX"}
-          style={{
-            width: "100%", height: 50, border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
-            borderRadius: 10, padding: "0 16px", fontSize: 16, color: "#111",
-            textAlign: "center", marginBottom: 12, outline: "none", boxSizing: "border-box",
-          }}
-        />
-        <button type="button" onClick={onSubmit} disabled={submitting}
-          style={{
-            width: "100%", height: 50, background: bg, color: iconColor,
-            border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700,
-            cursor: "pointer", opacity: submitting ? 0.7 : 1,
-          }}>
-          {submitting ? "Enviando…" : buttonText}
-        </button>
+        {step === 2 ? (
+          <VipGroupChoice
+            cfg={cfg}
+            phone={value}
+            onBack={() => setStep(1)}
+            onDone={() => { setValue(""); setStep(1); setOpen(false); }}
+          />
+        ) : (
+          <>
+            <input
+              type="tel" inputMode="numeric" value={value}
+              onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
+              placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD) XXXXX-XXXX"}
+              onKeyDown={(e) => { if (e.key === "Enter") onSubmit(); }}
+              style={{
+                width: "100%", height: 50, border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
+                borderRadius: 10, padding: "0 16px", fontSize: 16, color: "#111",
+                textAlign: "center", marginBottom: 12, outline: "none", boxSizing: "border-box",
+              }}
+            />
+            <button type="button" onClick={onSubmit} disabled={submitting}
+              style={{
+                width: "100%", height: 50, background: bg, color: iconColor,
+                border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700,
+                cursor: "pointer", opacity: submitting ? 0.7 : 1,
+              }}>
+              {submitting ? "Enviando…" : buttonText}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
