@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Edit2, Trash2, GripVertical } from "lucide-react";
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor,
@@ -205,6 +205,23 @@ function CategoryDialog({ open, onOpenChange, editing, categories, storeId, onSa
   const [parentId, setParentId] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
+  // Preenche o formulário sempre que o diálogo abre (criar ou editar).
+  useEffect(() => {
+    if (!open) return;
+    if (editing) {
+      setName(editing.name ?? "");
+      setSlug(editing.slug ?? "");
+      setParentId(editing.parent_id ?? "");
+      setImageUrl(editing.image_url ?? null);
+    } else {
+      setName("");
+      setSlug("");
+      setParentId("");
+      setImageUrl(null);
+    }
+  }, [open, editing]);
+
+
   async function save() {
     if (!name.trim()) { toast.error("Nome obrigatório"); return; }
     const payload = {
@@ -214,7 +231,13 @@ function CategoryDialog({ open, onOpenChange, editing, categories, storeId, onSa
       image_url: imageUrl,
     };
     if (editing) {
-      const { error } = await supabase.from("categories").update(payload).eq("id", editing.id);
+      const { store_id: _ignored, ...rest } = payload;
+      const update = {
+        ...rest,
+        slug: rest.slug || editing.slug,
+        image_url: imageUrl ?? editing.image_url ?? null,
+      };
+      const { error } = await supabase.from("categories").update(update).eq("id", editing.id);
       if (error) { toast.error(error.message); return; }
     } else {
       const { error } = await supabase.from("categories").insert(payload);
@@ -226,13 +249,7 @@ function CategoryDialog({ open, onOpenChange, editing, categories, storeId, onSa
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o) => {
-      if (o && editing) {
-        setName(editing.name); setSlug(editing.slug);
-        setParentId(editing.parent_id ?? ""); setImageUrl(editing.image_url ?? null);
-      } else if (o) { setName(""); setSlug(""); setParentId(""); setImageUrl(null); }
-      onOpenChange(o);
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{editing ? "Editar" : "Nova"} categoria</DialogTitle>
