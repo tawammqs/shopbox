@@ -265,6 +265,8 @@ export function MioVipSection() {
               {submitting ? "Enviando…" : buttonText}
             </button>
           )}
+          </>
+          )}
         </div>
       </div>
     </section>
