@@ -173,6 +173,7 @@ export function MioVipSection() {
   const [submitting, setSubmitting] = useState(false);
   const [invalid, setInvalid] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
 
   if (!q.data?.enabled) return null;
   const cfg = q.data.cfg;
