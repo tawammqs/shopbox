@@ -134,8 +134,7 @@ export function TheShoesMobileBar({ showVip = true }: { showVip?: boolean }) {
       {/* Espaço para o conteúdo não ficar escondido atrás da barra fixa no mobile */}
       <style>{`
         @media (max-width: 767px) {
-          .storefront-root[data-store-slug="the-shoes"] main,
-          .storefront-root[data-theme="mio"] main { padding-bottom: 70px; }
+          main.pb-mobile-bar { padding-bottom: 70px; }
         }
       `}</style>
     </>
