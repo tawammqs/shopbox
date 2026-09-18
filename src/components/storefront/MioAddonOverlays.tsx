@@ -126,6 +126,44 @@ export function MioVipMenuLink({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+/** Passo 2 — escolha do grupo (somente lojas com dois grupos configurados). */
+function VipGroupChoice({ cfg, phone, onBack, onDone }: {
+  cfg: GrupoVipCfg; phone: string; onBack: () => void; onDone: () => void;
+}) {
+  const label1 = cfg.group_1_label || "Grupo Feminino";
+  const label2 = cfg.group_2_label || "Grupo Masculino";
+  const linkStyle = (background: string): React.CSSProperties => ({
+    display: "block", background, color: "#fff", padding: "14px 24px",
+    borderRadius: 12, textAlign: "center", fontWeight: 700, fontSize: 15,
+    textDecoration: "none",
+  });
+  return (
+    <div>
+      <h3 style={{ fontWeight: 800, fontSize: 17, color: "#111", marginBottom: 6 }}>
+        Qual grupo você quer entrar?
+      </h3>
+      <p style={{ fontSize: 13, color: "#666", marginBottom: 16 }}>
+        Escolha o grupo de ofertas da sua preferência:
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <a href={cfg.whatsapp_group_link} target="_blank" rel="noopener noreferrer"
+          style={linkStyle("#111827")} onClick={onDone}>
+          {label1}
+        </a>
+        <a href={cfg.whatsapp_group_link_2} target="_blank" rel="noopener noreferrer"
+          style={linkStyle("#25d366")} onClick={onDone}>
+          {label2}
+        </a>
+      </div>
+      <button type="button" onClick={onBack}
+        style={{ marginTop: 12, fontSize: 13, color: "#9ca3af", background: "none", border: "none", cursor: "pointer" }}>
+        ← Voltar
+      </button>
+      <p style={{ marginTop: 8, fontSize: 12, color: "#c0c0c0" }}>{phone}</p>
+    </div>
+  );
+}
+
 /** Seção inline da homepage — equivalente ao "Achadinhos / Ofertas Secretas" da The Shoes.
  *  Renderiza o input de WhatsApp INLINE (1 clique para submeter), sem abrir popup. */
 export function MioVipSection() {
