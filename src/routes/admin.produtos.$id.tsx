@@ -515,6 +515,7 @@ function ProductFormPage() {
                   )}
                 </p>
               </div>
+              )}
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox checked={showPrice} onCheckedChange={(v) => setShowPrice(!!v)} />
                 Exibir o preço na loja
