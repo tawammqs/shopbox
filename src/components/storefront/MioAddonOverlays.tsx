@@ -59,6 +59,11 @@ function GiftIcon({ color = "#fff", size = 22 }: { color?: string; size?: number
 type GrupoVipCfg = {
   active?: boolean;
   whatsapp_group_link?: string;
+  /** Segundo grupo (opcional). Quando preenchido, o cliente escolhe o grupo. */
+  whatsapp_group_link_2?: string;
+  two_groups?: boolean;
+  group_1_label?: string;
+  group_2_label?: string;
   section_title?: string;
   description?: string;
   button_text?: string;
@@ -66,13 +71,17 @@ type GrupoVipCfg = {
   icon_color?: string;
 };
 
+/** true quando a loja tem dois grupos configurados (passo de escolha). */
+function hasTwoGroups(cfg: GrupoVipCfg) {
+  return !!cfg.whatsapp_group_link_2 && cfg.two_groups !== false;
+}
+
 export function useMioVipConfig() {
   const { store } = useStorefront();
-  const isMio = useIsMioTheme();
   const isLegacy = store.slug === "the-shoes";
   return useQuery({
     queryKey: ["mio-vip-cfg", store.id],
-    enabled: isMio && !isLegacy,
+    enabled: !isLegacy,
     queryFn: async () => {
       const [statusRes, cfgRes] = await Promise.all([
         supabase.from("store_addons").select("status").eq("store_id", store.id).eq("addon_key", "grupo_vip").maybeSingle(),
