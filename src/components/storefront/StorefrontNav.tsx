@@ -59,6 +59,7 @@ export function StorefrontNav() {
         >
           Rastrear pedido
         </Link>
+        <MioVipNavButton />
       </div>
     </nav>
   );
