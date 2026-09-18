@@ -281,9 +281,10 @@ export function MioVipPopupHost() {
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [invalid, setInvalid] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
 
   useEffect(() => {
-    const h = () => setOpen(true);
+    const h = () => { setStep(1); setOpen(true); };
     window.addEventListener(VIP_POPUP_EVENT, h);
     return () => window.removeEventListener(VIP_POPUP_EVENT, h);
   }, []);
