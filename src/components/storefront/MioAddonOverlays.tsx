@@ -350,24 +350,15 @@ export function MioVipPopupHost() {
         </div>
         <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
         <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{description}</p>
-        <input
-          type="tel" inputMode="numeric" value={value}
-          onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
-          placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD) XXXXX-XXXX"}
-          style={{
-            width: "100%", height: 50, border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
-            borderRadius: 10, padding: "0 16px", fontSize: 16, color: "#111",
-            textAlign: "center", marginBottom: 12, outline: "none", boxSizing: "border-box",
-          }}
-        />
-        <button type="button" onClick={onSubmit} disabled={submitting}
-          style={{
-            width: "100%", height: 50, background: bg, color: iconColor,
-            border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700,
-            cursor: "pointer", opacity: submitting ? 0.7 : 1,
-          }}>
-          {submitting ? "Enviando…" : buttonText}
-        </button>
+        {step === 2 ? (
+          <VipGroupChoice
+            cfg={cfg}
+            phone={value}
+            onBack={() => setStep(1)}
+            onDone={() => { setValue(""); setStep(1); setOpen(false); }}
+          />
+        ) : (
+philosophy)}
       </div>
     </div>
   );
