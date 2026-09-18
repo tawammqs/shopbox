@@ -358,7 +358,28 @@ export function MioVipPopupHost() {
             onDone={() => { setValue(""); setStep(1); setOpen(false); }}
           />
         ) : (
-philosophy)}
+          <>
+            <input
+              type="tel" inputMode="numeric" value={value}
+              onChange={(e) => { setValue(formatWhatsapp(e.target.value)); if (invalid) setInvalid(false); }}
+              placeholder={invalid ? "Digite um WhatsApp válido" : "(DDD) XXXXX-XXXX"}
+              onKeyDown={(e) => { if (e.key === "Enter") onSubmit(); }}
+              style={{
+                width: "100%", height: 50, border: `1.5px solid ${invalid ? "#e53935" : "#e0e0e0"}`,
+                borderRadius: 10, padding: "0 16px", fontSize: 16, color: "#111",
+                textAlign: "center", marginBottom: 12, outline: "none", boxSizing: "border-box",
+              }}
+            />
+            <button type="button" onClick={onSubmit} disabled={submitting}
+              style={{
+                width: "100%", height: 50, background: bg, color: iconColor,
+                border: "none", borderRadius: 10, fontSize: 15, fontWeight: 700,
+                cursor: "pointer", opacity: submitting ? 0.7 : 1,
+              }}>
+              {submitting ? "Enviando…" : buttonText}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
