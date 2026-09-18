@@ -126,6 +126,49 @@ export function MioVipMenuLink({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
+/** Item de navegação desktop (nav genérico) — abre o popup de captura. */
+export function MioVipNavButton() {
+  const q = useMioVipConfig();
+  if (!q.data?.enabled) return null;
+  const cfg = q.data.cfg;
+  const title = cfg.section_title || "Ofertas Secretas";
+  return (
+    <button
+      type="button"
+      onClick={() => openVipPopup()}
+      className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:text-accent"
+    >
+      <LockIcon color="currentColor" size={14} />
+      {title}
+    </button>
+  );
+}
+
+/** Cadeado fixo no mobile — abre o popup de captura. */
+export function MioVipMobileLock() {
+  const q = useMioVipConfig();
+  if (!q.data?.enabled) return null;
+  const cfg = q.data.cfg;
+  const bg = cfg.background_color || "#111111";
+  const fg = cfg.icon_color || "#ffffff";
+  return (
+    <button
+      type="button"
+      aria-label={cfg.section_title || "Ofertas Secretas"}
+      onClick={() => openVipPopup()}
+      className="md:hidden"
+      style={{
+        position: "fixed", left: 16, bottom: 20, zIndex: 900,
+        width: 52, height: 52, borderRadius: "50%", background: bg,
+        border: "none", display: "grid", placeItems: "center",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.25)", cursor: "pointer",
+      }}
+    >
+      <LockIcon color={fg} size={24} />
+    </button>
+  );
+}
+
 /** Passo 2 — escolha do grupo (somente lojas com dois grupos configurados). */
 function VipGroupChoice({ cfg, phone, onBack, onDone }: {
   cfg: GrupoVipCfg; phone: string; onBack: () => void; onDone: () => void;
