@@ -221,6 +221,15 @@ export function MioVipSection() {
           <h2 style={{ fontWeight: 800, fontSize: 22, color: "#111", marginBottom: 10 }}>{title}</h2>
           <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 20 }}>{description}</p>
 
+          {step === 2 ? (
+            <VipGroupChoice
+              cfg={cfg}
+              phone={value}
+              onBack={() => setStep(1)}
+              onDone={() => { setStep(1); setSuccess(true); setValue(""); }}
+            />
+          ) : (
+          <>
           <input
             type="tel"
             inputMode="numeric"
