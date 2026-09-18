@@ -194,9 +194,13 @@ export function MioVipSection() {
       await supabase.from("vip_group_leads" as any).insert({
         store_id: store.id, whatsapp: digits, source: "mio_vip_section",
       });
-      window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
-      setSuccess(true);
-      setValue("");
+      if (hasTwoGroups(cfg)) {
+        setStep(2);
+      } else {
+        window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
+        setSuccess(true);
+        setValue("");
+      }
     } catch {
       toast.error("Não foi possível concluir. Tente novamente.");
     } finally {
