@@ -74,6 +74,7 @@ function NewSchemaHomePage({ cust, storeSlug }: { cust: any; storeSlug: string }
   return (
     <div className="ts-root">
       {order.map((key) => {
+        if (key === "addon:grupo_vip") return <MioVipSection key={key} />;
         if (key.startsWith("addon:")) return null;
         const sk = key as HomepageSectionKey;
         if (!canRender(sk)) return null;
