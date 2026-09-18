@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { HandCoins, Lock, MessageCircle, Package, Tag } from "lucide-react";
-import { useStorefront } from "../StoreContext";
+import { useStorefront, useIsMioTheme } from "../StoreContext";
 import { SalesTeamSelector } from "../SalesTeamSelector";
 
 export const TS_OPEN_COUPON_EVENT = "ts:open-coupon";
 export const TS_OPEN_VIP_EVENT = "ts:open-vip";
+const MIO_OPEN_COUPON_EVENT = "mio:open-coupon";
 
 const btnStyle: React.CSSProperties = {
   display: "flex",
@@ -24,24 +25,33 @@ const btnStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = { fontSize: 10, fontWeight: 500, lineHeight: 1 };
 
 /**
- * Barra fixa inferior (somente mobile) com ações rápidas do storefront da The Shoes.
+ * Barra fixa inferior (somente mobile) com ações rápidas do storefront.
  * Reutiliza os modais já existentes via CustomEvents:
  *  - ts:open-coupon → TheShoesCouponTab (captura de leads / cupom)
+ *  - mio:open-coupon → MioCouponTab (captura de leads / cupom)
  *  - ts:open-vip    → TheShoesHeader → TheShoesVipBanner (grupo VIP)
  * Atendimento abre o SalesTeamSelector (seleção de vendedoras).
  */
-export function TheShoesMobileBar() {
+export function TheShoesMobileBar({ showVip = true }: { showVip?: boolean }) {
   const { store } = useStorefront();
+  const isMio = useIsMioTheme();
+  const isLegacyTheShoes = store.slug === "the-shoes";
   const [whatsappOpen, setWhatsappOpen] = useState(false);
 
-  const openCoupon = () => window.dispatchEvent(new Event(TS_OPEN_COUPON_EVENT));
+  const openCoupon = () => {
+    if (isMio && !isLegacyTheShoes) {
+      window.dispatchEvent(new Event(MIO_OPEN_COUPON_EVENT));
+    } else {
+      window.dispatchEvent(new Event(TS_OPEN_COUPON_EVENT));
+    }
+  };
   const openVip = () => window.dispatchEvent(new Event(TS_OPEN_VIP_EVENT));
 
   return (
     <>
       {/* display vem das classes (grid / md:hidden) — inline display sobrescreveria o md:hidden */}
       <div
-        className="grid grid-cols-5 items-center md:hidden"
+        className={`grid items-center md:hidden ${showVip ? "grid-cols-5" : "grid-cols-4"}`}
         style={{
           position: "fixed",
           bottom: 0,
@@ -63,41 +73,43 @@ export function TheShoesMobileBar() {
           <span style={labelStyle}>Rastreio</span>
         </Link>
 
-        <button
-          type="button"
-          onClick={openVip}
-          aria-label="Grupo VIP"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 3,
-            padding: 4,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            position: "relative",
-            marginTop: -24,
-          }}
-        >
-          <div
+        {showVip && (
+          <button
+            type="button"
+            onClick={openVip}
+            aria-label="Grupo VIP"
             style={{
-              width: 52,
-              height: 52,
-              borderRadius: "50%",
-              backgroundColor: "#111827",
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              border: "3px solid #ffffff",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+              gap: 3,
+              padding: 4,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              position: "relative",
+              marginTop: -24,
             }}
           >
-            <Lock size={22} color="#ffffff" />
-          </div>
-          <span style={{ fontSize: 10, fontWeight: 600, color: "#111827" }}>VIP</span>
-        </button>
+            <div
+              style={{
+                width: 52,
+                height: 52,
+                borderRadius: "50%",
+                backgroundColor: "#111827",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: "3px solid #ffffff",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+              }}
+            >
+              <Lock size={22} color="#ffffff" />
+            </div>
+            <span style={{ fontSize: 10, fontWeight: 600, color: "#111827" }}>VIP</span>
+          </button>
+        )}
 
         <Link to="/loja/$slug/afiliados" params={{ slug: store.slug }} style={btnStyle} aria-label="Afiliados">
           <HandCoins size={20} />
@@ -122,7 +134,8 @@ export function TheShoesMobileBar() {
       {/* Espaço para o conteúdo não ficar escondido atrás da barra fixa no mobile */}
       <style>{`
         @media (max-width: 767px) {
-          .storefront-root[data-store-slug="the-shoes"] main { padding-bottom: 70px; }
+          .storefront-root[data-store-slug="the-shoes"] main,
+          .storefront-root[data-theme="mio"] main { padding-bottom: 70px; }
         }
       `}</style>
     </>
