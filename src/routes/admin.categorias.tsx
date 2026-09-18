@@ -205,6 +205,23 @@ function CategoryDialog({ open, onOpenChange, editing, categories, storeId, onSa
   const [parentId, setParentId] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
+  // Preenche o formulário sempre que o diálogo abre (criar ou editar).
+  useEffect(() => {
+    if (!open) return;
+    if (editing) {
+      setName(editing.name ?? "");
+      setSlug(editing.slug ?? "");
+      setParentId(editing.parent_id ?? "");
+      setImageUrl(editing.image_url ?? null);
+    } else {
+      setName("");
+      setSlug("");
+      setParentId("");
+      setImageUrl(null);
+    }
+  }, [open, editing]);
+
+
   async function save() {
     if (!name.trim()) { toast.error("Nome obrigatório"); return; }
     const payload = {
