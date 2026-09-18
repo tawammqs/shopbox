@@ -231,7 +231,13 @@ function CategoryDialog({ open, onOpenChange, editing, categories, storeId, onSa
       image_url: imageUrl,
     };
     if (editing) {
-      const { error } = await supabase.from("categories").update(payload).eq("id", editing.id);
+      const { store_id: _ignored, ...rest } = payload;
+      const update = {
+        ...rest,
+        slug: rest.slug || editing.slug,
+        image_url: imageUrl ?? editing.image_url ?? null,
+      };
+      const { error } = await supabase.from("categories").update(update).eq("id", editing.id);
       if (error) { toast.error(error.message); return; }
     } else {
       const { error } = await supabase.from("categories").insert(payload);
