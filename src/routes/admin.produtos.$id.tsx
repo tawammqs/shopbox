@@ -206,9 +206,10 @@ function ProductFormPage() {
   }
 
   const autoOriginalPrice = useMemo(() => {
+    if (store?.slug !== "the-shoes") return "";
     const p = Number(price);
     return p > 0 ? (p * 2.5).toFixed(2) : "";
-  }, [price]);
+  }, [price, store?.slug]);
 
   useEffect(() => {
     if (!originalPriceManual) setOriginalPrice(autoOriginalPrice);
@@ -269,7 +270,9 @@ function ProductFormPage() {
         description: description || null,
         price: Number(price) || 0,
         promo_price: promoPrice ? Number(promoPrice) : null,
-        original_price: originalPrice ? Number(originalPrice) : (Number(price) ? Number((Number(price) * 2.5).toFixed(2)) : null),
+        original_price: store.slug === "the-shoes"
+          ? (originalPrice ? Number(originalPrice) : (Number(price) ? Number((Number(price) * 2.5).toFixed(2)) : null))
+          : null,
         cost_price: costPrice ? Number(costPrice) : null,
         show_price: showPrice,
         product_type: productType,
@@ -490,6 +493,7 @@ function ProductFormPage() {
                   <CurrencyInput value={promoPrice} onChange={setPromoPrice} />
                 </Field>
               </div>
+              {store?.slug === "the-shoes" && (
               <div>
                 <Field label="Preço original (riscado)">
                   <CurrencyInput
@@ -511,6 +515,7 @@ function ProductFormPage() {
                   )}
                 </p>
               </div>
+              )}
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox checked={showPrice} onCheckedChange={(v) => setShowPrice(!!v)} />
                 Exibir o preço na loja
