@@ -16,6 +16,10 @@ export const Route = createFileRoute("/admin/marketing/grupo-vip")({
 type Cfg = {
   active?: boolean;
   whatsapp_group_link?: string;
+  whatsapp_group_link_2?: string;
+  two_groups?: boolean;
+  group_1_label?: string;
+  group_2_label?: string;
   section_title?: string;
   description?: string;
   button_text?: string;
@@ -102,6 +106,15 @@ function Config({ storeId }: { storeId: string }) {
           <input type="checkbox" checked={!!form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} className="h-5 w-9" />
         </label>
         <Field label="Link do grupo do WhatsApp" value={form.whatsapp_group_link ?? ""} placeholder="https://chat.whatsapp.com/..." onChange={(v) => setForm({ ...form, whatsapp_group_link: v })} />
+        <label className="flex items-center justify-between text-sm font-medium">
+          Usar dois grupos (cliente escolhe)
+          <input type="checkbox" checked={form.two_groups !== false && !!form.whatsapp_group_link_2} onChange={(e) => setForm({ ...form, two_groups: e.target.checked })} className="h-5 w-9" />
+        </label>
+        <Field label="Link do segundo grupo" value={form.whatsapp_group_link_2 ?? ""} placeholder="https://chat.whatsapp.com/... (opcional)" onChange={(v) => setForm({ ...form, whatsapp_group_link_2: v })} />
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Nome do 1º grupo" value={form.group_1_label ?? ""} placeholder="Grupo Feminino" onChange={(v) => setForm({ ...form, group_1_label: v })} />
+          <Field label="Nome do 2º grupo" value={form.group_2_label ?? ""} placeholder="Grupo Masculino" onChange={(v) => setForm({ ...form, group_2_label: v })} />
+        </div>
         <Field label="Título da seção" value={form.section_title ?? ""} placeholder="Ofertas Secretas" onChange={(v) => setForm({ ...form, section_title: v })} />
         <Field label="Texto descritivo" value={form.description ?? ""} placeholder="novidades, promoções e descontos exclusivos" onChange={(v) => setForm({ ...form, description: v })} />
         <Field label="Texto do botão" value={form.button_text ?? ""} placeholder="Entrar no grupo" onChange={(v) => setForm({ ...form, button_text: v })} />
