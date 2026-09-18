@@ -312,10 +312,14 @@ export function MioVipPopupHost() {
       await supabase.from("vip_group_leads" as any).insert({
         store_id: store.id, whatsapp: digits, source: "mio_vip_section",
       });
-      toast.success("Redirecionando para o grupo VIP! 🎉");
-      window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
-      setValue("");
-      setOpen(false);
+      if (hasTwoGroups(cfg)) {
+        setStep(2);
+      } else {
+        toast.success("Redirecionando para o grupo VIP! 🎉");
+        window.open(cfg.whatsapp_group_link!, "_blank", "noopener,noreferrer");
+        setValue("");
+        setOpen(false);
+      }
     } catch {
       toast.error("Não foi possível concluir. Tente novamente.");
     } finally {
