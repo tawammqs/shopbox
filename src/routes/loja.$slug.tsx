@@ -158,7 +158,7 @@ function StorefrontLayout() {
         {isTheShoes ? <TheShoesCartDrawer /> : <CartDrawer />}
         {isLegacyTheShoes && <TheShoesCouponTab />}
         {isLegacyTheShoes && <TheShoesMobileBar />}
-        {isTheShoes && !isLegacyTheShoes && <MioVipPopupHost />}
+        {!isLegacyTheShoes && <MioVipPopupHost />}
         {isTheShoes && !isLegacyTheShoes && <MioCouponTab />}
         {isTheShoes && <TheShoesGlobalStyles />}
         <WelcomePopup />
