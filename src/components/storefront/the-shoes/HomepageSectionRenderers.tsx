@@ -566,23 +566,51 @@ export function BannersCategoriasRender({ cfg }: { cfg: BannerCategoriasCfg }) {
   const { store, categories } = useStorefront();
   const items = (cfg.items ?? []).filter((it) => it.category_id && (it.desktop_url || it.mobile_url));
   if (items.length === 0) return null;
+  const isLojaAranha = store.slug === "loja-aranha";
+
   return (
     <section className="ts-section">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {items.map((it, i) => {
-          const cat = categories.find((c) => c.id === it.category_id);
-          if (!cat) return null;
-          return (
-            <Link key={i} to="/loja/$slug/categoria/$categorySlug" params={{ slug: store.slug, categorySlug: cat.slug }} className="block overflow-hidden rounded-xl">
-              <picture>
-                {it.mobile_url && <source media="(max-width: 768px)" srcSet={it.mobile_url} />}
-                <img src={it.desktop_url || it.mobile_url} alt={cat.name} className="h-44 w-full object-cover transition hover:scale-105 md:h-52" />
-              </picture>
-              <p className="mt-2 text-center text-sm font-semibold text-[#111]">{cat.name}</p>
-            </Link>
-          );
-        })}
-      </div>
+      {isLojaAranha ? (
+        <div
+          className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}
+        >
+          {items.map((it, i) => {
+            const cat = categories.find((c) => c.id === it.category_id);
+            if (!cat) return null;
+            return (
+              <Link key={i} to="/loja/$slug/categoria/$categorySlug" params={{ slug: store.slug, categorySlug: cat.slug }} className="block overflow-hidden rounded-lg">
+                <picture>
+                  {it.mobile_url && <source media="(max-width: 768px)" srcSet={it.mobile_url} />}
+                  <img
+                    src={it.desktop_url || it.mobile_url}
+                    alt={cat.name}
+                    className="w-full object-cover transition hover:scale-[1.02]"
+                    style={{ aspectRatio: "3 / 2", display: "block" }}
+                  />
+                </picture>
+                <p className="mt-2 text-center text-sm font-semibold text-[#111]">{cat.name}</p>
+              </Link>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {items.map((it, i) => {
+            const cat = categories.find((c) => c.id === it.category_id);
+            if (!cat) return null;
+            return (
+              <Link key={i} to="/loja/$slug/categoria/$categorySlug" params={{ slug: store.slug, categorySlug: cat.slug }} className="block overflow-hidden rounded-xl">
+                <picture>
+                  {it.mobile_url && <source media="(max-width: 768px)" srcSet={it.mobile_url} />}
+                  <img src={it.desktop_url || it.mobile_url} alt={cat.name} className="h-44 w-full object-cover transition hover:scale-105 md:h-52" />
+                </picture>
+                <p className="mt-2 text-center text-sm font-semibold text-[#111]">{cat.name}</p>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }
