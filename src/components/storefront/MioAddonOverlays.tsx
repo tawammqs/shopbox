@@ -483,6 +483,13 @@ export function MioCouponTab() {
     return () => { document.body.style.overflow = prev; };
   }, [open]);
 
+  // Barra fixa mobile abre este modal via CustomEvent.
+  useEffect(() => {
+    const h = () => setOpen(true);
+    window.addEventListener("mio:open-coupon", h);
+    return () => window.removeEventListener("mio:open-coupon", h);
+  }, []);
+
   if (!isMio || isLegacyTheShoes) return null;
   if (!q.data?.active) return null;
   const cfg = q.data.cfg;
