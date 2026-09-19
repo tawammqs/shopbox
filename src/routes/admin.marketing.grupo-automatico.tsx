@@ -42,6 +42,21 @@ export const Route = createFileRoute("/admin/marketing/grupo-automatico")({
 
 const MAX_GROUPS = 5;
 
+const WA_FUNCTIONS_BASE = "https://ygnyttmfnmxbhxufcftw.supabase.co/functions/v1";
+
+async function callWaFunction<T = any>(name: string, body?: Record<string, unknown>): Promise<T> {
+  const res = await fetch(`${WA_FUNCTIONS_BASE}/${name}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body ?? {}),
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(json?.error || json?.message || `Erro ${res.status} ao chamar ${name}`);
+  }
+  return json as T;
+}
+
 type Conn = {
   id: string;
   phone_number: string | null;
@@ -149,7 +164,21 @@ function Section({
 function ConnectionSection({ storeId }: { storeId: string }) {
   const { data: conn, isLoading } = useConnection(storeId);
   const [open, setOpen] = useState(false);
+  const [qr, setQr] = useState<string | null>(null);
   const connected = !!conn?.active && !!conn?.phone_number;
+
+  const connect = useMutation({
+    mutationFn: () => callWaFunction("get-qr-code", { storeId }),
+    onSuccess: (data: any) => {
+      const code =
+        data?.qr ?? data?.qrcode ?? data?.qr_code ?? data?.code ?? data?.data ?? null;
+      setQr(typeof code === "string" ? code : null);
+      setOpen(true);
+      if (!code) toast.error("O servidor não retornou um QR Code.");
+    },
+    onError: (e: any) =>
+      toast.error(e?.message ?? "Não foi possível gerar o QR Code. Tente novamente."),
+  });
 
   return (
     <Section icon={Smartphone} title="Conectar WhatsApp">
@@ -166,22 +195,25 @@ function ConnectionSection({ storeId }: { storeId: string }) {
           </span>
         )}
         <button
-          onClick={() => setOpen(true)}
-          className="rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959]"
+          onClick={() => connect.mutate()}
+          disabled={connect.isPending}
+          className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959] disabled:opacity-60"
         >
-          Conectar WhatsApp via QR Code
+          {connect.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {connect.isPending ? "Gerando QR Code…" : "Conectar WhatsApp via QR Code"}
         </button>
       </div>
       <p className="mt-2 text-xs text-[#9ca3af]">
         Abra o WhatsApp no celular → Aparelhos conectados → Conectar um aparelho.
       </p>
 
-      {open && <QrModal onClose={() => setOpen(false)} />}
+      {open && <QrModal qr={qr} onClose={() => setOpen(false)} />}
     </Section>
   );
 }
 
-function QrModal({ onClose }: { onClose: () => void }) {
+function QrModal({ qr, onClose }: { qr: string | null; onClose: () => void }) {
+  const isImage = !!qr && (/^data:image\//.test(qr) || /^https?:\/\//.test(qr));
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -197,15 +229,30 @@ function QrModal({ onClose }: { onClose: () => void }) {
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="mx-auto flex items-center justify-center rounded-xl border border-gray-200 p-4">
-          <QRCodeSVG
-            value="shopbox-whatsapp-pending-connection"
-            className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
-          />
+        <div className="mx-auto flex min-h-[232px] items-center justify-center rounded-xl border border-gray-200 p-4">
+          {qr ? (
+            isImage ? (
+              <img
+                src={qr}
+                alt="QR Code do WhatsApp"
+                className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
+              />
+            ) : (
+              <QRCodeSVG
+                value={qr}
+                className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
+              />
+            )
+          ) : (
+            <div className="flex flex-col items-center gap-2 py-8 text-[#9ca3af]">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <p className="text-xs">Carregando QR Code…</p>
+            </div>
+          )}
         </div>
         <p className="mt-4 text-sm font-medium text-[#374151]">Leia com seu celular</p>
         <p className="mt-1 text-xs text-[#9ca3af]">
-          A conexão real com o WhatsApp será ativada em breve.
+          Abra o WhatsApp → Aparelhos conectados → Conectar um aparelho.
         </p>
       </div>
     </div>
@@ -234,20 +281,13 @@ function GroupsSection({ storeId }: { storeId: string }) {
   const qc = useQueryClient();
 
   const sync = useMutation({
-    mutationFn: async () => {
-      const res = await fetch("/api/whatsapp/sync-groups", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ store_id: storeId }),
-      });
-      if (!res.ok) throw new Error("sync failed");
-      return res.json();
-    },
+    mutationFn: () => callWaFunction("Sync-whatsapp-groups", { storeId }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["mkt-groups", storeId] });
       toast.success("Grupos sincronizados");
     },
-    onError: () => toast.error("Conecte o WhatsApp para sincronizar seus grupos."),
+    onError: (e: any) =>
+      toast.error(e?.message ?? "Conecte o WhatsApp para sincronizar seus grupos."),
   });
 
   const toggle = useMutation({
@@ -336,20 +376,35 @@ function ScheduleSection({ storeId, storeSlug }: { storeId: string; storeSlug: s
       if (selected.length === 0) throw new Error("Selecione pelo menos um grupo");
       if (!product) throw new Error("Selecione um produto");
       const scheduled = now ? new Date().toISOString() : new Date(`${date}T${time}:00`).toISOString();
-      const { error } = await supabase.from("marketing_campaigns").insert({
-        store_id: storeId,
-        group_ids: selected,
-        product_id: product.id,
-        scheduled_at: scheduled,
-        status: "scheduled",
-      });
+      const { data, error } = await supabase
+        .from("marketing_campaigns")
+        .insert({
+          store_id: storeId,
+          group_ids: selected,
+          product_id: product.id,
+          scheduled_at: scheduled,
+          status: "scheduled",
+        })
+        .select("id")
+        .single();
       if (error) throw error;
+
+      if (now) {
+        try {
+          await callWaFunction("send-scheduled-campaign", { campaignId: data.id });
+        } catch (e: any) {
+          throw new Error(
+            `Campanha salva, mas o envio falhou: ${e?.message ?? "erro desconhecido"}`,
+          );
+        }
+      }
+      return { now };
     },
-    onSuccess: () => {
+    onSuccess: (r) => {
       qc.invalidateQueries({ queryKey: ["mkt-campaigns", storeId] });
       setSelected([]);
       setProduct(null);
-      toast.success("Campanha criada");
+      toast.success(r?.now ? "Oferta enviada agora!" : "Campanha agendada");
     },
     onError: (e: any) => toast.error(e?.message ?? "Não foi possível salvar"),
   });
@@ -413,14 +468,16 @@ function ScheduleSection({ storeId, storeSlug }: { storeId: string; storeSlug: s
             disabled={save.isPending}
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#25d366] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1fb959] disabled:opacity-60"
           >
-            <Clock className="h-4 w-4" /> Agendar Oferta
+            {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Clock className="h-4 w-4" />}
+            {save.isPending ? "Salvando…" : "Agendar Oferta"}
           </button>
           <button
             onClick={() => save.mutate(true)}
             disabled={save.isPending}
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-5 py-2.5 text-sm font-semibold text-[#374151] hover:bg-gray-50 disabled:opacity-60"
           >
-            <Send className="h-4 w-4" /> Enviar Agora
+            {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {save.isPending ? "Enviando…" : "Enviar Agora"}
           </button>
         </div>
       </div>
