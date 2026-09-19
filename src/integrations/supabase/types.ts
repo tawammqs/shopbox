@@ -687,6 +687,136 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_campaigns: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          group_ids: string[]
+          id: string
+          product_id: string | null
+          scheduled_at: string
+          sent_at: string | null
+          status: string
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          group_ids?: string[]
+          id?: string
+          product_id?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          group_ids?: string[]
+          id?: string
+          product_id?: string | null
+          scheduled_at?: string
+          sent_at?: string | null
+          status?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_campaigns_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketing_campaigns_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_groups: {
+        Row: {
+          active: boolean
+          created_at: string
+          group_jid: string
+          group_members_count: number
+          group_name: string
+          id: string
+          store_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          group_jid: string
+          group_members_count?: number
+          group_name: string
+          id?: string
+          store_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          group_jid?: string
+          group_members_count?: number
+          group_name?: string
+          id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_groups_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_whatsapp_connections: {
+        Row: {
+          active: boolean
+          connected_at: string | null
+          created_at: string
+          id: string
+          last_activity: string | null
+          phone_number: string | null
+          session_data: Json
+          store_id: string
+        }
+        Insert: {
+          active?: boolean
+          connected_at?: string | null
+          created_at?: string
+          id?: string
+          last_activity?: string | null
+          phone_number?: string | null
+          session_data?: Json
+          store_id: string
+        }
+        Update: {
+          active?: boolean
+          connected_at?: string | null
+          created_at?: string
+          id?: string
+          last_activity?: string | null
+          phone_number?: string | null
+          session_data?: Json
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_whatsapp_connections_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_leads: {
         Row: {
           created_at: string

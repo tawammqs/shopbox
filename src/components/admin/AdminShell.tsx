@@ -90,6 +90,7 @@ const SECTIONS: NavSection[] = [
         children: [
           { label: "Video Commerce", to: "/admin/marketing/video-commerce", addonKey: "video_commerce" },
           { label: "Grupo VIP", to: "/admin/marketing/grupo-vip", addonKey: "grupo_vip" },
+          { label: "Grupo Automático", to: "/admin/marketing/grupo-automatico" },
           { label: "Captura de Leads", to: "/admin/marketing/captura-leads", addonKey: "captura_leads" },
           { label: "Compre Junto", to: "/admin/marketing/compre-junto", addonKey: "compre_junto" },
           { label: "Perguntas e Avaliações", to: "/admin/marketing/perguntas-avaliacoes", addonKey: "perguntas_avaliacoes" },
@@ -159,6 +160,7 @@ const TITLE_MAP: Record<string, string> = {
   "/admin/marketing": "Marketing",
   "/admin/marketing/video-commerce": "Video Commerce",
   "/admin/marketing/grupo-vip": "Grupo VIP",
+  "/admin/marketing/grupo-automatico": "Grupo Automático",
   "/admin/marketing/captura-leads": "Captura de Leads",
   "/admin/marketing/compre-junto": "Compre Junto",
   "/admin/marketing/perguntas-avaliacoes": "Perguntas e Avaliações",

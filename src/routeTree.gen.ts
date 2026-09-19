@@ -67,6 +67,7 @@ import { Route as LojaSlugProdutosRouteImport } from './routes/loja.$slug.produt
 import { Route as LojaSlugEntrarRouteImport } from './routes/loja.$slug.entrar'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
+import { Route as ApiWhatsappSyncGroupsRouteImport } from './routes/api/whatsapp/sync-groups'
 import { Route as ApiPublicHostDebugRouteImport } from './routes/api/public/host-debug'
 import { Route as AdminTemasSucessoRouteImport } from './routes/admin.temas.sucesso'
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
@@ -75,6 +76,7 @@ import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id
 import { Route as AdminMarketingVideoCommerceRouteImport } from './routes/admin.marketing.video-commerce'
 import { Route as AdminMarketingPerguntasAvaliacoesRouteImport } from './routes/admin.marketing.perguntas-avaliacoes'
 import { Route as AdminMarketingGrupoVipRouteImport } from './routes/admin.marketing.grupo-vip'
+import { Route as AdminMarketingGrupoAutomaticoRouteImport } from './routes/admin.marketing.grupo-automatico'
 import { Route as AdminMarketingCompreJuntoRouteImport } from './routes/admin.marketing.compre-junto'
 import { Route as AdminMarketingCapturaLeadsRouteImport } from './routes/admin.marketing.captura-leads'
 import { Route as AdminLojaRedesSociaisRouteImport } from './routes/admin.loja.redes-sociais'
@@ -405,6 +407,11 @@ const FeedSlugMetaDotxmlRoute = FeedSlugMetaDotxmlRouteImport.update({
   path: '/feed/$slug/meta.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWhatsappSyncGroupsRoute = ApiWhatsappSyncGroupsRouteImport.update({
+  id: '/api/whatsapp/sync-groups',
+  path: '/api/whatsapp/sync-groups',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHostDebugRoute = ApiPublicHostDebugRouteImport.update({
   id: '/api/public/host-debug',
   path: '/api/public/host-debug',
@@ -448,6 +455,12 @@ const AdminMarketingGrupoVipRoute = AdminMarketingGrupoVipRouteImport.update({
   path: '/grupo-vip',
   getParentRoute: () => AdminMarketingRoute,
 } as any)
+const AdminMarketingGrupoAutomaticoRoute =
+  AdminMarketingGrupoAutomaticoRouteImport.update({
+    id: '/grupo-automatico',
+    path: '/grupo-automatico',
+    getParentRoute: () => AdminMarketingRoute,
+  } as any)
 const AdminMarketingCompreJuntoRoute =
   AdminMarketingCompreJuntoRouteImport.update({
     id: '/compre-junto',
@@ -728,6 +741,7 @@ export interface FileRoutesByFullPath {
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
   '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
+  '/admin/marketing/grupo-automatico': typeof AdminMarketingGrupoAutomaticoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
@@ -736,6 +750,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
+  '/api/whatsapp/sync-groups': typeof ApiWhatsappSyncGroupsRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
@@ -828,6 +843,7 @@ export interface FileRoutesByTo {
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
   '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
+  '/admin/marketing/grupo-automatico': typeof AdminMarketingGrupoAutomaticoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
@@ -836,6 +852,7 @@ export interface FileRoutesByTo {
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
+  '/api/whatsapp/sync-groups': typeof ApiWhatsappSyncGroupsRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
@@ -935,6 +952,7 @@ export interface FileRoutesById {
   '/admin/loja/redes-sociais': typeof AdminLojaRedesSociaisRoute
   '/admin/marketing/captura-leads': typeof AdminMarketingCapturaLeadsRoute
   '/admin/marketing/compre-junto': typeof AdminMarketingCompreJuntoRoute
+  '/admin/marketing/grupo-automatico': typeof AdminMarketingGrupoAutomaticoRoute
   '/admin/marketing/grupo-vip': typeof AdminMarketingGrupoVipRoute
   '/admin/marketing/perguntas-avaliacoes': typeof AdminMarketingPerguntasAvaliacoesRoute
   '/admin/marketing/video-commerce': typeof AdminMarketingVideoCommerceRoute
@@ -943,6 +961,7 @@ export interface FileRoutesById {
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
+  '/api/whatsapp/sync-groups': typeof ApiWhatsappSyncGroupsRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
@@ -1043,6 +1062,7 @@ export interface FileRouteTypes {
     | '/admin/loja/redes-sociais'
     | '/admin/marketing/captura-leads'
     | '/admin/marketing/compre-junto'
+    | '/admin/marketing/grupo-automatico'
     | '/admin/marketing/grupo-vip'
     | '/admin/marketing/perguntas-avaliacoes'
     | '/admin/marketing/video-commerce'
@@ -1051,6 +1071,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
     | '/api/public/host-debug'
+    | '/api/whatsapp/sync-groups'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/entrar'
@@ -1143,6 +1164,7 @@ export interface FileRouteTypes {
     | '/admin/loja/redes-sociais'
     | '/admin/marketing/captura-leads'
     | '/admin/marketing/compre-junto'
+    | '/admin/marketing/grupo-automatico'
     | '/admin/marketing/grupo-vip'
     | '/admin/marketing/perguntas-avaliacoes'
     | '/admin/marketing/video-commerce'
@@ -1151,6 +1173,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
     | '/api/public/host-debug'
+    | '/api/whatsapp/sync-groups'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/entrar'
@@ -1249,6 +1272,7 @@ export interface FileRouteTypes {
     | '/admin/loja/redes-sociais'
     | '/admin/marketing/captura-leads'
     | '/admin/marketing/compre-junto'
+    | '/admin/marketing/grupo-automatico'
     | '/admin/marketing/grupo-vip'
     | '/admin/marketing/perguntas-avaliacoes'
     | '/admin/marketing/video-commerce'
@@ -1257,6 +1281,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
     | '/api/public/host-debug'
+    | '/api/whatsapp/sync-groups'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/entrar'
@@ -1313,6 +1338,7 @@ export interface RootRouteChildren {
   VipSlugRoute: typeof VipSlugRoute
   TemasIndexRoute: typeof TemasIndexRoute
   ApiPublicHostDebugRoute: typeof ApiPublicHostDebugRoute
+  ApiWhatsappSyncGroupsRoute: typeof ApiWhatsappSyncGroupsRoute
   FeedSlugMetaDotxmlRoute: typeof FeedSlugMetaDotxmlRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -1731,6 +1757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeedSlugMetaDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/whatsapp/sync-groups': {
+      id: '/api/whatsapp/sync-groups'
+      path: '/api/whatsapp/sync-groups'
+      fullPath: '/api/whatsapp/sync-groups'
+      preLoaderRoute: typeof ApiWhatsappSyncGroupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/host-debug': {
       id: '/api/public/host-debug'
       path: '/api/public/host-debug'
@@ -1785,6 +1818,13 @@ declare module '@tanstack/react-router' {
       path: '/grupo-vip'
       fullPath: '/admin/marketing/grupo-vip'
       preLoaderRoute: typeof AdminMarketingGrupoVipRouteImport
+      parentRoute: typeof AdminMarketingRoute
+    }
+    '/admin/marketing/grupo-automatico': {
+      id: '/admin/marketing/grupo-automatico'
+      path: '/grupo-automatico'
+      fullPath: '/admin/marketing/grupo-automatico'
+      preLoaderRoute: typeof AdminMarketingGrupoAutomaticoRouteImport
       parentRoute: typeof AdminMarketingRoute
     }
     '/admin/marketing/compre-junto': {
@@ -2133,6 +2173,7 @@ const AdminEstatisticasRouteWithChildren =
 interface AdminMarketingRouteChildren {
   AdminMarketingCapturaLeadsRoute: typeof AdminMarketingCapturaLeadsRoute
   AdminMarketingCompreJuntoRoute: typeof AdminMarketingCompreJuntoRoute
+  AdminMarketingGrupoAutomaticoRoute: typeof AdminMarketingGrupoAutomaticoRoute
   AdminMarketingGrupoVipRoute: typeof AdminMarketingGrupoVipRoute
   AdminMarketingPerguntasAvaliacoesRoute: typeof AdminMarketingPerguntasAvaliacoesRoute
   AdminMarketingVideoCommerceRoute: typeof AdminMarketingVideoCommerceRoute
@@ -2142,6 +2183,7 @@ interface AdminMarketingRouteChildren {
 const AdminMarketingRouteChildren: AdminMarketingRouteChildren = {
   AdminMarketingCapturaLeadsRoute: AdminMarketingCapturaLeadsRoute,
   AdminMarketingCompreJuntoRoute: AdminMarketingCompreJuntoRoute,
+  AdminMarketingGrupoAutomaticoRoute: AdminMarketingGrupoAutomaticoRoute,
   AdminMarketingGrupoVipRoute: AdminMarketingGrupoVipRoute,
   AdminMarketingPerguntasAvaliacoesRoute:
     AdminMarketingPerguntasAvaliacoesRoute,
@@ -2313,6 +2355,7 @@ const rootRouteChildren: RootRouteChildren = {
   VipSlugRoute: VipSlugRoute,
   TemasIndexRoute: TemasIndexRoute,
   ApiPublicHostDebugRoute: ApiPublicHostDebugRoute,
+  ApiWhatsappSyncGroupsRoute: ApiWhatsappSyncGroupsRoute,
   FeedSlugMetaDotxmlRoute: FeedSlugMetaDotxmlRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
