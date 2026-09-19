@@ -42,6 +42,21 @@ export const Route = createFileRoute("/admin/marketing/grupo-automatico")({
 
 const MAX_GROUPS = 5;
 
+const WA_FUNCTIONS_BASE = "https://ygnyttmfnmxbhxufcftw.supabase.co/functions/v1";
+
+async function callWaFunction<T = any>(name: string, body?: Record<string, unknown>): Promise<T> {
+  const res = await fetch(`${WA_FUNCTIONS_BASE}/${name}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body ?? {}),
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(json?.error || json?.message || `Erro ${res.status} ao chamar ${name}`);
+  }
+  return json as T;
+}
+
 type Conn = {
   id: string;
   phone_number: string | null;
