@@ -281,20 +281,13 @@ function GroupsSection({ storeId }: { storeId: string }) {
   const qc = useQueryClient();
 
   const sync = useMutation({
-    mutationFn: async () => {
-      const res = await fetch("/api/whatsapp/sync-groups", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ store_id: storeId }),
-      });
-      if (!res.ok) throw new Error("sync failed");
-      return res.json();
-    },
+    mutationFn: () => callWaFunction("Sync-whatsapp-groups", { storeId }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["mkt-groups", storeId] });
       toast.success("Grupos sincronizados");
     },
-    onError: () => toast.error("Conecte o WhatsApp para sincronizar seus grupos."),
+    onError: (e: any) =>
+      toast.error(e?.message ?? "Conecte o WhatsApp para sincronizar seus grupos."),
   });
 
   const toggle = useMutation({
