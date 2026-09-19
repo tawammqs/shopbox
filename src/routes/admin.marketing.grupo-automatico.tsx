@@ -164,7 +164,21 @@ function Section({
 function ConnectionSection({ storeId }: { storeId: string }) {
   const { data: conn, isLoading } = useConnection(storeId);
   const [open, setOpen] = useState(false);
+  const [qr, setQr] = useState<string | null>(null);
   const connected = !!conn?.active && !!conn?.phone_number;
+
+  const connect = useMutation({
+    mutationFn: () => callWaFunction("get-qr-code", { storeId }),
+    onSuccess: (data: any) => {
+      const code =
+        data?.qr ?? data?.qrcode ?? data?.qr_code ?? data?.code ?? data?.data ?? null;
+      setQr(typeof code === "string" ? code : null);
+      setOpen(true);
+      if (!code) toast.error("O servidor não retornou um QR Code.");
+    },
+    onError: (e: any) =>
+      toast.error(e?.message ?? "Não foi possível gerar o QR Code. Tente novamente."),
+  });
 
   return (
     <Section icon={Smartphone} title="Conectar WhatsApp">
@@ -181,22 +195,25 @@ function ConnectionSection({ storeId }: { storeId: string }) {
           </span>
         )}
         <button
-          onClick={() => setOpen(true)}
-          className="rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959]"
+          onClick={() => connect.mutate()}
+          disabled={connect.isPending}
+          className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959] disabled:opacity-60"
         >
-          Conectar WhatsApp via QR Code
+          {connect.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+          {connect.isPending ? "Gerando QR Code…" : "Conectar WhatsApp via QR Code"}
         </button>
       </div>
       <p className="mt-2 text-xs text-[#9ca3af]">
         Abra o WhatsApp no celular → Aparelhos conectados → Conectar um aparelho.
       </p>
 
-      {open && <QrModal onClose={() => setOpen(false)} />}
+      {open && <QrModal qr={qr} onClose={() => setOpen(false)} />}
     </Section>
   );
 }
 
-function QrModal({ onClose }: { onClose: () => void }) {
+function QrModal({ qr, onClose }: { qr: string | null; onClose: () => void }) {
+  const isImage = !!qr && (/^data:image\//.test(qr) || /^https?:\/\//.test(qr));
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -212,15 +229,30 @@ function QrModal({ onClose }: { onClose: () => void }) {
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="mx-auto flex items-center justify-center rounded-xl border border-gray-200 p-4">
-          <QRCodeSVG
-            value="shopbox-whatsapp-pending-connection"
-            className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
-          />
+        <div className="mx-auto flex min-h-[232px] items-center justify-center rounded-xl border border-gray-200 p-4">
+          {qr ? (
+            isImage ? (
+              <img
+                src={qr}
+                alt="QR Code do WhatsApp"
+                className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
+              />
+            ) : (
+              <QRCodeSVG
+                value={qr}
+                className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
+              />
+            )
+          ) : (
+            <div className="flex flex-col items-center gap-2 py-8 text-[#9ca3af]">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <p className="text-xs">Carregando QR Code…</p>
+            </div>
+          )}
         </div>
         <p className="mt-4 text-sm font-medium text-[#374151]">Leia com seu celular</p>
         <p className="mt-1 text-xs text-[#9ca3af]">
-          A conexão real com o WhatsApp será ativada em breve.
+          Abra o WhatsApp → Aparelhos conectados → Conectar um aparelho.
         </p>
       </div>
     </div>
