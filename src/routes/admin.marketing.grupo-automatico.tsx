@@ -468,14 +468,16 @@ function ScheduleSection({ storeId, storeSlug }: { storeId: string; storeSlug: s
             disabled={save.isPending}
             className="inline-flex items-center gap-1.5 rounded-lg bg-[#25d366] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1fb959] disabled:opacity-60"
           >
-            <Clock className="h-4 w-4" /> Agendar Oferta
+            {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Clock className="h-4 w-4" />}
+            {save.isPending ? "Salvando…" : "Agendar Oferta"}
           </button>
           <button
             onClick={() => save.mutate(true)}
             disabled={save.isPending}
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-5 py-2.5 text-sm font-semibold text-[#374151] hover:bg-gray-50 disabled:opacity-60"
           >
-            <Send className="h-4 w-4" /> Enviar Agora
+            {save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {save.isPending ? "Enviando…" : "Enviar Agora"}
           </button>
         </div>
       </div>
