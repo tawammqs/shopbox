@@ -67,6 +67,7 @@ import { Route as LojaSlugProdutosRouteImport } from './routes/loja.$slug.produt
 import { Route as LojaSlugEntrarRouteImport } from './routes/loja.$slug.entrar'
 import { Route as LojaSlugBuscaRouteImport } from './routes/loja.$slug.busca'
 import { Route as FeedSlugMetaDotxmlRouteImport } from './routes/feed.$slug.meta[.]xml'
+import { Route as ApiWhatsappSyncGroupsRouteImport } from './routes/api/whatsapp/sync-groups'
 import { Route as ApiPublicHostDebugRouteImport } from './routes/api/public/host-debug'
 import { Route as AdminTemasSucessoRouteImport } from './routes/admin.temas.sucesso'
 import { Route as AdminProdutosTabelaPrecosRouteImport } from './routes/admin.produtos.tabela-precos'
@@ -404,6 +405,11 @@ const LojaSlugBuscaRoute = LojaSlugBuscaRouteImport.update({
 const FeedSlugMetaDotxmlRoute = FeedSlugMetaDotxmlRouteImport.update({
   id: '/feed/$slug/meta.xml',
   path: '/feed/$slug/meta.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWhatsappSyncGroupsRoute = ApiWhatsappSyncGroupsRouteImport.update({
+  id: '/api/whatsapp/sync-groups',
+  path: '/api/whatsapp/sync-groups',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHostDebugRoute = ApiPublicHostDebugRouteImport.update({
@@ -744,6 +750,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
+  '/api/whatsapp/sync-groups': typeof ApiWhatsappSyncGroupsRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
@@ -845,6 +852,7 @@ export interface FileRoutesByTo {
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
+  '/api/whatsapp/sync-groups': typeof ApiWhatsappSyncGroupsRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
@@ -953,6 +961,7 @@ export interface FileRoutesById {
   '/admin/produtos/tabela-precos': typeof AdminProdutosTabelaPrecosRoute
   '/admin/temas/sucesso': typeof AdminTemasSucessoRoute
   '/api/public/host-debug': typeof ApiPublicHostDebugRoute
+  '/api/whatsapp/sync-groups': typeof ApiWhatsappSyncGroupsRoute
   '/feed/$slug/meta.xml': typeof FeedSlugMetaDotxmlRoute
   '/loja/$slug/busca': typeof LojaSlugBuscaRoute
   '/loja/$slug/entrar': typeof LojaSlugEntrarRoute
@@ -1062,6 +1071,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
     | '/api/public/host-debug'
+    | '/api/whatsapp/sync-groups'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/entrar'
@@ -1163,6 +1173,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
     | '/api/public/host-debug'
+    | '/api/whatsapp/sync-groups'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/entrar'
@@ -1270,6 +1281,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/tabela-precos'
     | '/admin/temas/sucesso'
     | '/api/public/host-debug'
+    | '/api/whatsapp/sync-groups'
     | '/feed/$slug/meta.xml'
     | '/loja/$slug/busca'
     | '/loja/$slug/entrar'
@@ -1326,6 +1338,7 @@ export interface RootRouteChildren {
   VipSlugRoute: typeof VipSlugRoute
   TemasIndexRoute: typeof TemasIndexRoute
   ApiPublicHostDebugRoute: typeof ApiPublicHostDebugRoute
+  ApiWhatsappSyncGroupsRoute: typeof ApiWhatsappSyncGroupsRoute
   FeedSlugMetaDotxmlRoute: typeof FeedSlugMetaDotxmlRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -1742,6 +1755,13 @@ declare module '@tanstack/react-router' {
       path: '/feed/$slug/meta.xml'
       fullPath: '/feed/$slug/meta.xml'
       preLoaderRoute: typeof FeedSlugMetaDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/whatsapp/sync-groups': {
+      id: '/api/whatsapp/sync-groups'
+      path: '/api/whatsapp/sync-groups'
+      fullPath: '/api/whatsapp/sync-groups'
+      preLoaderRoute: typeof ApiWhatsappSyncGroupsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/host-debug': {
@@ -2335,6 +2355,7 @@ const rootRouteChildren: RootRouteChildren = {
   VipSlugRoute: VipSlugRoute,
   TemasIndexRoute: TemasIndexRoute,
   ApiPublicHostDebugRoute: ApiPublicHostDebugRoute,
+  ApiWhatsappSyncGroupsRoute: ApiWhatsappSyncGroupsRoute,
   FeedSlugMetaDotxmlRoute: FeedSlugMetaDotxmlRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
