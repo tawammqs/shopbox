@@ -160,101 +160,129 @@ function Section({
   );
 }
 
+function normalizeWhatsAppNumber(value: string): string {
+  let digits = value.replace(/\D/g, "");
+  if (digits.length === 11 || digits.length === 10) digits = `55${digits}`;
+  return digits.slice(0, 13);
+}
+
+function maskWhatsAppNumber(value: string): string {
+  const digits = normalizeWhatsAppNumber(value).slice(0, 13);
+  const country = digits.slice(0, 2);
+  const ddd = digits.slice(2, 4);
+  const local = digits.slice(4);
+
+  if (!ddd) return country;
+  if (!local) return `${country} ${ddd}`;
+  if (local.length <= 4) return `${country} ${ddd} ${local}`;
+  if (local.length === 8) return `${country} ${ddd} ${local.slice(0, 4)}-${local.slice(4)}`;
+  return `${country} ${ddd} ${local.slice(0, 5)}-${local.slice(5, 9)}`;
+}
+
+function displayWhatsAppNumber(value: string): string {
+  const digits = normalizeWhatsAppNumber(value).slice(0, 13);
+  if (digits.length < 10) return value;
+  return `+${maskWhatsAppNumber(digits)}`;
+}
+
 function ConnectionSection({ storeId }: { storeId: string }) {
   const { data: conn, isLoading } = useConnection(storeId);
-  const [open, setOpen] = useState(false);
-  const [qr, setQr] = useState<string | null>(null);
+  const qc = useQueryClient();
+  const [phone, setPhone] = useState("");
+
   const connected = !!conn?.active && !!conn?.phone_number;
 
   const connect = useMutation({
-    mutationFn: () => callWaFunction("get-qr-code", { storeId }),
-    onSuccess: (data: any) => {
-      const code =
-        data?.qr ?? data?.qrcode ?? data?.qr_code ?? data?.code ?? data?.data ?? null;
-      setQr(typeof code === "string" ? code : null);
-      setOpen(true);
-      if (!code) toast.error("O servidor não retornou um QR Code.");
+    mutationFn: async () => {
+      const digits = normalizeWhatsAppNumber(phone);
+      if (digits.length < 12) throw new Error("Informe um número válido com DDD");
+
+      const { error } = await supabase.from("marketing_whatsapp_connections").upsert(
+        {
+          store_id: storeId,
+          phone_number: digits,
+          active: true,
+          connected_at: new Date().toISOString(),
+        },
+        { onConflict: "store_id" },
+      );
+      if (error) throw error;
+      return digits;
     },
-    onError: (e: any) =>
-      toast.error(e?.message ?? "Não foi possível gerar o QR Code. Tente novamente."),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["mkt-wa-connection", storeId] });
+      setPhone("");
+      toast.success("WhatsApp conectado");
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Não foi possível conectar"),
   });
+
+  const disconnect = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("marketing_whatsapp_connections")
+        .update({ active: false, phone_number: null })
+        .eq("store_id", storeId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["mkt-wa-connection", storeId] });
+      toast.success("WhatsApp desconectado");
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Não foi possível desconectar"),
+  });
+
+  useEffect(() => {
+    if (connected && conn?.phone_number) {
+      setPhone(maskWhatsAppNumber(conn.phone_number));
+    }
+  }, [connected, conn?.phone_number]);
 
   return (
     <Section icon={Smartphone} title="Conectar WhatsApp">
-      <div className="flex flex-wrap items-center gap-3">
-        {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-        ) : connected ? (
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+      ) : connected ? (
+        <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#25d366]/10 px-3 py-1 text-xs font-medium text-[#15803d]">
-            <Check className="h-3.5 w-3.5" /> Conectado · {conn!.phone_number}
+            <Check className="h-3.5 w-3.5" /> Conectado · {displayWhatsAppNumber(conn!.phone_number!)}
           </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-600">
-            <X className="h-3.5 w-3.5" /> Desconectado
-          </span>
-        )}
-        <button
-          onClick={() => connect.mutate()}
-          disabled={connect.isPending}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959] disabled:opacity-60"
-        >
-          {connect.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-          {connect.isPending ? "Gerando QR Code…" : "Conectar WhatsApp via QR Code"}
-        </button>
-      </div>
-      <p className="mt-2 text-xs text-[#9ca3af]">
-        Abra o WhatsApp no celular → Aparelhos conectados → Conectar um aparelho.
-      </p>
-
-      {open && <QrModal qr={qr} onClose={() => setOpen(false)} />}
-    </Section>
-  );
-}
-
-function QrModal({ qr, onClose }: { qr: string | null; onClose: () => void }) {
-  const isImage = !!qr && (/^data:image\//.test(qr) || /^https?:\/\//.test(qr));
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-sm rounded-2xl bg-white p-6 text-center"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-[#111827]">Conectar WhatsApp</h3>
-          <button onClick={onClose} aria-label="Fechar" className="text-gray-400 hover:text-gray-600">
-            <X className="h-5 w-5" />
+          <button
+            onClick={() => disconnect.mutate()}
+            disabled={disconnect.isPending}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+          >
+            {disconnect.isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            Desconectar
           </button>
         </div>
-        <div className="mx-auto flex min-h-[232px] items-center justify-center rounded-xl border border-gray-200 p-4">
-          {qr ? (
-            isImage ? (
-              <img
-                src={qr}
-                alt="QR Code do WhatsApp"
-                className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
-              />
-            ) : (
-              <QRCodeSVG
-                value={qr}
-                className="h-[200px] w-[200px] md:h-[250px] md:w-[250px]"
-              />
-            )
-          ) : (
-            <div className="flex flex-col items-center gap-2 py-8 text-[#9ca3af]">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <p className="text-xs">Carregando QR Code…</p>
-            </div>
-          )}
+      ) : (
+        <div className="space-y-3">
+          <div>
+            <label className="text-sm font-medium text-[#374151]">Número de WhatsApp</label>
+            <input
+              type="text"
+              inputMode="tel"
+              value={phone}
+              onChange={(e) => setPhone(maskWhatsAppNumber(e.target.value))}
+              placeholder="55 11 98765-4321"
+              className="mt-1 h-10 w-full rounded-lg border border-gray-200 px-3 text-sm outline-none focus:border-[#25d366] focus:ring-2 focus:ring-[#25d366]/20"
+            />
+            <p className="mt-1 text-xs text-[#9ca3af]">
+              Digite com ou sem máscara. O DDD é obrigatório.
+            </p>
+          </div>
+          <button
+            onClick={() => connect.mutate()}
+            disabled={connect.isPending}
+            className="inline-flex items-center gap-2 rounded-lg bg-[#25d366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1fb959] disabled:opacity-60"
+          >
+            {connect.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+            {connect.isPending ? "Conectando…" : "Conectar"}
+          </button>
         </div>
-        <p className="mt-4 text-sm font-medium text-[#374151]">Leia com seu celular</p>
-        <p className="mt-1 text-xs text-[#9ca3af]">
-          Abra o WhatsApp → Aparelhos conectados → Conectar um aparelho.
-        </p>
-      </div>
-    </div>
+      )}
+    </Section>
   );
 }
 
