@@ -376,20 +376,35 @@ function ScheduleSection({ storeId, storeSlug }: { storeId: string; storeSlug: s
       if (selected.length === 0) throw new Error("Selecione pelo menos um grupo");
       if (!product) throw new Error("Selecione um produto");
       const scheduled = now ? new Date().toISOString() : new Date(`${date}T${time}:00`).toISOString();
-      const { error } = await supabase.from("marketing_campaigns").insert({
-        store_id: storeId,
-        group_ids: selected,
-        product_id: product.id,
-        scheduled_at: scheduled,
-        status: "scheduled",
-      });
+      const { data, error } = await supabase
+        .from("marketing_campaigns")
+        .insert({
+          store_id: storeId,
+          group_ids: selected,
+          product_id: product.id,
+          scheduled_at: scheduled,
+          status: "scheduled",
+        })
+        .select("id")
+        .single();
       if (error) throw error;
+
+      if (now) {
+        try {
+          await callWaFunction("send-scheduled-campaign", { campaignId: data.id });
+        } catch (e: any) {
+          throw new Error(
+            `Campanha salva, mas o envio falhou: ${e?.message ?? "erro desconhecido"}`,
+          );
+        }
+      }
+      return { now };
     },
-    onSuccess: () => {
+    onSuccess: (r) => {
       qc.invalidateQueries({ queryKey: ["mkt-campaigns", storeId] });
       setSelected([]);
       setProduct(null);
-      toast.success("Campanha criada");
+      toast.success(r?.now ? "Oferta enviada agora!" : "Campanha agendada");
     },
     onError: (e: any) => toast.error(e?.message ?? "Não foi possível salvar"),
   });
