@@ -1,13 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type CSSProperties } from "react";
 import {
-  Package, Tag, Globe, TrendingUp, MessageCircle,
-  Users, Star, Menu, X, TicketPercent, UserRoundSearch,
-  Video, ShoppingCart, BarChart3, Handshake, Instagram, Youtube,
+  Menu, X, Instagram, Youtube, ArrowLeft, ArrowRight,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
-import shopboxLogo from "@/assets/shopbox-logo.png.asset.json";
-import shopboxLogoDark from "@/assets/shopbox-logo-dark.png.asset.json";
 import garetBook from "@/assets/garet-book.woff.asset.json";
 import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
 import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
@@ -304,7 +300,7 @@ const STYLES = `
 .psb .landing-nav-shell { position: fixed; inset: 0 0 auto; z-index: 200; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); }
 .psb .landing-nav { min-height: 72px; max-width: 1280px; margin: 0 auto; padding: 14px 48px; display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 32px; }
 .psb .landing-logo { display: inline-flex; width: fit-content; align-items: center; }
-.psb .landing-logo img { display: block; width: auto; height: 48px; }
+.psb .landing-logo img { display: block; width: auto; height: 40px; }
 .psb .landing-menu-btn { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--line); background: #fff; color: #1a1a1a; }
 .psb .landing-mobile-menu { position: fixed; inset: 0; z-index: 300; background: rgba(255,255,255,.98); backdrop-filter: blur(16px); display: flex; flex-direction: column; padding: 18px; }
 .psb .landing-mobile-menu-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
@@ -361,6 +357,7 @@ const STYLES = `
 .psb .compare-item-visual .compare-placeholder-inner { width: min(100%, 390px); padding: 28px; border: 1px solid #ccefd7; border-radius: 20px; background: #fff; box-shadow: 0 24px 55px rgba(37,211,102,.14); animation: compareReveal .35s ease both; }
 .psb .compare-progress { display: block; height: 2px; margin: 8px 0 16px; overflow: hidden; border-radius: 2px; background: #e8e8e0; }
 .psb .compare-progress span { display: block; width: var(--progress); height: 100%; border-radius: inherit; background: var(--green); transition: width .05s linear; }
+.psb .compare-item:not(.active) .compare-progress { display: none; }
 .psb .compare-list.is-negative .compare-progress span { background: #ef4444; }
 .psb .mock-top { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid #edf0eb; }
 .psb .mock-avatar { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 700; }
@@ -408,7 +405,7 @@ const STYLES = `
 }
 @media (max-width: 760px) {
   .psb .landing-nav { min-height: 72px; padding: 12px 18px; gap: 12px; grid-template-columns: auto 1fr auto; }
-  .psb .landing-logo img { height: 36px; }
+  .psb .landing-logo img { height: 40px; max-width: 180px; object-fit: contain; }
   .psb .landing-login { display: none; }
   .psb .landing-signup { padding: 9px 14px; font-size: 12px; }
   .psb .landing-menu-btn { display: flex; }
@@ -428,6 +425,103 @@ const STYLES = `
   .psb .compare-item-title { font-size: 15px; }
   .psb .compare-item-desc { font-size: 13px; }
 }
+
+/* 2026 LANDING SECTIONS */
+.psb .feature-stack { display: grid; gap: 24px; margin-top: 56px; }
+.psb .feature-panel { min-height: 430px; padding: 56px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; overflow: hidden; border-radius: 24px; color: #fff; background: linear-gradient(135deg,#25d366,#1a9e4a); }
+.psb .feature-panel.reverse .feature-copy { order: 2; }
+.psb .feature-panel.reverse .feature-mock { order: 1; }
+.psb .feature-tag { color: rgba(255,255,255,.68); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.psb .feature-panel h3 { margin: 12px 0 16px; color: #fff; font-size: clamp(26px,3vw,36px); line-height: 1.15; }
+.psb .feature-panel p { color: rgba(255,255,255,.84); font-size: 16px; line-height: 1.75; }
+.psb .feature-mock { min-height: 280px; padding: 20px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: 18px; background: rgba(255,255,255,.16); box-shadow: 0 28px 60px rgba(6,79,34,.20); backdrop-filter: blur(10px); }
+.psb .mock-window { width: 100%; overflow: hidden; border-radius: 13px; background: #fff; color: var(--ink); box-shadow: 0 18px 45px rgba(0,0,0,.16); }
+.psb .mock-window-bar { height: 38px; padding: 0 14px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); background: #fafaf8; }
+.psb .mock-window-bar i { width: 7px; height: 7px; border-radius: 50%; background: #d1d5db; }
+.psb .mock-window-body { min-height: 210px; padding: 22px; display: grid; gap: 13px; }
+.psb .mock-kpi-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.psb .mock-kpi { min-height: 64px; padding: 11px; border-radius: 9px; background: #f5f7f4; }
+.psb .mock-kpi b { display: block; color: var(--ink); font-size: 18px; }
+.psb .mock-kpi small { color: #777; font-size: 9px; }
+.psb .mock-chat { max-width: 86%; padding: 11px 13px; border-radius: 12px 12px 2px 12px; color: #174824; background: #dcf8e5; font-size: 11px; justify-self: end; }
+.psb .mock-list-row { min-height: 38px; padding: 8px 11px; display: flex; align-items: center; gap: 10px; border: 1px solid #edf0eb; border-radius: 8px; color: #666; font-size: 10px; }
+.psb .mock-list-row span { width: 25px; height: 25px; border-radius: 7px; background: #e9fbee; }
+
+.psb .steps-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 80px; align-items: start; }
+.psb .steps-sticky { position: sticky; top: 120px; align-self: start; padding-top: 8px; }
+.psb .steps-eyebrow { color: var(--green); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.psb .steps-sticky h2 { margin: 16px 0 20px; max-width: 500px; font-size: clamp(34px,4vw,54px); line-height: 1.08; }
+.psb .steps-sticky p { max-width: 500px; margin-bottom: 30px; color: #6b7280; font-size: 16px; line-height: 1.7; }
+.psb .steps-stack { display: flex; flex-direction: column; gap: 24px; }
+.psb .step-card { min-height: 290px; padding: 34px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 18px 48px rgba(0,0,0,.045); }
+.psb .step-card:nth-child(2) { position: relative; z-index: 2; }
+.psb .step-card:nth-child(3) { position: relative; z-index: 3; }
+.psb .step-card:nth-child(4) { position: relative; z-index: 4; }
+.psb .step-card-num { width: 52px; height: 52px; display: grid; place-items: center; margin-bottom: 54px; border: 2px solid var(--line-mint); border-radius: 50%; color: var(--green); background: var(--bg-mint); font-size: 17px; font-weight: 700; }
+.psb .step-card h3 { margin-bottom: 10px; font-size: 21px; }
+.psb .step-card p { color: #666; font-size: 14px; line-height: 1.7; }
+
+.psb .pricing-tabs { width: fit-content; margin: 36px auto 48px; padding: 4px; display: flex; border-radius: 100px; background: #f0f0ed; }
+.psb .pricing-tab { min-height: 44px; padding: 0 28px; border: 0; border-radius: 100px; color: #777; background: transparent; font-size: 14px; transition: all .2s; }
+.psb .pricing-tab.active { color: var(--ink); background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.psb .ready-card { max-width: 760px; margin: 0 auto; padding: 48px; display: grid; grid-template-columns: 1fr auto; gap: 34px; align-items: center; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+.psb .ready-card h3 { margin-bottom: 12px; font-size: 28px; }
+.psb .ready-card p { color: #666; line-height: 1.7; }
+
+.psb .testi-head { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
+.psb .testi-head h2 { max-width: 620px; font-size: clamp(34px,4vw,54px); line-height: 1.1; }
+.psb .testi-nav { display: flex; gap: 8px; }
+.psb .testi-nav button { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: #fff; transition: border-color .2s, transform .2s; }
+.psb .testi-nav button:hover { border-color: var(--green); transform: translateY(-2px); }
+.psb .testi-viewport { overflow: hidden; }
+.psb .testi-track { display: flex; gap: 24px; transition: transform .4s ease; }
+.psb .testi-slide { flex: 0 0 calc((100% - 48px)/3); min-width: 0; min-height: 390px; padding: 34px; display: flex; flex-direction: column; gap: 22px; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+.psb .testi-person { display: flex; align-items: center; gap: 15px; }
+.psb .testi-avatar { width: 56px; height: 56px; display: grid; place-items: center; flex-shrink: 0; border-radius: 50%; color: #fff; background: linear-gradient(135deg,var(--green),#1a9e4a); font-size: 18px; font-weight: 700; }
+.psb .testi-name { color: var(--ink); font-size: 15px; font-weight: 600; }
+.psb .testi-store { color: #888; font-size: 13px; }
+.psb .testi-stars { color: var(--green); letter-spacing: 2px; }
+.psb .testi-copy { flex: 1; color: #444; font-size: 16px; line-height: 1.75; }
+
+.psb .guarantee-bar { max-width: 560px; margin-top: 40px; padding: 24px 32px; justify-content: flex-start; gap: 20px; border-color: var(--line-mint); border-radius: 16px; text-align: left; }
+.psb .g-icon { font-size: 36px; }
+.psb .g-title { font-weight: 600; }
+.psb .g-sub { font-size: 14px; color: #555; }
+
+.psb .sec-footer { padding: 56px 52px 28px; color: #6b7280; background: #fff; border-top: 1px solid var(--line); }
+.psb .footer-logo { height: 40px; }
+.psb .f-brand p, .psb .f-col a, .psb .social-links a { color: #6b7280; font-weight: 400; }
+.psb .f-col h4 { color: var(--ink); font-weight: 500; }
+.psb .f-col a:hover, .psb .social-links a:hover { color: var(--ink); }
+.psb .social-links a { border-color: var(--line); background: #fff; }
+.psb .social-links a:hover { border-color: var(--green); background: var(--bg-mint); }
+.psb .f-bottom { border-color: var(--line); }
+
+@media (max-width: 900px) {
+  .psb .feature-panel { min-height: 0; padding: 42px 34px; gap: 30px; }
+  .psb .steps-layout { gap: 40px; }
+  .psb .testi-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .psb .testi-track { transform: none !important; }
+  .psb .testi-slide { flex-basis: min(78vw,380px); scroll-snap-align: start; }
+}
+@media (max-width: 700px) {
+  .psb .feature-stack { margin-top: 38px; }
+  .psb .feature-panel, .psb .feature-panel.reverse { grid-template-columns: 1fr; padding: 34px 24px; border-radius: 18px; }
+  .psb .feature-panel .feature-copy, .psb .feature-panel.reverse .feature-copy { order: 1; }
+  .psb .feature-panel .feature-mock, .psb .feature-panel.reverse .feature-mock { order: 2; min-height: 230px; }
+  .psb .steps-layout { grid-template-columns: 1fr; gap: 42px; }
+  .psb .steps-sticky { position: static; }
+  .psb .step-card { min-height: 250px; padding: 28px; }
+  .psb .step-card-num { margin-bottom: 42px; }
+  .psb .pricing-tabs { width: calc(100% - 40px); overflow-x: auto; justify-content: flex-start; }
+  .psb .pricing-tab { min-width: max-content; padding: 0 20px; }
+  .psb .ready-card { margin-inline: 20px; padding: 30px; grid-template-columns: 1fr; }
+  .psb .testi-head { align-items: flex-end; }
+  .psb .testi-nav { display: none; }
+  .psb .testi-slide { flex-basis: min(86vw,360px); padding: 28px; }
+  .psb .guarantee-bar { align-items: flex-start; flex-direction: row; }
+  .psb .f-brand { margin-bottom: 34px; }
+}
 `;
 
 const TICKER_ITEMS = [
@@ -444,18 +538,11 @@ const TICKER_ITEMS = [
 ];
 
 const FEATURES = [
-  { Ic: Package, t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor e tamanho." },
-  { Ic: MessageCircle, t: "Checkout pelo WhatsApp", d: "O cliente clica em comprar e vai direto para o WhatsApp. Alta conversão, zero fricção." },
-  { Ic: TicketPercent, t: "Cupons e promoções", d: "Crie cupons, promoções relâmpago e temporizadores de oferta." },
-  { Ic: Users, t: "Programa de Afiliados", d: "Crie sua rede de vendedores e pague comissões automáticas por venda." },
-  { Ic: UserRoundSearch, t: "Captura de Leads", d: "Colete números de WhatsApp com ofertas irresistíveis e cupons de boas-vindas." },
-  { Ic: Star, t: "Grupo VIP Automático", d: "Automatize ofertas exclusivas para seu grupo VIP no WhatsApp." },
-  { Ic: Video, t: "Video Commerce", d: "Venda mais com vídeos dos produtos direto na vitrine da loja." },
-  { Ic: ShoppingCart, t: "Compre Junto", d: "Aumente o ticket médio com sugestões inteligentes de produtos complementares." },
-  { Ic: Globe, t: "Domínio personalizado", d: "Use seu próprio domínio e transmita mais credibilidade." },
-  { Ic: BarChart3, t: "Analytics em tempo real", d: "Veja quais produtos vendem mais e quanto você fatura." },
-  { Ic: Star, t: "Avaliações de produtos", d: "Clientes avaliam e você exibe as estrelas na vitrine." },
-  { Ic: Handshake, t: "Múltiplas vendedoras", d: "Selecione qual vendedora atende cada pedido pelo WhatsApp." },
+  { tag: "Vendas", title: "Checkout pelo WhatsApp", description: "O cliente navega, escolhe e finaliza a compra direto no WhatsApp. Alta conversão, zero fricção." },
+  { tag: "Crescimento", title: "Programa de Afiliados", description: "Crie sua rede de vendedores e pague comissões automáticas por venda gerada." },
+  { tag: "Engajamento", title: "Grupo VIP + Captura de Leads", description: "Colete números de WhatsApp e automatize ofertas exclusivas para seu grupo VIP." },
+  { tag: "Conversão", title: "Video Commerce + Compre Junto", description: "Venda mais com vídeos dos produtos e sugestões inteligentes de compra combinada." },
+  { tag: "Gestão", title: "Painel completo", description: "Gerencie produtos, pedidos, cupons, promoções e afiliados em um único painel intuitivo." },
 ];
 
 const TESTIMONIALS = [
@@ -584,7 +671,7 @@ function ComSemSection() {
                     </div>
                   </>
                 )}
-                <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>
+                {isActive && <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>}
               </div>
             );
           })}
@@ -600,9 +687,36 @@ const PLANS = [
   { label: "Premium", monthly: 197, annual: 158, features: ["Tudo do Profissional", "Analytics avançado", "Múltiplos usuários admin", "Suporte prioritário"], featured: false },
 ];
 
+type PricingTab = "monthly" | "annual" | "ready";
+
+const STEPS = [
+  { title: "Crie sua conta", description: "Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis para testar tudo." },
+  { title: "Monte sua loja", description: "Adicione produtos com fotos, variações e preços. Escolha um tema profissional." },
+  { title: "Configure seu WhatsApp", description: "Informe o número e as vendedoras. Seus clientes finalizam a compra pelo chat." },
+  { title: "Compartilhe e venda", description: "Envie o link da loja para seus clientes e comece a receber pedidos agora." },
+];
+
+function FeatureMockup({ index }: { index: number }) {
+  return (
+    <div className="feature-mock" aria-hidden="true">
+      <div className="mock-window">
+        <div className="mock-window-bar"><i /><i /><i /></div>
+        <div className="mock-window-body">
+          {index === 0 && <><div className="mock-list-row"><span />Produto selecionado · R$ 129,90</div><div className="mock-chat">Olá! Quero finalizar este pedido 👋</div><div className="mock-list-row"><span />Pedido enviado ao WhatsApp</div></>}
+          {index === 1 && <><div className="mock-kpi-row"><div className="mock-kpi"><small>Afiliados</small><b>28</b></div><div className="mock-kpi"><small>Vendas</small><b>142</b></div><div className="mock-kpi"><small>Comissão</small><b>10%</b></div></div><div className="mock-list-row"><span />Ana · 19 vendas geradas</div><div className="mock-list-row"><span />Marina · 14 vendas geradas</div></>}
+          {index === 2 && <><div className="mock-list-row"><span />Grupo VIP · 1.248 contatos</div><div className="mock-chat">Oferta exclusiva liberada para você ✨</div><div className="mock-list-row"><span />Campanha agendada · Hoje, 18:00</div></>}
+          {index === 3 && <><div className="mock-list-row"><span />▶ Vídeo do produto · 00:24</div><div className="mock-list-row"><span />Compre junto · + R$ 49,90</div><div className="mock-kpi-row"><div className="mock-kpi"><small>Conversão</small><b>+32%</b></div><div className="mock-kpi"><small>Ticket</small><b>+18%</b></div><div className="mock-kpi"><small>Pedidos</small><b>86</b></div></div></>}
+          {index === 4 && <><div className="mock-kpi-row"><div className="mock-kpi"><small>Faturamento</small><b>R$ 18k</b></div><div className="mock-kpi"><small>Pedidos</small><b>216</b></div><div className="mock-kpi"><small>Clientes</small><b>184</b></div></div><div className="mock-list-row"><span />Novo pedido · #1048</div><div className="mock-list-row"><span />Cupom aplicado · BEMVINDO10</div></>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [pricingTab, setPricingTab] = useState<PricingTab>("monthly");
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [whatsappLead, setWhatsappLead] = useState("");
   const [whatsappError, setWhatsappError] = useState("");
@@ -654,7 +768,7 @@ function LandingPage() {
       <header className="landing-nav-shell">
         <nav className="landing-nav" aria-label="Navegação principal">
           <Link to="/" className="landing-logo" aria-label="ShopBox — início">
-            <img src={shopboxLogo.url} alt="ShopBox" />
+            <img src="/logo-shopbox.png" alt="ShopBox" />
           </Link>
           <div className="landing-nav-links">
             <a href="#sobre-feats">Funcionalidades</a>
@@ -664,7 +778,6 @@ function LandingPage() {
           </div>
           <div className="landing-nav-actions">
             <Link to="/login" className="landing-login">Login</Link>
-            <Link to="/cadastro" className="landing-signup">Criar loja grátis</Link>
             <button
               type="button"
               className="landing-menu-btn"
@@ -682,7 +795,7 @@ function LandingPage() {
         <div className="landing-mobile-menu" role="dialog" aria-label="Menu de navegação">
           <div className="landing-mobile-menu-head">
             <Link to="/" className="landing-logo" aria-label="ShopBox — início" onClick={() => setMobileOpen(false)}>
-              <img src={shopboxLogo.url} alt="ShopBox" />
+              <img src="/logo-shopbox.png" alt="ShopBox" />
             </Link>
             <button
               type="button"
@@ -700,7 +813,6 @@ function LandingPage() {
           </div>
           <div className="landing-mobile-menu-actions">
             <Link to="/login" onClick={() => setMobileOpen(false)}>Login</Link>
-            <Link to="/cadastro" onClick={() => setMobileOpen(false)}>Criar loja grátis</Link>
           </div>
         </div>
       )}
@@ -759,33 +871,41 @@ function LandingPage() {
             <h2 className="sh2">Tudo que você precisa para vender mais.</h2>
             <p className="ssub">Não importa o tamanho do seu negócio — a ShopBox tem os recursos certos para cada fase.</p>
           </header>
-          <div className="feats-grid">
-            {FEATURES.map((feature) => (
-              <article key={feature.t} className="fc">
-                <div className="fc-ic"><feature.Ic aria-hidden="true" /></div>
-                <h3>{feature.t}</h3>
-                <p>{feature.d}</p>
+          <div className="feature-stack">
+            {FEATURES.map((feature, index) => (
+              <article key={feature.title} className={`feature-panel${index % 2 ? " reverse" : ""}`}>
+                <div className="feature-copy">
+                  <span className="feature-tag">{feature.tag}</span>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </div>
+                <FeatureMockup index={index} />
               </article>
             ))}
           </div>
-          <div className="feats-cta"><Link to="/funcionalidades" className="primary-link">Conhecer funcionalidades →</Link></div>
         </div>
       </section>
 
       {/* SEÇÃO 4 — COMO FUNCIONA */}
       <section className="sec-steps" id="como-funciona">
         <div className="wrap sec">
-          <header className="section-head">
-            <span className="pill">Como funciona</span>
-            <h2 className="sh2">Comece a vender em minutos</h2>
-            <p className="ssub">Sem setup técnico, sem burocracia. Sua loja no ar hoje.</p>
-          </header>
-          <div className="steps-grid">
-            <article className="step"><div className="step-num">01</div><h3>Crie sua conta</h3><p>Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis.</p></article>
-            <article className="step"><div className="step-num">02</div><h3>Monte sua loja</h3><p>Adicione produtos, escolha um tema e configure seu WhatsApp.</p></article>
-            <article className="step"><div className="step-num">03</div><h3>Compartilhe o link</h3><p>Envie para seus clientes e comece a receber pedidos agora.</p></article>
+          <div className="steps-layout">
+            <div className="steps-sticky">
+              <span className="steps-eyebrow">Comece a vender hoje</span>
+              <h2>Como criar uma loja na ShopBox</h2>
+              <p>Da primeira configuração ao primeiro pedido, tudo foi pensado para você começar sem complicação.</p>
+              <Link to="/cadastro" className="primary-link">Criar loja grátis →</Link>
+            </div>
+            <div className="steps-stack">
+              {STEPS.map((step, index) => (
+                <article key={step.title} className="step-card">
+                  <div className="step-card-num">0{index + 1}</div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </article>
+              ))}
+            </div>
           </div>
-          <div className="steps-cta"><Link to="/cadastro" className="primary-link">Criar minha loja grátis →</Link></div>
         </div>
       </section>
 
@@ -796,16 +916,19 @@ function LandingPage() {
             <span className="pill">Planos</span>
             <h2 className="sh2">Sua loja, do seu jeito. Seu plano também.</h2>
           </header>
-          <div className="billing-shell">
-            <div className={`billing-toggle-bar${isAnnual ? " annual" : ""}`} role="group" aria-label="Período de cobrança">
-              <span className="billing-slider" aria-hidden="true" />
-              <button type="button" className={`billing-option${!isAnnual ? " active" : ""}`} aria-pressed={!isAnnual} onClick={() => setIsAnnual(false)}>Mensal</button>
-              <button type="button" className={`billing-option${isAnnual ? " active" : ""}`} aria-pressed={isAnnual} onClick={() => setIsAnnual(true)}>Anual (-20%)</button>
-            </div>
-            {isAnnual && <span className="save-badge">Economize 20%</span>}
+          <div className="pricing-tabs" role="tablist" aria-label="Tipo de plano">
+            <button type="button" role="tab" aria-selected={pricingTab === "monthly"} className={`pricing-tab${pricingTab === "monthly" ? " active" : ""}`} onClick={() => setPricingTab("monthly")}>Mensal</button>
+            <button type="button" role="tab" aria-selected={pricingTab === "annual"} className={`pricing-tab${pricingTab === "annual" ? " active" : ""}`} onClick={() => setPricingTab("annual")}>Anual (-20%)</button>
+            <button type="button" role="tab" aria-selected={pricingTab === "ready"} className={`pricing-tab${pricingTab === "ready" ? " active" : ""}`} onClick={() => setPricingTab("ready")}>Loja Pronta</button>
           </div>
-          <div className="plans-grid">
+          {pricingTab === "ready" ? (
+            <article className="ready-card">
+              <div><h3>Sua loja pronta para vender</h3><p>Nossa equipe configura sua loja, organiza o catálogo e deixa tudo preparado para você começar com acompanhamento especializado.</p></div>
+              <a href={WA_LINK} target="_blank" rel="noreferrer" className="primary-link">Falar com especialista →</a>
+            </article>
+          ) : <div className="plans-grid">
             {PLANS.map((plan) => {
+              const isAnnual = pricingTab === "annual";
               const price = isAnnual ? plan.annual : plan.monthly;
               return (
                 <article key={plan.label} className={`plan-card${plan.featured ? " featured" : ""}`}>
@@ -821,7 +944,7 @@ function LandingPage() {
                 </article>
               );
             })}
-          </div>
+          </div>}
           <p className="pricing-fine">7 dias grátis em todos os planos · Sem cartão · Cancele quando quiser</p>
         </div>
       </section>
@@ -829,21 +952,24 @@ function LandingPage() {
       {/* SEÇÃO 6 — DEPOIMENTOS */}
       <section className="sec-testi">
         <div className="wrap sec">
-          <header className="section-head">
-            <span className="pill">Depoimentos</span>
-            <h2 className="sh2">+2.000 lojistas já vendem mais com a ShopBox</h2>
+          <header className="testi-head">
+            <div><span className="pill">Depoimentos</span><h2>O que dizem os lojistas que vendem com a ShopBox</h2></div>
+            <div className="testi-nav">
+              <button type="button" aria-label="Depoimento anterior" onClick={() => setTestimonialIndex((current) => (current - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}><ArrowLeft size={18} /></button>
+              <button type="button" aria-label="Próximo depoimento" onClick={() => setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length)}><ArrowRight size={18} /></button>
+            </div>
           </header>
-          <div className="testi-grid">
-            {TESTIMONIALS.map((testimonial) => (
-              <article key={testimonial.av} className="tc">
-                <div className="tc-av">{testimonial.av}</div>
-                <div className="tc-stars" aria-label="5 estrelas">★★★★★</div>
-                <p className="tc-text">“{testimonial.text}”</p>
-                <div className="tc-auth"><div className="tc-name">{testimonial.name}</div><div className="tc-role">{testimonial.role}</div></div>
-                <div className="tc-used">Funcionalidades usadas</div>
-                <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
-              </article>
-            ))}
+          <div className="testi-viewport">
+            <div className="testi-track" style={{ transform: `translateX(calc(${testimonialIndex} * (-33.333% - 16px)))` }}>
+              {TESTIMONIALS.map((testimonial) => (
+                <article key={testimonial.av} className="testi-slide">
+                  <div className="testi-person"><div className="testi-avatar">{testimonial.av}</div><div><div className="testi-name">{testimonial.name}</div><div className="testi-store">{testimonial.role}</div></div></div>
+                  <div className="testi-stars" aria-label="5 estrelas">★★★★★</div>
+                  <p className="testi-copy">“{testimonial.text}”</p>
+                  <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -873,7 +999,7 @@ function LandingPage() {
       {/* SEÇÃO 8 — RODAPÉ */}
       <footer className="sec-footer">
         <div className="f-brand">
-          <img src={shopboxLogoDark.url} alt="ShopBox" className="footer-logo" />
+          <img src="/logo-shopbox.png" alt="ShopBox" className="footer-logo" />
           <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
         </div>
         <div className="f-grid">
