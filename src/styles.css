@@ -175,6 +175,14 @@
   .scrollbar-hide { scrollbar-width: none; }
 }
 
+.blog-prose { color: var(--color-foreground); font-size: 1.0625rem; line-height: 1.85; }
+.blog-prose h2 { margin: 2.5rem 0 1rem; font-size: 1.875rem; font-weight: 650; line-height: 1.25; }
+.blog-prose h3 { margin: 2rem 0 0.75rem; font-size: 1.375rem; font-weight: 650; line-height: 1.35; }
+.blog-prose p { margin: 1rem 0; color: var(--color-muted-foreground); }
+.blog-prose ul { margin: 1.25rem 0; list-style: disc; padding-left: 1.5rem; color: var(--color-muted-foreground); }
+.blog-prose li { margin: 0.55rem 0; }
+.blog-prose strong { color: var(--color-foreground); font-weight: 700; }
+
 /* ===== Image gallery: always-visible delete + reorder on touch ===== */
 .product-image-card { position: relative; }
 .product-image-card .image-delete-btn {
