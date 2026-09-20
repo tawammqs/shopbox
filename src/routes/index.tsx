@@ -73,7 +73,7 @@ const STYLES = `
   background: #fff;
 }
 .psb a { text-decoration: none; color: inherit; }
-.psb button { font-family: inherit; cursor: pointer; font-weight: 700; }
+.psb button { font-family: inherit; cursor: pointer; font-weight: 600; }
 
 /* SECTION WRAPPERS */
 .psb .sec { padding: 96px 52px; }
@@ -150,11 +150,11 @@ const STYLES = `
 @keyframes psbmq { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 
 /* SECTION HEADERS */
-.psb h1, .psb h2, .psb h3 { font-weight: 600; } .psb h4 { font-weight: 800; }
+.psb h1, .psb h2, .psb h3 { font-weight: 650; } .psb h4 { font-weight: 800; }
 .psb #sobre-feats, .psb #como-funciona, .psb #precos, .psb #faq { scroll-margin-top: 72px; }
 .psb .pill { display: inline-block; border: 1px solid var(--line); background: #fff; color: var(--muted); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 9999px; margin-bottom: 16px; }
 .psb .section-head { max-width: 760px; margin: 0 auto; text-align: center; }
-.psb .sh2 { font-size: clamp(32px, 4.2vw, 54px); font-weight: 600; letter-spacing: -1.5px; line-height: 1.08; margin-bottom: 18px; color: var(--ink); }
+.psb .sh2 { font-size: clamp(32px, 4.2vw, 54px); font-weight: 650; letter-spacing: -1.5px; line-height: 1.08; margin-bottom: 18px; color: var(--ink); }
 .psb .ssub { max-width: 680px; margin: 0 auto; color: var(--muted); font-size: 17px; font-weight: 400; line-height: 1.7; }
 
 /* FEATURES */
@@ -197,7 +197,7 @@ const STYLES = `
 .psb .plan-label { color: var(--ink); font-size: 22px; }
 .psb .plan-card.featured .plan-label { color: #fff; }
 .psb .plan-price { display: flex; align-items: baseline; gap: 5px; margin-top: 24px; }
-.psb .plan-num { color: var(--ink); font-size: 48px; font-weight: 800; line-height: 1; }
+.psb .plan-num { color: var(--ink); font-size: 48px; font-weight: 600; line-height: 1; }
 .psb .plan-card.featured .plan-num { color: #fff; }
 .psb .plan-suffix, .psb .plan-note { color: #7b7b7b; font-size: 13px; }
 .psb .plan-card.featured .plan-suffix { color: #c6c6c6; }
@@ -447,19 +447,20 @@ const STYLES = `
 .psb .mock-list-row { min-height: 38px; padding: 8px 11px; display: flex; align-items: center; gap: 10px; border: 1px solid #edf0eb; border-radius: 8px; color: #666; font-size: 10px; }
 .psb .mock-list-row span { width: 25px; height: 25px; border-radius: 7px; background: #e9fbee; }
 
-.psb .steps-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 80px; align-items: start; }
-.psb .steps-sticky { position: sticky; top: 120px; align-self: start; padding-top: 8px; }
+.psb .steps-layout { max-width: 600px; margin: 0 auto; }
+.psb .steps-sticky { margin-bottom: 64px; text-align: center; }
 .psb .steps-eyebrow { color: var(--green); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
-.psb .steps-sticky h2 { margin: 16px 0 20px; max-width: 500px; font-size: clamp(34px,4vw,54px); line-height: 1.08; }
-.psb .steps-sticky p { max-width: 500px; margin-bottom: 30px; color: #6b7280; font-size: 16px; line-height: 1.7; }
-.psb .steps-stack { display: flex; flex-direction: column; gap: 24px; }
-.psb .step-card { min-height: 290px; padding: 34px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 18px 48px rgba(0,0,0,.045); }
-.psb .step-card:nth-child(2) { position: relative; z-index: 2; }
-.psb .step-card:nth-child(3) { position: relative; z-index: 3; }
-.psb .step-card:nth-child(4) { position: relative; z-index: 4; }
-.psb .step-card-num { width: 52px; height: 52px; display: grid; place-items: center; margin-bottom: 54px; border: 2px solid var(--line-mint); border-radius: 50%; color: var(--green); background: var(--bg-mint); font-size: 17px; font-weight: 700; }
-.psb .step-card h3 { margin-bottom: 10px; font-size: 21px; }
+.psb .steps-sticky h2 { margin: 16px 0 8px; font-size: clamp(34px,4vw,54px); line-height: 1.08; }
+.psb .steps-sticky p { max-width: 560px; margin: 0 auto; color: #6b7280; font-size: 16px; line-height: 1.7; }
+.psb .steps-stack { display: flex; flex-direction: column; gap: 0; }
+.psb .step-card { min-height: 240px; margin-bottom: 16px; padding: 32px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.04); }
+.psb .step-card:nth-child(2) { z-index: 2; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
+.psb .step-card:nth-child(3) { z-index: 3; box-shadow: 0 8px 32px rgba(0,0,0,.08); }
+.psb .step-card:nth-child(4) { z-index: 4; box-shadow: 0 10px 40px rgba(0,0,0,.10); }
+.psb .step-card-num { width: 48px; height: 48px; display: grid; place-items: center; margin-bottom: 16px; border: 2px solid var(--line-mint); border-radius: 50%; color: var(--green); background: var(--bg-mint); font-size: 18px; font-weight: 700; }
+.psb .step-card h3 { margin-bottom: 8px; font-size: 18px; }
 .psb .step-card p { color: #666; font-size: 14px; line-height: 1.7; }
+.psb .steps-cta-final { margin-top: 48px; text-align: center; }
 
 .psb .pricing-tabs { width: fit-content; margin: 36px auto 48px; padding: 4px; display: flex; border-radius: 100px; background: #f0f0ed; }
 .psb .pricing-tab { min-height: 44px; padding: 0 28px; border: 0; border-radius: 100px; color: #777; background: transparent; font-size: 14px; transition: all .2s; }
@@ -468,9 +469,9 @@ const STYLES = `
 .psb .ready-card h3 { margin-bottom: 12px; font-size: 28px; }
 .psb .ready-card p { color: #666; line-height: 1.7; }
 
-.psb .testi-head { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
+.psb .testi-head { margin-bottom: 40px; text-align: center; }
 .psb .testi-head h2 { max-width: 620px; font-size: clamp(34px,4vw,54px); line-height: 1.1; }
-.psb .testi-nav { display: flex; gap: 8px; }
+.psb .testi-nav { display: flex; justify-content: center; gap: 12px; margin-top: 32px; }
 .psb .testi-nav button { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: #fff; transition: border-color .2s, transform .2s; }
 .psb .testi-nav button:hover { border-color: var(--green); transform: translateY(-2px); }
 .psb .testi-viewport { overflow: hidden; }
@@ -523,15 +524,13 @@ const STYLES = `
 .psb .feature-card h3 { margin: 12px 0 10px; font-size: 19px; line-height: 1.35; }
 .psb .feature-card p { color: #666; font-size: 14px; line-height: 1.7; }
 
-.psb .step-card { position: sticky; top: 100px; }
-.psb .step-card:nth-child(2) { top: 120px; }
-.psb .step-card:nth-child(3) { top: 140px; }
-.psb .step-card:nth-child(4) { top: 160px; }
+.psb .step-card { position: sticky; top: 80px; z-index: 1; }
+.psb .step-card:nth-child(2) { top: 104px; }
+.psb .step-card:nth-child(3) { top: 128px; }
+.psb .step-card:nth-child(4) { top: 152px; }
 .psb .steps-stack { padding-bottom: 160px; }
 
-.psb .testi-head { display: block; text-align: center; }
 .psb .testi-head h2 { margin: 0 auto; }
-.psb .testi-nav { margin-top: 28px; justify-content: center; }
 .psb .testi-mobile { display: none; }
 
 .psb .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr repeat(4,minmax(0,1fr)); gap: 48px; align-items: start; }
@@ -540,7 +539,6 @@ const STYLES = `
 
 @media (max-width: 900px) {
   .psb .feature-panel { min-height: 0; padding: 42px 34px; gap: 30px; }
-  .psb .steps-layout { gap: 40px; }
   .psb .testi-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .psb .testi-track { transform: none !important; }
   .psb .testi-slide { flex-basis: min(78vw,380px); scroll-snap-align: start; }
@@ -550,18 +548,16 @@ const STYLES = `
   .psb .feature-panel, .psb .feature-panel.reverse { grid-template-columns: 1fr; padding: 34px 24px; border-radius: 18px; }
   .psb .feature-panel .feature-copy, .psb .feature-panel.reverse .feature-copy { order: 1; }
   .psb .feature-panel .feature-mock, .psb .feature-panel.reverse .feature-mock { order: 2; min-height: 230px; }
-  .psb .steps-layout { grid-template-columns: 1fr; gap: 42px; }
-  .psb .steps-sticky { position: static; }
+  .psb .steps-sticky { margin-bottom: 42px; }
   .psb .step-card { min-height: 250px; padding: 28px; }
-  .psb .step-card-num { margin-bottom: 42px; }
+  .psb .step-card-num { margin-bottom: 16px; }
   .psb .pricing-tabs { width: calc(100% - 40px); overflow-x: auto; justify-content: flex-start; }
   .psb .pricing-tab { min-width: max-content; padding: 0 20px; }
   .psb .ready-card { margin-inline: 20px; padding: 30px; grid-template-columns: 1fr; }
   .psb .testi-head { text-align: center; }
   .psb .testi-desktop { display: none; }
-  .psb .testi-mobile { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .psb .testi-mobile { display: flex; flex-direction: column; align-items: center; }
   .psb .testi-mobile .testi-slide { width: min(100%,360px); flex-basis: auto; min-height: 390px; }
-  .psb .testi-mobile .testi-nav { display: flex; margin-top: 0; }
   .psb .testi-slide { flex-basis: min(86vw,360px); padding: 28px; }
   .psb .footer-inner { grid-template-columns: 1fr 1fr; gap: 36px 24px; }
   .psb .f-brand { grid-column: 1 / -1; }
@@ -580,7 +576,7 @@ const STYLES = `
   .psb .steps-stack { padding-bottom: 0; }
   .psb .plans-grid { display: flex; grid-template-columns: none; gap: 16px; overflow-x: auto; padding: 8px 20px 24px; scroll-snap-type: x mandatory; scroll-padding-left: 20px; scrollbar-width: none; }
   .psb .plans-grid::-webkit-scrollbar { display: none; }
-  .psb .plan-card { flex: 0 0 80%; min-width: 0; scroll-snap-align: start; }
+  .psb .plan-card { flex: 0 0 80%; min-width: 0; scroll-snap-align: center; }
   .psb .pricing-tabs { width: max-content; max-width: calc(100% - 40px); overflow-x: auto; scrollbar-width: none; }
 }
 
@@ -786,6 +782,7 @@ function LandingPage() {
   const [whatsappLead, setWhatsappLead] = useState("");
   const [whatsappError, setWhatsappError] = useState("");
   const featureCarouselRef = useRef<HTMLDivElement>(null);
+  const plansCarouselRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const formatPhone = (raw: string) => {
@@ -819,6 +816,17 @@ function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (pricingTab === "ready" || !window.matchMedia("(max-width: 767px)").matches) return;
+    const frame = window.requestAnimationFrame(() => {
+      const container = plansCarouselRef.current;
+      const middleCard = container?.children.item(1);
+      if (!(container && middleCard instanceof HTMLElement)) return;
+      container.scrollLeft = middleCard.offsetLeft - (container.clientWidth - middleCard.clientWidth) / 2;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [pricingTab]);
+
   const mobileMenuLinks = [
     { href: "#sobre-feats", label: "Funcionalidades" },
     { href: "#como-funciona", label: "Como funciona" },
@@ -844,6 +852,7 @@ function LandingPage() {
           </div>
           <div className="landing-nav-actions">
             <Link to="/login" className="landing-login">Login</Link>
+            <Link to="/cadastro" className="landing-signup">Criar loja grátis</Link>
             <button
               type="button"
               className="landing-menu-btn"
@@ -879,6 +888,7 @@ function LandingPage() {
           </div>
           <div className="landing-mobile-menu-actions">
             <Link to="/login" onClick={() => setMobileOpen(false)}>Login</Link>
+            <Link to="/cadastro" onClick={() => setMobileOpen(false)}>Criar loja grátis</Link>
           </div>
         </div>
       )}
@@ -963,7 +973,6 @@ function LandingPage() {
               <span className="steps-eyebrow">Comece a vender hoje</span>
               <h2>Como criar uma loja na ShopBox</h2>
               <p>Da primeira configuração ao primeiro pedido, tudo foi pensado para você começar sem complicação.</p>
-              <Link to="/cadastro" className="primary-link">Criar loja grátis →</Link>
             </div>
             <div className="steps-stack">
               {STEPS.map((step, index) => (
@@ -973,6 +982,9 @@ function LandingPage() {
                   <p>{step.description}</p>
                 </article>
               ))}
+            </div>
+            <div className="steps-cta-final">
+              <Link to="/cadastro" className="primary-link">Criar loja grátis →</Link>
             </div>
           </div>
         </div>
@@ -987,7 +999,7 @@ function LandingPage() {
           </header>
           <div className="pricing-tabs" role="tablist" aria-label="Tipo de plano">
             <button type="button" role="tab" aria-selected={pricingTab === "monthly"} className={`pricing-tab${pricingTab === "monthly" ? " active" : ""}`} onClick={() => setPricingTab("monthly")}>Mensal</button>
-            <button type="button" role="tab" aria-selected={pricingTab === "annual"} className={`pricing-tab${pricingTab === "annual" ? " active" : ""}`} onClick={() => setPricingTab("annual")}>Anual (-20%)</button>
+            <button type="button" role="tab" aria-selected={pricingTab === "annual"} className={`pricing-tab${pricingTab === "annual" ? " active" : ""}`} onClick={() => setPricingTab("annual")}>Anual</button>
             <button type="button" role="tab" aria-selected={pricingTab === "ready"} className={`pricing-tab${pricingTab === "ready" ? " active" : ""}`} onClick={() => setPricingTab("ready")}>Loja Pronta</button>
           </div>
           {pricingTab === "ready" ? (
@@ -995,7 +1007,7 @@ function LandingPage() {
               <div><h3>Sua loja pronta para vender</h3><p>Nossa equipe configura sua loja, organiza o catálogo e deixa tudo preparado para você começar com acompanhamento especializado.</p></div>
               <a href={WA_LINK} target="_blank" rel="noreferrer" className="primary-link">Falar com especialista →</a>
             </article>
-          ) : <div className="plans-grid">
+          ) : <div className="plans-grid" ref={plansCarouselRef}>
             {PLANS.map((plan) => {
               const isAnnual = pricingTab === "annual";
               const price = isAnnual ? plan.annual : plan.monthly;
@@ -1023,10 +1035,6 @@ function LandingPage() {
         <div className="wrap sec">
           <header className="testi-head">
             <div><span className="pill">Depoimentos</span><h2>O que dizem os lojistas que vendem com a ShopBox</h2></div>
-            <div className="testi-nav">
-              <button type="button" aria-label="Depoimento anterior" onClick={() => setTestimonialIndex((current) => (current - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}><ArrowLeft size={18} /></button>
-              <button type="button" aria-label="Próximo depoimento" onClick={() => setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length)}><ArrowRight size={18} /></button>
-            </div>
           </header>
           <div className="testi-viewport testi-desktop">
             <div className="testi-track" style={{ transform: `translateX(calc(${testimonialIndex} * (-33.333% - 16px)))` }}>
@@ -1051,10 +1059,10 @@ function LandingPage() {
                 <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
               </article>;
             })()}
-            <div className="testi-nav">
-              <button type="button" aria-label="Depoimento anterior" onClick={() => setTestimonialIndex((current) => (current - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}><ArrowLeft size={18} /></button>
-              <button type="button" aria-label="Próximo depoimento" onClick={() => setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length)}><ArrowRight size={18} /></button>
-            </div>
+          </div>
+          <div className="testi-nav">
+            <button type="button" aria-label="Depoimento anterior" onClick={() => setTestimonialIndex((current) => (current - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}><ArrowLeft size={18} /></button>
+            <button type="button" aria-label="Próximo depoimento" onClick={() => setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length)}><ArrowRight size={18} /></button>
           </div>
         </div>
       </section>
