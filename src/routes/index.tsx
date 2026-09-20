@@ -248,7 +248,8 @@ const STYLES = `
 
 /* FOOTER */
 .psb .sec-footer { padding: 68px 52px 30px; background: #0a0a0a; color: #9ca3af; }
-.psb .f-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 54px; }
+.psb .f-brand { max-width: 1200px; margin: 0 auto 42px; }
+.psb .f-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 54px; }
 .psb .footer-logo { display: block; width: auto; height: 46px; filter: brightness(0) invert(1); }
 .psb .f-brand p { max-width: 290px; margin-top: 18px; color: #9ca3af; font-size: 14px; line-height: 1.7; }
 .psb .social-links { display: flex; gap: 10px; margin-top: 22px; }
@@ -258,6 +259,7 @@ const STYLES = `
 .psb .f-col h4 { margin-bottom: 18px; color: #fff; font-size: 14px; }
 .psb .f-col a { display: block; margin-bottom: 11px; color: #9ca3af; font-size: 14px; transition: color .2s; }
 .psb .f-col a:hover { color: #fff; }
+.psb .f-social-title { margin-top: 24px; }
 .psb .f-bottom { max-width: 1200px; margin: 48px auto 0; padding-top: 24px; border-top: 1px solid #252525; color: #6b7280; text-align: center; font-size: 13px; }
 
 /* RESPONSIVE LOWER SECTIONS */
@@ -379,7 +381,7 @@ const STYLES = `
 }
 @media (max-width: 900px) {
   .psb .sec { padding: 72px 20px; }
-  .psb .what-grid, .psb .feats-grid, .psb .steps-grid, .psb .testi-grid, .psb .vs-comparison { grid-template-columns: 1fr; }
+  .psb .what-grid, .psb .steps-grid, .psb .vs-comparison { grid-template-columns: 1fr; }
   .psb .vs-comparison { gap: 16px; }
   .psb .vs-divider { width: 100%; height: 40px; }
   .psb .stats-band { grid-template-columns: 1fr 1fr; }
@@ -869,14 +871,15 @@ function LandingPage() {
 
       {/* SEÇÃO 8 — RODAPÉ */}
       <footer className="sec-footer">
+        <div className="f-brand">
+          <img src={shopboxLogo.url} alt="ShopBox" className="footer-logo" />
+          <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
+        </div>
         <div className="f-grid">
-          <div className="f-brand">
-            <img src={shopboxLogo.url} alt="ShopBox" className="footer-logo" />
-            <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
-          </div>
           <div className="f-col"><h4>Produto</h4><a href="#sobre-feats">Funcionalidades</a><a href="#como-funciona">Como funciona</a><a href="#precos">Planos</a><Link to="/temas">Temas</Link><a href="#faq">FAQ</a></div>
           <div className="f-col"><h4>Suporte</h4><a href="#faq">Central de ajuda</a><a href={WA_LINK} target="_blank" rel="noreferrer">Fale conosco</a><a href="#">Status da plataforma</a></div>
-          <div className="f-col"><h4>Legal</h4><Link to="/privacidade">Política de privacidade</Link><Link to="/termos">Termos de uso</Link><h4 className="f-social-title">Redes sociais</h4><div className="social-links"><a href="#" aria-label="Instagram"><Instagram /></a><a href="#" aria-label="YouTube"><Youtube /></a></div></div>
+          <div className="f-col"><h4>Legal</h4><Link to="/privacidade">Política de privacidade</Link><Link to="/termos">Termos de uso</Link></div>
+          <div className="f-col"><h4>Redes sociais</h4><div className="social-links"><a href="#" aria-label="Instagram"><Instagram /></a><a href="#" aria-label="YouTube"><Youtube /></a></div></div>
         </div>
         <div className="f-bottom">© 2026 ShopBox. Todos os direitos reservados.</div>
       </footer>
