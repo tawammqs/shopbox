@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type CSSProperties } from "react";
 import {
-  Palette, ClipboardList, CreditCard,
   Package, Tag, Globe, TrendingUp, MessageCircle,
-  Users, Zap, Clock, Star, Menu, X,
+  Users, Star, Menu, X, TicketPercent, UserRoundSearch,
+  Video, ShoppingCart, BarChart3, Handshake, Instagram, Youtube,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
 import shopboxLogo from "@/assets/shopbox-logo.png.asset.json";
@@ -113,7 +113,7 @@ const STYLES = `
 .psb .hero { padding: 64px 24px 96px; text-align: center; }
 .psb .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e8e8e0; border-radius: 100px; padding: 6px 18px; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 32px; }
 .psb .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #25D366; }
-.psb .hero h1 { font-size: clamp(44px, 6.2vw, 80px); font-weight: 700; letter-spacing: -2px; line-height: 1.08; max-width: 860px; margin: 0 auto; color: #1a1a1a; }
+.psb .hero h1 { font-size: clamp(44px, 6.2vw, 80px); font-weight: 800; letter-spacing: -2px; line-height: 1.08; max-width: 860px; margin: 0 auto; color: #1a1a1a; }
 .psb .hero h1 em { font-weight: 700; color: #25D366; font-style: italic; }
 .psb .hero-sub { margin: 22px auto 0; font-size: clamp(16px, 1.4vw, 19px); color: #555; max-width: 600px; line-height: 1.7; font-weight: 400; }
 .psb .hero-actions { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
@@ -153,169 +153,135 @@ const STYLES = `
 @keyframes psbmq { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 
 /* SECTION HEADERS */
-.psb .pill { display: inline-block; border: 1px solid #e8e8e0; background: #fff; color: #555; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 9999px; margin-bottom: 16px; }
-.psb .sh2 { font-size: clamp(28px, 3.8vw, 50px); font-weight: 700; letter-spacing: -1.5px; line-height: 1.1; max-width: 700px; margin-bottom: 18px; color: #1a1a1a; }
-.psb .sec-steps .sh2, .psb .sec-cta .sh2 { color: #fff; }
-.psb .sec-steps .sh2 em, .psb .sec-cta .sh2 em { font-style: italic; color: #25D366; font-weight: 700; }
-.psb .ssub { font-size: 17px; line-height: 1.75; font-weight: 400; max-width: 560px; color: #555; }
-.psb .sec-steps .ssub { color: #aaa; }
-
-/* WHAT */
-.psb .what-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 60px; }
-.psb .wf-list { display: flex; flex-direction: column; gap: 16px; }
-.psb .wf { display: flex; gap: 16px; align-items: flex-start; padding: 22px; border-radius: 14px; border: 1px solid #bbf7d0; background: #fff; transition: all .22s; }
-.psb .wf:hover { border-color: #25D366; box-shadow: 0 6px 28px rgba(37,211,102,.12); }
-.psb .wf-ic { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; }
-.psb .wf-ic > svg { width: 22px; height: 22px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.psb .wf-ic.wf-ic-wa > svg { stroke: none; fill: #25D366; }
-.psb .wf h4 { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; line-height: 1.3; }
-.psb .wf p  { font-size: 14px; font-weight: 400; color: #555; line-height: 1.6; }
-
-/* PHONE MOCK */
-.psb .phone { background: #fff; border: 1px solid #bbf7d0; border-radius: 26px; padding: 28px; max-width: 330px; margin: 0 auto; box-shadow: 0 12px 64px rgba(0,100,40,.08); }
-.psb .ph-head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #e8e8e0; margin-bottom: 18px; }
-.psb .ph-av { width: 40px; height: 40px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; }
-.psb .ph-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
-.psb .ph-on { font-size: 12px; color: #25D366; font-weight: 600; }
-.psb .ph-prod { background: #fafaf8; border-radius: 14px; padding: 16px; display: flex; gap: 14px; align-items: center; margin-bottom: 14px; border: 1px solid #e8e8e0; }
-.psb .ph-img { width: 56px; height: 56px; border-radius: 10px; background: linear-gradient(135deg,#d4f5dc,#a8e6b4); display: flex; align-items: center; justify-content: center; font-size: 26px; }
-.psb .ph-pn { font-size: 14px; font-weight: 700; color: #1a1a1a; }
-.psb .ph-pp { font-size: 20px; font-weight: 700; color: #25D366; margin-top: 2px; }
-.psb .ph-btn { width: 100%; padding: 13px; background: #25D366; border-radius: 11px; text-align: center; color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.psb .ph-stat { margin-top: 18px; text-align: center; }
-.psb .ph-sv { font-size: 30px; font-weight: 700; color: #25D366; letter-spacing: -1px; }
-.psb .ph-sl { font-size: 12px; color: #888; font-weight: 500; }
-
-/* STATS */
-.psb .stats-band { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: #bbf7d0; border: 1px solid #bbf7d0; border-radius: 16px; overflow: hidden; margin-top: 60px; }
-.psb .sc { background: #fff; padding: 32px 24px; text-align: center; }
-.psb .sc-ic { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; }
-.psb .sc-ic svg { width: 22px; height: 22px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.psb .sn { font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: -1.5px; line-height: 1; }
-.psb .sl { font-size: 13.5px; color: #555; margin-top: 8px; font-weight: 600; }
-
-/* VS */
-.psb .vs-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: stretch; margin-top: 56px; }
-.psb .vs-card { border-radius: 22px; padding: 36px; }
-.psb .vs-card-bad { background: #fff5f5; border: 1px solid #fecaca; }
-.psb .vs-card-good { background: #f0fdf4; border: 1px solid #bbf7d0; }
-.psb .vs-card-title { font-size: 16px; font-weight: 800; margin-bottom: 28px; display: flex; align-items: center; gap: 10px; }
-.psb .vs-card-bad .vs-card-title { color: #991b1b; }
-.psb .vs-card-good .vs-card-title { color: #166534; }
-.psb .vs-divider { display: flex; align-items: center; justify-content: center; width: 72px; flex-shrink: 0; }
-.psb .vs-badge-pill { background: #fff; border: 1.5px solid #e8e8e0; border-radius: 100px; padding: 8px 14px; font-size: 12px; font-weight: 700; color: #888; letter-spacing: 1px; }
-.psb .vs-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,.05); font-size: 14px; line-height: 1.5; }
-.psb .vs-item:last-child { border-bottom: none; }
-.psb .vs-card-bad .vs-item { color: #7c2d2d; }
-.psb .vs-card-good .vs-item { color: #1a1a1a; font-weight: 500; }
-.psb .ic-bad { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: #fee2e2; border: 1px solid #fecaca; display: flex; align-items: center; justify-content: center; }
-.psb .ic-bad svg { width: 14px; height: 14px; stroke: #dc2626; fill: none; stroke-width: 2.5; stroke-linecap: round; }
-.psb .ic-good { width: 28px; height: 28px; flex-shrink: 0; border-radius: 8px; background: #dcfce7; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; }
-.psb .ic-good svg { width: 14px; height: 14px; stroke: #16a34a; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.psb h1, .psb h2, .psb h3, .psb h4 { font-weight: 800; }
+.psb .pill { display: inline-block; border: 1px solid var(--line); background: #fff; color: var(--muted); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 9999px; margin-bottom: 16px; }
+.psb .section-head { max-width: 760px; margin: 0 auto; text-align: center; }
+.psb .sh2 { font-size: clamp(32px, 4.2vw, 54px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; margin-bottom: 18px; color: var(--ink); }
+.psb .ssub { max-width: 680px; margin: 0 auto; color: var(--muted); font-size: 17px; font-weight: 400; line-height: 1.7; }
 
 /* FEATURES */
-.psb .feats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
-.psb .fc { background: #fafaf8; border: 1px solid #e8e8e0; border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: all .25s; }
-.psb .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 700; color: rgba(37,211,102,.08); line-height: 1; letter-spacing: -3px; }
-.psb .fc:hover { border-color: #25D366; transform: translateY(-4px); box-shadow: 0 12px 44px rgba(37,211,102,.12); }
-.psb .fc-ic { width: 48px; height: 48px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
-.psb .fc-ic svg { width: 24px; height: 24px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.psb .fc h3 { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
-.psb .fc p  { font-size: 14px; color: #555; line-height: 1.65; }
+.psb .feats-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; margin-top: 56px; }
+.psb .fc { min-height: 250px; padding: 28px; background: #fff; border: 1px solid var(--line); border-radius: 8px; transition: border-color .22s, box-shadow .22s, transform .22s; }
+.psb .fc:hover { border-color: var(--green); box-shadow: 0 16px 34px rgba(26,158,74,.10); transform: translateY(-3px); }
+.psb .fc-ic { width: 52px; height: 52px; margin-bottom: 24px; display: grid; place-items: center; border-radius: 8px; color: #fff; background: linear-gradient(135deg,var(--green),#1a9e4a); box-shadow: 0 9px 22px rgba(37,211,102,.22); }
+.psb .fc-ic svg { width: 25px; height: 25px; stroke-width: 2; }
+.psb .fc h3 { margin-bottom: 9px; color: var(--ink); font-size: 17px; line-height: 1.35; }
+.psb .fc p { color: #6b7280; font-size: 14px; line-height: 1.65; }
 
-/* STEPS (dark) */
-.psb .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; margin-top: 56px; }
-.psb .step { padding: 32px 28px; border-radius: 18px; background: #232323; border: 1px solid #2f2f2f; }
-.psb .step-num { width: 44px; height: 44px; border-radius: 50%; background: #25D366; color: #fff; font-weight: 700; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
-.psb .step h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: #fff; }
-.psb .step p { font-size: 14px; font-weight: 400; color: #aaa; line-height: 1.65; }
-
-/* TESTIMONIALS */
-.psb .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
-.psb .tc { background: #fafaf8; border: 1px solid #e8e8e0; border-radius: 18px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
-.psb .tc-stars { color: #25D366; font-size: 14px; letter-spacing: 2px; }
-.psb .tc-text { font-size: 15px; color: #444; line-height: 1.75; flex: 1; }
-.psb .tc-auth { display: flex; gap: 12px; align-items: center; border-top: 1px solid #e8e8e0; padding-top: 14px; }
-.psb .tc-av { width: 40px; height: 40px; border-radius: 50%; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #166534; }
-.psb .tc-name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
-.psb .tc-role { font-size: 12px; color: #888; }
+/* STEPS */
+.psb .sec-steps { background: #fff; color: var(--ink); border-bottom: 1px solid var(--line); }
+.psb .steps-grid { position: relative; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 28px; margin-top: 60px; }
+.psb .steps-grid::before { content: ''; position: absolute; top: 38px; left: 16.5%; right: 16.5%; height: 2px; background: #d9f7e4; }
+.psb .step { position: relative; padding: 0 28px 30px; text-align: center; background: #fff; }
+.psb .step-num { position: relative; z-index: 1; width: 76px; height: 76px; margin: 0 auto 24px; display: grid; place-items: center; border-radius: 50%; color: var(--green-text); background: var(--bg-mint); border: 2px solid var(--green); font-size: 28px; font-weight: 800; box-shadow: 0 0 0 10px #fff; }
+.psb .step h3 { margin-bottom: 10px; color: var(--ink); font-size: 20px; }
+.psb .step p { color: #6b7280; font-size: 14px; line-height: 1.65; }
+.psb .steps-cta { margin-top: 34px; text-align: center; }
+.psb .primary-link { display: inline-flex; align-items: center; justify-content: center; min-height: 50px; padding: 0 28px; border-radius: 8px; color: #fff; background: var(--green); font-size: 15px; font-weight: 700; transition: transform .2s, background .2s; }
+.psb .primary-link:hover { background: var(--green-dk); transform: translateY(-2px); }
 
 /* PRICING */
-.psb .pricing-wrap { max-width: 900px; margin: 0 auto; padding: 0; }
-.psb .pricing-head { text-align: left; }
-.psb .pricing-h2 { font-family: 'Garet', sans-serif; font-weight: 700; font-size: 38px; letter-spacing: -1.5px; line-height: 1.1; color: #1a1a1a; }
-.psb .pricing-sub { font-size: 15px; font-weight: 400; color: #888; margin-top: 12px; margin-bottom: 32px; }
-.psb .billing-toggle-bar { display: inline-flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #e8e8e0; border-radius: 9999px; padding: 6px 20px; margin-bottom: 40px; cursor: pointer; user-select: none; }
-.psb .billing-lbl { font-size: 14px; font-weight: 500; transition: color .2s; }
-.psb .billing-pill { position: relative; width: 44px; height: 24px; background: #25D366; border-radius: 9999px; flex-shrink: 0; }
-.psb .billing-knob { position: absolute; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .2s ease; }
-.psb .save-badge { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 9999px; transition: opacity .2s; }
-.psb .plans-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-.psb .plan-card { background: #fff; border: 1px solid #e8e8e0; border-radius: 14px; padding: 28px 24px; transition: transform .2s, box-shadow .2s; display: flex; flex-direction: column; }
-.psb .plan-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.07); }
-.psb .plan-card.featured { background: #1a1a1a; border: 2px solid #1a1a1a; transform: scale(1.03); position: relative; }
-.psb .plan-card.featured:hover { transform: scale(1.03) translateY(-3px); }
-.psb .plan-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #25D366; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 14px; border-radius: 9999px; white-space: nowrap; letter-spacing: 0.05em; }
-.psb .plan-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
-.psb .plan-card.featured .plan-label { color: #25D366; }
-.psb .plan-price { display: flex; align-items: baseline; gap: 4px; line-height: 1; }
-.psb .plan-num { font-weight: 700; font-size: 42px; letter-spacing: -2px; color: #1a1a1a; }
+.psb .sec-pricing { padding: 96px 52px; background: #fafaf8; border-block: 1px solid var(--line); }
+.psb .pricing-wrap { max-width: 1200px; margin: 0 auto; }
+.psb .billing-toggle-bar { width: fit-content; margin: 34px auto 46px; padding: 6px; display: flex; align-items: center; gap: 4px; border: 1px solid var(--line); border-radius: 9999px; background: #fff; }
+.psb .billing-option { min-height: 38px; padding: 0 18px; border: 0; border-radius: 9999px; color: #777; background: transparent; font-size: 14px; font-weight: 700; transition: color .2s, background .2s; }
+.psb .billing-option.active { color: #fff; background: var(--ink); }
+.psb .save-badge { margin-left: 6px; padding: 5px 10px; border-radius: 9999px; color: var(--green-text); background: var(--bg-mint); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.psb .plans-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; align-items: stretch; }
+.psb .plan-card { position: relative; min-height: 470px; padding: 32px 28px; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: 8px; transition: transform .2s, box-shadow .2s; }
+.psb .plan-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.08); }
+.psb .plan-card.featured { color: #fff; background: var(--ink); border-color: var(--ink); }
+.psb .plan-badge { position: absolute; top: 18px; right: 18px; padding: 5px 10px; border-radius: 9999px; color: var(--ink); background: var(--green); font-size: 10px; font-weight: 800; }
+.psb .plan-label { color: var(--ink); font-size: 22px; }
+.psb .plan-card.featured .plan-label { color: #fff; }
+.psb .plan-price { display: flex; align-items: baseline; gap: 5px; margin-top: 24px; }
+.psb .plan-num { color: var(--ink); font-size: 48px; font-weight: 800; line-height: 1; }
 .psb .plan-card.featured .plan-num { color: #fff; }
-.psb .plan-suffix { font-size: 13px; font-weight: 400; color: #aaa; }
-.psb .plan-card.featured .plan-suffix { color: #555; }
-.psb .plan-note { font-size: 12px; min-height: 18px; margin-top: 6px; color: #bbb; }
-.psb .plan-card.featured .plan-note { color: #25D366; }
-.psb .plan-btn { width: 100%; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; margin: 24px 0; text-align: center; display: block; transition: all .2s; }
-.psb .plan-btn.ghost { border: 1.5px solid #e8e8e0; background: transparent; color: #555; }
-.psb .plan-btn.ghost:hover { border-color: #25D366; color: #1a1a1a; }
-.psb .plan-btn.fill { background: #25D366; color: #fff; border: none; }
-.psb .plan-btn.fill:hover { background: #1ebe57; }
-.psb .plan-feats { display: flex; flex-direction: column; gap: 9px; font-size: 13px; }
-.psb .plan-feats li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.45; }
-.psb .feat-yes { color: #25D366; font-weight: 700; flex-shrink: 0; }
-.psb .plan-card .plan-feats li.inc { color: #444; }
-.psb .plan-card.featured .plan-feats li.inc { color: #ccc; }
-.psb .feat-no { color: #ddd; font-weight: 700; flex-shrink: 0; }
-.psb .plan-card .plan-feats li.exc { color: #bbb; }
-.psb .plan-card.featured .feat-no { color: #444; }
-.psb .plan-card.featured .plan-feats li.exc { color: #555; }
-.psb .plan-divider { border-top: 1px solid #f0f0ea; margin: 8px 0; }
-.psb .plan-card.featured .plan-divider { border-color: #2a2a2a; }
-.psb .pricing-fine { text-align: center; margin-top: 24px; font-size: 13px; color: #aaa; }
-.psb .guarantee-bar { max-width: 560px; margin: 28px auto 0; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px 24px; display: flex; align-items: center; gap: 14px; }
-.psb .g-icon { font-size: 28px; flex-shrink: 0; }
-.psb .g-title { font-size: 14px; font-weight: 700; color: #166534; }
-.psb .g-sub { font-size: 12px; color: #555; line-height: 1.5; margin-top: 2px; }
+.psb .plan-suffix, .psb .plan-note { color: #7b7b7b; font-size: 13px; }
+.psb .plan-card.featured .plan-suffix { color: #c6c6c6; }
+.psb .plan-note { min-height: 22px; margin-top: 8px; }
+.psb .plan-card.featured .plan-note { color: var(--green); }
+.psb .plan-btn { width: 100%; min-height: 46px; margin: 26px 0; display: grid; place-items: center; border-radius: 8px; color: var(--ink); border: 1px solid var(--green); font-size: 14px; font-weight: 700; transition: background .2s, color .2s; }
+.psb .plan-btn:hover, .psb .plan-card.featured .plan-btn { color: #fff; background: var(--green); }
+.psb .plan-feats { display: grid; gap: 13px; margin-top: auto; list-style: none; }
+.psb .plan-feats li { display: flex; gap: 10px; align-items: flex-start; color: #4b5563; font-size: 14px; line-height: 1.5; }
+.psb .plan-card.featured .plan-feats li { color: #d1d5db; }
+.psb .feat-yes { color: var(--green); font-weight: 800; }
+.psb .pricing-fine { margin-top: 28px; text-align: center; color: #777; font-size: 13px; }
+
+/* TESTIMONIALS */
+.psb .sec-testi { background: #fff; border-bottom: 1px solid var(--line); }
+.psb .testi-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; margin-top: 56px; }
+.psb .tc { min-height: 330px; padding: 30px; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.psb .tc-stars { color: var(--green); font-size: 16px; letter-spacing: 2px; }
+.psb .tc-text { flex: 1; margin: 24px 0 30px; color: #374151; font-size: 17px; line-height: 1.75; }
+.psb .tc-auth { display: flex; gap: 13px; align-items: center; padding-top: 20px; border-top: 1px solid var(--line); }
+.psb .tc-av { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: linear-gradient(135deg,var(--green),#1a9e4a); font-size: 13px; font-weight: 800; }
+.psb .tc-name { color: var(--ink); font-size: 14px; font-weight: 800; }
+.psb .tc-role { color: #8b8b8b; font-size: 12px; }
 
 /* FAQ */
-.psb .faq-list { margin-top: 56px; border: 1px solid #e8e8e0; border-radius: 18px; overflow: hidden; background: #fff; max-width: 820px; }
-.psb .faq-item { border-bottom: 1px solid #e8e8e0; }
-.psb .faq-item:last-child { border-bottom: none; }
-.psb .faq-q { width: 100%; padding: 22px 28px; font-size: 16px; font-weight: 700; color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; background: transparent; border: none; text-align: left; transition: background .2s; }
-.psb .faq-q:hover { background: #fafaf8; }
-.psb .faq-arr { color: #25D366; font-size: 24px; transition: transform .3s; line-height: 1; }
-.psb .faq-a { padding: 0 28px; max-height: 0; overflow: hidden; font-size: 15px; color: #555; line-height: 1.75; transition: max-height .35s ease, padding .35s ease; }
-.psb .faq-item.open .faq-a { max-height: 300px; padding: 0 28px 22px; }
+.psb .sec-faq { background: var(--bg-mint); border-bottom: 1px solid var(--line-mint); }
+.psb .faq-list { max-width: 820px; margin: 52px auto 0; overflow: hidden; border: 1px solid #dfe8e1; border-radius: 8px; background: #fff; box-shadow: 0 16px 40px rgba(22,101,52,.06); }
+.psb .faq-item { border-bottom: 1px solid var(--line); }
+.psb .faq-item:last-child { border-bottom: 0; }
+.psb .faq-q { width: 100%; padding: 22px 26px; display: flex; justify-content: space-between; gap: 20px; align-items: center; border: 0; color: var(--ink); background: #fff; text-align: left; font-size: 16px; font-weight: 700; }
+.psb .faq-q:hover { background: #fbfdfb; }
+.psb .faq-arr { flex-shrink: 0; color: var(--green); font-size: 24px; line-height: 1; transition: transform .3s; }
+.psb .faq-a { max-height: 0; padding: 0 26px; overflow: hidden; color: #6b7280; font-size: 14px; line-height: 1.75; transition: max-height .35s, padding .35s; }
+.psb .faq-item.open .faq-a { max-height: 300px; padding: 0 26px 22px; }
 .psb .faq-item.open .faq-arr { transform: rotate(45deg); }
-
-/* CTA FINAL */
-.psb .cta-inner { text-align: center; }
-.psb .cta-inner h2 { font-size: clamp(36px, 4.5vw, 58px); font-weight: 700; letter-spacing: -2px; margin-bottom: 14px; color: #fff; }
-.psb .cta-inner p { font-size: 18px; font-weight: 400; color: #aaa; margin-bottom: 38px; }
-.psb .cta-btn { background: #25D366; color: #fff; border: none; font-size: 17px; font-weight: 700; padding: 16px 42px; border-radius: 10px; display: inline-flex; align-items: center; gap: 9px; transition: all .2s; }
-.psb .cta-btn:hover { background: #1ebe57; transform: translateY(-2px); }
-.psb .cta-note { margin-top: 18px; font-size: 13px; color: #888; }
+.psb .guarantee-bar { max-width: 820px; margin: 28px auto 0; padding: 20px 24px; display: flex; align-items: center; gap: 14px; border: 1px solid var(--line-mint); border-radius: 8px; background: #fff; }
+.psb .g-icon { flex-shrink: 0; font-size: 27px; }
+.psb .g-title { color: var(--green-text); font-size: 14px; font-weight: 800; }
+.psb .g-sub { margin-top: 2px; color: #5f6b62; font-size: 12px; line-height: 1.5; }
 
 /* FOOTER */
-.psb .sec-footer { padding: 64px 52px 40px; }
-.psb .f-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; max-width: 1200px; margin: 0 auto; }
-.psb .f-brand .logo { font-size: 30px; }
-.psb .f-brand .logo .lo-a { color: #fff; }
-.psb .f-brand p { font-size: 14px; color: #6b7280; margin-top: 12px; max-width: 240px; line-height: 1.65; }
-.psb .f-col h4 { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #6b7280; margin-bottom: 16px; }
-.psb .f-col a { display: block; font-size: 14px; color: #9ca3af; margin-bottom: 10px; transition: color .2s; }
+.psb .sec-footer { padding: 68px 52px 30px; background: #0a0a0a; color: #9ca3af; }
+.psb .f-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 54px; }
+.psb .footer-logo { display: block; width: auto; height: 46px; filter: brightness(0) invert(1); }
+.psb .f-brand p { max-width: 290px; margin-top: 18px; color: #9ca3af; font-size: 14px; line-height: 1.7; }
+.psb .social-links { display: flex; gap: 10px; margin-top: 22px; }
+.psb .social-links a { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid #2b2b2b; border-radius: 50%; color: #9ca3af; transition: color .2s, border-color .2s, background .2s; }
+.psb .social-links a:hover { color: #fff; border-color: var(--green); background: #151515; }
+.psb .social-links svg { width: 17px; height: 17px; }
+.psb .f-col h4 { margin-bottom: 18px; color: #fff; font-size: 14px; }
+.psb .f-col a { display: block; margin-bottom: 11px; color: #9ca3af; font-size: 14px; transition: color .2s; }
 .psb .f-col a:hover { color: #fff; }
-.psb .f-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6b7280; flex-wrap: wrap; gap: 12px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+.psb .f-bottom { max-width: 1200px; margin: 48px auto 0; padding-top: 24px; border-top: 1px solid #252525; color: #6b7280; text-align: center; font-size: 13px; }
+
+/* RESPONSIVE LOWER SECTIONS */
+@media (max-width: 900px) {
+  .psb .sec { padding: 76px 24px; }
+  .psb .feats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .psb .testi-grid { grid-template-columns: 1fr; }
+  .psb .f-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .psb .sec { padding: 64px 20px; }
+  .psb .feats-grid { grid-template-columns: 1fr; gap: 14px; margin-top: 40px; }
+  .psb .fc { min-height: 0; }
+  .psb .steps-grid { grid-template-columns: 1fr; gap: 0; margin-top: 42px; }
+  .psb .steps-grid::before { top: 38px; bottom: 38px; left: 37px; right: auto; width: 2px; height: auto; }
+  .psb .step { min-height: 142px; padding: 0 0 28px 100px; text-align: left; }
+  .psb .step-num { position: absolute; left: 0; top: 0; margin: 0; }
+  .psb .steps-cta { margin-top: 12px; }
+  .psb .sec-pricing { padding: 64px 0; }
+  .psb .sec-pricing .section-head, .psb .billing-toggle-bar, .psb .pricing-fine { margin-left: 20px; margin-right: 20px; }
+  .psb .billing-toggle-bar { width: calc(100% - 40px); justify-content: center; }
+  .psb .billing-option { padding-inline: 13px; }
+  .psb .plans-grid { display: flex; gap: 14px; overflow-x: auto; padding: 8px 20px 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .psb .plans-grid::-webkit-scrollbar { display: none; }
+  .psb .plan-card { flex: 0 0 min(84vw,330px); scroll-snap-align: center; }
+  .psb .testi-grid { margin-top: 40px; }
+  .psb .tc { min-height: 300px; }
+  .psb .faq-q { padding: 20px; font-size: 15px; }
+  .psb .faq-a { padding-inline: 20px; }
+  .psb .faq-item.open .faq-a { padding: 0 20px 20px; }
+  .psb .guarantee-bar { align-items: flex-start; }
+  .psb .sec-footer { padding: 56px 20px 28px; }
+  .psb .f-grid { grid-template-columns: 1fr; gap: 36px; }
+}
 
 /* REDESIGN: NAV, HERO & COM/SEM */
 .psb .landing-nav-shell { position: fixed; inset: 0 0 auto; z-index: 200; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); }
@@ -345,7 +311,7 @@ const STYLES = `
 .psb .conversation-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: var(--line); }
 .psb .conversation-badge { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 100px; padding: 7px 18px; margin-bottom: 32px; font-size: 13px; font-weight: 650; color: #555; background: #fff; }
 .psb .conversation-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(37,211,102,.1); }
-.psb .conversation-hero h1 { max-width: 980px; font-size: clamp(42px, 6.2vw, 82px); font-weight: 700; letter-spacing: -3px; line-height: 1.04; color: #1a1a1a; }
+.psb .conversation-hero h1 { max-width: 980px; font-size: clamp(42px, 6.2vw, 82px); font-weight: 800; letter-spacing: -3px; line-height: 1.04; color: #1a1a1a; }
 .psb .conversation-hero h1 span { color: #1a1a1a; }
 .psb .conversation-copy { max-width: 650px; margin: 26px auto 0; color: #555; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.7; }
 .psb .whatsapp-lead-wrap { width: min(100%, 500px); margin: 44px auto 0; }
@@ -361,7 +327,7 @@ const STYLES = `
 .psb .compare-section { padding: 108px 48px 116px; background: #f8f8f6; border-bottom: 1px solid var(--line); }
 .psb .compare-wrap { max-width: 760px; margin: 0 auto; }
 .psb .compare-head { max-width: 820px; margin: 0 auto 40px; text-align: center; }
-.psb .compare-head h2 { color: #1a1a1a; font-size: clamp(34px, 4.4vw, 56px); font-weight: 700; letter-spacing: -2px; line-height: 1.08; }
+.psb .compare-head h2 { color: #1a1a1a; font-size: clamp(34px, 4.4vw, 56px); font-weight: 800; letter-spacing: -2px; line-height: 1.08; }
 .psb .compare-head p { max-width: 680px; margin: 18px auto 0; color: #666; font-size: 17px; font-weight: 400; line-height: 1.65; }
 .psb .compare-toggle { width: fit-content; margin: 0 auto 60px; padding: 6px; display: flex; gap: 6px; border: 1px solid var(--line); border-radius: 100px; background: #fff; }
 .psb .compare-toggle button { border: 0; border-radius: 100px; padding: 11px 30px; background: transparent; color: #888; font-size: 14px; font-weight: 700; transition: background .2s, color .2s; }
@@ -461,12 +427,18 @@ const TICKER_ITEMS = [
 ];
 
 const FEATURES = [
-  { n: "01", Ic: Package, t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor e tamanho, e controle de estoque completo." },
-  { n: "02", Ic: MessageCircle, t: "Checkout pelo WhatsApp", d: "O cliente clica em 'comprar' e vai direto para o WhatsApp. Alta conversão, zero fricção, sem redirecionamentos." },
-  { n: "03", Ic: Tag, t: "Cupons e promoções", d: "Crie cupons de desconto, promoções relâmpago e frete grátis para vender mais em datas especiais." },
-  { n: "04", Ic: CreditCard, t: "Pagamentos integrados", d: "Aceite Pix, cartão de crédito e boleto. Integração com os principais gateways do Brasil já incluída." },
-  { n: "05", Ic: Globe, t: "Domínio personalizado", d: "Use seu próprio domínio (.com.br) e transmita mais credibilidade e profissionalismo." },
-  { n: "06", Ic: TrendingUp, t: "Analytics em tempo real", d: "Veja quais produtos vendem mais, de onde vêm seus clientes e quanto você fatura." },
+  { Ic: Package, t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor e tamanho." },
+  { Ic: MessageCircle, t: "Checkout pelo WhatsApp", d: "O cliente clica em comprar e vai direto para o WhatsApp. Alta conversão, zero fricção." },
+  { Ic: TicketPercent, t: "Cupons e promoções", d: "Crie cupons, promoções relâmpago e temporizadores de oferta." },
+  { Ic: Users, t: "Programa de Afiliados", d: "Crie sua rede de vendedores e pague comissões automáticas por venda." },
+  { Ic: UserRoundSearch, t: "Captura de Leads", d: "Colete números de WhatsApp com ofertas irresistíveis e cupons de boas-vindas." },
+  { Ic: Star, t: "Grupo VIP Automático", d: "Automatize ofertas exclusivas para seu grupo VIP no WhatsApp." },
+  { Ic: Video, t: "Video Commerce", d: "Venda mais com vídeos dos produtos direto na vitrine da loja." },
+  { Ic: ShoppingCart, t: "Compre Junto", d: "Aumente o ticket médio com sugestões inteligentes de produtos complementares." },
+  { Ic: Globe, t: "Domínio personalizado", d: "Use seu próprio domínio e transmita mais credibilidade." },
+  { Ic: BarChart3, t: "Analytics em tempo real", d: "Veja quais produtos vendem mais e quanto você fatura." },
+  { Ic: Star, t: "Avaliações de produtos", d: "Clientes avaliam e você exibe as estrelas na vitrine." },
+  { Ic: Handshake, t: "Múltiplas vendedoras", d: "Selecione qual vendedora atende cada pedido pelo WhatsApp." },
 ];
 
 const TESTIMONIALS = [
@@ -606,70 +578,9 @@ function ComSemSection() {
 }
 
 const PLANS = [
-  {
-    label: "INICIAL",
-    monthly: 47,
-    annual: 38,
-    annualNote: "R$451/ano — economize R$113",
-    included: [
-      "Até 200 produtos",
-      "Checkout pelo WhatsApp",
-      "Variações de cor e tamanho",
-      "Controle de estoque",
-      "3 fotos por produto",
-      "1 banner (desktop + mobile)",
-      "2 temas gratuitos",
-      "CRM básico (100 clientes)",
-      "Suporte via Central de Ajuda",
-    ],
-    excluded: ["Cupons e promoções", "Fotos ilimitadas", "Domínio personalizado"],
-    featured: false,
-  },
-  {
-    label: "PROFISSIONAL",
-    monthly: 97,
-    annual: 78,
-    annualNote: "R$934/ano — economize R$230",
-    included: [
-      "Tudo do Plano Inicial",
-      "Produtos ilimitados",
-      "Fotos ilimitadas por produto",
-      "Banners ilimitados",
-      "Integra Google Analytics e Pixel do Facebook",
-      "Vídeos no produto (YouTube, Reels, Vimeo)",
-      "Cupons e promoções completas",
-      "Combos (Leve 2 Pague 1, 2 por R$X)",
-      "Pop-up de cupom de boas-vindas",
-      "CRM ilimitado + exportar CSV",
-      "Bulk actions de produtos",
-      "Marketplace de temas premium",
-      "Suporte via WhatsApp",
-    ],
-    excluded: ["Domínio personalizado", "Relatórios avançados"],
-    featured: true,
-  },
-  {
-    label: "PREMIUM",
-    monthly: 197,
-    annual: 158,
-    annualNote: "R$1.891/ano — economize R$453",
-    included: [
-      "Tudo do Plano Profissional",
-      "Múltiplas categorias por produto",
-      "Edição de pedidos",
-      "Notificador de pedidos",
-      "Domínio personalizado (.com.br)",
-      "Cor de destaque da loja personalizada",
-      "Analytics avançado (produtos mais vistos)",
-      "SEO por produto (meta title, description)",
-      "Frete por CEP configurável",
-      "Relatórios avançados",
-      "3 temas gratuitos incluídos",
-      "Suporte prioritário via WhatsApp",
-    ],
-    excluded: [],
-    featured: false,
-  },
+  { label: "Inicial", monthly: 47, features: ["Até 200 produtos", "2 temas gratuitos", "Suporte pela Central de Ajuda"], featured: false },
+  { label: "Profissional", monthly: 97, features: ["Produtos ilimitados", "Todos os add-ons", "Suporte pelo WhatsApp"], featured: true },
+  { label: "Premium", monthly: 197, features: ["Tudo do Profissional", "Domínio personalizado", "Analytics avançado", "Suporte prioritário"], featured: false },
 ];
 
 function LandingPage() {
@@ -823,206 +734,134 @@ function LandingPage() {
       {/* COM SHOPBOX / SEM SHOPBOX */}
       <ComSemSection />
 
-      {/* FUNCIONALIDADES (white) */}
-      <div className="sec-feats" id="sobre-feats">
+      {/* SEÇÃO 3 — FUNCIONALIDADES */}
+      <section className="sec-feats" id="sobre-feats">
         <div className="wrap sec">
-          <div className="pill">Funcionalidades</div>
-          <h2 className="sh2">Tudo que sua loja precisa<br />para vender mais</h2>
-          <p className="ssub">Cada recurso foi desenvolvido do zero para quem vende pelo WhatsApp.</p>
+          <header className="section-head">
+            <span className="pill">Funcionalidades</span>
+            <h2 className="sh2">Tudo que você precisa para vender mais.</h2>
+            <p className="ssub">Não importa o tamanho do seu negócio — a ShopBox tem os recursos certos para cada fase.</p>
+          </header>
           <div className="feats-grid">
-            {FEATURES.map((f) => (
-              <div key={f.n} className="fc" data-n={f.n}>
-                <div className="fc-ic"><f.Ic /></div>
-                <h3>{f.t}</h3>
-                <p>{f.d}</p>
-              </div>
+            {FEATURES.map((feature) => (
+              <article key={feature.t} className="fc">
+                <div className="fc-ic"><feature.Ic aria-hidden="true" /></div>
+                <h3>{feature.t}</h3>
+                <p>{feature.d}</p>
+              </article>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* COMO FUNCIONA (dark) */}
-      <div className="sec-steps" id="como-funciona">
+      {/* SEÇÃO 4 — COMO FUNCIONA */}
+      <section className="sec-steps" id="como-funciona">
         <div className="wrap sec">
-          <div className="pill" style={{ background: "#232323", border: "1px solid #2f2f2f", color: "#aaa" }}>Como funciona</div>
-          <h2 className="sh2">Comece a vender em <em>3 passos.</em></h2>
-          <p className="ssub">Sem complexidade, sem burocracia. Sua loja no ar em menos de 30 minutos.</p>
+          <header className="section-head">
+            <span className="pill">Como funciona</span>
+            <h2 className="sh2">Comece a vender em minutos</h2>
+            <p className="ssub">Sem setup técnico, sem burocracia. Sua loja no ar hoje.</p>
+          </header>
           <div className="steps-grid">
-            <div className="step"><div className="step-num">1</div><h3>Crie sua conta</h3><p>Cadastre-se em menos de 2 minutos. Sem cartão de crédito, sem burocracia. 7 dias grátis para testar tudo sem limites.</p></div>
-            <div className="step"><div className="step-num">2</div><h3>Monte sua loja</h3><p>Adicione seus produtos, escolha um tema profissional e configure os meios de pagamento que preferir. Tudo sem código.</p></div>
-            <div className="step"><div className="step-num">3</div><h3>Compartilhe e venda</h3><p>Envie o link da sua loja pelo WhatsApp e comece a receber pedidos. Seus clientes compram sem sair do app.</p></div>
+            <article className="step"><div className="step-num">1</div><h3>Crie sua conta</h3><p>Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis.</p></article>
+            <article className="step"><div className="step-num">2</div><h3>Monte sua loja</h3><p>Adicione produtos, escolha um tema e configure seu WhatsApp.</p></article>
+            <article className="step"><div className="step-num">3</div><h3>Compartilhe o link</h3><p>Envie para seus clientes e comece a receber pedidos agora.</p></article>
           </div>
+          <div className="steps-cta"><Link to="/cadastro" className="primary-link">Criar minha loja grátis →</Link></div>
         </div>
-      </div>
+      </section>
 
-      {/* DEPOIMENTOS (white) */}
-      <div className="sec-testi">
-        <div className="wrap sec">
-          <div className="pill">Depoimentos</div>
-          <h2 className="sh2">O que dizem sobre<br />a ShopBox</h2>
-          <p className="ssub">Mais de 12.000 lojistas já transformaram seu negócio com a ShopBox.</p>
-          <div className="testi-grid">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.av} className="tc">
-                <div className="tc-stars">★★★★★</div>
-                <p className="tc-text">{t.text}</p>
-                <div className="tc-auth">
-                  <div className="tc-av">{t.av}</div>
-                  <div>
-                    <div className="tc-name">{t.name}</div>
-                    <div className="tc-role">{t.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* PRICING (cream) */}
-      <div className="sec-pricing" id="precos" style={{ padding: "72px 40px" }}>
+      {/* SEÇÃO 5 — PLANOS */}
+      <section className="sec-pricing" id="precos">
         <div className="pricing-wrap">
-          <div className="pricing-head">
+          <header className="section-head">
             <span className="pill">Planos</span>
-            <h2 className="pricing-h2">Sem surpresas,<br />sem letras miúdas.</h2>
-            <p className="pricing-sub">Escolha o plano certo para sua loja. Mude quando quiser.</p>
-
-            <button
-              type="button"
-              className="billing-toggle-bar"
-              onClick={() => setIsAnnual((v) => !v)}
-              aria-label="Alternar entre cobrança mensal e anual"
-            >
-              <span className="billing-lbl" style={{ color: isAnnual ? "#aaa" : "#1a1a1a" }}>Mensal</span>
-              <span className="billing-pill">
-                <span className="billing-knob" style={{ left: isAnnual ? "23px" : "3px" }} />
-              </span>
-              <span className="billing-lbl" style={{ color: isAnnual ? "#1a1a1a" : "#aaa" }}>Anual</span>
-              <span className="save-badge" style={{ opacity: isAnnual ? 1 : 0.4 }}>Economize 20%</span>
-            </button>
+            <h2 className="sh2">Sua loja, do seu jeito. Seu plano também.</h2>
+          </header>
+          <div className="billing-toggle-bar" role="group" aria-label="Período de cobrança">
+            <button type="button" className={`billing-option${!isAnnual ? " active" : ""}`} aria-pressed={!isAnnual} onClick={() => setIsAnnual(false)}>Mensal</button>
+            <button type="button" className={`billing-option${isAnnual ? " active" : ""}`} aria-pressed={isAnnual} onClick={() => setIsAnnual(true)}>Anual (-20%)</button>
+            {isAnnual && <span className="save-badge">Economize 20%</span>}
           </div>
-
           <div className="plans-grid">
-            {PLANS.map((p) => (
-              <div key={p.label} className={`plan-card${p.featured ? " featured" : ""}`}>
-                {p.featured && <span className="plan-badge">MAIS POPULAR</span>}
-                <div className="plan-label">{p.label}</div>
-                <div className="plan-price">
-                  <span className="plan-num">R${isAnnual ? p.annual : p.monthly}</span>
-                  <span className="plan-suffix">/mês</span>
-                </div>
-                <div className="plan-note">{isAnnual ? p.annualNote : ""}</div>
-
-                <Link to="/cadastro" className={`plan-btn ${p.featured ? "fill" : "ghost"}`}>
-                  Testar grátis por 7 dias
-                </Link>
-
-                <ul className="plan-feats">
-                  {p.included.map((f) => (
-                    <li key={f} className="inc">
-                      <span className="feat-yes">✓</span>
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                  {p.excluded.length > 0 && <li className="plan-divider" />}
-                  {p.excluded.map((f) => (
-                    <li key={f} className="exc">
-                      <span className="feat-no">✗</span>
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {PLANS.map((plan) => {
+              const price = isAnnual ? Math.round(plan.monthly * 0.8) : plan.monthly;
+              return (
+                <article key={plan.label} className={`plan-card${plan.featured ? " featured" : ""}`}>
+                  {plan.featured && <span className="plan-badge">MAIS POPULAR</span>}
+                  <h3 className="plan-label">{plan.label}</h3>
+                  <div className="plan-price"><span className="plan-num">R${price}</span><span className="plan-suffix">/mês</span></div>
+                  <p className="plan-note">{isAnnual ? "Cobrança anual · 20% de economia" : "Cobrança mensal"}</p>
+                  <Link to="/cadastro" className="plan-btn">Testar grátis por 7 dias</Link>
+                  <ul className="plan-feats">
+                    {plan.features.map((feature) => <li key={feature}><span className="feat-yes">✓</span><span>{feature}</span></li>)}
+                  </ul>
+                </article>
+              );
+            })}
           </div>
-
-          <p className="pricing-fine">
-            7 dias grátis em todos os planos · sem cartão · cancele quando quiser
-          </p>
-
-          <div className="guarantee-bar">
-            <div className="g-icon">🛡️</div>
-            <div>
-              <div className="g-title">Garantia de 7 dias sem risco</div>
-              <div className="g-sub">Não ficou satisfeito? Devolvemos 100% do valor pago. Sem perguntas, sem burocracia.</div>
-            </div>
-          </div>
+          <p className="pricing-fine">7 dias grátis em todos os planos · Sem cartão · Cancele quando quiser</p>
         </div>
-      </div>
+      </section>
 
-      {/* FAQ (white) */}
-      <div className="sec-faq" id="faq">
+      {/* SEÇÃO 6 — DEPOIMENTOS */}
+      <section className="sec-testi">
         <div className="wrap sec">
-          <div className="pill">FAQ</div>
-          <h2 className="sh2">Perguntas frequentes</h2>
+          <header className="section-head">
+            <span className="pill">Depoimentos</span>
+            <h2 className="sh2">+2.000 lojistas já vendem mais com a ShopBox</h2>
+          </header>
+          <div className="testi-grid">
+            {TESTIMONIALS.map((testimonial) => (
+              <article key={testimonial.av} className="tc">
+                <div className="tc-stars" aria-label="5 estrelas">★★★★★</div>
+                <p className="tc-text">“{testimonial.text}”</p>
+                <div className="tc-auth"><div className="tc-av">{testimonial.av}</div><div><div className="tc-name">{testimonial.name}</div><div className="tc-role">{testimonial.role}</div></div></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SEÇÃO 7 — FAQ */}
+      <section className="sec-faq" id="faq">
+        <div className="wrap sec">
+          <header className="section-head">
+            <span className="pill">FAQ</span>
+            <h2 className="sh2">Perguntas frequentes</h2>
+            <p className="ssub">Tudo o que você precisa saber antes de criar sua loja.</p>
+          </header>
           <div className="faq-list">
-            {FAQS.map((f, i) => (
-              <div key={i} className={`faq-item ${openFaq === i ? "open" : ""}`}>
-                <button className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                  {f.q}
-                  <span className="faq-arr">+</span>
+            {FAQS.map((faq, index) => (
+              <div key={faq.q} className={`faq-item${openFaq === index ? " open" : ""}`}>
+                <button type="button" className="faq-q" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)}>
+                  {faq.q}<span className="faq-arr" aria-hidden="true">+</span>
                 </button>
-                <div className="faq-a">{f.a}</div>
+                <div className="faq-a">{faq.a}</div>
               </div>
             ))}
           </div>
-          <div style={{ textAlign: "center", marginTop: 48, padding: 40, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 18 }}>
-            <p style={{ color: "#555", marginBottom: 18, fontSize: 16 }}>Ainda tem dúvidas? Fale diretamente com a gente</p>
-            <a href={WA_LINK} target="_blank" rel="noreferrer" className="btn-hero">
-              <WhatsAppIcon color="#fff" />
-              Enviar mensagem
-            </a>
-          </div>
+          <div className="guarantee-bar"><div className="g-icon">🛡️</div><div><div className="g-title">Garantia de 7 dias sem risco</div><div className="g-sub">Não ficou satisfeito? Devolvemos 100% do valor pago. Sem perguntas, sem burocracia.</div></div></div>
         </div>
-      </div>
+      </section>
 
-      {/* CTA FINAL (dark) */}
-      <div className="sec-cta">
-        <div className="wrap sec cta-inner">
-          <h2>Pronto para criar sua loja?</h2>
-          <p>Mais de 12.000 lojistas já vendem pelo WhatsApp com a ShopBox</p>
-          <Link to="/cadastro" className="cta-btn">
-            Testar grátis por 7 dias
-          </Link>
-          <p className="cta-note">
-            Nota <strong style={{ color: "#ccc" }}>4.9</strong> · +12 mil lojistas · 7 dias grátis · sem cartão de crédito
-          </p>
-        </div>
-      </div>
-
-      {/* FOOTER */}
+      {/* SEÇÃO 8 — RODAPÉ */}
       <footer className="sec-footer">
         <div className="f-grid">
           <div className="f-brand">
-            <Logo />
-            <p>A plataforma de e-commerce feita para quem vende pelo WhatsApp. Simples, rápido e sem comissão.</p>
+            <img src={shopboxLogo.url} alt="ShopBox" className="footer-logo" />
+            <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
+            <div className="social-links">
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram /></a>
+              <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube"><Youtube /></a>
+              <a href={WA_LINK} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle /></a>
+            </div>
           </div>
-          <div className="f-col">
-            <h4>Produto</h4>
-            <a href="#sobre-feats">Funcionalidades</a>
-            <a href="#">Temas</a>
-            <a href="#">Integrações</a>
-            <a href="#precos">Preços</a>
-          </div>
-          <div className="f-col">
-            <h4>Empresa</h4>
-            <a href="#">Sobre nós</a>
-            <a href="#">Blog</a>
-            <a href="#">Parceiros</a>
-            <a href="#">Contato</a>
-          </div>
-          <div className="f-col">
-            <h4>Suporte</h4>
-            <a href="#">Central de ajuda</a>
-            <a href={WA_LINK} target="_blank" rel="noreferrer">WhatsApp</a>
-            <Link to="/termos">Termos de uso</Link>
-            <Link to="/privacidade">Privacidade</Link>
-          </div>
+          <div className="f-col"><h4>Produto</h4><a href="#sobre-feats">Funcionalidades</a><a href="#como-funciona">Como funciona</a><a href="#precos">Planos</a><Link to="/temas">Temas</Link><a href="#faq">FAQ</a></div>
+          <div className="f-col"><h4>Suporte</h4><a href="#faq">Central de ajuda</a><a href={WA_LINK} target="_blank" rel="noreferrer">Fale conosco</a><a href="#">Status da plataforma</a></div>
+          <div className="f-col"><h4>Legal</h4><Link to="/privacidade">Política de privacidade</Link><Link to="/termos">Termos de uso</Link></div>
         </div>
-        <div className="f-bottom">
-          <span>© 2026 ShopBox. Todos os direitos reservados.</span>
-          <span>Feito com ❤️ para lojistas brasileiros</span>
-        </div>
+        <div className="f-bottom">© 2026 ShopBox. Todos os direitos reservados.</div>
       </footer>
     </div>
   );
