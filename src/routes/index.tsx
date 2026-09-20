@@ -4,10 +4,10 @@ import {
   Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Star, Menu, X, TicketPercent, UserRoundSearch,
   Video, ShoppingCart, BarChart3, Handshake, Instagram, Youtube,
+  ArrowLeft, ArrowRight,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
 import shopboxLogo from "@/assets/shopbox-logo.png.asset.json";
-import shopboxLogoDark from "@/assets/shopbox-logo-dark.png.asset.json";
 import garetBook from "@/assets/garet-book.woff.asset.json";
 import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
 import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
@@ -361,6 +361,7 @@ const STYLES = `
 .psb .compare-item-visual .compare-placeholder-inner { width: min(100%, 390px); padding: 28px; border: 1px solid #ccefd7; border-radius: 20px; background: #fff; box-shadow: 0 24px 55px rgba(37,211,102,.14); animation: compareReveal .35s ease both; }
 .psb .compare-progress { display: block; height: 2px; margin: 8px 0 16px; overflow: hidden; border-radius: 2px; background: #e8e8e0; }
 .psb .compare-progress span { display: block; width: var(--progress); height: 100%; border-radius: inherit; background: var(--green); transition: width .05s linear; }
+.psb .compare-item:not(.active) .compare-progress { display: none; }
 .psb .compare-list.is-negative .compare-progress span { background: #ef4444; }
 .psb .mock-top { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid #edf0eb; }
 .psb .mock-avatar { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 700; }
@@ -428,6 +429,103 @@ const STYLES = `
   .psb .compare-item-title { font-size: 15px; }
   .psb .compare-item-desc { font-size: 13px; }
 }
+
+/* 2026 LANDING SECTIONS */
+.psb .feature-stack { display: grid; gap: 24px; margin-top: 56px; }
+.psb .feature-panel { min-height: 430px; padding: 56px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; overflow: hidden; border-radius: 24px; color: #fff; background: linear-gradient(135deg,#25d366,#1a9e4a); }
+.psb .feature-panel.reverse .feature-copy { order: 2; }
+.psb .feature-panel.reverse .feature-mock { order: 1; }
+.psb .feature-tag { color: rgba(255,255,255,.68); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.psb .feature-panel h3 { margin: 12px 0 16px; color: #fff; font-size: clamp(26px,3vw,36px); line-height: 1.15; }
+.psb .feature-panel p { color: rgba(255,255,255,.84); font-size: 16px; line-height: 1.75; }
+.psb .feature-mock { min-height: 280px; padding: 20px; display: flex; align-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: 18px; background: rgba(255,255,255,.16); box-shadow: 0 28px 60px rgba(6,79,34,.20); backdrop-filter: blur(10px); }
+.psb .mock-window { width: 100%; overflow: hidden; border-radius: 13px; background: #fff; color: var(--ink); box-shadow: 0 18px 45px rgba(0,0,0,.16); }
+.psb .mock-window-bar { height: 38px; padding: 0 14px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--line); background: #fafaf8; }
+.psb .mock-window-bar i { width: 7px; height: 7px; border-radius: 50%; background: #d1d5db; }
+.psb .mock-window-body { min-height: 210px; padding: 22px; display: grid; gap: 13px; }
+.psb .mock-kpi-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.psb .mock-kpi { min-height: 64px; padding: 11px; border-radius: 9px; background: #f5f7f4; }
+.psb .mock-kpi b { display: block; color: var(--ink); font-size: 18px; }
+.psb .mock-kpi small { color: #777; font-size: 9px; }
+.psb .mock-chat { max-width: 86%; padding: 11px 13px; border-radius: 12px 12px 2px 12px; color: #174824; background: #dcf8e5; font-size: 11px; justify-self: end; }
+.psb .mock-list-row { min-height: 38px; padding: 8px 11px; display: flex; align-items: center; gap: 10px; border: 1px solid #edf0eb; border-radius: 8px; color: #666; font-size: 10px; }
+.psb .mock-list-row span { width: 25px; height: 25px; border-radius: 7px; background: #e9fbee; }
+
+.psb .steps-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 80px; align-items: start; }
+.psb .steps-sticky { position: sticky; top: 120px; align-self: start; padding-top: 8px; }
+.psb .steps-eyebrow { color: var(--green); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.psb .steps-sticky h2 { margin: 16px 0 20px; max-width: 500px; font-size: clamp(34px,4vw,54px); line-height: 1.08; }
+.psb .steps-sticky p { max-width: 500px; margin-bottom: 30px; color: #6b7280; font-size: 16px; line-height: 1.7; }
+.psb .steps-stack { display: flex; flex-direction: column; gap: 24px; }
+.psb .step-card { min-height: 290px; padding: 34px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 18px 48px rgba(0,0,0,.045); }
+.psb .step-card:nth-child(2) { position: relative; z-index: 2; }
+.psb .step-card:nth-child(3) { position: relative; z-index: 3; }
+.psb .step-card:nth-child(4) { position: relative; z-index: 4; }
+.psb .step-card-num { width: 52px; height: 52px; display: grid; place-items: center; margin-bottom: 54px; border: 2px solid var(--line-mint); border-radius: 50%; color: var(--green); background: var(--bg-mint); font-size: 17px; font-weight: 700; }
+.psb .step-card h3 { margin-bottom: 10px; font-size: 21px; }
+.psb .step-card p { color: #666; font-size: 14px; line-height: 1.7; }
+
+.psb .pricing-tabs { width: fit-content; margin: 36px auto 48px; padding: 4px; display: flex; border-radius: 100px; background: #f0f0ed; }
+.psb .pricing-tab { min-height: 44px; padding: 0 28px; border: 0; border-radius: 100px; color: #777; background: transparent; font-size: 14px; transition: all .2s; }
+.psb .pricing-tab.active { color: var(--ink); background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.psb .ready-card { max-width: 760px; margin: 0 auto; padding: 48px; display: grid; grid-template-columns: 1fr auto; gap: 34px; align-items: center; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+.psb .ready-card h3 { margin-bottom: 12px; font-size: 28px; }
+.psb .ready-card p { color: #666; line-height: 1.7; }
+
+.psb .testi-head { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; }
+.psb .testi-head h2 { max-width: 620px; font-size: clamp(34px,4vw,54px); line-height: 1.1; }
+.psb .testi-nav { display: flex; gap: 8px; }
+.psb .testi-nav button { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: #fff; transition: border-color .2s, transform .2s; }
+.psb .testi-nav button:hover { border-color: var(--green); transform: translateY(-2px); }
+.psb .testi-viewport { overflow: hidden; }
+.psb .testi-track { display: flex; gap: 24px; transition: transform .4s ease; }
+.psb .testi-slide { flex: 0 0 calc((100% - 48px)/3); min-width: 0; min-height: 390px; padding: 34px; display: flex; flex-direction: column; gap: 22px; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+.psb .testi-person { display: flex; align-items: center; gap: 15px; }
+.psb .testi-avatar { width: 56px; height: 56px; display: grid; place-items: center; flex-shrink: 0; border-radius: 50%; color: #fff; background: linear-gradient(135deg,var(--green),#1a9e4a); font-size: 18px; font-weight: 700; }
+.psb .testi-name { color: var(--ink); font-size: 15px; font-weight: 600; }
+.psb .testi-store { color: #888; font-size: 13px; }
+.psb .testi-stars { color: var(--green); letter-spacing: 2px; }
+.psb .testi-copy { flex: 1; color: #444; font-size: 16px; line-height: 1.75; }
+
+.psb .guarantee-bar { max-width: 560px; margin-top: 40px; padding: 24px 32px; justify-content: flex-start; gap: 20px; border-color: var(--line-mint); border-radius: 16px; text-align: left; }
+.psb .g-icon { font-size: 36px; }
+.psb .g-title { font-weight: 600; }
+.psb .g-sub { font-size: 14px; color: #555; }
+
+.psb .sec-footer { padding: 56px 52px 28px; color: #6b7280; background: #fff; border-top: 1px solid var(--line); }
+.psb .footer-logo { height: 40px; }
+.psb .f-brand p, .psb .f-col a, .psb .social-links a { color: #6b7280; font-weight: 400; }
+.psb .f-col h4 { color: var(--ink); font-weight: 500; }
+.psb .f-col a:hover, .psb .social-links a:hover { color: var(--ink); }
+.psb .social-links a { border-color: var(--line); background: #fff; }
+.psb .social-links a:hover { border-color: var(--green); background: var(--bg-mint); }
+.psb .f-bottom { border-color: var(--line); }
+
+@media (max-width: 900px) {
+  .psb .feature-panel { min-height: 0; padding: 42px 34px; gap: 30px; }
+  .psb .steps-layout { gap: 40px; }
+  .psb .testi-viewport { overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .psb .testi-track { transform: none !important; }
+  .psb .testi-slide { flex-basis: min(78vw,380px); scroll-snap-align: start; }
+}
+@media (max-width: 700px) {
+  .psb .feature-stack { margin-top: 38px; }
+  .psb .feature-panel, .psb .feature-panel.reverse { grid-template-columns: 1fr; padding: 34px 24px; border-radius: 18px; }
+  .psb .feature-panel .feature-copy, .psb .feature-panel.reverse .feature-copy { order: 1; }
+  .psb .feature-panel .feature-mock, .psb .feature-panel.reverse .feature-mock { order: 2; min-height: 230px; }
+  .psb .steps-layout { grid-template-columns: 1fr; gap: 42px; }
+  .psb .steps-sticky { position: static; }
+  .psb .step-card { min-height: 250px; padding: 28px; }
+  .psb .step-card-num { margin-bottom: 42px; }
+  .psb .pricing-tabs { width: calc(100% - 40px); overflow-x: auto; justify-content: flex-start; }
+  .psb .pricing-tab { min-width: max-content; padding: 0 20px; }
+  .psb .ready-card { margin-inline: 20px; padding: 30px; grid-template-columns: 1fr; }
+  .psb .testi-head { align-items: flex-end; }
+  .psb .testi-nav { display: none; }
+  .psb .testi-slide { flex-basis: min(86vw,360px); padding: 28px; }
+  .psb .guarantee-bar { align-items: flex-start; flex-direction: row; }
+  .psb .f-brand { margin-bottom: 34px; }
+}
 `;
 
 const TICKER_ITEMS = [
@@ -444,18 +542,11 @@ const TICKER_ITEMS = [
 ];
 
 const FEATURES = [
-  { Ic: Package, t: "Produtos ilimitados", d: "Cadastre quantos produtos quiser com fotos, variações de cor e tamanho." },
-  { Ic: MessageCircle, t: "Checkout pelo WhatsApp", d: "O cliente clica em comprar e vai direto para o WhatsApp. Alta conversão, zero fricção." },
-  { Ic: TicketPercent, t: "Cupons e promoções", d: "Crie cupons, promoções relâmpago e temporizadores de oferta." },
-  { Ic: Users, t: "Programa de Afiliados", d: "Crie sua rede de vendedores e pague comissões automáticas por venda." },
-  { Ic: UserRoundSearch, t: "Captura de Leads", d: "Colete números de WhatsApp com ofertas irresistíveis e cupons de boas-vindas." },
-  { Ic: Star, t: "Grupo VIP Automático", d: "Automatize ofertas exclusivas para seu grupo VIP no WhatsApp." },
-  { Ic: Video, t: "Video Commerce", d: "Venda mais com vídeos dos produtos direto na vitrine da loja." },
-  { Ic: ShoppingCart, t: "Compre Junto", d: "Aumente o ticket médio com sugestões inteligentes de produtos complementares." },
-  { Ic: Globe, t: "Domínio personalizado", d: "Use seu próprio domínio e transmita mais credibilidade." },
-  { Ic: BarChart3, t: "Analytics em tempo real", d: "Veja quais produtos vendem mais e quanto você fatura." },
-  { Ic: Star, t: "Avaliações de produtos", d: "Clientes avaliam e você exibe as estrelas na vitrine." },
-  { Ic: Handshake, t: "Múltiplas vendedoras", d: "Selecione qual vendedora atende cada pedido pelo WhatsApp." },
+  { tag: "Vendas", title: "Checkout pelo WhatsApp", description: "O cliente navega, escolhe e finaliza a compra direto no WhatsApp. Alta conversão, zero fricção." },
+  { tag: "Crescimento", title: "Programa de Afiliados", description: "Crie sua rede de vendedores e pague comissões automáticas por venda gerada." },
+  { tag: "Engajamento", title: "Grupo VIP + Captura de Leads", description: "Colete números de WhatsApp e automatize ofertas exclusivas para seu grupo VIP." },
+  { tag: "Conversão", title: "Video Commerce + Compre Junto", description: "Venda mais com vídeos dos produtos e sugestões inteligentes de compra combinada." },
+  { tag: "Gestão", title: "Painel completo", description: "Gerencie produtos, pedidos, cupons, promoções e afiliados em um único painel intuitivo." },
 ];
 
 const TESTIMONIALS = [
