@@ -372,8 +372,8 @@ const STYLES = `
 .psb .compare-item-title { display: block; width: 100%; border: 0; background: transparent; padding: 0; text-align: left; cursor: pointer; font-size: 16px; font-weight: 700; color: #1a1a1a; margin: 16px 0 6px; opacity: .45; transition: opacity .25s; }
 .psb .compare-item.active .compare-item-title { opacity: 1; }
 .psb .compare-item-desc { font-size: 14px; font-weight: 400; color: #666; line-height: 1.65; margin: 0 0 16px; }
-.psb .compare-item-visual { width: 100%; border-radius: 16px; margin-bottom: 16px; overflow: hidden; background: #fff; border: 1px solid var(--line); }
-.psb .compare-item-visual img { width: 100%; height: auto; object-fit: cover; aspect-ratio: 16 / 9; display: block; animation: compareReveal .3s ease both; }
+.psb .compare-item-visual { width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; margin-bottom: 16px; overflow: hidden; background: #fff; border: 1px solid var(--line); }
+.psb .compare-item-visual img { width: 100%; height: 100%; object-fit: cover; display: block; animation: compareReveal .3s ease both; }
 .psb .compare-item-visual .compare-placeholder { width: 100%; height: auto; min-height: 220px; display: grid; place-items: center; padding: 38px; background: linear-gradient(145deg,#effcf3,#fff 70%); }
 .psb .compare-item-visual .compare-placeholder-inner { width: min(100%, 390px); padding: 28px; border: 1px solid #ccefd7; border-radius: 20px; background: #fff; box-shadow: 0 24px 55px rgba(37,211,102,.14); animation: compareReveal .35s ease both; }
 .psb .compare-progress { display: block; height: 2px; margin: 8px 0 16px; overflow: hidden; border-radius: 2px; background: #e8e8e0; }
