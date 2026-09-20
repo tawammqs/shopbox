@@ -78,6 +78,13 @@
       "when": 1789843988637,
       "tag": "0010_create_marketing_whatsapp_automation",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789930969522,
+      "tag": "0011_create_blog_posts",
+      "breakpoints": true
     }
   ]
 }

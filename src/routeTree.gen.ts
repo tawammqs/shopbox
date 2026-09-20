@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SuperadminRouteImport } from './routes/superadmin'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
@@ -21,6 +22,7 @@ import { Route as PainelRouteImport } from './routes/painel'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FuncionalidadesRouteImport } from './routes/funcionalidades'
 import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TemasIndexRouteImport } from './routes/temas.index'
@@ -31,11 +33,13 @@ import { Route as TemasSlugRouteImport } from './routes/temas.$slug'
 import { Route as SuperadminMetricasRouteImport } from './routes/superadmin.metricas'
 import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
 import { Route as SuperadminClientesRouteImport } from './routes/superadmin.clientes'
+import { Route as SuperadminBlogRouteImport } from './routes/superadmin.blog'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
 import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cleanup-orphan-stores'
 import { Route as HooksCartRecoveryRouteImport } from './routes/hooks/cart-recovery'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiVirtualTryOnRouteImport } from './routes/api/virtual-try-on'
 import { Route as AdminVendasRouteImport } from './routes/admin.vendas'
 import { Route as AdminTemasRouteImport } from './routes/admin.temas'
@@ -131,6 +135,11 @@ const SuperadminRoute = SuperadminRouteImport.update({
   path: '/superadmin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -174,6 +183,11 @@ const FuncionalidadesRoute = FuncionalidadesRouteImport.update({
 const CadastroRoute = CadastroRouteImport.update({
   id: '/cadastro',
   path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -226,6 +240,11 @@ const SuperadminClientesRoute = SuperadminClientesRouteImport.update({
   path: '/clientes',
   getParentRoute: () => SuperadminRoute,
 } as any)
+const SuperadminBlogRoute = SuperadminBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => SuperadminRoute,
+} as any)
 const LojaSlugRoute = LojaSlugRouteImport.update({
   id: '/loja/$slug',
   path: '/loja/$slug',
@@ -251,6 +270,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const ApiVirtualTryOnRoute = ApiVirtualTryOnRouteImport.update({
   id: '/api/virtual-try-on',
@@ -676,6 +700,7 @@ const LojaSlugProdutoProductSlugAffiliateSlugRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/blog': typeof BlogRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/funcionalidades': typeof FuncionalidadesRoute
   '/login': typeof LoginRoute
@@ -685,6 +710,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/superadmin': typeof SuperadminRouteWithChildren
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -706,11 +732,13 @@ export interface FileRoutesByFullPath {
   '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
   '/api/virtual-try-on': typeof ApiVirtualTryOnRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/superadmin/blog': typeof SuperadminBlogRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
@@ -783,6 +811,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/funcionalidades': typeof FuncionalidadesRoute
   '/login': typeof LoginRoute
@@ -792,6 +821,7 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/afiliados': typeof AdminAfiliadosRoute
@@ -809,10 +839,12 @@ export interface FileRoutesByTo {
   '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
   '/api/virtual-try-on': typeof ApiVirtualTryOnRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
+  '/superadmin/blog': typeof SuperadminBlogRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
@@ -887,6 +919,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/blog': typeof BlogRouteWithChildren
   '/cadastro': typeof CadastroRoute
   '/funcionalidades': typeof FuncionalidadesRoute
   '/login': typeof LoginRoute
@@ -896,6 +929,7 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/recuperar-senha': typeof RecuperarSenhaRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/superadmin': typeof SuperadminRouteWithChildren
   '/termos': typeof TermosRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -917,11 +951,13 @@ export interface FileRoutesById {
   '/admin/temas': typeof AdminTemasRouteWithChildren
   '/admin/vendas': typeof AdminVendasRoute
   '/api/virtual-try-on': typeof ApiVirtualTryOnRoute
+  '/blog/$slug': typeof BlogSlugRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
+  '/superadmin/blog': typeof SuperadminBlogRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
   '/superadmin/metricas': typeof SuperadminMetricasRoute
@@ -997,6 +1033,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/blog'
     | '/cadastro'
     | '/funcionalidades'
     | '/login'
@@ -1006,6 +1043,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/superadmin'
     | '/termos'
     | '/unsubscribe'
@@ -1027,11 +1065,13 @@ export interface FileRouteTypes {
     | '/admin/temas'
     | '/admin/vendas'
     | '/api/virtual-try-on'
+    | '/blog/$slug'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
+    | '/superadmin/blog'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/metricas'
@@ -1104,6 +1144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/blog'
     | '/cadastro'
     | '/funcionalidades'
     | '/login'
@@ -1113,6 +1154,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/termos'
     | '/unsubscribe'
     | '/admin/afiliados'
@@ -1130,10 +1172,12 @@ export interface FileRouteTypes {
     | '/admin/temas'
     | '/admin/vendas'
     | '/api/virtual-try-on'
+    | '/blog/$slug'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
+    | '/superadmin/blog'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/metricas'
@@ -1207,6 +1251,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/blog'
     | '/cadastro'
     | '/funcionalidades'
     | '/login'
@@ -1216,6 +1261,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/recuperar-senha'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/superadmin'
     | '/termos'
     | '/unsubscribe'
@@ -1237,11 +1283,13 @@ export interface FileRouteTypes {
     | '/admin/temas'
     | '/admin/vendas'
     | '/api/virtual-try-on'
+    | '/blog/$slug'
     | '/checkout/return'
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
     | '/loja/$slug'
+    | '/superadmin/blog'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
     | '/superadmin/metricas'
@@ -1316,6 +1364,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  BlogRoute: typeof BlogRouteWithChildren
   CadastroRoute: typeof CadastroRoute
   FuncionalidadesRoute: typeof FuncionalidadesRoute
   LoginRoute: typeof LoginRoute
@@ -1325,6 +1374,7 @@ export interface RootRouteChildren {
   PrivacidadeRoute: typeof PrivacidadeRoute
   RecuperarSenhaRoute: typeof RecuperarSenhaRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuperadminRoute: typeof SuperadminRouteWithChildren
   TermosRoute: typeof TermosRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
@@ -1370,6 +1420,13 @@ declare module '@tanstack/react-router' {
       path: '/superadmin'
       fullPath: '/superadmin'
       preLoaderRoute: typeof SuperadminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -1433,6 +1490,13 @@ declare module '@tanstack/react-router' {
       path: '/cadastro'
       fullPath: '/cadastro'
       preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -1505,6 +1569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperadminClientesRouteImport
       parentRoute: typeof SuperadminRoute
     }
+    '/superadmin/blog': {
+      id: '/superadmin/blog'
+      path: '/blog'
+      fullPath: '/superadmin/blog'
+      preLoaderRoute: typeof SuperadminBlogRouteImport
+      parentRoute: typeof SuperadminRoute
+    }
     '/loja/$slug': {
       id: '/loja/$slug'
       path: '/loja/$slug'
@@ -1539,6 +1610,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/checkout/return'
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/api/virtual-try-on': {
       id: '/api/virtual-try-on'
@@ -2271,7 +2349,18 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
 interface SuperadminRouteChildren {
+  SuperadminBlogRoute: typeof SuperadminBlogRoute
   SuperadminClientesRoute: typeof SuperadminClientesRoute
   SuperadminLojasRoute: typeof SuperadminLojasRoute
   SuperadminMetricasRoute: typeof SuperadminMetricasRoute
@@ -2279,6 +2368,7 @@ interface SuperadminRouteChildren {
 }
 
 const SuperadminRouteChildren: SuperadminRouteChildren = {
+  SuperadminBlogRoute: SuperadminBlogRoute,
   SuperadminClientesRoute: SuperadminClientesRoute,
   SuperadminLojasRoute: SuperadminLojasRoute,
   SuperadminMetricasRoute: SuperadminMetricasRoute,
@@ -2333,6 +2423,7 @@ const LojaSlugRouteWithChildren = LojaSlugRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  BlogRoute: BlogRouteWithChildren,
   CadastroRoute: CadastroRoute,
   FuncionalidadesRoute: FuncionalidadesRoute,
   LoginRoute: LoginRoute,
@@ -2342,6 +2433,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadeRoute: PrivacidadeRoute,
   RecuperarSenhaRoute: RecuperarSenhaRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuperadminRoute: SuperadminRouteWithChildren,
   TermosRoute: TermosRoute,
   UnsubscribeRoute: UnsubscribeRoute,
