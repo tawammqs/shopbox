@@ -440,7 +440,7 @@ const STYLES = `
   .psb .compare-head p { font-size: 15px; }
   .psb .compare-toggle { width: 100%; margin-bottom: 40px; }
   .psb .compare-toggle button { flex: 1; padding: 11px 16px; }
-  .psb .compare-item-visual .compare-placeholder { min-height: 180px; padding: 24px; }
+  .psb .compare-item-visual .compare-placeholder { padding: 24px; }
   .psb .compare-item-visual .compare-placeholder-inner { padding: 20px; }
   .psb .compare-item-title { font-size: 15px; }
   .psb .compare-item-desc { font-size: 13px; }
