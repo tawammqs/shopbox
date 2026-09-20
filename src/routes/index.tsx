@@ -675,7 +675,7 @@ function ComSemSection() {
                     </div>
                   </>
                 )}
-                <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>
+                {isActive && <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>}
               </div>
             );
           })}
@@ -691,9 +691,36 @@ const PLANS = [
   { label: "Premium", monthly: 197, annual: 158, features: ["Tudo do Profissional", "Analytics avançado", "Múltiplos usuários admin", "Suporte prioritário"], featured: false },
 ];
 
+type PricingTab = "monthly" | "annual" | "ready";
+
+const STEPS = [
+  { title: "Crie sua conta", description: "Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis para testar tudo." },
+  { title: "Monte sua loja", description: "Adicione produtos com fotos, variações e preços. Escolha um tema profissional." },
+  { title: "Configure seu WhatsApp", description: "Informe o número e as vendedoras. Seus clientes finalizam a compra pelo chat." },
+  { title: "Compartilhe e venda", description: "Envie o link da loja para seus clientes e comece a receber pedidos agora." },
+];
+
+function FeatureMockup({ index }: { index: number }) {
+  return (
+    <div className="feature-mock" aria-hidden="true">
+      <div className="mock-window">
+        <div className="mock-window-bar"><i /><i /><i /></div>
+        <div className="mock-window-body">
+          {index === 0 && <><div className="mock-list-row"><span />Produto selecionado · R$ 129,90</div><div className="mock-chat">Olá! Quero finalizar este pedido 👋</div><div className="mock-list-row"><span />Pedido enviado ao WhatsApp</div></>}
+          {index === 1 && <><div className="mock-kpi-row"><div className="mock-kpi"><small>Afiliados</small><b>28</b></div><div className="mock-kpi"><small>Vendas</small><b>142</b></div><div className="mock-kpi"><small>Comissão</small><b>10%</b></div></div><div className="mock-list-row"><span />Ana · 19 vendas geradas</div><div className="mock-list-row"><span />Marina · 14 vendas geradas</div></>}
+          {index === 2 && <><div className="mock-list-row"><span />Grupo VIP · 1.248 contatos</div><div className="mock-chat">Oferta exclusiva liberada para você ✨</div><div className="mock-list-row"><span />Campanha agendada · Hoje, 18:00</div></>}
+          {index === 3 && <><div className="mock-list-row"><span />▶ Vídeo do produto · 00:24</div><div className="mock-list-row"><span />Compre junto · + R$ 49,90</div><div className="mock-kpi-row"><div className="mock-kpi"><small>Conversão</small><b>+32%</b></div><div className="mock-kpi"><small>Ticket</small><b>+18%</b></div><div className="mock-kpi"><small>Pedidos</small><b>86</b></div></div></>}
+          {index === 4 && <><div className="mock-kpi-row"><div className="mock-kpi"><small>Faturamento</small><b>R$ 18k</b></div><div className="mock-kpi"><small>Pedidos</small><b>216</b></div><div className="mock-kpi"><small>Clientes</small><b>184</b></div></div><div className="mock-list-row"><span />Novo pedido · #1048</div><div className="mock-list-row"><span />Cupom aplicado · BEMVINDO10</div></>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [pricingTab, setPricingTab] = useState<PricingTab>("monthly");
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [whatsappLead, setWhatsappLead] = useState("");
   const [whatsappError, setWhatsappError] = useState("");
@@ -745,7 +772,7 @@ function LandingPage() {
       <header className="landing-nav-shell">
         <nav className="landing-nav" aria-label="Navegação principal">
           <Link to="/" className="landing-logo" aria-label="ShopBox — início">
-            <img src={shopboxLogo.url} alt="ShopBox" />
+            <img src="/logo-shopbox.png" alt="ShopBox" />
           </Link>
           <div className="landing-nav-links">
             <a href="#sobre-feats">Funcionalidades</a>
@@ -755,7 +782,6 @@ function LandingPage() {
           </div>
           <div className="landing-nav-actions">
             <Link to="/login" className="landing-login">Login</Link>
-            <Link to="/cadastro" className="landing-signup">Criar loja grátis</Link>
             <button
               type="button"
               className="landing-menu-btn"
@@ -773,7 +799,7 @@ function LandingPage() {
         <div className="landing-mobile-menu" role="dialog" aria-label="Menu de navegação">
           <div className="landing-mobile-menu-head">
             <Link to="/" className="landing-logo" aria-label="ShopBox — início" onClick={() => setMobileOpen(false)}>
-              <img src={shopboxLogo.url} alt="ShopBox" />
+              <img src="/logo-shopbox.png" alt="ShopBox" />
             </Link>
             <button
               type="button"
@@ -791,7 +817,6 @@ function LandingPage() {
           </div>
           <div className="landing-mobile-menu-actions">
             <Link to="/login" onClick={() => setMobileOpen(false)}>Login</Link>
-            <Link to="/cadastro" onClick={() => setMobileOpen(false)}>Criar loja grátis</Link>
           </div>
         </div>
       )}
@@ -850,33 +875,41 @@ function LandingPage() {
             <h2 className="sh2">Tudo que você precisa para vender mais.</h2>
             <p className="ssub">Não importa o tamanho do seu negócio — a ShopBox tem os recursos certos para cada fase.</p>
           </header>
-          <div className="feats-grid">
-            {FEATURES.map((feature) => (
-              <article key={feature.t} className="fc">
-                <div className="fc-ic"><feature.Ic aria-hidden="true" /></div>
-                <h3>{feature.t}</h3>
-                <p>{feature.d}</p>
+          <div className="feature-stack">
+            {FEATURES.map((feature, index) => (
+              <article key={feature.title} className={`feature-panel${index % 2 ? " reverse" : ""}`}>
+                <div className="feature-copy">
+                  <span className="feature-tag">{feature.tag}</span>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </div>
+                <FeatureMockup index={index} />
               </article>
             ))}
           </div>
-          <div className="feats-cta"><Link to="/funcionalidades" className="primary-link">Conhecer funcionalidades →</Link></div>
         </div>
       </section>
 
       {/* SEÇÃO 4 — COMO FUNCIONA */}
       <section className="sec-steps" id="como-funciona">
         <div className="wrap sec">
-          <header className="section-head">
-            <span className="pill">Como funciona</span>
-            <h2 className="sh2">Comece a vender em minutos</h2>
-            <p className="ssub">Sem setup técnico, sem burocracia. Sua loja no ar hoje.</p>
-          </header>
-          <div className="steps-grid">
-            <article className="step"><div className="step-num">01</div><h3>Crie sua conta</h3><p>Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis.</p></article>
-            <article className="step"><div className="step-num">02</div><h3>Monte sua loja</h3><p>Adicione produtos, escolha um tema e configure seu WhatsApp.</p></article>
-            <article className="step"><div className="step-num">03</div><h3>Compartilhe o link</h3><p>Envie para seus clientes e comece a receber pedidos agora.</p></article>
+          <div className="steps-layout">
+            <div className="steps-sticky">
+              <span className="steps-eyebrow">Comece a vender hoje</span>
+              <h2>Como criar uma loja na ShopBox</h2>
+              <p>Da primeira configuração ao primeiro pedido, tudo foi pensado para você começar sem complicação.</p>
+              <Link to="/cadastro" className="primary-link">Criar loja grátis →</Link>
+            </div>
+            <div className="steps-stack">
+              {STEPS.map((step, index) => (
+                <article key={step.title} className="step-card">
+                  <div className="step-card-num">0{index + 1}</div>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </article>
+              ))}
+            </div>
           </div>
-          <div className="steps-cta"><Link to="/cadastro" className="primary-link">Criar minha loja grátis →</Link></div>
         </div>
       </section>
 
@@ -887,16 +920,19 @@ function LandingPage() {
             <span className="pill">Planos</span>
             <h2 className="sh2">Sua loja, do seu jeito. Seu plano também.</h2>
           </header>
-          <div className="billing-shell">
-            <div className={`billing-toggle-bar${isAnnual ? " annual" : ""}`} role="group" aria-label="Período de cobrança">
-              <span className="billing-slider" aria-hidden="true" />
-              <button type="button" className={`billing-option${!isAnnual ? " active" : ""}`} aria-pressed={!isAnnual} onClick={() => setIsAnnual(false)}>Mensal</button>
-              <button type="button" className={`billing-option${isAnnual ? " active" : ""}`} aria-pressed={isAnnual} onClick={() => setIsAnnual(true)}>Anual (-20%)</button>
-            </div>
-            {isAnnual && <span className="save-badge">Economize 20%</span>}
+          <div className="pricing-tabs" role="tablist" aria-label="Tipo de plano">
+            <button type="button" role="tab" aria-selected={pricingTab === "monthly"} className={`pricing-tab${pricingTab === "monthly" ? " active" : ""}`} onClick={() => setPricingTab("monthly")}>Mensal</button>
+            <button type="button" role="tab" aria-selected={pricingTab === "annual"} className={`pricing-tab${pricingTab === "annual" ? " active" : ""}`} onClick={() => setPricingTab("annual")}>Anual (-20%)</button>
+            <button type="button" role="tab" aria-selected={pricingTab === "ready"} className={`pricing-tab${pricingTab === "ready" ? " active" : ""}`} onClick={() => setPricingTab("ready")}>Loja Pronta</button>
           </div>
-          <div className="plans-grid">
+          {pricingTab === "ready" ? (
+            <article className="ready-card">
+              <div><h3>Sua loja pronta para vender</h3><p>Nossa equipe configura sua loja, organiza o catálogo e deixa tudo preparado para você começar com acompanhamento especializado.</p></div>
+              <a href={WA_LINK} target="_blank" rel="noreferrer" className="primary-link">Falar com especialista →</a>
+            </article>
+          ) : <div className="plans-grid">
             {PLANS.map((plan) => {
+              const isAnnual = pricingTab === "annual";
               const price = isAnnual ? plan.annual : plan.monthly;
               return (
                 <article key={plan.label} className={`plan-card${plan.featured ? " featured" : ""}`}>
@@ -912,7 +948,7 @@ function LandingPage() {
                 </article>
               );
             })}
-          </div>
+          </div>}
           <p className="pricing-fine">7 dias grátis em todos os planos · Sem cartão · Cancele quando quiser</p>
         </div>
       </section>
@@ -920,21 +956,24 @@ function LandingPage() {
       {/* SEÇÃO 6 — DEPOIMENTOS */}
       <section className="sec-testi">
         <div className="wrap sec">
-          <header className="section-head">
-            <span className="pill">Depoimentos</span>
-            <h2 className="sh2">+2.000 lojistas já vendem mais com a ShopBox</h2>
+          <header className="testi-head">
+            <div><span className="pill">Depoimentos</span><h2>O que dizem os lojistas que vendem com a ShopBox</h2></div>
+            <div className="testi-nav">
+              <button type="button" aria-label="Depoimento anterior" onClick={() => setTestimonialIndex((current) => (current - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}><ArrowLeft size={18} /></button>
+              <button type="button" aria-label="Próximo depoimento" onClick={() => setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length)}><ArrowRight size={18} /></button>
+            </div>
           </header>
-          <div className="testi-grid">
-            {TESTIMONIALS.map((testimonial) => (
-              <article key={testimonial.av} className="tc">
-                <div className="tc-av">{testimonial.av}</div>
-                <div className="tc-stars" aria-label="5 estrelas">★★★★★</div>
-                <p className="tc-text">“{testimonial.text}”</p>
-                <div className="tc-auth"><div className="tc-name">{testimonial.name}</div><div className="tc-role">{testimonial.role}</div></div>
-                <div className="tc-used">Funcionalidades usadas</div>
-                <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
-              </article>
-            ))}
+          <div className="testi-viewport">
+            <div className="testi-track" style={{ transform: `translateX(calc(${testimonialIndex} * (-33.333% - 16px)))` }}>
+              {TESTIMONIALS.map((testimonial) => (
+                <article key={testimonial.av} className="testi-slide">
+                  <div className="testi-person"><div className="testi-avatar">{testimonial.av}</div><div><div className="testi-name">{testimonial.name}</div><div className="testi-store">{testimonial.role}</div></div></div>
+                  <div className="testi-stars" aria-label="5 estrelas">★★★★★</div>
+                  <p className="testi-copy">“{testimonial.text}”</p>
+                  <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -964,7 +1003,7 @@ function LandingPage() {
       {/* SEÇÃO 8 — RODAPÉ */}
       <footer className="sec-footer">
         <div className="f-brand">
-          <img src={shopboxLogoDark.url} alt="ShopBox" className="footer-logo" />
+          <img src="/logo-shopbox.png" alt="ShopBox" className="footer-logo" />
           <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
         </div>
         <div className="f-grid">
