@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowRight, Clock, UserRound } from "lucide-react";
 import { BLOG_CATEGORIES, listPublishedPosts } from "@/lib/blog.functions";
@@ -22,6 +22,9 @@ function formatDate(value: string | null) {
 }
 
 function BlogPage() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  if (pathname !== "/blog" && pathname !== "/blog/") return <Outlet />;
+
   const posts = Route.useLoaderData();
   const [category, setCategory] = useState("Todos");
   const filtered = useMemo(() => category === "Todos" ? posts : posts.filter((post) => post.category === category), [category, posts]);
