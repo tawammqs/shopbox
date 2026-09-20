@@ -1,11 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import {
   Palette, ClipboardList, CreditCard,
   Package, Tag, Globe, TrendingUp, MessageCircle,
   Users, Zap, Clock, Star,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
+import shopboxLogoDark from "@/assets/shopbox-logo-dark.png.asset.json";
+import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
+import semShopbox02 from "@/assets/comparativo-sem-02.webp.asset.json";
+import semShopbox03 from "@/assets/comparativo-sem-03.webp.asset.json";
+import semShopbox04 from "@/assets/comparativo-sem-04.webp.asset.json";
+import semShopbox05 from "@/assets/comparativo-sem-05.webp.asset.json";
 
 const SHOPBOX_HOSTS = ["shopboxapp.com.br", "www.shopboxapp.com.br", "shopbox.lovable.app", "localhost"];
 function isShopBoxHost(h: string) {
@@ -29,6 +35,8 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:title", content: "ShopBox — Venda pelo WhatsApp" },
       { property: "og:description", content: "Crie sua loja online e venda pelo WhatsApp em minutos." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
@@ -305,6 +313,70 @@ const STYLES = `
 .psb .f-col a:hover { color: #fff; }
 .psb .f-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6b7280; flex-wrap: wrap; gap: 12px; max-width: 1200px; margin-left: auto; margin-right: auto; }
 
+/* REDESIGN: NAV, HERO & COM/SEM */
+.psb .landing-nav-shell { position: fixed; inset: 0 0 auto; z-index: 200; background: rgba(10,10,10,.9); border-bottom: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(16px); }
+.psb .landing-nav { min-height: 72px; max-width: 1280px; margin: 0 auto; padding: 14px 48px; display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 32px; }
+.psb .landing-logo { display: inline-flex; width: fit-content; align-items: center; }
+.psb .landing-logo img { display: block; width: auto; height: 32px; }
+.psb .landing-nav-links { display: flex; align-items: center; justify-content: center; gap: 32px; }
+.psb .landing-nav-links a { color: #aaa; font-size: 14px; font-weight: 600; transition: color .2s; white-space: nowrap; }
+.psb .landing-nav-links a:hover { color: #fff; }
+.psb .landing-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+.psb .landing-login { color: #aaa; border: 1px solid #333; border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 600; transition: color .2s, border-color .2s; }
+.psb .landing-login:hover { color: #fff; border-color: #555; }
+.psb .landing-signup { color: #fff; background: var(--green); border-radius: 8px; padding: 9px 22px; font-size: 14px; font-weight: 800; transition: background .2s, transform .2s; white-space: nowrap; }
+.psb .landing-signup:hover { background: var(--green-dk); transform: translateY(-1px); }
+.psb .conversation-hero { min-height: 100svh; padding: 152px 24px 88px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 112%, rgba(37,211,102,.13), transparent 38%), #0a0a0a; color: #fff; }
+.psb .conversation-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(37,211,102,.5), transparent); }
+.psb .conversation-badge { display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(255,255,255,.13); border-radius: 100px; padding: 7px 18px; margin-bottom: 32px; font-size: 13px; font-weight: 650; color: #aaa; background: rgba(255,255,255,.025); }
+.psb .conversation-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(37,211,102,.1); }
+.psb .conversation-hero h1 { max-width: 980px; font-size: clamp(42px, 6.2vw, 82px); font-weight: 900; letter-spacing: -3px; line-height: 1.04; color: #fff; }
+.psb .conversation-hero h1 span { color: var(--green); }
+.psb .conversation-copy { max-width: 650px; margin: 26px auto 0; color: #929292; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.7; }
+.psb .whatsapp-lead { width: min(100%, 500px); margin: 44px auto 0; padding: 6px 6px 6px 18px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 10px; border-radius: 16px; background: #fff; box-shadow: 0 22px 70px rgba(0,0,0,.4); }
+.psb .whatsapp-lead svg { width: 21px; height: 21px; color: #6b7280; }
+.psb .whatsapp-lead input { min-width: 0; width: 100%; border: 0; outline: 0; color: #1a1a1a; background: transparent; font-size: 15px; }
+.psb .whatsapp-lead input::placeholder { color: #8b8b8b; }
+.psb .whatsapp-lead button { border: 0; border-radius: 11px; padding: 14px 22px; color: #fff; background: var(--green); font-size: 14px; font-weight: 800; white-space: nowrap; transition: background .2s, transform .2s; }
+.psb .whatsapp-lead button:hover { background: var(--green-dk); transform: translateY(-1px); }
+.psb .conversation-note { margin-top: 16px; color: #5f5f5f; font-size: 13px; }
+.psb .compare-section { padding: 108px 48px 116px; background: #f8f8f6; border-bottom: 1px solid var(--line); }
+.psb .compare-wrap { max-width: 1120px; margin: 0 auto; }
+.psb .compare-head { max-width: 820px; margin: 0 auto 40px; text-align: center; }
+.psb .compare-head h2 { color: #1a1a1a; font-size: clamp(34px, 4.4vw, 56px); font-weight: 900; letter-spacing: -2px; line-height: 1.08; }
+.psb .compare-head p { max-width: 680px; margin: 18px auto 0; color: #666; font-size: 17px; line-height: 1.65; }
+.psb .compare-toggle { width: fit-content; margin: 0 auto 60px; padding: 6px; display: flex; gap: 6px; border: 1px solid var(--line); border-radius: 100px; background: #fff; }
+.psb .compare-toggle button { border: 0; border-radius: 100px; padding: 11px 30px; background: transparent; color: #888; font-size: 14px; font-weight: 800; transition: background .2s, color .2s; }
+.psb .compare-toggle button.active { background: #1a1a1a; color: #fff; }
+.psb .compare-grid { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: 72px; align-items: center; }
+.psb .compare-list { min-width: 0; }
+.psb .compare-item { width: 100%; padding: 20px 0; display: block; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: transparent; opacity: .46; transition: opacity .25s; }
+.psb .compare-item:first-child { border-top: 1px solid var(--line); }
+.psb .compare-item:hover, .psb .compare-item.active { opacity: 1; }
+.psb .compare-title { display: grid; grid-template-columns: 22px minmax(0,1fr); align-items: center; gap: 9px; color: #1a1a1a; font-size: 16px; font-weight: 800; }
+.psb .compare-mark { color: var(--green); font-size: 17px; font-weight: 900; }
+.psb .compare-list.is-negative .compare-mark { color: #ef4444; }
+.psb .compare-description { margin: 8px 0 14px 31px; color: #666; font-size: 14px; line-height: 1.65; }
+.psb .compare-progress { height: 3px; margin-left: 31px; overflow: hidden; border-radius: 10px; background: #e5e5df; }
+.psb .compare-progress span { display: block; width: var(--progress); height: 100%; border-radius: inherit; background: var(--green); transition: width .05s linear; }
+.psb .compare-list.is-negative .compare-progress span { background: #ef4444; }
+.psb .compare-visual { aspect-ratio: 1 / 1; position: relative; overflow: hidden; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: 0 22px 60px rgba(15,23,42,.08); }
+.psb .compare-visual img { width: 100%; height: 100%; object-fit: contain; animation: compareReveal .35s ease both; }
+.psb .compare-placeholder { width: 100%; height: 100%; display: grid; place-items: center; padding: 38px; background: linear-gradient(145deg,#effcf3,#fff 70%); }
+.psb .compare-placeholder-inner { width: min(100%, 390px); padding: 28px; border: 1px solid #ccefd7; border-radius: 20px; background: #fff; box-shadow: 0 24px 55px rgba(37,211,102,.14); animation: compareReveal .35s ease both; }
+.psb .mock-top { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid #edf0eb; }
+.psb .mock-avatar { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 900; }
+.psb .mock-lines { flex: 1; display: grid; gap: 8px; }
+.psb .mock-lines i { display: block; height: 8px; border-radius: 10px; background: #eceeea; }
+.psb .mock-lines i:last-child { width: 64%; }
+.psb .mock-message { margin-top: 20px; margin-left: 32px; padding: 16px 18px; border-radius: 16px 16px 3px 16px; color: #174824; background: #dcf8e5; font-size: 14px; line-height: 1.5; }
+.psb .mock-order { margin-top: 14px; display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; padding: 14px; border: 1px solid #edf0eb; border-radius: 14px; }
+.psb .mock-product { aspect-ratio: 1; display: grid; place-items: center; border-radius: 10px; background: #f3f3ef; font-size: 24px; }
+.psb .mock-order strong { display: block; color: #1a1a1a; font-size: 14px; }
+.psb .mock-order small { color: var(--green-text); font-weight: 800; }
+@keyframes compareReveal { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .psb .compare-visual img, .psb .compare-placeholder-inner { animation: none; } }
+
 /* RESPONSIVE */
 @media (max-width: 1024px) {
   .psb .navbar { padding: 14px 24px; }
@@ -330,6 +402,33 @@ const STYLES = `
 }
 @media (max-width: 640px) {
   .psb .hero h1 { font-size: 38px; letter-spacing: -1.5px; }
+}
+@media (max-width: 1024px) {
+  .psb .landing-nav { grid-template-columns: minmax(0,1fr) auto; padding: 14px 24px; }
+  .psb .landing-nav-links { display: none; }
+  .psb .compare-grid { gap: 44px; }
+}
+@media (max-width: 760px) {
+  .psb .landing-nav { min-height: 66px; padding: 12px 18px; gap: 12px; }
+  .psb .landing-logo img { height: 27px; }
+  .psb .landing-login { display: none; }
+  .psb .landing-signup { padding: 9px 14px; font-size: 12px; }
+  .psb .conversation-hero { min-height: 100svh; padding: 118px 20px 64px; }
+  .psb .conversation-hero h1 { font-size: clamp(39px, 12vw, 54px); letter-spacing: -2px; }
+  .psb .conversation-copy { font-size: 16px; line-height: 1.6; }
+  .psb .whatsapp-lead { padding: 12px; grid-template-columns: auto minmax(0,1fr); border-radius: 16px; }
+  .psb .whatsapp-lead button { grid-column: 1 / -1; width: 100%; }
+  .psb .compare-section { padding: 78px 20px 84px; }
+  .psb .compare-head { margin-bottom: 32px; }
+  .psb .compare-head h2 { font-size: 36px; letter-spacing: -1.5px; }
+  .psb .compare-head p { font-size: 15px; }
+  .psb .compare-toggle { width: 100%; margin-bottom: 40px; }
+  .psb .compare-toggle button { flex: 1; padding: 11px 16px; }
+  .psb .compare-grid { grid-template-columns: 1fr; gap: 36px; }
+  .psb .compare-visual { aspect-ratio: 1 / 1; border-radius: 18px; }
+  .psb .compare-item { padding: 18px 0; }
+  .psb .compare-placeholder { padding: 24px; }
+  .psb .compare-placeholder-inner { padding: 20px; }
 }
 `;
 
@@ -386,6 +485,99 @@ function Logo({ className = "logo" }: { className?: string }) {
     <span className={className}>
       <span className="lo-a">Shop</span><span className="lo-b">Box</span>
     </span>
+  );
+}
+
+type CompareMode = "com" | "sem";
+type CompareItem = { title: string; description: string; image?: string };
+
+const COM_SHOPBOX: CompareItem[] = [
+  { title: "Converta mais", description: 'Cada visitante que clica em “Comprar” vai direto para o WhatsApp com o pedido montado — sem fricção, sem abandono de carrinho.' },
+  { title: "Venda 24h por dia", description: "Sua loja nunca fecha. O cliente navega, escolhe e inicia a compra a qualquer hora — a conversa começa quando ele quiser." },
+  { title: "Zero comissão por venda", description: "100% do valor de cada venda vai para o seu bolso. Você paga apenas a mensalidade — sem surpresas, sem taxas escondidas." },
+  { title: "Relacionamento direto", description: "Cada compra começa uma conversa. Você conhece seu cliente, fideliza e vende de novo — sem intermediários." },
+  { title: "Tudo integrado", description: "Catálogo, estoque, cupons, promoções e checkout em um só lugar. Gerencie tudo pelo painel e venda pelo WhatsApp." },
+];
+
+const SEM_SHOPBOX: CompareItem[] = [
+  { title: "Carrinho abandonado", description: "Processos longos de cadastro e checkout complexo fazem o cliente desistir antes de finalizar a compra.", image: semShopbox01.url },
+  { title: "Comissão em cada venda", description: "Marketplaces e plataformas tradicionais cobram de 10% a 20% de cada venda — menos dinheiro no seu bolso.", image: semShopbox02.url },
+  { title: "Cliente sumiu após a compra", description: "Sem contato direto, você não consegue fidelizar. O cliente compra uma vez e vai embora sem deixar rastro.", image: semShopbox03.url },
+  { title: "Setup técnico complexo", description: "Meses configurando plugins, integrações e design. Enquanto isso, você perde tempo e vendas.", image: semShopbox04.url },
+  { title: "Ferramentas separadas", description: "Uma ferramenta para e-mail, outra para cupons, outra para estoque. Custo alto, operação desconexa.", image: semShopbox05.url },
+];
+
+function ComSemSection() {
+  const [mode, setMode] = useState<CompareMode>("com");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const items = mode === "com" ? COM_SHOPBOX : SEM_SHOPBOX;
+  const activeItem = items[activeIndex] ?? items[0];
+
+  useEffect(() => {
+    setProgress(0);
+    const interval = window.setInterval(() => {
+      setProgress((current) => {
+        if (current >= 100) {
+          setActiveIndex((index) => (index + 1) % items.length);
+          return 0;
+        }
+        return current + 1.25;
+      });
+    }, 50);
+    return () => window.clearInterval(interval);
+  }, [activeIndex, mode, items.length]);
+
+  if (!activeItem) return null;
+
+  const selectMode = (nextMode: CompareMode) => {
+    setMode(nextMode);
+    setActiveIndex(0);
+    setProgress(0);
+  };
+
+  const progressStyle = { "--progress": `${Math.min(progress, 100)}%` } as CSSProperties;
+
+  return (
+    <section className="compare-section" aria-labelledby="compare-title">
+      <div className="compare-wrap">
+        <header className="compare-head">
+          <h2 id="compare-title">Venda onde seu cliente está,<br />com tudo conectado.</h2>
+          <p>Por trás de cada checkout pelo WhatsApp, tem tecnologia para vender mais e gerenciar menos.</p>
+        </header>
+        <div className="compare-toggle" role="group" aria-label="Comparar experiências">
+          <button type="button" className={mode === "com" ? "active" : ""} aria-pressed={mode === "com"} onClick={() => selectMode("com")}>Com ShopBox</button>
+          <button type="button" className={mode === "sem" ? "active" : ""} aria-pressed={mode === "sem"} onClick={() => selectMode("sem")}>Sem ShopBox</button>
+        </div>
+        <div className="compare-grid">
+          <div className={`compare-list${mode === "sem" ? " is-negative" : ""}`}>
+            {items.map((item, index) => {
+              const isActive = index === activeIndex;
+              return (
+                <button key={item.title} type="button" className={`compare-item${isActive ? " active" : ""}`} onClick={() => { setActiveIndex(index); setProgress(0); }}>
+                  <span className="compare-title"><span className="compare-mark">{mode === "com" ? "✓" : "×"}</span><span>{item.title}</span></span>
+                  {isActive && <span className="compare-description">{item.description}</span>}
+                  {isActive && <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>}
+                </button>
+              );
+            })}
+          </div>
+          <div className="compare-visual" key={`${mode}-${activeIndex}`}>
+            {activeItem.image ? (
+              <img src={activeItem.image} alt={`Ilustração: ${activeItem.title}`} />
+            ) : (
+              <div className="compare-placeholder" role="img" aria-label={`ShopBox: ${activeItem.title}`}>
+                <div className="compare-placeholder-inner">
+                  <div className="mock-top"><span className="mock-avatar">S</span><span className="mock-lines"><i /><i /></span></div>
+                  <div className="mock-message">Olá! Quero finalizar meu pedido pelo WhatsApp.</div>
+                  <div className="mock-order"><span className="mock-product">🛍️</span><span><strong>{activeItem.title}</strong><small>Pedido pronto para enviar</small></span></div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -459,6 +651,7 @@ const PLANS = [
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [whatsappLead, setWhatsappLead] = useState("");
   const navigate = useNavigate();
 
   // Custom-domain routing: if the visitor is on a non-ShopBox hostname, look up
@@ -484,193 +677,41 @@ function LandingPage() {
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
 
       {/* NAV */}
-      <div className="sec-nav">
-        <nav className="navbar">
-          <Link to="/" aria-label="ShopBox"><Logo /></Link>
-          <div className="nav-links">
-            <a href="#sobre">Funcionalidades</a>
+      <header className="landing-nav-shell">
+        <nav className="landing-nav" aria-label="Navegação principal">
+          <Link to="/" className="landing-logo" aria-label="ShopBox — início">
+            <img src={shopboxLogoDark.url} alt="ShopBox" />
+          </Link>
+          <div className="landing-nav-links">
+            <a href="#sobre-feats">Funcionalidades</a>
             <a href="#como-funciona">Como funciona</a>
-            <Link to="/temas">Temas</Link>
-            <a href="#precos">Preços</a>
+            <a href="#precos">Planos</a>
             <a href="#faq">FAQ</a>
           </div>
-          <div className="nav-cta">
-            <Link to="/login" className="btn-ghost">Entrar</Link>
-            <Link to="/cadastro" className="btn-cta">Testar grátis</Link>
+          <div className="landing-nav-actions">
+            <Link to="/login" className="landing-login">Login</Link>
+            <Link to="/cadastro" className="landing-signup">Criar loja grátis</Link>
           </div>
         </nav>
-      </div>
+      </header>
 
       {/* HERO */}
-      <div className="sec-hero">
-        <div className="hero wrap">
-          <div className="hero-badge">+12.000 lojas ativas no WhatsApp</div>
-          <h1>
-            A plataforma de <em>Vendas pelo WhatsApp.</em>
-            <br />
-            feita para vender de verdade
-          </h1>
-          <p className="hero-sub">
-            Monte sua loja em minutos, compartilhe o link e comece a receber pedidos hoje. Sem marketplace, sem comissão, sem complicação.
-          </p>
-          <div className="hero-actions">
-            <Link to="/cadastro" className="btn-hero">
-              <WhatsAppIcon color="#fff" />
-              Testar grátis por 7 dias
-            </Link>
-            <a href="#como-funciona" className="btn-outline">Como funciona →</a>
-          </div>
-          <p className="hero-note">
-            Nota <strong>4.9</strong> por mais de <strong>12 mil lojistas</strong> · sem cartão de crédito
-          </p>
+      <section className="conversation-hero">
+        <div className="conversation-badge">+12.000 lojas ativas no WhatsApp</div>
+        <h1>O futuro das vendas<br /><span>agora é conversacional</span></h1>
+        <p className="conversation-copy">
+          Enquanto outras plataformas tentam adaptar o WhatsApp para vender, a ShopBox nasceu assim — uma loja completa que vende onde seu cliente já está.
+        </p>
+        <form className="whatsapp-lead" onSubmit={(event) => { event.preventDefault(); navigate({ to: "/cadastro", search: whatsappLead ? { whatsapp: whatsappLead } : undefined }); }}>
+          <MessageCircle aria-hidden="true" />
+          <input type="tel" value={whatsappLead} onChange={(event) => setWhatsappLead(event.target.value)} placeholder="Seu número de WhatsApp" aria-label="Seu número de WhatsApp" />
+          <button type="submit">Quero vender →</button>
+        </form>
+        <p className="conversation-note">7 dias grátis · sem cartão · cancele quando quiser</p>
+      </section>
 
-          <div className="hero-dash">
-            <div className="dash-bar">
-              <div className="dr" /><div className="dy" /><div className="dg" />
-              <span className="dash-url">minhaloja.shopboxapp.com.br</span>
-            </div>
-            <div className="dash-body">
-              <div className="dc"><div className="dc-l">Faturamento</div><div className="dc-v">R$47k</div><div className="dc-t">↑ +23% esse mês</div></div>
-              <div className="dc"><div className="dc-l">Pedidos</div><div className="dc-v">847</div><div className="dc-t">↑ +18% esse mês</div></div>
-              <div className="dc"><div className="dc-l">Conversão</div><div className="dc-v">94%</div><div className="dc-t">↑ 3x mais que site</div></div>
-              <div className="dc"><div className="dc-l">Clientes</div><div className="dc-v">1.2k</div><div className="dc-t">↑ +41 novos hoje</div></div>
-              <div className="dc dc-table">
-                <div className="dc-table-scroll">
-                  <table>
-                    <thead><tr><th>Produto</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
-                    <tbody>
-                      <tr><td>Vestido Floral Rosa</td><td>Ana C.</td><td>R$ 189,90</td><td><span className="tg">Pago</span></td></tr>
-                      <tr><td>Tênis Runner Pro</td><td>João M.</td><td>R$ 320,00</td><td><span className="tg">Pago</span></td></tr>
-                      <tr><td>Bolsa em Couro</td><td>Maria L.</td><td>R$ 450,00</td><td><span className="ty">Pendente</span></td></tr>
-                      <tr><td>Camisa Polo Classic</td><td>Pedro S.</td><td>R$ 89,90</td><td><span className="tg">Pago</span></td></tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* MARQUEE */}
-      <div className="sec-marquee">
-        <div className="marquee-wrap">
-          <div className="marquee-track">
-            {[...TICKER_ITEMS, ...TICKER_ITEMS].map((t, i) => (
-              <div key={i} className="mi">{t}</div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* VITRINE / O QUE É (mint) */}
-      <div className="sec-about" id="sobre">
-        <div className="wrap sec">
-          <div className="pill">O que é a ShopBox</div>
-          <h2 className="sh2">Mais vendas,<br />menos complicação</h2>
-          <p className="ssub">
-            A ShopBox foi criada para quem vende pelo WhatsApp e quer uma loja profissional — sem marketplace, sem taxa por venda, sem setup técnico.
-          </p>
-          <div className="what-grid">
-            <div className="wf-list">
-              <div className="wf"><div className="wf-ic wf-ic-wa"><WhatsAppIcon size={22} color="#25D366" /></div><div><h4>Checkout nativo pelo WhatsApp</h4><p>Seus clientes finalizam a compra direto no WhatsApp. Sem redirecionar para sites externos — conversão até 3x maior.</p></div></div>
-              <div className="wf"><div className="wf-ic"><Palette /></div><div><h4>Temas profissionais prontos</h4><p>Dezenas de temas para deixar sua loja com a cara da sua marca em minutos, sem designer ou desenvolvedor.</p></div></div>
-              <div className="wf"><div className="wf-ic"><ClipboardList /></div><div><h4>Gestão completa de pedidos</h4><p>Acompanhe estoque, pedidos e pagamentos em um painel simples e intuitivo — tudo em um só lugar.</p></div></div>
-              <div className="wf"><div className="wf-ic"><CreditCard /></div><div><h4>Pagamentos integrados</h4><p>Aceite Pix, cartão de crédito e boleto. Integrações com os principais gateways do Brasil já incluídas.</p></div></div>
-            </div>
-            <div>
-              <div className="phone">
-                <div className="ph-head">
-                  <div className="ph-av">L</div>
-                  <div>
-                    <div className="ph-name">Loja da Ana</div>
-                    <div className="ph-on">● online agora</div>
-                  </div>
-                </div>
-                <div className="ph-prod">
-                  <div className="ph-img">👗</div>
-                  <div>
-                    <div className="ph-pn">Vestido Floral Rosa</div>
-                    <div className="ph-pp">R$ 189,90</div>
-                  </div>
-                </div>
-                <div className="ph-btn">
-                  <WhatsAppIcon size={15} color="#fff" />
-                  Comprar pelo WhatsApp
-                </div>
-                <div className="ph-stat">
-                  <div className="ph-sv">R$47k</div>
-                  <div className="ph-sl">faturamento esse mês</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="stats-band">
-            <div className="sc"><div className="sc-ic"><Users /></div><div className="sn">12k+</div><div className="sl">lojistas ativos</div></div>
-            <div className="sc"><div className="sc-ic"><Zap /></div><div className="sn">3x</div><div className="sl">mais conversão vs site comum</div></div>
-            <div className="sc"><div className="sc-ic"><Clock /></div><div className="sn">30min</div><div className="sl">para montar sua loja</div></div>
-            <div className="sc"><div className="sc-ic"><Star /></div><div className="sn">4.9★</div><div className="sl">nota média dos lojistas</div></div>
-          </div>
-        </div>
-      </div>
-
-      {/* VS (cream) */}
-      <div className="sec-vs">
-        <div className="wrap sec">
-          <div className="pill">Por que a ShopBox</div>
-          <h2 className="sh2">Diga adeus às plataformas que cobram por cada venda</h2>
-          <p className="ssub">
-            Chatbots de IA, marketplaces genéricos e plataformas complexas — todos cobram comissão ou tiram o controle das suas vendas. A ShopBox não.
-          </p>
-          <div className="vs-comparison">
-            <div className="vs-card vs-card-bad">
-              <div className="vs-card-title">Outras plataformas</div>
-              {[
-                "Cobra comissão por venda",
-                "Redireciona para sites externos",
-                "Setup técnico complexo e demorado",
-                "Suporte lento, genérico e impessoal",
-                "Chatbot de IA com custo extra por interação",
-                "Analytics bloqueado em planos premium",
-                "Layouts engessados sem identidade",
-              ].map((item) => (
-                <div key={item} className="vs-item">
-                  <span className="ic-bad">
-                    <svg viewBox="0 0 14 14"><line x1="3" y1="3" x2="11" y2="11" /><line x1="11" y1="3" x2="3" y2="11" /></svg>
-                  </span>
-                  {item}
-                </div>
-              ))}
-            </div>
-            <div className="vs-divider"><div className="vs-badge-pill">VS</div></div>
-            <div className="vs-card vs-card-good">
-              <div className="vs-card-title">
-                <WhatsAppIcon size={22} color="#166534" />
-                ShopBox
-              </div>
-              {[
-                "Zero comissão — 100% da venda é seu",
-                "Checkout nativo dentro do WhatsApp",
-                "Loja no ar em menos de 30 minutos",
-                "Suporte humanizado via WhatsApp",
-                "Catálogo automático integrado ao chat",
-                "Analytics em tempo real em todos os planos",
-                "Temas profissionais com sua identidade",
-              ].map((item) => (
-                <div key={item} className="vs-item">
-                  <span className="ic-good">
-                    <svg viewBox="0 0 14 14"><polyline points="2,7 5.5,11 12,3" /></svg>
-                  </span>
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ textAlign: "center", marginTop: 40 }}>
-            <Link to="/cadastro" className="btn-hero">Começar agora →</Link>
-          </div>
-        </div>
-      </div>
+      {/* COM SHOPBOX / SEM SHOPBOX */}
+      <ComSemSection />
 
       {/* FUNCIONALIDADES (white) */}
       <div className="sec-feats" id="sobre-feats">
