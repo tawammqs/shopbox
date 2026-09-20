@@ -154,6 +154,7 @@ const STYLES = `
 
 /* SECTION HEADERS */
 .psb h1, .psb h2, .psb h3, .psb h4 { font-weight: 800; }
+.psb #sobre-feats, .psb #como-funciona, .psb #precos, .psb #faq { scroll-margin-top: 72px; }
 .psb .pill { display: inline-block; border: 1px solid var(--line); background: #fff; color: var(--muted); font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 9999px; margin-bottom: 16px; }
 .psb .section-head { max-width: 760px; margin: 0 auto; text-align: center; }
 .psb .sh2 { font-size: clamp(32px, 4.2vw, 54px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; margin-bottom: 18px; color: var(--ink); }
