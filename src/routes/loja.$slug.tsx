@@ -151,13 +151,13 @@ function StorefrontLayout() {
             <MobileNavDrawer open={navOpen} onClose={() => setNavOpen(false)} />
           </>
         )}
-        <main className={isTheShoes ? "pb-mobile-bar" : ""}>
+        <main className={isLegacyTheShoes ? "pb-mobile-bar" : ""}>
           <Outlet />
         </main>
         {isTheShoes ? <TheShoesFooter /> : <StorefrontFooter />}
         {isTheShoes ? <TheShoesCartDrawer /> : <CartDrawer />}
         {isLegacyTheShoes && <TheShoesCouponTab />}
-        {isTheShoes && <TheShoesMobileBar />}
+        {isLegacyTheShoes && <TheShoesMobileBar />}
         {!isLegacyTheShoes && <MioVipPopupHost />}
         {!isTheShoes && <MioVipMobileLock />}
         {isTheShoes && !isLegacyTheShoes && <MioCouponTab />}
