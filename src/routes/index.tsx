@@ -559,7 +559,7 @@ function ComSemSection() {
               const isActive = index === activeIndex;
               return (
                 <button key={item.title} type="button" className={`compare-item${isActive ? " active" : ""}`} onClick={() => { setActiveIndex(index); setProgress(0); }}>
-                  <span className="compare-title"><span className="compare-mark">{mode === "com" ? "✓" : "×"}</span><span>{item.title}</span></span>
+                  <span className="compare-title">{item.title}</span>
                   {isActive && <span className="compare-description">{item.description}</span>}
                   {isActive && <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>}
                 </button>
@@ -656,7 +656,21 @@ function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAnnual, setIsAnnual] = useState(false);
   const [whatsappLead, setWhatsappLead] = useState("");
+  const [whatsappError, setWhatsappError] = useState("");
   const navigate = useNavigate();
+
+  const formatPhone = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const validatePhone = (digits: string) => {
+    if (digits.length < 10) return "Número incompleto";
+    if (digits.length === 10 && digits[2] === "9") return "Celular deve ter 11 dígitos";
+    return "";
+  };
 
   // Custom-domain routing: if the visitor is on a non-ShopBox hostname, look up
   // the store mapped to that hostname and forward to its storefront.
@@ -684,7 +698,7 @@ function LandingPage() {
       <header className="landing-nav-shell">
         <nav className="landing-nav" aria-label="Navegação principal">
           <Link to="/" className="landing-logo" aria-label="ShopBox — início">
-            <img src={shopboxLogoDark.url} alt="ShopBox" />
+            <img src={shopboxLogo.url} alt="ShopBox" />
           </Link>
           <div className="landing-nav-links">
             <a href="#sobre-feats">Funcionalidades</a>
@@ -706,11 +720,39 @@ function LandingPage() {
         <p className="conversation-copy">
           Enquanto outras plataformas tentam adaptar o WhatsApp para vender, a ShopBox nasceu assim — uma loja completa que vende onde seu cliente já está.
         </p>
-        <form className="whatsapp-lead" onSubmit={(event) => { event.preventDefault(); navigate({ to: "/cadastro", search: whatsappLead ? { whatsapp: whatsappLead } : undefined }); }}>
-          <MessageCircle aria-hidden="true" />
-          <input type="tel" value={whatsappLead} onChange={(event) => setWhatsappLead(event.target.value)} placeholder="Seu número de WhatsApp" aria-label="Seu número de WhatsApp" />
-          <button type="submit">Quero vender →</button>
-        </form>
+        <div className="whatsapp-lead-wrap">
+          <form
+            className={`whatsapp-lead${whatsappError ? " has-error" : ""}`}
+            onSubmit={(event) => {
+              event.preventDefault();
+              const digits = whatsappLead.replace(/\D/g, "");
+              const error = validatePhone(digits);
+              setWhatsappError(error);
+              if (error) return;
+              navigate({ to: "/cadastro", search: { phone: `55${digits}` } });
+            }}
+          >
+            <span className="phone-prefix" aria-hidden="true">🇧🇷 +55</span>
+            <input
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel-national"
+              value={whatsappLead}
+              onChange={(event) => {
+                const formatted = formatPhone(event.target.value);
+                const digits = formatted.replace(/\D/g, "");
+                setWhatsappLead(formatted);
+                setWhatsappError(digits.length > 0 ? validatePhone(digits) : "");
+              }}
+              placeholder="(00) 00000-0000"
+              aria-label="Número de WhatsApp"
+              aria-invalid={Boolean(whatsappError)}
+              aria-describedby={whatsappError ? "whatsapp-error" : undefined}
+            />
+            <button type="submit">Quero vender →</button>
+          </form>
+          {whatsappError && <p className="phone-error" id="whatsapp-error" role="alert">{whatsappError}</p>}
+        </div>
         <p className="conversation-note">7 dias grátis · sem cartão · cancele quando quiser</p>
       </section>
 
