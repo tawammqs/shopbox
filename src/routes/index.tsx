@@ -1,13 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type CSSProperties } from "react";
 import {
-  Package, Tag, Globe, TrendingUp, MessageCircle,
-  Users, Star, Menu, X, TicketPercent, UserRoundSearch,
-  Video, ShoppingCart, BarChart3, Handshake, Instagram, Youtube,
-  ArrowLeft, ArrowRight,
+  Menu, X, Instagram, Youtube, ArrowLeft, ArrowRight,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
-import shopboxLogo from "@/assets/shopbox-logo.png.asset.json";
 import garetBook from "@/assets/garet-book.woff.asset.json";
 import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
 import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
@@ -304,7 +300,7 @@ const STYLES = `
 .psb .landing-nav-shell { position: fixed; inset: 0 0 auto; z-index: 200; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); }
 .psb .landing-nav { min-height: 72px; max-width: 1280px; margin: 0 auto; padding: 14px 48px; display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 32px; }
 .psb .landing-logo { display: inline-flex; width: fit-content; align-items: center; }
-.psb .landing-logo img { display: block; width: auto; height: 48px; }
+.psb .landing-logo img { display: block; width: auto; height: 40px; }
 .psb .landing-menu-btn { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--line); background: #fff; color: #1a1a1a; }
 .psb .landing-mobile-menu { position: fixed; inset: 0; z-index: 300; background: rgba(255,255,255,.98); backdrop-filter: blur(16px); display: flex; flex-direction: column; padding: 18px; }
 .psb .landing-mobile-menu-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
@@ -409,7 +405,7 @@ const STYLES = `
 }
 @media (max-width: 760px) {
   .psb .landing-nav { min-height: 72px; padding: 12px 18px; gap: 12px; grid-template-columns: auto 1fr auto; }
-  .psb .landing-logo img { height: 36px; }
+  .psb .landing-logo img { height: 40px; max-width: 180px; object-fit: contain; }
   .psb .landing-login { display: none; }
   .psb .landing-signup { padding: 9px 14px; font-size: 12px; }
   .psb .landing-menu-btn { display: flex; }
