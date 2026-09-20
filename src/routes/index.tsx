@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
-  Menu, X, Instagram, Youtube, ArrowLeft, ArrowRight,
+  Menu, X, Instagram, Youtube, ArrowLeft, ArrowRight, ShoppingBag, Users, MessageCircle, PlayCircle, BarChart3,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
 import garetBook from "@/assets/garet-book.woff.asset.json";
@@ -490,12 +490,53 @@ const STYLES = `
 
 .psb .sec-footer { padding: 56px 52px 28px; color: #6b7280; background: #fff; border-top: 1px solid var(--line); }
 .psb .footer-logo { height: 40px; }
+.psb .f-brand { margin: 0; text-align: left; }
 .psb .f-brand p, .psb .f-col a, .psb .social-links a { color: #6b7280; font-weight: 400; }
-.psb .f-col h4 { color: var(--ink); font-weight: 500; }
+.psb .f-col h4 { color: var(--ink); font-weight: 600; }
 .psb .f-col a:hover, .psb .social-links a:hover { color: var(--ink); }
 .psb .social-links a { border-color: var(--line); background: #fff; }
 .psb .social-links a:hover { border-color: var(--green); background: var(--bg-mint); }
 .psb .f-bottom { border-color: var(--line); }
+
+/* FINAL LANDING LAYOUT */
+.psb .compare-wrap { max-width: 1120px; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 80px; align-items: start; }
+.psb .compare-head { position: sticky; top: 120px; margin: 0; text-align: left; }
+.psb .compare-head p { margin: 18px 0 0; }
+.psb .compare-dynamic { min-width: 0; }
+.psb .compare-toggle { margin: 0 0 40px; }
+
+.psb .sec-feats { padding: 100px 0; color: #fff; background: linear-gradient(135deg,#1a9e4a,#25d366); border: 0; }
+.psb .sec-feats .wrap { max-width: 1100px; padding: 0 48px; }
+.psb .sec-feats .section-head { color: #fff; }
+.psb .sec-feats .pill { color: #fff; border-color: rgba(255,255,255,.42); background: rgba(255,255,255,.14); }
+.psb .sec-feats .sh2 { color: #fff; }
+.psb .sec-feats .ssub { color: rgba(255,255,255,.82); }
+.psb .feature-carousel-nav { margin: 44px 0 22px; display: flex; justify-content: flex-end; gap: 8px; }
+.psb .feature-carousel-nav button { width: 42px; height: 42px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; color: #fff; background: rgba(255,255,255,.16); transition: background .2s, transform .2s; }
+.psb .feature-carousel-nav button:hover { background: rgba(255,255,255,.28); transform: translateY(-2px); }
+.psb .feature-carousel { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+.psb .feature-carousel::-webkit-scrollbar { display: none; }
+.psb .feature-card { flex: 0 0 calc((100% - 40px)/3); min-height: 300px; padding: 32px; scroll-snap-align: start; border-radius: 20px; color: var(--ink); background: #fff; }
+.psb .feature-card-icon { width: 52px; height: 52px; margin-bottom: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--green-text); background: var(--bg-mint); }
+.psb .feature-card-icon svg { width: 25px; height: 25px; }
+.psb .feature-card-tag { color: var(--green-text); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+.psb .feature-card h3 { margin: 12px 0 10px; font-size: 19px; line-height: 1.35; }
+.psb .feature-card p { color: #666; font-size: 14px; line-height: 1.7; }
+
+.psb .step-card { position: sticky; top: 100px; }
+.psb .step-card:nth-child(2) { top: 120px; }
+.psb .step-card:nth-child(3) { top: 140px; }
+.psb .step-card:nth-child(4) { top: 160px; }
+.psb .steps-stack { padding-bottom: 160px; }
+
+.psb .testi-head { display: block; text-align: center; }
+.psb .testi-head h2 { margin: 0 auto; }
+.psb .testi-nav { margin-top: 28px; justify-content: center; }
+.psb .testi-mobile { display: none; }
+
+.psb .footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr repeat(4,minmax(0,1fr)); gap: 48px; align-items: start; }
+.psb .f-grid { display: contents; }
+.psb .social-links a { width: 36px; height: 36px; }
 
 @media (max-width: 900px) {
   .psb .feature-panel { min-height: 0; padding: 42px 34px; gap: 30px; }
@@ -516,11 +557,35 @@ const STYLES = `
   .psb .pricing-tabs { width: calc(100% - 40px); overflow-x: auto; justify-content: flex-start; }
   .psb .pricing-tab { min-width: max-content; padding: 0 20px; }
   .psb .ready-card { margin-inline: 20px; padding: 30px; grid-template-columns: 1fr; }
-  .psb .testi-head { align-items: flex-end; }
-  .psb .testi-nav { display: none; }
+  .psb .testi-head { text-align: center; }
+  .psb .testi-desktop { display: none; }
+  .psb .testi-mobile { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .psb .testi-mobile .testi-slide { width: min(100%,360px); flex-basis: auto; min-height: 390px; }
+  .psb .testi-mobile .testi-nav { display: flex; margin-top: 0; }
   .psb .testi-slide { flex-basis: min(86vw,360px); padding: 28px; }
-  .psb .guarantee-bar { align-items: flex-start; flex-direction: row; }
-  .psb .f-brand { margin-bottom: 34px; }
+  .psb .footer-inner { grid-template-columns: 1fr 1fr; gap: 36px 24px; }
+  .psb .f-brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 767px) {
+  .psb .compare-wrap { display: block; }
+  .psb .compare-head { position: static; text-align: center; margin-bottom: 32px; }
+  .psb .compare-head p { margin-inline: auto; }
+  .psb .compare-toggle { width: 100%; margin-bottom: 40px; }
+  .psb .feature-card { flex-basis: 82%; min-height: 290px; padding: 28px; }
+  .psb .sec-feats { padding: 72px 0; }
+  .psb .sec-feats .wrap { padding: 0 20px; }
+  .psb .feature-carousel-nav { margin-top: 34px; }
+  .psb .step-card, .psb .step-card:nth-child(2), .psb .step-card:nth-child(3), .psb .step-card:nth-child(4) { position: static; }
+  .psb .steps-stack { padding-bottom: 0; }
+  .psb .plans-grid { display: flex; grid-template-columns: none; gap: 16px; overflow-x: auto; padding: 8px 20px 24px; scroll-snap-type: x mandatory; scroll-padding-left: 20px; scrollbar-width: none; }
+  .psb .plans-grid::-webkit-scrollbar { display: none; }
+  .psb .plan-card { flex: 0 0 80%; min-width: 0; scroll-snap-align: start; }
+  .psb .pricing-tabs { width: max-content; max-width: calc(100% - 40px); overflow-x: auto; scrollbar-width: none; }
+}
+
+@media (max-width: 520px) {
+  .psb .footer-inner { grid-template-columns: 1fr 1fr; }
 }
 `;
 
@@ -538,11 +603,11 @@ const TICKER_ITEMS = [
 ];
 
 const FEATURES = [
-  { tag: "Vendas", title: "Checkout pelo WhatsApp", description: "O cliente navega, escolhe e finaliza a compra direto no WhatsApp. Alta conversão, zero fricção." },
-  { tag: "Crescimento", title: "Programa de Afiliados", description: "Crie sua rede de vendedores e pague comissões automáticas por venda gerada." },
-  { tag: "Engajamento", title: "Grupo VIP + Captura de Leads", description: "Colete números de WhatsApp e automatize ofertas exclusivas para seu grupo VIP." },
-  { tag: "Conversão", title: "Video Commerce + Compre Junto", description: "Venda mais com vídeos dos produtos e sugestões inteligentes de compra combinada." },
-  { tag: "Gestão", title: "Painel completo", description: "Gerencie produtos, pedidos, cupons, promoções e afiliados em um único painel intuitivo." },
+  { tag: "Vendas", title: "Checkout pelo WhatsApp", description: "O cliente navega, escolhe e finaliza a compra direto no WhatsApp. Alta conversão, zero fricção.", Icon: ShoppingBag },
+  { tag: "Crescimento", title: "Programa de Afiliados", description: "Crie sua rede de vendedores e pague comissões automáticas por venda gerada.", Icon: Users },
+  { tag: "Engajamento", title: "Grupo VIP + Captura de Leads", description: "Colete números de WhatsApp e automatize ofertas exclusivas para seu grupo VIP.", Icon: MessageCircle },
+  { tag: "Conversão", title: "Video Commerce + Compre Junto", description: "Venda mais com vídeos dos produtos e sugestões inteligentes de compra combinada.", Icon: PlayCircle },
+  { tag: "Gestão", title: "Painel completo", description: "Gerencie produtos, pedidos, cupons, promoções e afiliados em um único painel intuitivo.", Icon: BarChart3 },
 ];
 
 const TESTIMONIALS = [
@@ -636,7 +701,7 @@ function ComSemSection() {
           <h2 id="compare-title">Venda onde seu<br />cliente está, com<br />tudo conectado.</h2>
           <p>Com a ShopBox, você recebe pedidos no automático.</p>
         </header>
-        <div className="compare-toggle" role="group" aria-label="Comparar experiências">
+        <div className="compare-dynamic"><div className="compare-toggle" role="group" aria-label="Comparar experiências">
           <button type="button" className={mode === "com" ? "active" : ""} aria-pressed={mode === "com"} onClick={() => selectMode("com")}>Com ShopBox</button>
           <button type="button" className={mode === "sem" ? "active" : ""} aria-pressed={mode === "sem"} onClick={() => selectMode("sem")}>Sem ShopBox</button>
         </div>
@@ -675,7 +740,7 @@ function ComSemSection() {
               </div>
             );
           })}
-        </div>
+        </div></div>
       </div>
     </section>
   );
@@ -720,6 +785,7 @@ function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [whatsappLead, setWhatsappLead] = useState("");
   const [whatsappError, setWhatsappError] = useState("");
+  const featureCarouselRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const formatPhone = (raw: string) => {
@@ -865,23 +931,26 @@ function LandingPage() {
 
       {/* SEÇÃO 3 — FUNCIONALIDADES */}
       <section className="sec-feats" id="sobre-feats">
-        <div className="wrap sec">
+        <div className="wrap">
           <header className="section-head">
             <span className="pill">Funcionalidades</span>
             <h2 className="sh2">Tudo que você precisa para vender mais.</h2>
             <p className="ssub">Não importa o tamanho do seu negócio — a ShopBox tem os recursos certos para cada fase.</p>
           </header>
-          <div className="feature-stack">
-            {FEATURES.map((feature, index) => (
-              <article key={feature.title} className={`feature-panel${index % 2 ? " reverse" : ""}`}>
-                <div className="feature-copy">
-                  <span className="feature-tag">{feature.tag}</span>
-                  <h3>{feature.title}</h3>
-                  <p>{feature.description}</p>
-                </div>
-                <FeatureMockup index={index} />
+          <div className="feature-carousel-nav">
+            <button type="button" aria-label="Funcionalidade anterior" onClick={() => featureCarouselRef.current?.scrollBy({ left: -360, behavior: "smooth" })}><ArrowLeft size={18} /></button>
+            <button type="button" aria-label="Próxima funcionalidade" onClick={() => featureCarouselRef.current?.scrollBy({ left: 360, behavior: "smooth" })}><ArrowRight size={18} /></button>
+          </div>
+          <div className="feature-carousel" ref={featureCarouselRef}>
+            {FEATURES.map((feature) => {
+              const Icon = feature.Icon;
+              return <article key={feature.title} className="feature-card">
+                <div className="feature-card-icon"><Icon /></div>
+                <span className="feature-card-tag">{feature.tag}</span>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
               </article>
-            ))}
+            })}
           </div>
         </div>
       </section>
@@ -959,7 +1028,7 @@ function LandingPage() {
               <button type="button" aria-label="Próximo depoimento" onClick={() => setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length)}><ArrowRight size={18} /></button>
             </div>
           </header>
-          <div className="testi-viewport">
+          <div className="testi-viewport testi-desktop">
             <div className="testi-track" style={{ transform: `translateX(calc(${testimonialIndex} * (-33.333% - 16px)))` }}>
               {TESTIMONIALS.map((testimonial) => (
                 <article key={testimonial.av} className="testi-slide">
@@ -969,6 +1038,22 @@ function LandingPage() {
                   <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
                 </article>
               ))}
+            </div>
+          </div>
+          <div className="testi-mobile">
+            {(() => {
+              const testimonial = TESTIMONIALS[testimonialIndex];
+              if (!testimonial) return null;
+              return <article className="testi-slide">
+                <div className="testi-person"><div className="testi-avatar">{testimonial.av}</div><div><div className="testi-name">{testimonial.name}</div><div className="testi-store">{testimonial.role}</div></div></div>
+                <div className="testi-stars" aria-label="5 estrelas">★★★★★</div>
+                <p className="testi-copy">“{testimonial.text}”</p>
+                <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
+              </article>;
+            })()}
+            <div className="testi-nav">
+              <button type="button" aria-label="Depoimento anterior" onClick={() => setTestimonialIndex((current) => (current - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}><ArrowLeft size={18} /></button>
+              <button type="button" aria-label="Próximo depoimento" onClick={() => setTestimonialIndex((current) => (current + 1) % TESTIMONIALS.length)}><ArrowRight size={18} /></button>
             </div>
           </div>
         </div>
@@ -992,21 +1077,23 @@ function LandingPage() {
               </div>
             ))}
           </div>
-          <div className="guarantee-bar"><div className="g-icon">🛡️</div><div><div className="g-title">Garantia de 7 dias sem risco</div><div className="g-sub">Não ficou satisfeito? Devolvemos 100% do valor pago. Sem perguntas, sem burocracia.</div></div></div>
         </div>
       </section>
 
       {/* SEÇÃO 8 — RODAPÉ */}
       <footer className="sec-footer">
-        <div className="f-brand">
-          <img src="/logo-shopbox.png" alt="ShopBox" className="footer-logo" />
-          <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
-        </div>
-        <div className="f-grid">
+        <div className="footer-inner">
+          <div className="f-brand">
+            <img src="/logo-shopbox.png" alt="ShopBox" className="footer-logo" />
+            <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
+            <div className="social-links"><a href="#" aria-label="Instagram"><Instagram /></a><a href="#" aria-label="YouTube"><Youtube /></a></div>
+          </div>
+          <div className="f-grid">
           <div className="f-col"><h4>Produto</h4><a href="#sobre-feats">Funcionalidades</a><a href="#como-funciona">Como funciona</a><a href="#precos">Planos</a><Link to="/temas">Temas</Link><a href="#faq">FAQ</a></div>
           <div className="f-col"><h4>Suporte</h4><a href="#faq">Central de ajuda</a><a href={WA_LINK} target="_blank" rel="noreferrer">Fale conosco</a><a href="#">Status da plataforma</a></div>
           <div className="f-col"><h4>Legal</h4><Link to="/privacidade">Política de privacidade</Link><Link to="/termos">Termos de uso</Link></div>
-          <div className="f-col"><h4>Redes sociais</h4><div className="social-links"><a href="#" aria-label="Instagram"><Instagram /></a><a href="#" aria-label="YouTube"><Youtube /></a></div></div>
+          <div className="f-col"><h4>Blog</h4><a href="/blog">Blog ShopBox</a></div>
+          </div>
         </div>
         <div className="f-bottom">© 2026 ShopBox. Todos os direitos reservados.</div>
       </footer>
