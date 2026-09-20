@@ -6,7 +6,9 @@ import {
   Users, Zap, Clock, Star,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
-import shopboxLogoDark from "@/assets/shopbox-logo-dark.png.asset.json";
+import shopboxLogo from "@/assets/shopbox-logo.png.asset.json";
+import garetBook from "@/assets/garet-book.woff.asset.json";
+import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
 import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
 import semShopbox02 from "@/assets/comparativo-sem-02.webp.asset.json";
 import semShopbox03 from "@/assets/comparativo-sem-03.webp.asset.json";
@@ -49,7 +51,9 @@ export const Route = createFileRoute("/")({
 });
 
 const STYLES = `
-.psb, .psb *, .psb *::before, .psb *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Public Sans', system-ui, sans-serif; }
+@font-face { font-family: 'Garet'; src: url('${garetBook.url}') format('woff'); font-style: normal; font-weight: 300 700; font-display: swap; }
+@font-face { font-family: 'Garet'; src: url('${garetHeavy.url}') format('woff'); font-style: normal; font-weight: 800 900; font-display: swap; }
+.psb, .psb *, .psb *::before, .psb *::after { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Garet', sans-serif; }
 .psb {
   --green: #25D366;
   --green-dk: #1ebe57;
@@ -239,7 +243,7 @@ const STYLES = `
 /* PRICING */
 .psb .pricing-wrap { max-width: 900px; margin: 0 auto; padding: 0; }
 .psb .pricing-head { text-align: left; }
-.psb .pricing-h2 { font-family: 'Public Sans', sans-serif; font-weight: 900; font-size: 38px; letter-spacing: -1.5px; line-height: 1.1; color: #1a1a1a; }
+.psb .pricing-h2 { font-family: 'Garet', sans-serif; font-weight: 900; font-size: 38px; letter-spacing: -1.5px; line-height: 1.1; color: #1a1a1a; }
 .psb .pricing-sub { font-size: 15px; color: #888; margin-top: 12px; margin-bottom: 32px; }
 .psb .billing-toggle-bar { display: inline-flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #e8e8e0; border-radius: 9999px; padding: 6px 20px; margin-bottom: 40px; cursor: pointer; user-select: none; }
 .psb .billing-lbl { font-size: 14px; font-weight: 500; transition: color .2s; }
@@ -314,32 +318,35 @@ const STYLES = `
 .psb .f-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid #1f2937; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #6b7280; flex-wrap: wrap; gap: 12px; max-width: 1200px; margin-left: auto; margin-right: auto; }
 
 /* REDESIGN: NAV, HERO & COM/SEM */
-.psb .landing-nav-shell { position: fixed; inset: 0 0 auto; z-index: 200; background: rgba(10,10,10,.9); border-bottom: 1px solid rgba(255,255,255,.08); backdrop-filter: blur(16px); }
+.psb .landing-nav-shell { position: fixed; inset: 0 0 auto; z-index: 200; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); }
 .psb .landing-nav { min-height: 72px; max-width: 1280px; margin: 0 auto; padding: 14px 48px; display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 32px; }
 .psb .landing-logo { display: inline-flex; width: fit-content; align-items: center; }
 .psb .landing-logo img { display: block; width: auto; height: 32px; }
 .psb .landing-nav-links { display: flex; align-items: center; justify-content: center; gap: 32px; }
-.psb .landing-nav-links a { color: #aaa; font-size: 14px; font-weight: 600; transition: color .2s; white-space: nowrap; }
-.psb .landing-nav-links a:hover { color: #fff; }
+.psb .landing-nav-links a { color: #555; font-size: 14px; font-weight: 600; transition: color .2s; white-space: nowrap; }
+.psb .landing-nav-links a:hover { color: #1a1a1a; }
 .psb .landing-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-.psb .landing-login { color: #aaa; border: 1px solid #333; border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 600; transition: color .2s, border-color .2s; }
-.psb .landing-login:hover { color: #fff; border-color: #555; }
+.psb .landing-login { color: #555; border: 1px solid var(--line); border-radius: 8px; padding: 8px 20px; font-size: 14px; font-weight: 600; transition: color .2s, border-color .2s; }
+.psb .landing-login:hover { color: #1a1a1a; border-color: #b8b8b0; }
 .psb .landing-signup { color: #fff; background: var(--green); border-radius: 8px; padding: 9px 22px; font-size: 14px; font-weight: 800; transition: background .2s, transform .2s; white-space: nowrap; }
 .psb .landing-signup:hover { background: var(--green-dk); transform: translateY(-1px); }
-.psb .conversation-hero { min-height: 100svh; padding: 152px 24px 88px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 112%, rgba(37,211,102,.13), transparent 38%), #0a0a0a; color: #fff; }
-.psb .conversation-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(37,211,102,.5), transparent); }
-.psb .conversation-badge { display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(255,255,255,.13); border-radius: 100px; padding: 7px 18px; margin-bottom: 32px; font-size: 13px; font-weight: 650; color: #aaa; background: rgba(255,255,255,.025); }
+.psb .conversation-hero { min-height: 100svh; padding: 152px 24px 88px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; background: #fff; color: #1a1a1a; }
+.psb .conversation-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: var(--line); }
+.psb .conversation-badge { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 100px; padding: 7px 18px; margin-bottom: 32px; font-size: 13px; font-weight: 650; color: #555; background: #fff; }
 .psb .conversation-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(37,211,102,.1); }
-.psb .conversation-hero h1 { max-width: 980px; font-size: clamp(42px, 6.2vw, 82px); font-weight: 900; letter-spacing: -3px; line-height: 1.04; color: #fff; }
+.psb .conversation-hero h1 { max-width: 980px; font-size: clamp(42px, 6.2vw, 82px); font-weight: 900; letter-spacing: -3px; line-height: 1.04; color: #1a1a1a; }
 .psb .conversation-hero h1 span { color: var(--green); }
-.psb .conversation-copy { max-width: 650px; margin: 26px auto 0; color: #929292; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.7; }
-.psb .whatsapp-lead { width: min(100%, 500px); margin: 44px auto 0; padding: 6px 6px 6px 18px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 10px; border-radius: 16px; background: #fff; box-shadow: 0 22px 70px rgba(0,0,0,.4); }
-.psb .whatsapp-lead svg { width: 21px; height: 21px; color: #6b7280; }
+.psb .conversation-copy { max-width: 650px; margin: 26px auto 0; color: #555; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.7; }
+.psb .whatsapp-lead-wrap { width: min(100%, 500px); margin: 44px auto 0; }
+.psb .whatsapp-lead { width: 100%; padding: 6px 6px 6px 16px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; border: 2px solid var(--line); border-radius: 16px; background: #fff; box-shadow: 0 8px 32px rgba(0,0,0,.08); transition: border-color .2s; }
+.psb .whatsapp-lead.has-error { border-color: #ef4444; }
+.psb .phone-prefix { padding-right: 12px; margin-right: 12px; border-right: 1px solid var(--line); color: #555; font-size: 14px; font-weight: 700; white-space: nowrap; }
 .psb .whatsapp-lead input { min-width: 0; width: 100%; border: 0; outline: 0; color: #1a1a1a; background: transparent; font-size: 15px; }
 .psb .whatsapp-lead input::placeholder { color: #8b8b8b; }
 .psb .whatsapp-lead button { border: 0; border-radius: 11px; padding: 14px 22px; color: #fff; background: var(--green); font-size: 14px; font-weight: 800; white-space: nowrap; transition: background .2s, transform .2s; }
 .psb .whatsapp-lead button:hover { background: var(--green-dk); transform: translateY(-1px); }
-.psb .conversation-note { margin-top: 16px; color: #5f5f5f; font-size: 13px; }
+.psb .phone-error { margin-top: 8px; color: #ef4444; font-size: 12px; text-align: left; }
+.psb .conversation-note { margin-top: 16px; color: #777; font-size: 13px; }
 .psb .compare-section { padding: 108px 48px 116px; background: #f8f8f6; border-bottom: 1px solid var(--line); }
 .psb .compare-wrap { max-width: 1120px; margin: 0 auto; }
 .psb .compare-head { max-width: 820px; margin: 0 auto 40px; text-align: center; }
@@ -350,18 +357,15 @@ const STYLES = `
 .psb .compare-toggle button.active { background: #1a1a1a; color: #fff; }
 .psb .compare-grid { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: 72px; align-items: center; }
 .psb .compare-list { min-width: 0; }
-.psb .compare-item { width: 100%; padding: 20px 0; display: block; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: transparent; opacity: .46; transition: opacity .25s; }
-.psb .compare-item:first-child { border-top: 1px solid var(--line); }
+.psb .compare-item { width: 100%; padding: 16px 0 4px; display: block; text-align: left; border: 0; background: transparent; opacity: .45; transition: opacity .25s; }
 .psb .compare-item:hover, .psb .compare-item.active { opacity: 1; }
-.psb .compare-title { display: grid; grid-template-columns: 22px minmax(0,1fr); align-items: center; gap: 9px; color: #1a1a1a; font-size: 16px; font-weight: 800; }
-.psb .compare-mark { color: var(--green); font-size: 17px; font-weight: 900; }
-.psb .compare-list.is-negative .compare-mark { color: #ef4444; }
-.psb .compare-description { margin: 8px 0 14px 31px; color: #666; font-size: 14px; line-height: 1.65; }
-.psb .compare-progress { height: 3px; margin-left: 31px; overflow: hidden; border-radius: 10px; background: #e5e5df; }
+.psb .compare-title { display: block; color: #1a1a1a; font-size: 16px; font-weight: 800; }
+.psb .compare-description { margin: 6px 0 14px; color: #666; font-size: 14px; line-height: 1.65; }
+.psb .compare-progress { display: block; height: 3px; margin-top: 14px; overflow: hidden; border-radius: 10px; background: #deded7; }
 .psb .compare-progress span { display: block; width: var(--progress); height: 100%; border-radius: inherit; background: var(--green); transition: width .05s linear; }
 .psb .compare-list.is-negative .compare-progress span { background: #ef4444; }
-.psb .compare-visual { aspect-ratio: 1 / 1; position: relative; overflow: hidden; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 24px; background: #fff; box-shadow: 0 22px 60px rgba(15,23,42,.08); }
-.psb .compare-visual img { width: 100%; height: 100%; object-fit: contain; animation: compareReveal .35s ease both; }
+.psb .compare-visual { aspect-ratio: 4 / 3; position: relative; overflow: hidden; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 24px; background: #f8f8f6; transition: all .3s ease; }
+.psb .compare-visual img { width: 100%; height: 100%; object-fit: cover; animation: compareReveal .3s ease both; }
 .psb .compare-placeholder { width: 100%; height: 100%; display: grid; place-items: center; padding: 38px; background: linear-gradient(145deg,#effcf3,#fff 70%); }
 .psb .compare-placeholder-inner { width: min(100%, 390px); padding: 28px; border: 1px solid #ccefd7; border-radius: 20px; background: #fff; box-shadow: 0 24px 55px rgba(37,211,102,.14); animation: compareReveal .35s ease both; }
 .psb .mock-top { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid #edf0eb; }
@@ -416,8 +420,8 @@ const STYLES = `
   .psb .conversation-hero { min-height: 100svh; padding: 118px 20px 64px; }
   .psb .conversation-hero h1 { font-size: clamp(39px, 12vw, 54px); letter-spacing: -2px; }
   .psb .conversation-copy { font-size: 16px; line-height: 1.6; }
-  .psb .whatsapp-lead { padding: 12px; grid-template-columns: auto minmax(0,1fr); border-radius: 16px; }
-  .psb .whatsapp-lead button { grid-column: 1 / -1; width: 100%; }
+  .psb .whatsapp-lead { padding: 12px; grid-template-columns: auto minmax(0,1fr); gap: 0; border-radius: 16px; }
+  .psb .whatsapp-lead button { grid-column: 1 / -1; width: 100%; margin-top: 12px; }
   .psb .compare-section { padding: 78px 20px 84px; }
   .psb .compare-head { margin-bottom: 32px; }
   .psb .compare-head h2 { font-size: 36px; letter-spacing: -1.5px; }
@@ -425,7 +429,7 @@ const STYLES = `
   .psb .compare-toggle { width: 100%; margin-bottom: 40px; }
   .psb .compare-toggle button { flex: 1; padding: 11px 16px; }
   .psb .compare-grid { grid-template-columns: 1fr; gap: 36px; }
-  .psb .compare-visual { aspect-ratio: 1 / 1; border-radius: 18px; }
+  .psb .compare-visual { aspect-ratio: 4 / 3; border-radius: 18px; }
   .psb .compare-item { padding: 18px 0; }
   .psb .compare-placeholder { padding: 24px; }
   .psb .compare-placeholder-inner { padding: 20px; }
@@ -555,7 +559,7 @@ function ComSemSection() {
               const isActive = index === activeIndex;
               return (
                 <button key={item.title} type="button" className={`compare-item${isActive ? " active" : ""}`} onClick={() => { setActiveIndex(index); setProgress(0); }}>
-                  <span className="compare-title"><span className="compare-mark">{mode === "com" ? "✓" : "×"}</span><span>{item.title}</span></span>
+                  <span className="compare-title">{item.title}</span>
                   {isActive && <span className="compare-description">{item.description}</span>}
                   {isActive && <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>}
                 </button>
@@ -652,7 +656,21 @@ function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAnnual, setIsAnnual] = useState(false);
   const [whatsappLead, setWhatsappLead] = useState("");
+  const [whatsappError, setWhatsappError] = useState("");
   const navigate = useNavigate();
+
+  const formatPhone = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const validatePhone = (digits: string) => {
+    if (digits.length < 10) return "Número incompleto";
+    if (digits.length === 10 && digits[2] === "9") return "Celular deve ter 11 dígitos";
+    return "";
+  };
 
   // Custom-domain routing: if the visitor is on a non-ShopBox hostname, look up
   // the store mapped to that hostname and forward to its storefront.
@@ -680,7 +698,7 @@ function LandingPage() {
       <header className="landing-nav-shell">
         <nav className="landing-nav" aria-label="Navegação principal">
           <Link to="/" className="landing-logo" aria-label="ShopBox — início">
-            <img src={shopboxLogoDark.url} alt="ShopBox" />
+            <img src={shopboxLogo.url} alt="ShopBox" />
           </Link>
           <div className="landing-nav-links">
             <a href="#sobre-feats">Funcionalidades</a>
@@ -702,11 +720,39 @@ function LandingPage() {
         <p className="conversation-copy">
           Enquanto outras plataformas tentam adaptar o WhatsApp para vender, a ShopBox nasceu assim — uma loja completa que vende onde seu cliente já está.
         </p>
-        <form className="whatsapp-lead" onSubmit={(event) => { event.preventDefault(); navigate({ to: "/cadastro", search: whatsappLead ? { whatsapp: whatsappLead } : undefined }); }}>
-          <MessageCircle aria-hidden="true" />
-          <input type="tel" value={whatsappLead} onChange={(event) => setWhatsappLead(event.target.value)} placeholder="Seu número de WhatsApp" aria-label="Seu número de WhatsApp" />
-          <button type="submit">Quero vender →</button>
-        </form>
+        <div className="whatsapp-lead-wrap">
+          <form
+            className={`whatsapp-lead${whatsappError ? " has-error" : ""}`}
+            onSubmit={(event) => {
+              event.preventDefault();
+              const digits = whatsappLead.replace(/\D/g, "");
+              const error = validatePhone(digits);
+              setWhatsappError(error);
+              if (error) return;
+              navigate({ to: "/cadastro", search: { phone: `55${digits}` } });
+            }}
+          >
+            <span className="phone-prefix" aria-hidden="true">🇧🇷 +55</span>
+            <input
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel-national"
+              value={whatsappLead}
+              onChange={(event) => {
+                const formatted = formatPhone(event.target.value);
+                const digits = formatted.replace(/\D/g, "");
+                setWhatsappLead(formatted);
+                setWhatsappError(digits.length > 0 ? validatePhone(digits) : "");
+              }}
+              placeholder="(00) 00000-0000"
+              aria-label="Número de WhatsApp"
+              aria-invalid={Boolean(whatsappError)}
+              aria-describedby={whatsappError ? "whatsapp-error" : undefined}
+            />
+            <button type="submit">Quero vender →</button>
+          </form>
+          {whatsappError && <p className="phone-error" id="whatsapp-error" role="alert">{whatsappError}</p>}
+        </div>
         <p className="conversation-note">7 dias grátis · sem cartão · cancele quando quiser</p>
       </section>
 
