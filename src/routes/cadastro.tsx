@@ -27,6 +27,10 @@ export const Route = createFileRoute("/cadastro")({
       { property: "og:description", content: "Cadastro rápido em 3 passos. Sem cartão para começar." },
     ],
   }),
+  validateSearch: z.object({
+    phone: z.string().optional(),
+    whatsapp: z.string().optional(),
+  }),
   component: SignupPage,
 });
 

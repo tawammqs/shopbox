@@ -3,7 +3,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import {
   Palette, ClipboardList, CreditCard,
   Package, Tag, Globe, TrendingUp, MessageCircle,
-  Users, Zap, Clock, Star,
+  Users, Zap, Clock, Star, Menu, X,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
 import shopboxLogo from "@/assets/shopbox-logo.png.asset.json";
@@ -97,7 +97,7 @@ const STYLES = `
 
 /* NAV */
 .psb .navbar { position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; }
-.psb .logo { font-weight: 900; font-size: 26px; letter-spacing: -1px; display: inline-flex; }
+.psb .logo { font-weight: 700; font-size: 26px; letter-spacing: -1px; display: inline-flex; }
 .psb .logo .lo-a { color: #1a1a1a; }
 .psb .logo .lo-b { color: #25D366; }
 .psb .nav-links { display: flex; align-items: center; gap: 34px; }
@@ -113,8 +113,8 @@ const STYLES = `
 .psb .hero { padding: 64px 24px 96px; text-align: center; }
 .psb .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #e8e8e0; border-radius: 100px; padding: 6px 18px; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 32px; }
 .psb .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #25D366; }
-.psb .hero h1 { font-size: clamp(44px, 6.2vw, 80px); font-weight: 900; letter-spacing: -2px; line-height: 1.08; max-width: 860px; margin: 0 auto; color: #1a1a1a; }
-.psb .hero h1 em { font-weight: 900; color: #25D366; font-style: italic; }
+.psb .hero h1 { font-size: clamp(44px, 6.2vw, 80px); font-weight: 700; letter-spacing: -2px; line-height: 1.08; max-width: 860px; margin: 0 auto; color: #1a1a1a; }
+.psb .hero h1 em { font-weight: 700; color: #25D366; font-style: italic; }
 .psb .hero-sub { margin: 22px auto 0; font-size: clamp(16px, 1.4vw, 19px); color: #555; max-width: 600px; line-height: 1.7; font-weight: 400; }
 .psb .hero-actions { margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 .psb .btn-hero { font-size: 16px; font-weight: 700; color: #fff; padding: 14px 34px; border-radius: 10px; background: #25D366; display: inline-flex; align-items: center; gap: 9px; border: none; transition: all .22s; box-shadow: 0 8px 24px rgba(37,211,102,.28); }
@@ -134,7 +134,7 @@ const STYLES = `
 .psb .dash-body { padding: 28px; display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
 .psb .dc { background: #fafaf8; border: 1px solid #e8e8e0; border-radius: 12px; padding: 20px; }
 .psb .dc-l { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: #888; }
-.psb .dc-v { font-size: 28px; font-weight: 900; color: #1a1a1a; margin-top: 6px; letter-spacing: -1px; }
+.psb .dc-v { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-top: 6px; letter-spacing: -1px; }
 .psb .dc-t { font-size: 12px; color: #25D366; margin-top: 4px; font-weight: 600; }
 .psb .dc-table { grid-column: 1/-1; }
 .psb .dc-table-scroll { overflow-x: auto; }
@@ -154,9 +154,9 @@ const STYLES = `
 
 /* SECTION HEADERS */
 .psb .pill { display: inline-block; border: 1px solid #e8e8e0; background: #fff; color: #555; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 9999px; margin-bottom: 16px; }
-.psb .sh2 { font-size: clamp(28px, 3.8vw, 50px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; max-width: 700px; margin-bottom: 18px; color: #1a1a1a; }
+.psb .sh2 { font-size: clamp(28px, 3.8vw, 50px); font-weight: 700; letter-spacing: -1.5px; line-height: 1.1; max-width: 700px; margin-bottom: 18px; color: #1a1a1a; }
 .psb .sec-steps .sh2, .psb .sec-cta .sh2 { color: #fff; }
-.psb .sec-steps .sh2 em, .psb .sec-cta .sh2 em { font-style: italic; color: #25D366; font-weight: 900; }
+.psb .sec-steps .sh2 em, .psb .sec-cta .sh2 em { font-style: italic; color: #25D366; font-weight: 700; }
 .psb .ssub { font-size: 17px; line-height: 1.75; font-weight: 400; max-width: 560px; color: #555; }
 .psb .sec-steps .ssub { color: #aaa; }
 
@@ -169,21 +169,21 @@ const STYLES = `
 .psb .wf-ic > svg { width: 22px; height: 22px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .psb .wf-ic.wf-ic-wa > svg { stroke: none; fill: #25D366; }
 .psb .wf h4 { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; line-height: 1.3; }
-.psb .wf p  { font-size: 14px; color: #555; line-height: 1.6; }
+.psb .wf p  { font-size: 14px; font-weight: 400; color: #555; line-height: 1.6; }
 
 /* PHONE MOCK */
 .psb .phone { background: #fff; border: 1px solid #bbf7d0; border-radius: 26px; padding: 28px; max-width: 330px; margin: 0 auto; box-shadow: 0 12px 64px rgba(0,100,40,.08); }
 .psb .ph-head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid #e8e8e0; margin-bottom: 18px; }
-.psb .ph-av { width: 40px; height: 40px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; color: #fff; }
+.psb .ph-av { width: 40px; height: 40px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; }
 .psb .ph-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
 .psb .ph-on { font-size: 12px; color: #25D366; font-weight: 600; }
 .psb .ph-prod { background: #fafaf8; border-radius: 14px; padding: 16px; display: flex; gap: 14px; align-items: center; margin-bottom: 14px; border: 1px solid #e8e8e0; }
 .psb .ph-img { width: 56px; height: 56px; border-radius: 10px; background: linear-gradient(135deg,#d4f5dc,#a8e6b4); display: flex; align-items: center; justify-content: center; font-size: 26px; }
 .psb .ph-pn { font-size: 14px; font-weight: 700; color: #1a1a1a; }
-.psb .ph-pp { font-size: 20px; font-weight: 900; color: #25D366; margin-top: 2px; }
+.psb .ph-pp { font-size: 20px; font-weight: 700; color: #25D366; margin-top: 2px; }
 .psb .ph-btn { width: 100%; padding: 13px; background: #25D366; border-radius: 11px; text-align: center; color: #fff; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .psb .ph-stat { margin-top: 18px; text-align: center; }
-.psb .ph-sv { font-size: 30px; font-weight: 900; color: #25D366; letter-spacing: -1px; }
+.psb .ph-sv { font-size: 30px; font-weight: 700; color: #25D366; letter-spacing: -1px; }
 .psb .ph-sl { font-size: 12px; color: #888; font-weight: 500; }
 
 /* STATS */
@@ -191,7 +191,7 @@ const STYLES = `
 .psb .sc { background: #fff; padding: 32px 24px; text-align: center; }
 .psb .sc-ic { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; }
 .psb .sc-ic svg { width: 22px; height: 22px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.psb .sn { font-size: 38px; font-weight: 900; color: #1a1a1a; letter-spacing: -1.5px; line-height: 1; }
+.psb .sn { font-size: 38px; font-weight: 700; color: #1a1a1a; letter-spacing: -1.5px; line-height: 1; }
 .psb .sl { font-size: 13.5px; color: #555; margin-top: 8px; font-weight: 600; }
 
 /* VS */
@@ -203,7 +203,7 @@ const STYLES = `
 .psb .vs-card-bad .vs-card-title { color: #991b1b; }
 .psb .vs-card-good .vs-card-title { color: #166534; }
 .psb .vs-divider { display: flex; align-items: center; justify-content: center; width: 72px; flex-shrink: 0; }
-.psb .vs-badge-pill { background: #fff; border: 1.5px solid #e8e8e0; border-radius: 100px; padding: 8px 14px; font-size: 12px; font-weight: 900; color: #888; letter-spacing: 1px; }
+.psb .vs-badge-pill { background: #fff; border: 1.5px solid #e8e8e0; border-radius: 100px; padding: 8px 14px; font-size: 12px; font-weight: 700; color: #888; letter-spacing: 1px; }
 .psb .vs-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,.05); font-size: 14px; line-height: 1.5; }
 .psb .vs-item:last-child { border-bottom: none; }
 .psb .vs-card-bad .vs-item { color: #7c2d2d; }
@@ -216,19 +216,19 @@ const STYLES = `
 /* FEATURES */
 .psb .feats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
 .psb .fc { background: #fafaf8; border: 1px solid #e8e8e0; border-radius: 18px; padding: 30px; position: relative; overflow: hidden; transition: all .25s; }
-.psb .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 900; color: rgba(37,211,102,.08); line-height: 1; letter-spacing: -3px; }
+.psb .fc::after { content: attr(data-n); position: absolute; right: 18px; top: 12px; font-size: 64px; font-weight: 700; color: rgba(37,211,102,.08); line-height: 1; letter-spacing: -3px; }
 .psb .fc:hover { border-color: #25D366; transform: translateY(-4px); box-shadow: 0 12px 44px rgba(37,211,102,.12); }
 .psb .fc-ic { width: 48px; height: 48px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
 .psb .fc-ic svg { width: 24px; height: 24px; stroke: #25D366; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.psb .fc h3 { font-size: 17px; font-weight: 800; color: #1a1a1a; margin-bottom: 10px; }
+.psb .fc h3 { font-size: 17px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
 .psb .fc p  { font-size: 14px; color: #555; line-height: 1.65; }
 
 /* STEPS (dark) */
 .psb .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; margin-top: 56px; }
 .psb .step { padding: 32px 28px; border-radius: 18px; background: #232323; border: 1px solid #2f2f2f; }
-.psb .step-num { width: 44px; height: 44px; border-radius: 50%; background: #25D366; color: #fff; font-weight: 900; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
-.psb .step h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: #fff; }
-.psb .step p { font-size: 14px; color: #aaa; line-height: 1.65; }
+.psb .step-num { width: 44px; height: 44px; border-radius: 50%; background: #25D366; color: #fff; font-weight: 700; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+.psb .step h3 { font-size: 20px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+.psb .step p { font-size: 14px; font-weight: 400; color: #aaa; line-height: 1.65; }
 
 /* TESTIMONIALS */
 .psb .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 56px; }
@@ -243,8 +243,8 @@ const STYLES = `
 /* PRICING */
 .psb .pricing-wrap { max-width: 900px; margin: 0 auto; padding: 0; }
 .psb .pricing-head { text-align: left; }
-.psb .pricing-h2 { font-family: 'Garet', sans-serif; font-weight: 900; font-size: 38px; letter-spacing: -1.5px; line-height: 1.1; color: #1a1a1a; }
-.psb .pricing-sub { font-size: 15px; color: #888; margin-top: 12px; margin-bottom: 32px; }
+.psb .pricing-h2 { font-family: 'Garet', sans-serif; font-weight: 700; font-size: 38px; letter-spacing: -1.5px; line-height: 1.1; color: #1a1a1a; }
+.psb .pricing-sub { font-size: 15px; font-weight: 400; color: #888; margin-top: 12px; margin-bottom: 32px; }
 .psb .billing-toggle-bar { display: inline-flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #e8e8e0; border-radius: 9999px; padding: 6px 20px; margin-bottom: 40px; cursor: pointer; user-select: none; }
 .psb .billing-lbl { font-size: 14px; font-weight: 500; transition: color .2s; }
 .psb .billing-pill { position: relative; width: 44px; height: 24px; background: #25D366; border-radius: 9999px; flex-shrink: 0; }
@@ -259,7 +259,7 @@ const STYLES = `
 .psb .plan-label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
 .psb .plan-card.featured .plan-label { color: #25D366; }
 .psb .plan-price { display: flex; align-items: baseline; gap: 4px; line-height: 1; }
-.psb .plan-num { font-weight: 900; font-size: 42px; letter-spacing: -2px; color: #1a1a1a; }
+.psb .plan-num { font-weight: 700; font-size: 42px; letter-spacing: -2px; color: #1a1a1a; }
 .psb .plan-card.featured .plan-num { color: #fff; }
 .psb .plan-suffix { font-size: 13px; font-weight: 400; color: #aaa; }
 .psb .plan-card.featured .plan-suffix { color: #555; }
@@ -300,8 +300,8 @@ const STYLES = `
 
 /* CTA FINAL */
 .psb .cta-inner { text-align: center; }
-.psb .cta-inner h2 { font-size: clamp(36px, 4.5vw, 58px); font-weight: 900; letter-spacing: -2px; margin-bottom: 14px; color: #fff; }
-.psb .cta-inner p { font-size: 18px; color: #aaa; margin-bottom: 38px; }
+.psb .cta-inner h2 { font-size: clamp(36px, 4.5vw, 58px); font-weight: 700; letter-spacing: -2px; margin-bottom: 14px; color: #fff; }
+.psb .cta-inner p { font-size: 18px; font-weight: 400; color: #aaa; margin-bottom: 38px; }
 .psb .cta-btn { background: #25D366; color: #fff; border: none; font-size: 17px; font-weight: 700; padding: 16px 42px; border-radius: 10px; display: inline-flex; align-items: center; gap: 9px; transition: all .2s; }
 .psb .cta-btn:hover { background: #1ebe57; transform: translateY(-2px); }
 .psb .cta-note { margin-top: 18px; font-size: 13px; color: #888; }
@@ -321,7 +321,18 @@ const STYLES = `
 .psb .landing-nav-shell { position: fixed; inset: 0 0 auto; z-index: 200; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(16px); }
 .psb .landing-nav { min-height: 72px; max-width: 1280px; margin: 0 auto; padding: 14px 48px; display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 32px; }
 .psb .landing-logo { display: inline-flex; width: fit-content; align-items: center; }
-.psb .landing-logo img { display: block; width: auto; height: 32px; }
+.psb .landing-logo img { display: block; width: auto; height: 48px; }
+.psb .landing-menu-btn { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--line); background: #fff; color: #1a1a1a; }
+.psb .landing-mobile-menu { position: fixed; inset: 0; z-index: 300; background: rgba(255,255,255,.98); backdrop-filter: blur(16px); display: flex; flex-direction: column; padding: 18px; }
+.psb .landing-mobile-menu-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.psb .landing-mobile-menu-head img { height: 40px; width: auto; }
+.psb .landing-mobile-menu-close { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--line); background: #fff; color: #1a1a1a; }
+.psb .landing-mobile-menu-links { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.psb .landing-mobile-menu-links a { display: block; padding: 14px 4px; font-size: 18px; font-weight: 600; color: #1a1a1a; border-bottom: 1px solid var(--line); }
+.psb .landing-mobile-menu-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+.psb .landing-mobile-menu-actions a { text-align: center; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 700; }
+.psb .landing-mobile-menu-actions a:first-child { color: #555; border: 1px solid var(--line); background: #fff; }
+.psb .landing-mobile-menu-actions a:last-child { color: #fff; background: var(--green); }
 .psb .landing-nav-links { display: flex; align-items: center; justify-content: center; gap: 32px; }
 .psb .landing-nav-links a { color: #555; font-size: 14px; font-weight: 600; transition: color .2s; white-space: nowrap; }
 .psb .landing-nav-links a:hover { color: #1a1a1a; }
@@ -334,8 +345,8 @@ const STYLES = `
 .psb .conversation-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: var(--line); }
 .psb .conversation-badge { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line); border-radius: 100px; padding: 7px 18px; margin-bottom: 32px; font-size: 13px; font-weight: 650; color: #555; background: #fff; }
 .psb .conversation-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(37,211,102,.1); }
-.psb .conversation-hero h1 { max-width: 980px; font-size: clamp(42px, 6.2vw, 82px); font-weight: 900; letter-spacing: -3px; line-height: 1.04; color: #1a1a1a; }
-.psb .conversation-hero h1 span { color: var(--green); }
+.psb .conversation-hero h1 { max-width: 980px; font-size: clamp(42px, 6.2vw, 82px); font-weight: 700; letter-spacing: -3px; line-height: 1.04; color: #1a1a1a; }
+.psb .conversation-hero h1 span { color: #1a1a1a; }
 .psb .conversation-copy { max-width: 650px; margin: 26px auto 0; color: #555; font-size: clamp(16px, 1.4vw, 20px); line-height: 1.7; }
 .psb .whatsapp-lead-wrap { width: min(100%, 500px); margin: 44px auto 0; }
 .psb .whatsapp-lead { width: 100%; padding: 6px 6px 6px 16px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; border: 2px solid var(--line); border-radius: 16px; background: #fff; box-shadow: 0 8px 32px rgba(0,0,0,.08); transition: border-color .2s; }
@@ -348,38 +359,38 @@ const STYLES = `
 .psb .phone-error { margin-top: 8px; color: #ef4444; font-size: 12px; text-align: left; }
 .psb .conversation-note { margin-top: 16px; color: #777; font-size: 13px; }
 .psb .compare-section { padding: 108px 48px 116px; background: #f8f8f6; border-bottom: 1px solid var(--line); }
-.psb .compare-wrap { max-width: 1120px; margin: 0 auto; }
+.psb .compare-wrap { max-width: 760px; margin: 0 auto; }
 .psb .compare-head { max-width: 820px; margin: 0 auto 40px; text-align: center; }
-.psb .compare-head h2 { color: #1a1a1a; font-size: clamp(34px, 4.4vw, 56px); font-weight: 900; letter-spacing: -2px; line-height: 1.08; }
-.psb .compare-head p { max-width: 680px; margin: 18px auto 0; color: #666; font-size: 17px; line-height: 1.65; }
+.psb .compare-head h2 { color: #1a1a1a; font-size: clamp(34px, 4.4vw, 56px); font-weight: 700; letter-spacing: -2px; line-height: 1.08; }
+.psb .compare-head p { max-width: 680px; margin: 18px auto 0; color: #666; font-size: 17px; font-weight: 400; line-height: 1.65; }
 .psb .compare-toggle { width: fit-content; margin: 0 auto 60px; padding: 6px; display: flex; gap: 6px; border: 1px solid var(--line); border-radius: 100px; background: #fff; }
-.psb .compare-toggle button { border: 0; border-radius: 100px; padding: 11px 30px; background: transparent; color: #888; font-size: 14px; font-weight: 800; transition: background .2s, color .2s; }
+.psb .compare-toggle button { border: 0; border-radius: 100px; padding: 11px 30px; background: transparent; color: #888; font-size: 14px; font-weight: 700; transition: background .2s, color .2s; }
 .psb .compare-toggle button.active { background: #1a1a1a; color: #fff; }
-.psb .compare-grid { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: 72px; align-items: center; }
-.psb .compare-list { min-width: 0; }
-.psb .compare-item { width: 100%; padding: 16px 0 4px; display: block; text-align: left; border: 0; background: transparent; opacity: .45; transition: opacity .25s; }
-.psb .compare-item:hover, .psb .compare-item.active { opacity: 1; }
-.psb .compare-title { display: block; color: #1a1a1a; font-size: 16px; font-weight: 800; }
-.psb .compare-description { margin: 6px 0 14px; color: #666; font-size: 14px; line-height: 1.65; }
-.psb .compare-progress { display: block; height: 3px; margin-top: 14px; overflow: hidden; border-radius: 10px; background: #deded7; }
+.psb .compare-list { display: flex; flex-direction: column; }
+.psb .compare-item { width: 100%; padding: 0; display: block; text-align: left; border: 0; border-bottom: 1px solid #e8e8e0; background: transparent; cursor: pointer; }
+.psb .compare-item:last-child { border-bottom: none; }
+.psb .compare-item-title { display: block; width: 100%; border: 0; background: transparent; padding: 0; text-align: left; cursor: pointer; font-size: 16px; font-weight: 700; color: #1a1a1a; margin: 16px 0 6px; opacity: .45; transition: opacity .25s; }
+.psb .compare-item.active .compare-item-title { opacity: 1; }
+.psb .compare-item-desc { font-size: 14px; font-weight: 400; color: #666; line-height: 1.65; margin: 0 0 16px; }
+.psb .compare-item-visual { width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; margin-bottom: 16px; overflow: hidden; background: #fff; border: 1px solid var(--line); }
+.psb .compare-item-visual img { width: 100%; height: 100%; object-fit: cover; display: block; animation: compareReveal .3s ease both; }
+.psb .compare-item-visual .compare-placeholder { width: 100%; height: 100%; min-height: auto; display: grid; place-items: center; padding: 38px; background: linear-gradient(145deg,#effcf3,#fff 70%); }
+.psb .compare-item-visual .compare-placeholder-inner { width: min(100%, 390px); padding: 28px; border: 1px solid #ccefd7; border-radius: 20px; background: #fff; box-shadow: 0 24px 55px rgba(37,211,102,.14); animation: compareReveal .35s ease both; }
+.psb .compare-progress { display: block; height: 2px; margin: 8px 0 16px; overflow: hidden; border-radius: 2px; background: #e8e8e0; }
 .psb .compare-progress span { display: block; width: var(--progress); height: 100%; border-radius: inherit; background: var(--green); transition: width .05s linear; }
 .psb .compare-list.is-negative .compare-progress span { background: #ef4444; }
-.psb .compare-visual { aspect-ratio: 4 / 3; position: relative; overflow: hidden; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 24px; background: #f8f8f6; transition: all .3s ease; }
-.psb .compare-visual img { width: 100%; height: 100%; object-fit: cover; animation: compareReveal .3s ease both; }
-.psb .compare-placeholder { width: 100%; height: 100%; display: grid; place-items: center; padding: 38px; background: linear-gradient(145deg,#effcf3,#fff 70%); }
-.psb .compare-placeholder-inner { width: min(100%, 390px); padding: 28px; border: 1px solid #ccefd7; border-radius: 20px; background: #fff; box-shadow: 0 24px 55px rgba(37,211,102,.14); animation: compareReveal .35s ease both; }
 .psb .mock-top { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid #edf0eb; }
-.psb .mock-avatar { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 900; }
+.psb .mock-avatar { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 700; }
 .psb .mock-lines { flex: 1; display: grid; gap: 8px; }
 .psb .mock-lines i { display: block; height: 8px; border-radius: 10px; background: #eceeea; }
 .psb .mock-lines i:last-child { width: 64%; }
-.psb .mock-message { margin-top: 20px; margin-left: 32px; padding: 16px 18px; border-radius: 16px 16px 3px 16px; color: #174824; background: #dcf8e5; font-size: 14px; line-height: 1.5; }
+.psb .mock-message { margin-top: 20px; margin-left: 32px; padding: 16px 18px; border-radius: 16px 16px 3px 16px; color: #174824; background: #dcf8e5; font-size: 14px; font-weight: 400; line-height: 1.5; }
 .psb .mock-order { margin-top: 14px; display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; padding: 14px; border: 1px solid #edf0eb; border-radius: 14px; }
 .psb .mock-product { aspect-ratio: 1; display: grid; place-items: center; border-radius: 10px; background: #f3f3ef; font-size: 24px; }
-.psb .mock-order strong { display: block; color: #1a1a1a; font-size: 14px; }
-.psb .mock-order small { color: var(--green-text); font-weight: 800; }
+.psb .mock-order strong { display: block; color: #1a1a1a; font-size: 14px; font-weight: 700; }
+.psb .mock-order small { color: var(--green-text); font-weight: 700; }
 @keyframes compareReveal { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .psb .compare-visual img, .psb .compare-placeholder-inner { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .psb .compare-item-visual img, .psb .compare-item-visual .compare-placeholder-inner { animation: none; } }
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
@@ -413,10 +424,11 @@ const STYLES = `
   .psb .compare-grid { gap: 44px; }
 }
 @media (max-width: 760px) {
-  .psb .landing-nav { min-height: 66px; padding: 12px 18px; gap: 12px; }
-  .psb .landing-logo img { height: 27px; }
+  .psb .landing-nav { min-height: 72px; padding: 12px 18px; gap: 12px; grid-template-columns: auto 1fr auto; }
+  .psb .landing-logo img { height: 36px; }
   .psb .landing-login { display: none; }
   .psb .landing-signup { padding: 9px 14px; font-size: 12px; }
+  .psb .landing-menu-btn { display: flex; }
   .psb .conversation-hero { min-height: 100svh; padding: 118px 20px 64px; }
   .psb .conversation-hero h1 { font-size: clamp(39px, 12vw, 54px); letter-spacing: -2px; }
   .psb .conversation-copy { font-size: 16px; line-height: 1.6; }
@@ -428,11 +440,10 @@ const STYLES = `
   .psb .compare-head p { font-size: 15px; }
   .psb .compare-toggle { width: 100%; margin-bottom: 40px; }
   .psb .compare-toggle button { flex: 1; padding: 11px 16px; }
-  .psb .compare-grid { grid-template-columns: 1fr; gap: 36px; }
-  .psb .compare-visual { aspect-ratio: 4 / 3; border-radius: 18px; }
-  .psb .compare-item { padding: 18px 0; }
-  .psb .compare-placeholder { padding: 24px; }
-  .psb .compare-placeholder-inner { padding: 20px; }
+  .psb .compare-item-visual .compare-placeholder { padding: 24px; }
+  .psb .compare-item-visual .compare-placeholder-inner { padding: 20px; }
+  .psb .compare-item-title { font-size: 15px; }
+  .psb .compare-item-desc { font-size: 13px; }
 }
 `;
 
@@ -546,39 +557,48 @@ function ComSemSection() {
     <section className="compare-section" aria-labelledby="compare-title">
       <div className="compare-wrap">
         <header className="compare-head">
-          <h2 id="compare-title">Venda onde seu cliente está,<br />com tudo conectado.</h2>
-          <p>Por trás de cada checkout pelo WhatsApp, tem tecnologia para vender mais e gerenciar menos.</p>
+          <h2 id="compare-title">Venda onde seu<br />cliente está, com<br />tudo conectado.</h2>
+          <p>Com a ShopBox, você recebe pedidos no automático.</p>
         </header>
         <div className="compare-toggle" role="group" aria-label="Comparar experiências">
           <button type="button" className={mode === "com" ? "active" : ""} aria-pressed={mode === "com"} onClick={() => selectMode("com")}>Com ShopBox</button>
           <button type="button" className={mode === "sem" ? "active" : ""} aria-pressed={mode === "sem"} onClick={() => selectMode("sem")}>Sem ShopBox</button>
         </div>
-        <div className="compare-grid">
-          <div className={`compare-list${mode === "sem" ? " is-negative" : ""}`}>
-            {items.map((item, index) => {
-              const isActive = index === activeIndex;
-              return (
-                <button key={item.title} type="button" className={`compare-item${isActive ? " active" : ""}`} onClick={() => { setActiveIndex(index); setProgress(0); }}>
-                  <span className="compare-title">{item.title}</span>
-                  {isActive && <span className="compare-description">{item.description}</span>}
-                  {isActive && <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>}
+        <div className={`compare-list${mode === "sem" ? " is-negative" : ""}`}>
+          {items.map((item, index) => {
+            const isActive = index === activeIndex;
+            return (
+              <div key={item.title} className={`compare-item${isActive ? " active" : ""}`}>
+                <button
+                  type="button"
+                  className="compare-item-title"
+                  onClick={() => { setActiveIndex(index); setProgress(0); }}
+                  aria-pressed={isActive}
+                >
+                  {item.title}
                 </button>
-              );
-            })}
-          </div>
-          <div className="compare-visual" key={`${mode}-${activeIndex}`}>
-            {activeItem.image ? (
-              <img src={activeItem.image} alt={`Ilustração: ${activeItem.title}`} />
-            ) : (
-              <div className="compare-placeholder" role="img" aria-label={`ShopBox: ${activeItem.title}`}>
-                <div className="compare-placeholder-inner">
-                  <div className="mock-top"><span className="mock-avatar">S</span><span className="mock-lines"><i /><i /></span></div>
-                  <div className="mock-message">Olá! Quero finalizar meu pedido pelo WhatsApp.</div>
-                  <div className="mock-order"><span className="mock-product">🛍️</span><span><strong>{activeItem.title}</strong><small>Pedido pronto para enviar</small></span></div>
-                </div>
+                {isActive && (
+                  <>
+                    <p className="compare-item-desc">{item.description}</p>
+                    <div className="compare-item-visual">
+                      {item.image ? (
+                        <img src={item.image} alt={`Ilustração: ${item.title}`} />
+                      ) : (
+                        <div className="compare-placeholder" role="img" aria-label={`ShopBox: ${item.title}`}>
+                          <div className="compare-placeholder-inner">
+                            <div className="mock-top"><span className="mock-avatar">S</span><span className="mock-lines"><i /><i /></span></div>
+                            <div className="mock-message">Olá! Quero finalizar meu pedido pelo WhatsApp.</div>
+                            <div className="mock-order"><span className="mock-product">🛍️</span><span><strong>{item.title}</strong><small>Pedido pronto para enviar</small></span></div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+                <span className="compare-progress" aria-hidden="true"><span style={progressStyle} /></span>
               </div>
-            )}
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -655,6 +675,7 @@ const PLANS = [
 function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [whatsappLead, setWhatsappLead] = useState("");
   const [whatsappError, setWhatsappError] = useState("");
   const navigate = useNavigate();
@@ -690,6 +711,13 @@ function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const mobileMenuLinks = [
+    { href: "#sobre-feats", label: "Funcionalidades" },
+    { href: "#como-funciona", label: "Como funciona" },
+    { href: "#precos", label: "Planos" },
+    { href: "#faq", label: "FAQ" },
+  ];
+
   return (
     <div className="psb">
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
@@ -709,14 +737,50 @@ function LandingPage() {
           <div className="landing-nav-actions">
             <Link to="/login" className="landing-login">Login</Link>
             <Link to="/cadastro" className="landing-signup">Criar loja grátis</Link>
+            <button
+              type="button"
+              className="landing-menu-btn"
+              aria-label="Menu"
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
           </div>
         </nav>
       </header>
 
+      {mobileOpen && (
+        <div className="landing-mobile-menu" role="dialog" aria-label="Menu de navegação">
+          <div className="landing-mobile-menu-head">
+            <Link to="/" className="landing-logo" aria-label="ShopBox — início" onClick={() => setMobileOpen(false)}>
+              <img src={shopboxLogo.url} alt="ShopBox" />
+            </Link>
+            <button
+              type="button"
+              className="landing-mobile-menu-close"
+              aria-label="Fechar menu"
+              onClick={() => setMobileOpen(false)}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="landing-mobile-menu-links">
+            {mobileMenuLinks.map((link) => (
+              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>{link.label}</a>
+            ))}
+          </div>
+          <div className="landing-mobile-menu-actions">
+            <Link to="/login" onClick={() => setMobileOpen(false)}>Login</Link>
+            <Link to="/cadastro" onClick={() => setMobileOpen(false)}>Criar loja grátis</Link>
+          </div>
+        </div>
+      )}
+
       {/* HERO */}
       <section className="conversation-hero">
-        <div className="conversation-badge">+12.000 lojas ativas no WhatsApp</div>
-        <h1>O futuro das vendas<br /><span>agora é conversacional</span></h1>
+        <div className="conversation-badge">+2.000 lojas ativas no WhatsApp</div>
+        <h1>O futuro das<br />vendas agora é<br />conversacional</h1>
         <p className="conversation-copy">
           Enquanto outras plataformas tentam adaptar o WhatsApp para vender, a ShopBox nasceu assim — uma loja completa que vende onde seu cliente já está.
         </p>
@@ -729,7 +793,7 @@ function LandingPage() {
               const error = validatePhone(digits);
               setWhatsappError(error);
               if (error) return;
-              navigate({ to: "/cadastro", search: { phone: `55${digits}` } });
+              window.location.assign(`/cadastro?phone=55${digits}`);
             }}
           >
             <span className="phone-prefix" aria-hidden="true">🇧🇷 +55</span>
@@ -753,7 +817,7 @@ function LandingPage() {
           </form>
           {whatsappError && <p className="phone-error" id="whatsapp-error" role="alert">{whatsappError}</p>}
         </div>
-        <p className="conversation-note">7 dias grátis · sem cartão · cancele quando quiser</p>
+        <p className="conversation-note">7 dias grátis · Sem cartão · Cancele quando quiser</p>
       </section>
 
       {/* COM SHOPBOX / SEM SHOPBOX */}
