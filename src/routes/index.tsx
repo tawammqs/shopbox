@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
 import shopboxLogo from "@/assets/shopbox-logo.png.asset.json";
+import shopboxLogoDark from "@/assets/shopbox-logo-dark.png.asset.json";
 import garetBook from "@/assets/garet-book.woff.asset.json";
 import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
 import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
@@ -250,7 +251,7 @@ const STYLES = `
 .psb .sec-footer { padding: 68px 52px 30px; background: #0a0a0a; color: #9ca3af; }
 .psb .f-brand { max-width: 1200px; margin: 0 auto 42px; }
 .psb .f-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 54px; }
-.psb .footer-logo { display: block; width: auto; height: 46px; filter: brightness(0) invert(1); }
+.psb .footer-logo { display: block; width: auto; height: 46px; }
 .psb .f-brand p { max-width: 290px; margin-top: 18px; color: #9ca3af; font-size: 14px; line-height: 1.7; }
 .psb .social-links { display: flex; gap: 10px; margin-top: 22px; }
 .psb .social-links a { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid #2b2b2b; border-radius: 50%; color: #9ca3af; transition: color .2s, border-color .2s, background .2s; }
@@ -872,7 +873,7 @@ function LandingPage() {
       {/* SEÇÃO 8 — RODAPÉ */}
       <footer className="sec-footer">
         <div className="f-brand">
-          <img src={shopboxLogo.url} alt="ShopBox" className="footer-logo" />
+          <img src={shopboxLogoDark.url} alt="ShopBox" className="footer-logo" />
           <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
         </div>
         <div className="f-grid">
