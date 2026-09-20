@@ -793,7 +793,7 @@ function LandingPage() {
               const error = validatePhone(digits);
               setWhatsappError(error);
               if (error) return;
-              navigate({ to: "/cadastro", search: { phone: `55${digits}` } });
+              window.location.assign(`/cadastro?phone=55${digits}`);
             }}
           >
             <span className="phone-prefix" aria-hidden="true">🇧🇷 +55</span>
