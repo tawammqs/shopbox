@@ -185,7 +185,8 @@ const STYLES = `
 /* PRICING */
 .psb .sec-pricing { padding: 96px 52px; background: #fafaf8; border-block: 1px solid var(--line); }
 .psb .pricing-wrap { max-width: 1200px; margin: 0 auto; }
-.psb .billing-toggle-bar { position: relative; width: fit-content; margin: 34px auto 46px; padding: 6px; display: grid; grid-template-columns: 1fr 1fr; align-items: center; border: 1px solid var(--line); border-radius: 9999px; background: #fff; isolation: isolate; }
+.psb .billing-shell { margin: 34px auto 46px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.psb .billing-toggle-bar { position: relative; width: fit-content; padding: 6px; display: grid; grid-template-columns: 1fr 1fr; align-items: center; border: 1px solid var(--line); border-radius: 9999px; background: #fff; isolation: isolate; }
 .psb .billing-slider { position: absolute; z-index: -1; top: 6px; bottom: 6px; left: 6px; width: calc(50% - 6px); border-radius: 9999px; background: var(--ink); transition: transform .28s ease; }
 .psb .billing-toggle-bar.annual .billing-slider { transform: translateX(100%); }
 .psb .billing-option { min-width: 112px; min-height: 38px; padding: 0 18px; border: 0; border-radius: 9999px; color: #777; background: transparent; font-size: 14px; font-weight: 700; transition: color .2s; }
@@ -278,8 +279,9 @@ const STYLES = `
   .psb .step-num { margin: 0 0 12px; padding: 0; }
   .psb .steps-cta { margin-top: 12px; }
   .psb .sec-pricing { padding: 64px 0; }
-  .psb .sec-pricing .section-head, .psb .billing-toggle-bar, .psb .pricing-fine { margin-left: 20px; margin-right: 20px; }
-  .psb .billing-toggle-bar { width: calc(100% - 40px); }
+  .psb .sec-pricing .section-head, .psb .pricing-fine { margin-left: 20px; margin-right: 20px; }
+  .psb .billing-shell { margin-inline: 20px; flex-wrap: wrap; }
+  .psb .billing-toggle-bar { width: 100%; }
   .psb .billing-option { padding-inline: 13px; }
   .psb .plans-grid { display: flex; gap: 14px; overflow-x: auto; padding: 8px 20px 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .psb .plans-grid::-webkit-scrollbar { display: none; }
@@ -454,16 +456,16 @@ const FEATURES = [
 ];
 
 const TESTIMONIALS = [
-  { av: "AC", name: "Ana Costa", role: "Loja de roupas · SP", text: "Em 3 semanas já tinha recuperado o investimento. Minha loja ficou profissional e meus clientes adoraram comprar direto pelo WhatsApp." },
-  { av: "MR", name: "Marcos Ribeiro", role: "Pet shop · MG", text: "Nunca imaginei que criar uma loja seria tão fácil. Em 30 minutos estava tudo no ar. Hoje faço 3x mais vendas do que antes." },
-  { av: "JS", name: "Juliana Santos", role: "Cosméticos · RJ", text: "O suporte é incrível. Respondem em minutos pelo próprio WhatsApp. A plataforma é intuitiva e minha taxa de conversão disparou." },
+  { av: "AC", name: "Ana Costa", role: "Loja de roupas SP", text: "Em 3 semanas já tinha recuperado o investimento. Minha loja ficou profissional e meus clientes adoraram comprar direto pelo WhatsApp.", chips: ["Checkout WhatsApp", "Cupons"] },
+  { av: "MR", name: "Marcos Ribeiro", role: "Pet shop MG", text: "Nunca imaginei que criar uma loja seria tão fácil. Em 30 minutos estava tudo no ar. Hoje faço 3x mais vendas do que antes.", chips: ["Checkout WhatsApp", "Grupo VIP"] },
+  { av: "JS", name: "Juliana Santos", role: "Cosméticos RJ", text: "O suporte é incrível. Respondem em minutos pelo próprio WhatsApp. A plataforma é intuitiva e minha taxa de conversão disparou.", chips: ["Checkout WhatsApp", "Afiliados", "Video Commerce"] },
 ];
 
 const FAQS = [
   { q: "Preciso de cartão de crédito para testar?", a: "Não! Os 7 dias de teste são completamente gratuitos. Você só cadastra um meio de pagamento se decidir continuar após o período de teste." },
   { q: "Posso cancelar quando quiser?", a: "Sim, sem fidelidade. Você pode cancelar a qualquer momento diretamente pelo painel, sem burocracia e sem multas." },
   { q: "Como funciona o checkout pelo WhatsApp?", a: "Quando o cliente clica em 'comprar' na sua loja, ele é direcionado para uma conversa no WhatsApp onde finaliza o pedido. É direto, rápido e tem altíssima taxa de conversão." },
-  { q: "Quais formas de pagamento posso aceitar?", a: "Você pode aceitar Pix, boleto bancário e cartão de crédito e débito. As integrações com os principais gateways do Brasil já estão incluídas em todos os planos." },
+  { q: "Como meus clientes pagam?", a: "Você combina diretamente com seus clientes. Pix, transferência ou qualquer forma que preferir — sem intermediários, sem taxas." },
   { q: "Preciso de CNPJ para abrir minha loja?", a: "Não! Você pode começar com CPF. Quando formalizar como MEI ou empresa, basta atualizar os dados no painel sem precisar recriar a loja." },
   { q: "A ShopBox cobra comissão por venda?", a: "Não cobramos nenhuma comissão sobre suas vendas. Você paga apenas a mensalidade do plano e fica com 100% do que vender." },
   { q: "A ShopBox funciona em qualquer nicho?", a: "Sim! A plataforma atende lojistas de moda, acessórios, cosméticos, pet shop, alimentos, artesanato e muito mais." },
@@ -590,9 +592,9 @@ function ComSemSection() {
 }
 
 const PLANS = [
-  { label: "Inicial", monthly: 47, features: ["Até 200 produtos", "2 temas gratuitos", "Suporte pela Central de Ajuda"], featured: false },
-  { label: "Profissional", monthly: 97, features: ["Produtos ilimitados", "Todos os add-ons", "Suporte pelo WhatsApp"], featured: true },
-  { label: "Premium", monthly: 197, features: ["Tudo do Profissional", "Domínio personalizado", "Analytics avançado", "Suporte prioritário"], featured: false },
+  { label: "Inicial", monthly: 47, annual: 38, features: ["Até 200 produtos", "2 temas gratuitos", "Checkout pelo WhatsApp", "Cupons e promoções", "Suporte pela Central de Ajuda"], featured: false },
+  { label: "Profissional", monthly: 97, annual: 78, features: ["Produtos ilimitados", "Temas ilimitados", "Todos os add-ons (Afiliados, Grupo VIP, Video Commerce, Compre Junto, Captura de Leads)", "Analytics em tempo real", "Domínio personalizado", "Suporte pelo WhatsApp"], featured: true },
+  { label: "Premium", monthly: 197, annual: 158, features: ["Tudo do Profissional", "Analytics avançado", "Múltiplos usuários admin", "Suporte prioritário"], featured: false },
 ];
 
 function LandingPage() {
@@ -763,6 +765,7 @@ function LandingPage() {
               </article>
             ))}
           </div>
+          <div className="feats-cta"><Link to="/funcionalidades" className="primary-link">Conhecer funcionalidades →</Link></div>
         </div>
       </section>
 
@@ -775,9 +778,9 @@ function LandingPage() {
             <p className="ssub">Sem setup técnico, sem burocracia. Sua loja no ar hoje.</p>
           </header>
           <div className="steps-grid">
-            <article className="step"><div className="step-num">1</div><h3>Crie sua conta</h3><p>Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis.</p></article>
-            <article className="step"><div className="step-num">2</div><h3>Monte sua loja</h3><p>Adicione produtos, escolha um tema e configure seu WhatsApp.</p></article>
-            <article className="step"><div className="step-num">3</div><h3>Compartilhe o link</h3><p>Envie para seus clientes e comece a receber pedidos agora.</p></article>
+            <article className="step"><div className="step-num">01</div><h3>Crie sua conta</h3><p>Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis.</p></article>
+            <article className="step"><div className="step-num">02</div><h3>Monte sua loja</h3><p>Adicione produtos, escolha um tema e configure seu WhatsApp.</p></article>
+            <article className="step"><div className="step-num">03</div><h3>Compartilhe o link</h3><p>Envie para seus clientes e comece a receber pedidos agora.</p></article>
           </div>
           <div className="steps-cta"><Link to="/cadastro" className="primary-link">Criar minha loja grátis →</Link></div>
         </div>
@@ -790,20 +793,24 @@ function LandingPage() {
             <span className="pill">Planos</span>
             <h2 className="sh2">Sua loja, do seu jeito. Seu plano também.</h2>
           </header>
-          <div className="billing-toggle-bar" role="group" aria-label="Período de cobrança">
-            <button type="button" className={`billing-option${!isAnnual ? " active" : ""}`} aria-pressed={!isAnnual} onClick={() => setIsAnnual(false)}>Mensal</button>
-            <button type="button" className={`billing-option${isAnnual ? " active" : ""}`} aria-pressed={isAnnual} onClick={() => setIsAnnual(true)}>Anual (-20%)</button>
+          <div className="billing-shell">
+            <div className={`billing-toggle-bar${isAnnual ? " annual" : ""}`} role="group" aria-label="Período de cobrança">
+              <span className="billing-slider" aria-hidden="true" />
+              <button type="button" className={`billing-option${!isAnnual ? " active" : ""}`} aria-pressed={!isAnnual} onClick={() => setIsAnnual(false)}>Mensal</button>
+              <button type="button" className={`billing-option${isAnnual ? " active" : ""}`} aria-pressed={isAnnual} onClick={() => setIsAnnual(true)}>Anual (-20%)</button>
+            </div>
             {isAnnual && <span className="save-badge">Economize 20%</span>}
           </div>
           <div className="plans-grid">
             {PLANS.map((plan) => {
-              const price = isAnnual ? Math.round(plan.monthly * 0.8) : plan.monthly;
+              const price = isAnnual ? plan.annual : plan.monthly;
               return (
                 <article key={plan.label} className={`plan-card${plan.featured ? " featured" : ""}`}>
                   {plan.featured && <span className="plan-badge">MAIS POPULAR</span>}
                   <h3 className="plan-label">{plan.label}</h3>
                   <div className="plan-price"><span className="plan-num">R${price}</span><span className="plan-suffix">/mês</span></div>
                   <p className="plan-note">{isAnnual ? "Cobrança anual · 20% de economia" : "Cobrança mensal"}</p>
+                   {isAnnual && <span className="annual-card-badge">Economize 20%</span>}
                   <Link to="/cadastro" className="plan-btn">Testar grátis por 7 dias</Link>
                   <ul className="plan-feats">
                     {plan.features.map((feature) => <li key={feature}><span className="feat-yes">✓</span><span>{feature}</span></li>)}
@@ -826,9 +833,12 @@ function LandingPage() {
           <div className="testi-grid">
             {TESTIMONIALS.map((testimonial) => (
               <article key={testimonial.av} className="tc">
+                <div className="tc-av">{testimonial.av}</div>
                 <div className="tc-stars" aria-label="5 estrelas">★★★★★</div>
                 <p className="tc-text">“{testimonial.text}”</p>
-                <div className="tc-auth"><div className="tc-av">{testimonial.av}</div><div><div className="tc-name">{testimonial.name}</div><div className="tc-role">{testimonial.role}</div></div></div>
+                <div className="tc-auth"><div className="tc-name">{testimonial.name}</div><div className="tc-role">{testimonial.role}</div></div>
+                <div className="tc-used">Funcionalidades usadas</div>
+                <div className="tc-chips">{testimonial.chips.map((chip) => <span key={chip} className="tc-chip">{chip}</span>)}</div>
               </article>
             ))}
           </div>
@@ -863,15 +873,10 @@ function LandingPage() {
           <div className="f-brand">
             <img src={shopboxLogo.url} alt="ShopBox" className="footer-logo" />
             <p>A plataforma de loja online feita para quem vende pelo WhatsApp.</p>
-            <div className="social-links">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram"><Instagram /></a>
-              <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube"><Youtube /></a>
-              <a href={WA_LINK} target="_blank" rel="noreferrer" aria-label="WhatsApp"><MessageCircle /></a>
-            </div>
           </div>
           <div className="f-col"><h4>Produto</h4><a href="#sobre-feats">Funcionalidades</a><a href="#como-funciona">Como funciona</a><a href="#precos">Planos</a><Link to="/temas">Temas</Link><a href="#faq">FAQ</a></div>
           <div className="f-col"><h4>Suporte</h4><a href="#faq">Central de ajuda</a><a href={WA_LINK} target="_blank" rel="noreferrer">Fale conosco</a><a href="#">Status da plataforma</a></div>
-          <div className="f-col"><h4>Legal</h4><Link to="/privacidade">Política de privacidade</Link><Link to="/termos">Termos de uso</Link></div>
+          <div className="f-col"><h4>Legal</h4><Link to="/privacidade">Política de privacidade</Link><Link to="/termos">Termos de uso</Link><h4 className="f-social-title">Redes sociais</h4><div className="social-links"><a href="#" aria-label="Instagram"><Instagram /></a><a href="#" aria-label="YouTube"><Youtube /></a></div></div>
         </div>
         <div className="f-bottom">© 2026 ShopBox. Todos os direitos reservados.</div>
       </footer>
