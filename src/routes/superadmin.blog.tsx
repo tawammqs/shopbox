@@ -24,7 +24,7 @@ export const Route = createFileRoute("/superadmin/blog")({
 });
 
 type FormState = Omit<BlogPost, "created_at" | "updated_at" | "published_at">;
-const EMPTY: FormState = { id: "", title: "", slug: "", excerpt: "", content: "", cover_image_url: null, author_name: "Time ShopBox", author_avatar_url: null, category: BLOG_CATEGORIES[0], tags: [], meta_title: null, meta_description: null, reading_time: 5, is_published: false };
+const EMPTY: FormState = { id: "", title: "", slug: "", excerpt: "", content: "", cover_image_url: null, author_name: "Time ShopBox", author_avatar_url: null, category: BLOG_CATEGORIES[0], tags: [], meta_title: null, meta_description: null, reading_time: 5, is_published: false, view_count: 0, faq: [] };
 function slugify(value: string) { return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
 function errorMessage(error: unknown) { return error instanceof Error ? error.message : "Não foi possível concluir a ação."; }
 
