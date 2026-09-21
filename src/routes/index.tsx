@@ -847,6 +847,7 @@ function LandingPage() {
             <a href="#como-funciona">Como funciona</a>
             <a href="#precos">Planos</a>
             <a href="#faq">FAQ</a>
+            <Link to="/blog">Blog</Link>
           </div>
           <div className="landing-nav-actions">
             <Link to="/login" className="landing-login">Login</Link>
