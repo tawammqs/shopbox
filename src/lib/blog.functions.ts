@@ -54,6 +54,7 @@ const GeneratedPost = z.object({
   meta_title: z.string().max(70).optional(),
   meta_description: z.string().max(170).optional(),
   tags: z.array(z.string()).max(12).optional(),
+  faq: z.array(z.object({ question: z.string(), answer: z.string() })).max(8).optional(),
 });
 
 async function assertPlatformAdmin(
