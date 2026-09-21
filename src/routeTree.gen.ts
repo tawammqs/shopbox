@@ -35,6 +35,7 @@ import { Route as SuperadminLojasRouteImport } from './routes/superadmin.lojas'
 import { Route as SuperadminClientesRouteImport } from './routes/superadmin.clientes'
 import { Route as SuperadminBlogRouteImport } from './routes/superadmin.blog'
 import { Route as LojaSlugRouteImport } from './routes/loja.$slug'
+import { Route as LojaProntaSucessoRouteImport } from './routes/loja-pronta.sucesso'
 import { Route as HooksCleanupOrphanStoresRouteImport } from './routes/hooks/cleanup-orphan-stores'
 import { Route as HooksCartRecoveryRouteImport } from './routes/hooks/cart-recovery'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
@@ -248,6 +249,11 @@ const SuperadminBlogRoute = SuperadminBlogRouteImport.update({
 const LojaSlugRoute = LojaSlugRouteImport.update({
   id: '/loja/$slug',
   path: '/loja/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LojaProntaSucessoRoute = LojaProntaSucessoRouteImport.update({
+  id: '/loja-pronta/sucesso',
+  path: '/loja-pronta/sucesso',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HooksCleanupOrphanStoresRoute =
@@ -737,6 +743,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
+  '/loja-pronta/sucesso': typeof LojaProntaSucessoRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/blog': typeof SuperadminBlogRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
@@ -844,6 +851,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
+  '/loja-pronta/sucesso': typeof LojaProntaSucessoRoute
   '/superadmin/blog': typeof SuperadminBlogRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
   '/superadmin/lojas': typeof SuperadminLojasRoute
@@ -956,6 +964,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/hooks/cart-recovery': typeof HooksCartRecoveryRoute
   '/hooks/cleanup-orphan-stores': typeof HooksCleanupOrphanStoresRoute
+  '/loja-pronta/sucesso': typeof LojaProntaSucessoRoute
   '/loja/$slug': typeof LojaSlugRouteWithChildren
   '/superadmin/blog': typeof SuperadminBlogRoute
   '/superadmin/clientes': typeof SuperadminClientesRoute
@@ -1070,6 +1079,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
+    | '/loja-pronta/sucesso'
     | '/loja/$slug'
     | '/superadmin/blog'
     | '/superadmin/clientes'
@@ -1177,6 +1187,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
+    | '/loja-pronta/sucesso'
     | '/superadmin/blog'
     | '/superadmin/clientes'
     | '/superadmin/lojas'
@@ -1288,6 +1299,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/hooks/cart-recovery'
     | '/hooks/cleanup-orphan-stores'
+    | '/loja-pronta/sucesso'
     | '/loja/$slug'
     | '/superadmin/blog'
     | '/superadmin/clientes'
@@ -1383,6 +1395,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   HooksCartRecoveryRoute: typeof HooksCartRecoveryRoute
   HooksCleanupOrphanStoresRoute: typeof HooksCleanupOrphanStoresRoute
+  LojaProntaSucessoRoute: typeof LojaProntaSucessoRoute
   LojaSlugRoute: typeof LojaSlugRouteWithChildren
   TemasSlugRoute: typeof TemasSlugRoute
   VipSlugRoute: typeof VipSlugRoute
@@ -1581,6 +1594,13 @@ declare module '@tanstack/react-router' {
       path: '/loja/$slug'
       fullPath: '/loja/$slug'
       preLoaderRoute: typeof LojaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loja-pronta/sucesso': {
+      id: '/loja-pronta/sucesso'
+      path: '/loja-pronta/sucesso'
+      fullPath: '/loja-pronta/sucesso'
+      preLoaderRoute: typeof LojaProntaSucessoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hooks/cleanup-orphan-stores': {
@@ -2442,6 +2462,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   HooksCartRecoveryRoute: HooksCartRecoveryRoute,
   HooksCleanupOrphanStoresRoute: HooksCleanupOrphanStoresRoute,
+  LojaProntaSucessoRoute: LojaProntaSucessoRoute,
   LojaSlugRoute: LojaSlugRouteWithChildren,
   TemasSlugRoute: TemasSlugRoute,
   VipSlugRoute: VipSlugRoute,

@@ -4,6 +4,8 @@ import {
   Menu, X, Instagram, Youtube, ArrowLeft, ArrowRight, ShoppingBag, Users, MessageCircle, PlayCircle, BarChart3,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
+import { createLojaProntaCheckout } from "@/lib/loja-pronta.functions";
+import { toast } from "sonner";
 import garetBook from "@/assets/garet-book.woff.asset.json";
 import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
 import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
@@ -205,12 +207,21 @@ const STYLES = `
 .psb .plan-card.featured .plan-note { color: var(--green); }
 .psb .annual-card-badge { width: fit-content; margin-top: 13px; padding: 5px 10px; border-radius: 9999px; color: var(--green-text); background: var(--bg-mint); font-size: 11px; font-weight: 800; }
 .psb .plan-card.featured .annual-card-badge { color: var(--ink); background: var(--green); }
-.psb .plan-btn { width: 100%; min-height: 46px; margin: 26px 0; display: grid; place-items: center; border-radius: 8px; color: var(--ink); border: 1px solid var(--green); font-size: 14px; font-weight: 600; transition: background .2s, color .2s; }
+.psb .plan-btn { width: 100%; min-height: 46px; margin: auto 0 0; display: grid; place-items: center; border-radius: 8px; color: var(--ink); border: 1px solid var(--green); font-size: 14px; font-weight: 600; transition: background .2s, color .2s; }
 .psb .plan-btn:hover, .psb .plan-card.featured .plan-btn { color: #fff; background: var(--green); }
-.psb .plan-feats { display: grid; gap: 13px; margin-top: auto; list-style: none; }
+.psb .plan-feats { display: grid; gap: 13px; margin: 26px 0; list-style: none; }
 .psb .plan-feats li { display: flex; gap: 10px; align-items: flex-start; color: #4b5563; font-size: 14px; line-height: 1.5; }
 .psb .plan-card.featured .plan-feats li { color: #d1d5db; }
+.psb .plan-feats li.exc { color: #b6b6b6; }
+.psb .plan-card.featured .plan-feats li.exc { color: #6b7280; }
 .psb .feat-yes { color: var(--green); font-weight: 800; }
+.psb .feat-no { color: #d4d4d4; font-weight: 800; }
+.psb .plan-card.featured .feat-no { color: #4b5563; }
+.psb .plan-desc { margin-top: 10px; color: #6b7280; font-size: 13px; line-height: 1.6; }
+.psb .plan-card.featured .plan-desc { color: #9ca3af; }
+.psb .plan-installments { margin-top: 8px; color: var(--green); font-size: 13px; font-weight: 600; }
+.psb .ready-grid { max-width: 880px; margin: 0 auto; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; align-items: stretch; }
+.psb .ready-grid .plan-card { min-height: 0; }
 .psb .pricing-fine { margin-top: 28px; text-align: center; color: #777; font-size: 13px; }
 
 /* TESTIMONIALS */
@@ -554,6 +565,9 @@ const STYLES = `
   .psb .pricing-tabs { width: calc(100% - 40px); overflow-x: auto; justify-content: flex-start; }
   .psb .pricing-tab { min-width: max-content; padding: 0 20px; }
   .psb .ready-card { margin-inline: 20px; padding: 30px; grid-template-columns: 1fr; }
+  .psb .ready-grid { display: flex; gap: 14px; overflow-x: auto; padding: 16px 20px 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .psb .ready-grid::-webkit-scrollbar { display: none; }
+  .psb .ready-grid .plan-card { flex: 0 0 min(86vw,340px); scroll-snap-align: start; }
   .psb .testi-head { text-align: center; }
   .psb .testi-desktop { display: none; }
   .psb .testi-mobile { display: flex; flex-direction: column; align-items: center; }
@@ -748,6 +762,53 @@ const PLANS = [
 
 type PricingTab = "monthly" | "annual" | "ready";
 
+const LOJA_PRONTA_PLANS = [
+  {
+    label: "Loja Starter",
+    price: "182",
+    period: "12x de R$182,00",
+    priceId: "price_1UI6kOApU8dBxMeararWyccG",
+    featured: false,
+    description: "Ideal para quem quer começar a vender online e não pode perder tempo.",
+    included: [
+      "Criação completa da loja feita por nós",
+      "Cadastro de até 50 produtos com fotos",
+      "Configuração do WhatsApp e vendedoras",
+      "Tema profissional personalizado com sua marca",
+      "Banner principal criado e configurado",
+      "Configuração de cupons e promoções",
+      "Integração com grupo VIP do WhatsApp",
+      "Treinamento de 1h para usar a plataforma",
+      "Suporte por 30 dias após entrega",
+      "Entrega em até 5 dias úteis",
+    ],
+    excluded: ["Domínio personalizado", "Integração de afiliados", "Video commerce"],
+  },
+  {
+    label: "Loja Profissional",
+    price: "415",
+    period: "12x de R$415,00",
+    priceId: "price_1UI6lvApU8dBxMea0qsT6Jue",
+    featured: true,
+    description: "Para quem quer ir além do básico e lançar sua loja com inteligência e performance.",
+    included: [
+      "Tudo da Loja Starter",
+      "Cadastro de até 200 produtos com fotos",
+      "Domínio personalizado (.com.br) configurado",
+      "Configuração completa de afiliados",
+      "Video commerce ativado e configurado",
+      "Compre Junto configurado com sugestões",
+      "Captura de leads e automação do Grupo VIP",
+      "SEO básico configurado em todos os produtos",
+      "Pixel do Facebook e Google Analytics",
+      "Treinamento de 2h para usar a plataforma",
+      "Suporte prioritário por 60 dias após entrega",
+      "Entrega em até 7 dias úteis",
+    ],
+    excluded: [] as string[],
+  },
+];
+
 const STEPS = [
   { title: "Crie sua conta", description: "Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis para testar tudo." },
   { title: "Monte sua loja", description: "Adicione produtos com fotos, variações e preços. Escolha um tema profissional." },
@@ -781,7 +842,27 @@ function LandingPage() {
   const [whatsappError, setWhatsappError] = useState("");
   const featureCarouselRef = useRef<HTMLDivElement>(null);
   const plansCarouselRef = useRef<HTMLDivElement>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const handleStripeCheckout = async (priceId: string) => {
+    try {
+      setCheckoutLoading(priceId);
+      const data = await createLojaProntaCheckout({
+        data: {
+          priceId,
+          successUrl: `${window.location.origin}/loja-pronta/sucesso`,
+          cancelUrl: `${window.location.origin}/#precos`,
+        },
+      });
+      if (data?.url) window.location.href = data.url;
+      else throw new Error("Checkout indisponível");
+    } catch {
+      toast.error("Erro ao iniciar o pagamento. Tente novamente.");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
 
   const formatPhone = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 11);
@@ -1003,10 +1084,29 @@ function LandingPage() {
             <button type="button" role="tab" aria-selected={pricingTab === "ready"} className={`pricing-tab${pricingTab === "ready" ? " active" : ""}`} onClick={() => setPricingTab("ready")}>Loja Pronta</button>
           </div>
           {pricingTab === "ready" ? (
-            <article className="ready-card">
-              <div><h3>Sua loja pronta para vender</h3><p>Nossa equipe configura sua loja, organiza o catálogo e deixa tudo preparado para você começar com acompanhamento especializado.</p></div>
-              <a href={WA_LINK} target="_blank" rel="noreferrer" className="primary-link">Falar com especialista →</a>
-            </article>
+            <div className="ready-grid">
+              {LOJA_PRONTA_PLANS.map((plan) => (
+                <article key={plan.label} className={`plan-card${plan.featured ? " featured" : ""}`}>
+                  {plan.featured && <span className="plan-badge">MAIS COMPLETO</span>}
+                  <h3 className="plan-label">{plan.label}</h3>
+                  <p className="plan-desc">{plan.description}</p>
+                  <div className="plan-price"><span className="plan-num">R${plan.price}</span><span className="plan-suffix">/mês</span></div>
+                  <p className="plan-installments">{plan.period}</p>
+                  <ul className="plan-feats">
+                    {plan.included.map((feature) => <li key={feature}><span className="feat-yes">✓</span><span>{feature}</span></li>)}
+                    {plan.excluded.map((feature) => <li key={feature} className="exc"><span className="feat-no">✗</span><span>{feature}</span></li>)}
+                  </ul>
+                  <button
+                    type="button"
+                    className="plan-btn"
+                    disabled={checkoutLoading !== null}
+                    onClick={() => handleStripeCheckout(plan.priceId)}
+                  >
+                    {checkoutLoading === plan.priceId ? "Abrindo pagamento…" : "Contratar agora →"}
+                  </button>
+                </article>
+              ))}
+            </div>
           ) : <div className="plans-grid" ref={plansCarouselRef}>
             {PLANS.map((plan) => {
               const isAnnual = pricingTab === "annual";
@@ -1018,15 +1118,15 @@ function LandingPage() {
                   <div className="plan-price"><span className="plan-num">R${price}</span><span className="plan-suffix">/mês</span></div>
                   <p className="plan-note">{isAnnual ? "Cobrança anual · 20% de economia" : "Cobrança mensal"}</p>
                    {isAnnual && <span className="annual-card-badge">Economize 20%</span>}
-                  <Link to="/cadastro" className="plan-btn">Testar grátis por 7 dias</Link>
                   <ul className="plan-feats">
                     {plan.features.map((feature) => <li key={feature}><span className="feat-yes">✓</span><span>{feature}</span></li>)}
                   </ul>
+                  <Link to="/cadastro" className="plan-btn">Testar grátis por 7 dias</Link>
                 </article>
               );
             })}
           </div>}
-          <p className="pricing-fine">7 dias grátis em todos os planos · Sem cartão · Cancele quando quiser</p>
+          <p className="pricing-fine">{pricingTab === "ready" ? "Pagamento parcelado em 12x · Entrega garantida em dias úteis" : "7 dias grátis em todos os planos · Sem cartão · Cancele quando quiser"}</p>
         </div>
       </section>
 
