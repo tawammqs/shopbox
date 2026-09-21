@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { TrendingUp, Users, Store as StoreIcon, AlertCircle, DollarSign, Percent, Calendar, ExternalLink } from "lucide-react";
+import { TrendingUp, Users, Store as StoreIcon, AlertCircle, DollarSign, Percent, Calendar, ExternalLink, FileText, Eye, MessageCircle } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { getBlogMetrics } from "@/lib/blog.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -228,6 +230,8 @@ function SuperadminMetricasPage() {
             </Card>
           )}
 
+          <BlogMetricsSection />
+
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Cadastros recentes</CardTitle>
@@ -308,4 +312,54 @@ const STATUS_LABELS: Record<string, { label: string; variant: "default" | "secon
 function StatusBadge({ status }: { status: string }) {
   const cfg = STATUS_LABELS[status] ?? { label: status, variant: "outline" as const };
   return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+}
+
+function BlogMetricsSection() {
+  const fetchMetrics = useServerFn(getBlogMetrics);
+  const { data, isLoading } = useQuery({ queryKey: ["superadmin-blog-metrics"], queryFn: () => fetchMetrics() });
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-bold tracking-tight">Métricas do Blog</h2>
+        <p className="text-sm text-muted-foreground">Audiência dos artigos e leads captados pelo blog.</p>
+      </div>
+      {isLoading || !data ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}><CardContent className="p-6"><div className="h-16 animate-pulse rounded bg-muted" /></CardContent></Card>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard icon={FileText} label="Artigos publicados" value={data.publishedCount.toString()} />
+            <StatCard icon={Eye} label="Visualizações totais" value={data.totalViews.toString()} hint={`${data.views30d} nos últimos 30 dias`} />
+            <StatCard icon={MessageCircle} label="Leads do blog" value={data.leads.toString()} hint={`${data.leads30d} nos últimos 30 dias`} accent="text-emerald-600" />
+            <StatCard icon={Percent} label="Conversão do blog" value={`${data.conversionRate.toFixed(1)}%`} hint="leads ÷ visualizações" accent="text-emerald-600" />
+          </div>
+          <Card>
+            <CardHeader><CardTitle className="text-base">Top 5 artigos mais lidos</CardTitle></CardHeader>
+            <CardContent>
+              {data.topPosts.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Nenhum artigo publicado ainda.</p>
+              ) : (
+                <Table>
+                  <TableHeader><TableRow><TableHead>Artigo</TableHead><TableHead className="text-right">Visualizações</TableHead></TableRow></TableHeader>
+                  <TableBody>
+                    {data.topPosts.map((post) => (
+                      <TableRow key={post.id}>
+                        <TableCell><div className="font-medium">{post.title}</div><div className="text-xs text-muted-foreground">/blog/{post.slug}</div></TableCell>
+                        <TableCell className="text-right font-semibold">{post.view_count}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
+    </div>
+  );
 }
