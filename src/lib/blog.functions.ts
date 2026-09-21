@@ -30,7 +30,21 @@ const BlogPostInput = z.object({
   meta_description: z.string().trim().max(170).nullable(),
   reading_time: z.number().int().min(1).max(120),
   is_published: z.boolean(),
+  faq: z.array(z.object({ question: z.string().trim().min(3).max(300), answer: z.string().trim().min(3).max(2000) })).max(10).default([]),
 });
+
+export type BlogFaqItem = { question: string; answer: string };
+
+export function parseFaq(value: unknown): BlogFaqItem[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const record = item as Record<string, unknown>;
+    const question = typeof record["question"] === "string" ? record["question"] : "";
+    const answer = typeof record["answer"] === "string" ? record["answer"] : "";
+    return question && answer ? [{ question, answer }] : [];
+  });
+}
 
 const GeneratedPost = z.object({
   title: z.string().min(3).max(180),
@@ -40,6 +54,7 @@ const GeneratedPost = z.object({
   meta_title: z.string().max(70).optional(),
   meta_description: z.string().max(170).optional(),
   tags: z.array(z.string()).max(12).optional(),
+  faq: z.array(z.object({ question: z.string(), answer: z.string() })).max(8).optional(),
 });
 
 async function assertPlatformAdmin(
@@ -108,6 +123,52 @@ export const getPublishedPost = createServerFn({ method: "GET" })
     return { post, related: related ?? [] };
   });
 
+export const listTopPosts = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await createPublicClient()
+    .from("blog_posts")
+    .select("id,title,slug,excerpt,cover_image_url,category,reading_time,view_count")
+    .eq("is_published", true)
+    .lte("published_at", new Date().toISOString())
+    .order("view_count", { ascending: false })
+    .limit(3);
+  if (error) throw new Response(error.message, { status: 500 });
+  return data ?? [];
+});
+
+export const incrementBlogView = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    await createPublicClient().rpc("increment_blog_view", { _post_id: data.id });
+    return { ok: true };
+  });
+
+export const submitBlogLead = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({
+    whatsapp: z.string().trim().min(8).max(30),
+    source: z.string().trim().max(60).default("blog"),
+  }).parse(input))
+  .handler(async ({ data }) => {
+    const digits = data.whatsapp.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 13) throw new Response("Informe um WhatsApp válido com DDD.", { status: 400 });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("blog_leads").insert({ whatsapp: digits, source: data.source });
+    if (error) throw new Response(error.message, { status: 500 });
+    return { ok: true };
+  });
+
+export const listBlogLeads = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase
+      .from("blog_leads")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Response(error.message, { status: 500 });
+    return data ?? [];
+  });
+
+
 export const listAdminPosts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -139,6 +200,7 @@ export const saveBlogPost = createServerFn({ method: "POST" })
       meta_description: data.meta_description,
       reading_time: data.reading_time,
       is_published: data.is_published,
+      faq: data.faq,
       published_at: data.is_published ? new Date().toISOString() : null,
     };
     const query = data.id
@@ -218,7 +280,7 @@ export const generateBlogPost = createServerFn({ method: "POST" })
     await assertPlatformAdmin(context.supabase, context.userId);
     const apiKey = process.env["ANTHROPIC_API_KEY"];
     if (!apiKey) throw new Response("A chave da Anthropic não está configurada.", { status: 401 });
-    const prompt = `Crie um artigo de blog em português do Brasil sobre "${data.theme}". Palavra-chave principal: "${data.keyword}". Categoria: "${data.category}". Público: pequenos empreendedores brasileiros que vendem online e pelo WhatsApp. Escreva entre 1200 e 1800 palavras, com tom profissional, claro, prático e acolhedor. Não mencione concorrentes. Inclua uma CTA natural para criar uma loja na ShopBox. Retorne SOMENTE JSON válido com: title, slug, excerpt, content, meta_title, meta_description e tags. content deve ser HTML sem markdown, usando apenas h2, h3, p, ul, li e strong. O slug deve usar letras minúsculas, números e hífens.`;
+    const prompt = `Crie um artigo de blog em português do Brasil sobre "${data.theme}". Palavra-chave principal: "${data.keyword}". Categoria: "${data.category}". Público: pequenos empreendedores brasileiros que vendem online e pelo WhatsApp. Escreva entre 1200 e 1800 palavras, com tom profissional, claro, prático e acolhedor. Não mencione concorrentes. Inclua uma CTA natural para criar uma loja na ShopBox. Retorne SOMENTE JSON válido com: title, slug, excerpt, content, meta_title, meta_description, tags e faq. content deve ser HTML sem markdown, usando apenas h2, h3, p, ul, li e strong; cada h2 deve ter um id em kebab-case derivado do próprio título, por exemplo <h2 id="como-comecar">Como começar</h2>. faq deve ser uma lista com 4 a 5 objetos { "question", "answer" } com perguntas frequentes sobre o tema e respostas completas em texto simples. O slug deve usar letras minúsculas, números e hífens.`;
     const response = await requestClaude(apiKey, {
       model: "claude-sonnet-4-6",
       max_tokens: 4000,
@@ -238,6 +300,7 @@ export const generateBlogPost = createServerFn({ method: "POST" })
       meta_title: generated.meta_title ?? generated.title.slice(0, 70),
       meta_description: generated.meta_description ?? generated.excerpt.slice(0, 170),
       reading_time: Math.max(1, Math.ceil(words / 220)),
+      faq: generated.faq ?? [],
       is_published: false,
     }).select().single();
     if (error) throw new Response(error.message, { status: error.code === "23505" ? 409 : 500 });
