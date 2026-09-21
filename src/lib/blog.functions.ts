@@ -300,6 +300,7 @@ export const generateBlogPost = createServerFn({ method: "POST" })
       meta_title: generated.meta_title ?? generated.title.slice(0, 70),
       meta_description: generated.meta_description ?? generated.excerpt.slice(0, 170),
       reading_time: Math.max(1, Math.ceil(words / 220)),
+      faq: generated.faq ?? [],
       is_published: false,
     }).select().single();
     if (error) throw new Response(error.message, { status: error.code === "23505" ? 409 : 500 });
