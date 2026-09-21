@@ -4,6 +4,8 @@ import {
   Menu, X, Instagram, Youtube, ArrowLeft, ArrowRight, ShoppingBag, Users, MessageCircle, PlayCircle, BarChart3,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import garetBook from "@/assets/garet-book.woff.asset.json";
 import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
 import semShopbox01 from "@/assets/comparativo-sem-01.webp.asset.json";
@@ -840,7 +842,28 @@ function LandingPage() {
   const [whatsappError, setWhatsappError] = useState("");
   const featureCarouselRef = useRef<HTMLDivElement>(null);
   const plansCarouselRef = useRef<HTMLDivElement>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const handleStripeCheckout = async (priceId: string) => {
+    try {
+      setCheckoutLoading(priceId);
+      const { data, error } = await supabase.functions.invoke("create-loja-pronta-checkout", {
+        body: {
+          priceId,
+          successUrl: `${window.location.origin}/loja-pronta/sucesso`,
+          cancelUrl: `${window.location.origin}/#precos`,
+        },
+      });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url as string;
+      else throw new Error("Checkout indisponível");
+    } catch {
+      toast.error("Erro ao iniciar o pagamento. Tente novamente.");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
 
   const formatPhone = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 11);
