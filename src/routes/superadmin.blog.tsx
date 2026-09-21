@@ -36,6 +36,9 @@ function SuperadminBlogPage() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [generation, setGeneration] = useState({ theme: "", keyword: "", category: BLOG_CATEGORIES[0] as (typeof BLOG_CATEGORIES)[number] });
   const query = useQuery({ queryKey: ["superadmin-blog"], queryFn: () => listPosts() });
+  const fetchLeads = useServerFn(listBlogLeads);
+  const [tab, setTab] = useState<"posts" | "leads">("posts");
+  const leadsQuery = useQuery({ queryKey: ["superadmin-blog-leads"], queryFn: () => fetchLeads(), enabled: tab === "leads" });
   const refresh = () => qc.invalidateQueries({ queryKey: ["superadmin-blog"] });
   const save = useMutation({ mutationFn: (published: boolean) => savePost({ data: { ...form, id: form.id || null, cover_image_url: form.cover_image_url || null, author_avatar_url: form.author_avatar_url || null, meta_title: form.meta_title || null, meta_description: form.meta_description || null, tags: form.tags.filter(Boolean), faq: parseFaq(form.faq), is_published: published } }), onSuccess: (_post, published) => { toast.success(published ? "Artigo publicado" : "Rascunho salvo"); setEditorOpen(false); refresh(); }, onError: (e) => toast.error(errorMessage(e)) });
   const publish = useMutation({ mutationFn: ({ id, published }: { id: string; published: boolean }) => publishPost({ data: { id, published } }), onSuccess: (_d, vars) => { toast.success(vars.published ? "Artigo publicado" : "Artigo movido para rascunhos"); refresh(); }, onError: (e) => toast.error(errorMessage(e)) });
