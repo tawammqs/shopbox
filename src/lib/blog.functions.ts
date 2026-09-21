@@ -123,6 +123,52 @@ export const getPublishedPost = createServerFn({ method: "GET" })
     return { post, related: related ?? [] };
   });
 
+export const listTopPosts = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await createPublicClient()
+    .from("blog_posts")
+    .select("id,title,slug,excerpt,cover_image_url,category,reading_time,view_count")
+    .eq("is_published", true)
+    .lte("published_at", new Date().toISOString())
+    .order("view_count", { ascending: false })
+    .limit(3);
+  if (error) throw new Response(error.message, { status: 500 });
+  return data ?? [];
+});
+
+export const incrementBlogView = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    await createPublicClient().rpc("increment_blog_view", { _post_id: data.id });
+    return { ok: true };
+  });
+
+export const submitBlogLead = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({
+    whatsapp: z.string().trim().min(8).max(30),
+    source: z.string().trim().max(60).default("blog"),
+  }).parse(input))
+  .handler(async ({ data }) => {
+    const digits = data.whatsapp.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 13) throw new Response("Informe um WhatsApp válido com DDD.", { status: 400 });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("blog_leads").insert({ whatsapp: digits, source: data.source });
+    if (error) throw new Response(error.message, { status: 500 });
+    return { ok: true };
+  });
+
+export const listBlogLeads = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase
+      .from("blog_leads")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Response(error.message, { status: 500 });
+    return data ?? [];
+  });
+
+
 export const listAdminPosts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
