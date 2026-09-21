@@ -43,7 +43,20 @@ function BlogPage() {
         <h1 className="mx-auto max-w-3xl text-4xl font-semibold leading-tight md:text-6xl">Venda melhor. Cresça com mais clareza.</h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">Estratégias diretas para transformar conversas no WhatsApp em vendas e clientes fiéis.</p>
       </section>
+      {topPosts.length > 0 && <section className="mx-auto max-w-6xl px-5 pt-14">
+        <h2 className="text-2xl font-semibold">Mais lidos</h2>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {topPosts.map((post, index) => <Link key={post.id} to="/blog/$slug" params={{ slug: post.slug }} className="flex items-start gap-4 rounded-xl border border-border bg-card p-5 transition hover:border-[#25d366]">
+            <span className="text-2xl font-bold text-[#25d366]">{String(index + 1).padStart(2, "0")}</span>
+            <span>
+              <span className="block text-base font-semibold leading-snug">{post.title}</span>
+              <span className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground"><span className="font-semibold uppercase text-accent">{post.category}</span><span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{post.reading_time} min</span></span>
+            </span>
+          </Link>)}
+        </div>
+      </section>}
       <section className="mx-auto max-w-6xl px-5 py-12">
+        <BlogLeadCapture source="blog-listagem" />
         <div className="scrollbar-hide mb-10 flex gap-2 overflow-x-auto pb-2">
           {["Todos", ...BLOG_CATEGORIES].map((item) => <button key={item} onClick={() => setCategory(item)} className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition ${category === item ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card text-muted-foreground hover:text-foreground"}`}>{item}</button>)}
         </div>
