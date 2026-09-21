@@ -4,7 +4,7 @@ import {
   Menu, X, Instagram, Youtube, ArrowLeft, ArrowRight, ShoppingBag, Users, MessageCircle, PlayCircle, BarChart3,
 } from "lucide-react";
 import { resolveDomainSlug } from "@/lib/custom-domain.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { createLojaProntaCheckout } from "@/lib/loja-pronta.functions";
 import { toast } from "sonner";
 import garetBook from "@/assets/garet-book.woff.asset.json";
 import garetHeavy from "@/assets/garet-heavy.woff.asset.json";
@@ -848,15 +848,14 @@ function LandingPage() {
   const handleStripeCheckout = async (priceId: string) => {
     try {
       setCheckoutLoading(priceId);
-      const { data, error } = await supabase.functions.invoke("create-loja-pronta-checkout", {
-        body: {
+      const data = await createLojaProntaCheckout({
+        data: {
           priceId,
           successUrl: `${window.location.origin}/loja-pronta/sucesso`,
           cancelUrl: `${window.location.origin}/#precos`,
         },
       });
-      if (error) throw error;
-      if (data?.url) window.location.href = data.url as string;
+      if (data?.url) window.location.href = data.url;
       else throw new Error("Checkout indisponível");
     } catch {
       toast.error("Erro ao iniciar o pagamento. Tente novamente.");
