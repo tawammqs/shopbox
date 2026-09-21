@@ -30,7 +30,21 @@ const BlogPostInput = z.object({
   meta_description: z.string().trim().max(170).nullable(),
   reading_time: z.number().int().min(1).max(120),
   is_published: z.boolean(),
+  faq: z.array(z.object({ question: z.string().trim().min(3).max(300), answer: z.string().trim().min(3).max(2000) })).max(10).default([]),
 });
+
+export type BlogFaqItem = { question: string; answer: string };
+
+export function parseFaq(value: unknown): BlogFaqItem[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const record = item as Record<string, unknown>;
+    const question = typeof record["question"] === "string" ? record["question"] : "";
+    const answer = typeof record["answer"] === "string" ? record["answer"] : "";
+    return question && answer ? [{ question, answer }] : [];
+  });
+}
 
 const GeneratedPost = z.object({
   title: z.string().min(3).max(180),
