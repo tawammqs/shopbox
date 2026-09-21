@@ -760,6 +760,53 @@ const PLANS = [
 
 type PricingTab = "monthly" | "annual" | "ready";
 
+const LOJA_PRONTA_PLANS = [
+  {
+    label: "Loja Starter",
+    price: "182",
+    period: "12x de R$182,00",
+    priceId: "price_1UI6kOApU8dBxMeararWyccG",
+    featured: false,
+    description: "Ideal para quem quer começar a vender online e não pode perder tempo.",
+    included: [
+      "Criação completa da loja feita por nós",
+      "Cadastro de até 50 produtos com fotos",
+      "Configuração do WhatsApp e vendedoras",
+      "Tema profissional personalizado com sua marca",
+      "Banner principal criado e configurado",
+      "Configuração de cupons e promoções",
+      "Integração com grupo VIP do WhatsApp",
+      "Treinamento de 1h para usar a plataforma",
+      "Suporte por 30 dias após entrega",
+      "Entrega em até 5 dias úteis",
+    ],
+    excluded: ["Domínio personalizado", "Integração de afiliados", "Video commerce"],
+  },
+  {
+    label: "Loja Profissional",
+    price: "415",
+    period: "12x de R$415,00",
+    priceId: "price_1UI6lvApU8dBxMea0qsT6Jue",
+    featured: true,
+    description: "Para quem quer ir além do básico e lançar sua loja com inteligência e performance.",
+    included: [
+      "Tudo da Loja Starter",
+      "Cadastro de até 200 produtos com fotos",
+      "Domínio personalizado (.com.br) configurado",
+      "Configuração completa de afiliados",
+      "Video commerce ativado e configurado",
+      "Compre Junto configurado com sugestões",
+      "Captura de leads e automação do Grupo VIP",
+      "SEO básico configurado em todos os produtos",
+      "Pixel do Facebook e Google Analytics",
+      "Treinamento de 2h para usar a plataforma",
+      "Suporte prioritário por 60 dias após entrega",
+      "Entrega em até 7 dias úteis",
+    ],
+    excluded: [] as string[],
+  },
+];
+
 const STEPS = [
   { title: "Crie sua conta", description: "Cadastre-se em 2 minutos. Sem cartão de crédito, 7 dias grátis para testar tudo." },
   { title: "Monte sua loja", description: "Adicione produtos com fotos, variações e preços. Escolha um tema profissional." },
