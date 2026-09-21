@@ -563,6 +563,9 @@ const STYLES = `
   .psb .pricing-tabs { width: calc(100% - 40px); overflow-x: auto; justify-content: flex-start; }
   .psb .pricing-tab { min-width: max-content; padding: 0 20px; }
   .psb .ready-card { margin-inline: 20px; padding: 30px; grid-template-columns: 1fr; }
+  .psb .ready-grid { display: flex; gap: 14px; overflow-x: auto; padding: 16px 20px 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .psb .ready-grid::-webkit-scrollbar { display: none; }
+  .psb .ready-grid .plan-card { flex: 0 0 min(86vw,340px); scroll-snap-align: start; }
   .psb .testi-head { text-align: center; }
   .psb .testi-desktop { display: none; }
   .psb .testi-mobile { display: flex; flex-direction: column; align-items: center; }
