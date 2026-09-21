@@ -1085,10 +1085,29 @@ function LandingPage() {
             <button type="button" role="tab" aria-selected={pricingTab === "ready"} className={`pricing-tab${pricingTab === "ready" ? " active" : ""}`} onClick={() => setPricingTab("ready")}>Loja Pronta</button>
           </div>
           {pricingTab === "ready" ? (
-            <article className="ready-card">
-              <div><h3>Sua loja pronta para vender</h3><p>Nossa equipe configura sua loja, organiza o catálogo e deixa tudo preparado para você começar com acompanhamento especializado.</p></div>
-              <a href={WA_LINK} target="_blank" rel="noreferrer" className="primary-link">Falar com especialista →</a>
-            </article>
+            <div className="ready-grid">
+              {LOJA_PRONTA_PLANS.map((plan) => (
+                <article key={plan.label} className={`plan-card${plan.featured ? " featured" : ""}`}>
+                  {plan.featured && <span className="plan-badge">MAIS COMPLETO</span>}
+                  <h3 className="plan-label">{plan.label}</h3>
+                  <p className="plan-desc">{plan.description}</p>
+                  <div className="plan-price"><span className="plan-num">R${plan.price}</span><span className="plan-suffix">/mês</span></div>
+                  <p className="plan-installments">{plan.period}</p>
+                  <ul className="plan-feats">
+                    {plan.included.map((feature) => <li key={feature}><span className="feat-yes">✓</span><span>{feature}</span></li>)}
+                    {plan.excluded.map((feature) => <li key={feature} className="exc"><span className="feat-no">✗</span><span>{feature}</span></li>)}
+                  </ul>
+                  <button
+                    type="button"
+                    className="plan-btn"
+                    disabled={checkoutLoading !== null}
+                    onClick={() => handleStripeCheckout(plan.priceId)}
+                  >
+                    {checkoutLoading === plan.priceId ? "Abrindo pagamento…" : "Contratar agora →"}
+                  </button>
+                </article>
+              ))}
+            </div>
           ) : <div className="plans-grid" ref={plansCarouselRef}>
             {PLANS.map((plan) => {
               const isAnnual = pricingTab === "annual";
@@ -1100,15 +1119,15 @@ function LandingPage() {
                   <div className="plan-price"><span className="plan-num">R${price}</span><span className="plan-suffix">/mês</span></div>
                   <p className="plan-note">{isAnnual ? "Cobrança anual · 20% de economia" : "Cobrança mensal"}</p>
                    {isAnnual && <span className="annual-card-badge">Economize 20%</span>}
-                  <Link to="/cadastro" className="plan-btn">Testar grátis por 7 dias</Link>
                   <ul className="plan-feats">
                     {plan.features.map((feature) => <li key={feature}><span className="feat-yes">✓</span><span>{feature}</span></li>)}
                   </ul>
+                  <Link to="/cadastro" className="plan-btn">Testar grátis por 7 dias</Link>
                 </article>
               );
             })}
           </div>}
-          <p className="pricing-fine">7 dias grátis em todos os planos · Sem cartão · Cancele quando quiser</p>
+          <p className="pricing-fine">{pricingTab === "ready" ? "Pagamento parcelado em 12x · Entrega garantida em dias úteis" : "7 dias grátis em todos os planos · Sem cartão · Cancele quando quiser"}</p>
         </div>
       </section>
 
