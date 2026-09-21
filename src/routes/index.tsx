@@ -830,6 +830,7 @@ function LandingPage() {
     { href: "#como-funciona", label: "Como funciona" },
     { href: "#precos", label: "Planos" },
     { href: "#faq", label: "FAQ" },
+    { href: "/blog", label: "Blog" },
   ];
 
   return (
