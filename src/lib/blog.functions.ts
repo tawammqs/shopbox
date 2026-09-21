@@ -200,6 +200,7 @@ export const saveBlogPost = createServerFn({ method: "POST" })
       meta_description: data.meta_description,
       reading_time: data.reading_time,
       is_published: data.is_published,
+      faq: data.faq,
       published_at: data.is_published ? new Date().toISOString() : null,
     };
     const query = data.id
