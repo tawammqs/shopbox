@@ -1,10 +1,12 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowRight, Clock, UserRound } from "lucide-react";
-import { BLOG_CATEGORIES, listPublishedPosts } from "@/lib/blog.functions";
+import { BLOG_CATEGORIES, listPublishedPosts, listTopPosts } from "@/lib/blog.functions";
+import { BlogLeadCapture } from "@/components/blog/BlogLeadCapture";
+import { BlogWhatsAppButton } from "@/components/blog/BlogWhatsAppButton";
 
 export const Route = createFileRoute("/blog")({
-  loader: () => listPublishedPosts(),
+  loader: async () => ({ posts: await listPublishedPosts(), topPosts: await listTopPosts() }),
   head: () => ({ meta: [
     { title: "Blog ShopBox — Vendas, WhatsApp e empreendedorismo" },
     { name: "description", content: "Estratégias práticas para vender mais pelo WhatsApp, organizar sua loja e crescer no digital." },
