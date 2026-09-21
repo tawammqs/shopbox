@@ -306,3 +306,29 @@ export const generateBlogPost = createServerFn({ method: "POST" })
     if (error) throw new Response(error.message, { status: error.code === "23505" ? 409 : 500 });
     return saved;
   });
+
+export const getBlogMetrics = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertPlatformAdmin(context.supabase, context.userId);
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const [postsRes, viewsRes, leadsRes, leads30Res] = await Promise.all([
+      context.supabase.from("blog_posts").select("id,title,slug,view_count,is_published"),
+      context.supabase.from("blog_post_views").select("id", { count: "exact", head: true }).gte("created_at", since),
+      context.supabase.from("blog_leads").select("id", { count: "exact", head: true }),
+      context.supabase.from("blog_leads").select("id", { count: "exact", head: true }).gte("created_at", since),
+    ]);
+    if (postsRes.error) throw new Response(postsRes.error.message, { status: 500 });
+    const published = (postsRes.data ?? []).filter((post) => post.is_published);
+    const totalViews = published.reduce((sum, post) => sum + (post.view_count ?? 0), 0);
+    const leads = leadsRes.count ?? 0;
+    return {
+      publishedCount: published.length,
+      totalViews,
+      views30d: viewsRes.count ?? 0,
+      leads,
+      leads30d: leads30Res.count ?? 0,
+      conversionRate: totalViews > 0 ? (leads / totalViews) * 100 : 0,
+      topPosts: [...published].sort((a, b) => (b.view_count ?? 0) - (a.view_count ?? 0)).slice(0, 5),
+    };
+  });
