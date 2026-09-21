@@ -70,6 +70,7 @@ function BlogPage() {
         </div>}
       </section>
     </main>
+    <BlogWhatsAppButton />
     <footer className="border-t border-border px-5 py-8"><div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-sm text-muted-foreground sm:flex-row"><img src="/logo-shopbox.png" alt="ShopBox" className="h-9 w-auto" /><p>Conteúdo para quem vende pelo WhatsApp.</p></div></footer>
   </div>;
 }
