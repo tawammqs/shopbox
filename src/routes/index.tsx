@@ -205,12 +205,21 @@ const STYLES = `
 .psb .plan-card.featured .plan-note { color: var(--green); }
 .psb .annual-card-badge { width: fit-content; margin-top: 13px; padding: 5px 10px; border-radius: 9999px; color: var(--green-text); background: var(--bg-mint); font-size: 11px; font-weight: 800; }
 .psb .plan-card.featured .annual-card-badge { color: var(--ink); background: var(--green); }
-.psb .plan-btn { width: 100%; min-height: 46px; margin: 26px 0; display: grid; place-items: center; border-radius: 8px; color: var(--ink); border: 1px solid var(--green); font-size: 14px; font-weight: 600; transition: background .2s, color .2s; }
+.psb .plan-btn { width: 100%; min-height: 46px; margin: auto 0 0; display: grid; place-items: center; border-radius: 8px; color: var(--ink); border: 1px solid var(--green); font-size: 14px; font-weight: 600; transition: background .2s, color .2s; }
 .psb .plan-btn:hover, .psb .plan-card.featured .plan-btn { color: #fff; background: var(--green); }
-.psb .plan-feats { display: grid; gap: 13px; margin-top: auto; list-style: none; }
+.psb .plan-feats { display: grid; gap: 13px; margin: 26px 0; list-style: none; }
 .psb .plan-feats li { display: flex; gap: 10px; align-items: flex-start; color: #4b5563; font-size: 14px; line-height: 1.5; }
 .psb .plan-card.featured .plan-feats li { color: #d1d5db; }
+.psb .plan-feats li.exc { color: #b6b6b6; }
+.psb .plan-card.featured .plan-feats li.exc { color: #6b7280; }
 .psb .feat-yes { color: var(--green); font-weight: 800; }
+.psb .feat-no { color: #d4d4d4; font-weight: 800; }
+.psb .plan-card.featured .feat-no { color: #4b5563; }
+.psb .plan-desc { margin-top: 10px; color: #6b7280; font-size: 13px; line-height: 1.6; }
+.psb .plan-card.featured .plan-desc { color: #9ca3af; }
+.psb .plan-installments { margin-top: 8px; color: var(--green); font-size: 13px; font-weight: 600; }
+.psb .ready-grid { max-width: 880px; margin: 0 auto; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; align-items: stretch; }
+.psb .ready-grid .plan-card { min-height: 0; }
 .psb .pricing-fine { margin-top: 28px; text-align: center; color: #777; font-size: 13px; }
 
 /* TESTIMONIALS */
