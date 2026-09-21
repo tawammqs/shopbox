@@ -188,6 +188,27 @@ export type Database = {
           },
         ]
       }
+      blog_leads: {
+        Row: {
+          created_at: string
+          id: string
+          source: string
+          whatsapp: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          source?: string
+          whatsapp: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          source?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_avatar_url: string | null
@@ -197,6 +218,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string
           excerpt: string
+          faq: Json
           id: string
           is_published: boolean
           meta_description: string | null
@@ -207,6 +229,7 @@ export type Database = {
           tags: string[]
           title: string
           updated_at: string
+          view_count: number
         }
         Insert: {
           author_avatar_url?: string | null
@@ -216,6 +239,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           excerpt?: string
+          faq?: Json
           id?: string
           is_published?: boolean
           meta_description?: string | null
@@ -226,6 +250,7 @@ export type Database = {
           tags?: string[]
           title: string
           updated_at?: string
+          view_count?: number
         }
         Update: {
           author_avatar_url?: string | null
@@ -235,6 +260,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           excerpt?: string
+          faq?: Json
           id?: string
           is_published?: boolean
           meta_description?: string | null
@@ -245,6 +271,7 @@ export type Database = {
           tags?: string[]
           title?: string
           updated_at?: string
+          view_count?: number
         }
         Relationships: []
       }
@@ -3139,6 +3166,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_blog_view: { Args: { _post_id: string }; Returns: undefined }
       increment_product_view: {
         Args: { _product_id: string }
         Returns: undefined
