@@ -228,6 +228,8 @@ function SuperadminMetricasPage() {
             </Card>
           )}
 
+          <BlogMetricsSection />
+
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Cadastros recentes</CardTitle>
