@@ -27,7 +27,7 @@ function BlogPage() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   if (pathname !== "/blog" && pathname !== "/blog/") return <Outlet />;
 
-  const posts = Route.useLoaderData();
+  const { posts, topPosts } = Route.useLoaderData();
   const [category, setCategory] = useState("Todos");
   const filtered = useMemo(() => category === "Todos" ? posts : posts.filter((post) => post.category === category), [category, posts]);
   return <div className="min-h-screen bg-background text-foreground">
