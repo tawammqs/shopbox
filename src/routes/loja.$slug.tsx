@@ -74,7 +74,7 @@ export const Route = createFileRoute("/loja/$slug")({
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 px-4 text-center">
         <h1 className="font-display text-2xl">Erro ao carregar a loja</h1>
-        <p className="text-sm text-muted-foreground">{error.message}</p>
+        <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : String(error)}</p>
         <Button onClick={() => { router.invalidate(); reset(); }}>Tentar novamente</Button>
       </div>
     );
