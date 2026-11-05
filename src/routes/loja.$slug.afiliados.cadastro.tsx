@@ -48,7 +48,7 @@ function AffiliateSignupPage() {
         storeId: store.id,
         name: form.name,
         email: form.email,
-        whatsapp: form.whatsapp,
+        whatsapp: form.whatsapp.replace(/\D/g, ""),
         password: form.password,
         referredBySlug: ref,
       });

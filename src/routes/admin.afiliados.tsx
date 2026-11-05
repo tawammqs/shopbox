@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Users, Settings2, Download, Wallet, FileText, CreditCard } from "lucide-react";
+import { Loader2, Users, Settings2, Download, Wallet, FileText, CreditCard, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyStore } from "@/hooks/useMyStore";
@@ -77,6 +77,35 @@ const productName = (items: any) => {
   const first = items[0]?.title ?? items[0]?.name ?? "Produto";
   return items.length > 1 ? `${first} +${items.length - 1}` : first;
 };
+
+function waDigits(raw: string | null | undefined): string {
+  let d = String(raw ?? "").replace(/\D/g, "");
+  if (d.length >= 12 && d.startsWith("55")) d = d.slice(2);
+  return d;
+}
+
+function formatWhatsapp(raw: string | null | undefined): string {
+  const d = waDigits(raw);
+  if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return d;
+}
+
+function WhatsappLink({ value }: { value: string | null | undefined }) {
+  const d = waDigits(value);
+  if (!d) return <span className="text-xs text-muted-foreground/70">WhatsApp não informado</span>;
+  return (
+    <a
+      href={`https://wa.me/55${d}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground hover:underline"
+    >
+      <MessageCircle className="h-3.5 w-3.5" />
+      {formatWhatsapp(value)}
+    </a>
+  );
+}
 
 function downloadCSV(rows: string[][], filename: string) {
   const csv = rows.map((r) => r.map((c) => `"${String(c ?? "").replace(/"/g, '""')}"`).join(";")).join("\n");
@@ -273,6 +302,10 @@ function PagarPixModal({
                 <span className="text-muted-foreground">Afiliado</span>
                 <span className="font-medium text-foreground">{single.name}</span>
               </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">WhatsApp</span>
+                <WhatsappLink value={single.whatsapp} />
+              </div>
               <div className="flex justify-between gap-3 text-sm">
                 <span className="text-muted-foreground">Chave PIX</span>
                 <span className="truncate font-mono text-xs font-medium text-foreground">{single.pix_key || "Não cadastrada"}</span>
@@ -452,10 +485,11 @@ function AffiliatesAdminPage() {
   };
 
   const exportCSV = () => {
-    const headers = ["Data", "Afiliado", "Produto", "Valor Venda", "Comissão", "Recrutador", "Comissão recrutador", "Status"];
+    const headers = ["Data", "Afiliado", "WhatsApp", "Produto", "Valor Venda", "Comissão", "Recrutador", "Comissão recrutador", "Status"];
     const rows = reportRows.map((r) => [
       new Date(r.sale.created_at).toLocaleDateString("pt-BR"),
       r.affiliate?.name ?? "—",
+      r.affiliate ? formatWhatsapp(r.affiliate.whatsapp) : "",
       productName(r.sale.items),
       formatBRL(Number(r.sale.order_total)),
       formatBRL(Number(r.sale.commission_amount)),
@@ -550,6 +584,7 @@ function AffiliatesAdminPage() {
                         <td className="py-3 pr-3">
                           <p className="font-semibold text-foreground">{a.name}</p>
                           <p className="text-xs text-muted-foreground">{a.email} · /{a.affiliate_slug}</p>
+                          <WhatsappLink value={a.whatsapp} />
                         </td>
                         <td className="py-3 pr-3 text-right text-foreground">{t.count}</td>
                         <td className="py-3 pr-3 text-right text-foreground">{formatBRL(t.commission)}</td>
@@ -639,7 +674,10 @@ function AffiliatesAdminPage() {
                   {reportRows.map((r) => (
                     <tr key={r.sale.id}>
                       <td className="py-2.5 pr-3 text-foreground">{new Date(r.sale.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}</td>
-                      <td className="py-2.5 pr-3 text-foreground">{r.affiliate?.name ?? "—"}</td>
+                      <td className="py-2.5 pr-3 text-foreground">
+                        <p>{r.affiliate?.name ?? "—"}</p>
+                        {r.affiliate && <WhatsappLink value={r.affiliate.whatsapp} />}
+                      </td>
                       <td className="max-w-[220px] truncate py-2.5 pr-3 text-foreground">{productName(r.sale.items)}</td>
                       <td className="py-2.5 pr-3 text-right text-foreground">{formatBRL(Number(r.sale.order_total))}</td>
                       <td className="py-2.5 pr-3 text-right font-semibold text-foreground">{formatBRL(Number(r.sale.commission_amount))}</td>
@@ -691,7 +729,10 @@ function AffiliatesAdminPage() {
                 {payments.map((p) => (
                   <tr key={p.id}>
                     <td className="py-2.5 pr-3 text-foreground">{new Date(p.paid_at).toLocaleDateString("pt-BR")}</td>
-                    <td className="py-2.5 pr-3 text-foreground">{affById.get(p.affiliate_id)?.name ?? "—"}</td>
+                    <td className="py-2.5 pr-3 text-foreground">
+                      <p>{affById.get(p.affiliate_id)?.name ?? "—"}</p>
+                      {affById.get(p.affiliate_id) && <WhatsappLink value={affById.get(p.affiliate_id)?.whatsapp} />}
+                    </td>
                     <td className="max-w-[180px] truncate py-2.5 pr-3 font-mono text-xs text-foreground">{p.pix_key || "—"}</td>
                     <td className="py-2.5 pr-3 text-right font-bold text-[#1fb857]">{formatBRL(Number(p.amount))}</td>
                     <td className="py-2.5 text-muted-foreground">{p.notes || "—"}</td>
