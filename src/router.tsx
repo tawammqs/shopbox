@@ -4,7 +4,8 @@ import { QueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { routeTree } from "./routeTree.gen";
 
-function DefaultErrorComponent({ error, reset }: ErrorComponentProps) {
+function DefaultErrorComponent({ error: rawError, reset }: ErrorComponentProps) {
+  const error = rawError instanceof Error ? rawError : new Error(String(rawError));
   const router = useRouter();
   const [showStack, setShowStack] = useState(false);
   return (
